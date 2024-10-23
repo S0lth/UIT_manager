@@ -1,0 +1,17 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam monochrome true
+left to right direction
+title Partial  UseCase diagram
+
+actor technician
+
+
+
+rectangle "UIT MANAGER" as R {
+    technician --> (Consult the machines)
+    (Consult the machines) <.left. (Consult the triggered alarms.) : "<<extend>>"
+
+}
+
+@enduml

@@ -1,0 +1,11 @@
+@startuml 
+skinparam monochrome true
+title Partial  class diagram
+class Alarm{}
+class Machine{}
+class Criterion{}
+class CriteriaGroup{}
+Machine "1"-left- "0..*" Alarm : "is linked to"
+Alarm "1..*" *-- "1"CriteriaGroup : "contains"
+CriteriaGroup "1..*" -right-"1" Criterion : "is linked to"
+@enduml
