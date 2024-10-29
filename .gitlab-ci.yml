@@ -14,8 +14,8 @@ variables:
 build:
   stage: build
   script:
-    - dotnet restore ./Code/$PROJECT_NAME.sln
-    - dotnet build --no-restore ./Code/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION
+    - dotnet restore ./Code/$PROJECT_NAME/$PROJECT_NAME.sln  
+    - dotnet build --no-restore ./Code/$PROJECT_NAME/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION
   artifacts:
     paths:
       - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
@@ -25,7 +25,7 @@ build:
 test:
   stage: test
   script:
-    - dotnet test --no-build ./Code/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results.trx"
+    - dotnet test --no-build ./Code/$PROJECT_NAME/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results.trx"
   artifacts:
     when: always
     paths:
