@@ -25,13 +25,13 @@ build:
 test:
   stage: test
   script:
-    - mkdir -p "./Code/$PROJECT_NAME/TestResults"
+    - mkdir -p "$CI_PROJECT_DIR/Code/$PROJECT_NAME/TestResults"
     - TIMESTAMP=$(date +%Y%m%d%H%M%S)
-    - dotnet test --no-build "./Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results_$TIMESTAMP.trx" --results-directory "./Code/$PROJECT_NAME/TestResults"
+    - dotnet test --no-build "$CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results_$TIMESTAMP.trx" --results-directory "$CI_PROJECT_DIR/Code/$PROJECT_NAME/TestResults"
   artifacts:
     when: always
     paths:
-      - $CI_PROJECT_DIR/Code/$PROJECT_NAME/TestResults/*.trx
+      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME/TestResults/*.trx"
     expire_in: 1 week
   dependencies:
     - build
