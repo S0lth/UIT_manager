@@ -25,13 +25,7 @@ build:
 test:
   stage: test
   script:
-    - TIMESTAMP=$(date +%Y%m%d%H%M%S)
-    - dotnet test --no-build "Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=Code/$PROJECT_NAME/${PROJECT_NAME}_test_results_$TIMESTAMP.trx"
-  artifacts:
-    when: always
-    paths:
-      - "Code/$PROJECT_NAME/*.trx"
-    expire_in: 1 week
+    - dotnet test --no-build "Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
   dependencies:
     - build
   rules:
