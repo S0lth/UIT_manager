@@ -13,11 +13,12 @@ variables:
 build:
   stage: build
   script:
-    - dotnet restore ./Code/$PROJECT_NAME/$PROJECT_NAME.sln  
-    - dotnet build --no-restore ./Code/$PROJECT_NAME/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION
+    - dotnet restore $CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln  
+    - dotnet build --no-restore $CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION
   artifacts:
     paths:
-      - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
+      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
+      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME_TEST/bin/$BUILD_CONFIGURATION"
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
@@ -26,9 +27,13 @@ build:
 test:
   stage: test
   script:
-    - dotnet test --no-build "Code/$PROJECT_NAME/$PROJECT_NAME_TEST.sln" -c $BUILD_CONFIGURATION
+    - dotnet test --no-build "$CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
   dependencies:
     - build
+  artifacts:
+    paths:
+      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/*.trx"  
+    expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
