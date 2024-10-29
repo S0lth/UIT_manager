@@ -31,7 +31,7 @@ test:
   artifacts:
     when: always
     paths:
-      - "./Code/$PROJECT_NAME/TestResults/**/*.trx"
+      - "./Code/$PROJECT_NAME/TestResults/*.trx"
     expire_in: 1 week
   dependencies:
     - build
