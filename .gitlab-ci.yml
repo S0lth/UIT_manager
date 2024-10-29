@@ -18,6 +18,7 @@ build:
   artifacts:
     paths:
       - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
+      - "./Code/$PROJECT_NAME_TEST/bin/$BUILD_CONFIGURATION"
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
@@ -26,9 +27,13 @@ build:
 test:
   stage: test
   script:
-    - dotnet test --no-build "Code/$PROJECT_NAME/$PROJECT_NAME_TEST.sln" -c $BUILD_CONFIGURATION
+    - dotnet test --no-build "Code/$PROJECT_NAME_TEST/$PROJECT_NAME_TEST.csproj" -c $BUILD_CONFIGURATION
   dependencies:
     - build
+  artifacts:
+    paths:
+      - "./Code/$PROJECT_NAME_TEST/bin/$BUILD_CONFIGURATION/*.trx"  # Permet de récupérer les résultats de tests si nécessaire
+    expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
