@@ -7,6 +7,7 @@ stages:
 
 variables:
   PROJECT_NAME: UITManagerAgent
+  PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
 
 build:
@@ -25,7 +26,7 @@ build:
 test:
   stage: test
   script:
-    - dotnet test --no-build "Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
+    - dotnet test --no-build "Code/$PROJECT_NAME/$PROJECT_NAME_TEST.sln" -c $BUILD_CONFIGURATION
   dependencies:
     - build
   rules:
