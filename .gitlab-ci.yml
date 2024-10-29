@@ -25,9 +25,9 @@ build:
 test:
   stage: test
   script:
-    - mkdir -p "$CI_PROJECT_DIR/Code/$PROJECT_NAME/TestResults"
+    - mkdir -p "Code/$PROJECT_NAME/TestResults"
     - TIMESTAMP=$(date +%Y%m%d%H%M%S)
-    - dotnet test --no-build "$CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results_$TIMESTAMP.trx" --results-directory "$CI_PROJECT_DIR/Code/$PROJECT_NAME/TestResults"
+    - dotnet test --no-build "Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=Code/$PROJECT_NAME/TestResults/${PROJECT_NAME}_test_results_$TIMESTAMP.trx"
   artifacts:
     when: always
     paths:
