@@ -25,7 +25,10 @@ build:
 test:
   stage: test
   script:
-    - dotnet test --no-build "./Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results.trx"
+    - TIMESTAMP=$(date +%Y%m%d%H%M%S)
+    - dotnet test --no-build "./Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results_$TIMESTAMP.trx"
+    - echo "Listing contents of TestResults directory for debugging:"
+    - ls -R ./Code/$PROJECT_NAME/TestResults/
   artifacts:
     when: always
     paths:
