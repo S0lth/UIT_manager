@@ -27,12 +27,12 @@ build:
 test:
   stage: test
   script:
-    - dotnet test --no-build "Code/$PROJECT_NAME_TEST/$PROJECT_NAME_TEST.csproj" -c $BUILD_CONFIGURATION
+    - dotnet test --no-build "$CI_PROJECT_DIR/Code/$PROJECT_NAME_TEST/$PROJECT_NAME_TEST.csproj" -c $BUILD_CONFIGURATION
   dependencies:
     - build
   artifacts:
     paths:
-      - "./Code/$PROJECT_NAME_TEST/bin/$BUILD_CONFIGURATION/*.trx"  # Permet de récupérer les résultats de tests si nécessaire
+      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME_TEST/bin/$BUILD_CONFIGURATION/*.trx"  
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
