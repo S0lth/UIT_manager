@@ -1,5 +1,3 @@
-# .NET CI/CD Pipeline pour GitLab - Environnement de Développement
-
 image: mcr.microsoft.com/dotnet/sdk:8.0
 
 stages:
@@ -20,18 +18,19 @@ build:
     paths:
       - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
     expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 test:
   stage: test
   script:
-    - dotnet test --no-build ./Code/$PROJECT_NAME/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results.trx"
-  artifacts:
-    when: always
-    paths:
-      - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/*.trx"
-    expire_in: 1 week
+    - dotnet test --no-build "Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
   dependencies:
     - build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 deploy:
   stage: deploy
@@ -46,3 +45,6 @@ deploy:
     - test
   environment:
     name: development
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
