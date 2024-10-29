@@ -1,53 +1,49 @@
-# .NET Multi-Solution CI/CD Pipeline pour GitLab
-# Ce script gère plusieurs solutions dans un dossier spécifique.
-# Il utilise les étapes build, test, et upload des artefacts pour chaque solution.
+# .NET CI/CD Pipeline pour GitLab - Environnement de Développement
 
-variables:
-  NUGET_PATH: 'C:\NuGet\nuget.exe'
-  MSBUILD_PATH: 'C:\Program Files (x86)\MSBuild\14.0\Bin\msbuild.exe'
+image: mcr.microsoft.com/dotnet/sdk:8.0
 
 stages:
   - build
   - test
   - deploy
 
-build_uitmanageragent:
+variables:
+  PROJECT_NAME: UITManagerAgent
+  BUILD_CONFIGURATION: Debug
+
+build:
   stage: build
   script:
-    - 'dotnet restore ./Code/UITManagerAgent.sln'
-    - 'dotnet build --no-restore ./Code/UITManagerAgent.sln'
+    - dotnet restore ./Code/$PROJECT_NAME.sln
+    - dotnet build --no-restore ./Code/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION
   artifacts:
     paths:
-      - './Code/UITManagerAgent/bin/Release'
+      - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
     expire_in: 1 week
 
-test_uitmanageragent:
+# Job de test
+test:
   stage: test
   script:
-    - 'dotnet test --no-build ./Code/UITManagerAgent.sln --logger "trx;LogFileName=UITManagerAgent_test_results.trx"'
+    - dotnet test --no-build ./Code/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION --logger "trx;LogFileName=${PROJECT_NAME}_test_results.trx"
   artifacts:
     when: always
     paths:
-      - 'UITManagerAgent_test_results.trx'
+      - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/*.trx"
     expire_in: 1 week
   dependencies:
-    - build_uitmanageragent
+    - build
 
-# Ajouter d'autres jobs pour chaque solution supplémentaire (par exemple, SolutionB, SolutionC)
-# En dupliquant le bloc `build_solution` et `test_solution` en remplaçant `UITManagerAgent` par le nom de chaque solution
-
-deploy_artifacts:
+deploy:
   stage: deploy
   script:
-    # On déploie ou sauvegarde les artefacts, par exemple, en les copiant vers un répertoire de déploiement
-    - mkdir -p "$CI_PROJECT_DIR/deployment"
-    - cp ./Code/UITManagerAgent/bin/Release/* "$CI_PROJECT_DIR/deployment/"
+    - echo "Déploiement des artefacts depuis ./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION pour l'environnement de développement"
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/deployment"
+      - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
     expire_in: 1 week
   dependencies:
-    - build_uitmanageragent
-    - test_uitmanageragent
+    - build
+    - test
   environment:
-    name: production
+    name: development
