@@ -15,7 +15,6 @@ public class UserCollector : DataCollector
                     if (child.SchemaClassName == "User")
                     {
                         //if (child != null) users.usersList.Add(child.Name);
-                        //
                     }
                 }
             }
