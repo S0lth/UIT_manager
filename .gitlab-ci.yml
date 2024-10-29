@@ -21,7 +21,6 @@ build:
       - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
     expire_in: 1 week
 
-# Job de test
 test:
   stage: test
   script:
