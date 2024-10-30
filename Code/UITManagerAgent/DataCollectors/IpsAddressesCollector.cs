@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.DataCollectors;
 
@@ -14,7 +15,8 @@ public class IpsAddressesCollector : DataCollector
         {
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
-                ipsAddressesInformation.IPSList.Add(ip.ToString());
+                //ipsAddressesInformation.Add(ip.ToString());
+                ipsAddressesInformation.GetIpsList().Add(ip.ToString());
             }
         }
         return ipsAddressesInformation;

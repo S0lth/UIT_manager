@@ -1,9 +1,17 @@
-﻿namespace UITManagerAgent.DataCollectors;
+﻿using UITManagerAgent.DataCollectors;
+
+namespace UITManagerAgent.BasicInformation;
 
 public class IpsAddressesInformation : Information
 {
-    public List<string> IPSList = new();
+    private List<string> _ipsList = new();
 
-    public override string ToString() => $"{string.Join(", ", IPSList)}";
+    
+    public List<string> GetIpsList()
+    {
+        return _ipsList;
+    }
+
+    public override string ToString() => $"{string.Join(", ", _ipsList)}";
 
 }
