@@ -27,12 +27,11 @@ build:
 test:
   stage: test
   script:
+    - dotnet --version 
     - dotnet test --no-build "$CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
   dependencies:
     - build
   artifacts:
-    paths:
-      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/*.trx"  
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
