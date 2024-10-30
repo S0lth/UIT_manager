@@ -15,7 +15,6 @@ public class IpsAddressesCollector : DataCollector
         {
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
-                //ipsAddressesInformation.Add(ip.ToString());
                 ipsAddressesInformation.GetIpsList().Add(ip.ToString());
             }
         }
