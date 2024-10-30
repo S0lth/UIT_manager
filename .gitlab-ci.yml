@@ -26,8 +26,6 @@ build:
 
 test:
   stage: test
-  tags:
-    - saas-windows-medium-amd64
   script:
     - dotnet --version 
     - dotnet test --no-build "$CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
