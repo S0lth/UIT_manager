@@ -1,20 +1,18 @@
-﻿using UITManagerAgent.DataCollectors;
+using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.BasicInformation;
 
 /// <summary>
 /// Represents a collection of IP addresses.
 /// </summary>
-public class IpsAddressesInformation : Information
-{
+public class IpsAddressesInformation : Information {
     private List<string> _ipsList = new();
 
     /// <summary>
     /// Get the list of IP addresses.
     /// </summary>
     /// <returns>A list of IP addresses.</returns>
-    public List<string> GetIpsList()
-    {
+    public List<string> GetIpsList() {
         return _ipsList;
     }
 

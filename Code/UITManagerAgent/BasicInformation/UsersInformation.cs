@@ -1,12 +1,10 @@
-﻿
 using UITManagerAgent.DataCollectors;
 
 /// <summary>
 /// Represents a collection of user information.
 /// Inherits from the <see cref="Information"/> class.
 /// </summary>
-public class UsersInformation : Information
-{
+public class UsersInformation : Information {
     /// <summary>
     /// List of collected usernames.
     /// </summary>

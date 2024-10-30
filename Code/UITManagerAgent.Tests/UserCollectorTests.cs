@@ -93,6 +93,7 @@ public class UserCollectorTests
         var firstResult = (UsersInformation)userCollector.Collect();
         var secondResult = (UsersInformation)userCollector.Collect();
 
-        Assert.AreNotSame(firstResult, secondResult, "Each call to Collect should return a new instance of UsersInformation.");
+        Assert.AreNotSame(firstResult, secondResult,
+            "Each call to Collect should return a new instance of UsersInformation.");
     }
 }
