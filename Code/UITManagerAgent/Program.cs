@@ -13,6 +13,8 @@ public class Program
     {
         UserCollector userCollector = new UserCollector();
         Console.WriteLine(userCollector.Collect().ToString());
+        CpuCollectors d = new CpuCollectors();
+        Console.WriteLine(d.Collect().ToString());
         return Task.CompletedTask;
     }
 }
