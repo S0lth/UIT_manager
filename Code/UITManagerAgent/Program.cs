@@ -13,6 +13,9 @@ public class Program
     {
         UserCollector userCollector = new UserCollector();
         Console.WriteLine(userCollector.Collect().ToString());
+        
+        IpsAddressesCollector ipsAddressesCollector = new IpsAddressesCollector();
+        Console.WriteLine(ipsAddressesCollector.Collect().ToString());
         return Task.CompletedTask;
     }
 }
