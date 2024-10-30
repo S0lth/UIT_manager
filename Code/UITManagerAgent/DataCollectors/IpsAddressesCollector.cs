@@ -3,9 +3,16 @@ using System.Net.Sockets;
 using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.DataCollectors;
-
+/// <summary>
+/// Class responsible for collecting IP addresses.
+/// </summary>
 public class IpsAddressesCollector : DataCollector
 {
+    /// <summary>
+    /// Collects the IP addresses from the local system.
+    /// </summary>
+    /// <returns>
+    /// An <see cref="IpsAddressesInformation"/> object containing the collected IP addresses.</returns>
     public Information Collect()
     {
         IpsAddressesInformation ipsAddressesInformation = new();
