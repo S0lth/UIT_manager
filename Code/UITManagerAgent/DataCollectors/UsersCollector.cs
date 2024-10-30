@@ -1,13 +1,23 @@
-﻿namespace UITManagerAgent.DataCollectors;
-using System.DirectoryServices;
+﻿using System.DirectoryServices;
+using UITManagerAgent.DataCollectors;
 
+/// <summary>
+/// Collects user information from the system and returns it as a <see cref="UsersInformation"/> instance.
+/// </summary>
 public class UserCollector : DataCollector
 {
+    /// <summary>
+    /// Collects user information by accessing the system directory entries.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="UsersInformation"/> object containing the list of usernames.
+    /// </returns>
     public Information Collect()
     {
         UsersInformation users = new UsersInformation();
         
-        try {
+        try
+        {
             using (DirectoryEntry localMachine = new DirectoryEntry("WinNT://" + Environment.MachineName))
             {
                 foreach (DirectoryEntry child in localMachine.Children)
@@ -21,7 +31,7 @@ public class UserCollector : DataCollector
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Erreur lors de la récupération des utilisateurs : " + ex.Message);
+            Console.WriteLine("Error while retrieving users: " + ex.Message);
         }
 
         return users;
