@@ -12,19 +12,39 @@ public class IpsAddressesCollector : DataCollector
     /// Collects the IP addresses from the local system.
     /// </summary>
     /// <returns>
-    /// An <see cref="IpsAddressesInformation"/> object containing the collected IP addresses.</returns>
+    /// An <see cref="IpsAddressesInformation"/> object containing the collected IP addresses.
+    /// If no IP addresses are found or an error occurs, the list may be empty.
+    /// </returns>
+    /// <remarks>
+    /// This method handles potential network-related exceptions
+    /// such as <see cref="SocketException"/> and errors.
+    /// In case of error, the method returns an empty
+    /// <see cref="IpsAddressesInformation"/> object.
+    /// </remarks>
     public Information Collect()
     {
         IpsAddressesInformation ipsAddressesInformation = new();
-        string hostname = Dns.GetHostName();
-        IPHostEntry ipEntry = Dns.GetHostEntry(hostname);
-        foreach (IPAddress ip in ipEntry.AddressList)
+        try
         {
-            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            string hostname = Dns.GetHostName();
+            IPHostEntry ipEntry = Dns.GetHostEntry(hostname);
+            foreach (IPAddress ip in ipEntry.AddressList)
             {
-                ipsAddressesInformation.GetIpsList().Add(ip.ToString());
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    ipsAddressesInformation.GetIpsList().Add(ip.ToString());
+                }
             }
         }
+        catch (SocketException socketException)
+        {
+            Console.WriteLine($"Network error while retrieving IP addresses: {socketException.Message}");
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine($"An unexpected error occured: {exception.Message}");
+        }
+
         return ipsAddressesInformation;
     }
 }
