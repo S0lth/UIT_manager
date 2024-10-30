@@ -2,7 +2,9 @@
 
 public class UsersInformation : Information
 {
-    public List<string> usersList = new();
+    private List<string> _usersList = new();
     
-    public override string ToString() => $"{string.Join(", ", usersList)}";
+    public List<string> GetUsersList() => _usersList;
+    
+    public override string ToString() => $"{string.Join(", ", GetUsersList())}";
 }

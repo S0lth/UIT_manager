@@ -61,8 +61,8 @@ namespace UITManagerAgent.Tests
 
             var result = (UsersInformation)userCollector.Collect();
 
-            Assert.IsNotNull(result.usersList, "La liste des utilisateurs ne doit pas être nulle.");
-            Assert.IsTrue(result.usersList.Count >= 1, "La liste des utilisateurs doit contenir au moins 1 élément.");
+            Assert.IsNotNull(result.GetUsersList(), "La liste des utilisateurs ne doit pas être nulle.");
+            Assert.IsTrue(result.GetUsersList().Count >= 1, "La liste des utilisateurs doit contenir au moins 1 élément.");
         }
 
         [TestMethod]
