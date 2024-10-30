@@ -13,6 +13,8 @@ public class Program
     {
         UserCollector userCollector = new UserCollector();
         Console.WriteLine(userCollector.Collect().ToString());
+        DiskCollector diskCollector = new DiskCollector();
+        Console.WriteLine(diskCollector.Collect().ToString());
         return Task.CompletedTask;
     }
 }
