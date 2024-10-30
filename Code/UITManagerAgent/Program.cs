@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UITManagerAgent.DataCollectors;
 
@@ -15,6 +15,9 @@ public class Program
         Console.WriteLine(userCollector.Collect().ToString());
         CpuCollectors cupCollected = new CpuCollectors();
         Console.WriteLine(cupCollected.Collect().ToString());
+        
+        IpsAddressesCollector ipsAddressesCollector = new IpsAddressesCollector();
+        Console.WriteLine(ipsAddressesCollector.Collect().ToString());
         return Task.CompletedTask;
     }
 }
