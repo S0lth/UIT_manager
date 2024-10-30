@@ -1,4 +1,5 @@
 using UITManagerAgent.DataCollectors;
+using System.Runtime.InteropServices;
 
 namespace UITManagerAgent.Tests
 {
@@ -10,17 +11,20 @@ namespace UITManagerAgent.Tests
         [TestInitialize]
         public void Setup()
         {
-            // Initialisation avant chaque test
             userCollector = new UserCollector();
         }
 
         [TestMethod]
         public void Collect_ShouldReturnUsersInformationInstance()
         {
-            // Act
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Assert.Inconclusive("Ce test s'exécute uniquement sur Windows.");
+                return;
+            }
+
             var result = userCollector.Collect();
 
-            // Assert
             Assert.IsNotNull(result, "Le résultat ne doit pas être nul.");
             Assert.IsInstanceOfType(result, typeof(UsersInformation), "Le résultat doit être de type UsersInformation.");
         }
@@ -28,12 +32,16 @@ namespace UITManagerAgent.Tests
         [TestMethod]
         public void Collect_ShouldHandleExceptionsGracefully()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Assert.Inconclusive("Ce test s'exécute uniquement sur Windows.");
+                return;
+            }
+
             try
             {
-                // Act
                 var result = userCollector.Collect();
 
-                // Assert
                 Assert.IsNotNull(result, "Le résultat ne doit pas être nul même en cas d'exception.");
             }
             catch (Exception ex)
@@ -45,10 +53,14 @@ namespace UITManagerAgent.Tests
         [TestMethod]
         public void Collect_UsersListShouldNotBeNullOrEmpty_WhenUsersExist()
         {
-            // Act
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Assert.Inconclusive("Ce test s'exécute uniquement sur Windows.");
+                return;
+            }
+
             var result = (UsersInformation)userCollector.Collect();
 
-            // Assert
             Assert.IsNotNull(result.usersList, "La liste des utilisateurs ne doit pas être nulle.");
             Assert.IsTrue(result.usersList.Count >= 1, "La liste des utilisateurs doit contenir au moins 1 élément.");
         }
@@ -56,11 +68,15 @@ namespace UITManagerAgent.Tests
         [TestMethod]
         public void Collect_ShouldReturnNewInstanceOnEachCall()
         {
-            // Act
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Assert.Inconclusive("Ce test s'exécute uniquement sur Windows.");
+                return;
+            }
+
             var firstResult = (UsersInformation)userCollector.Collect();
             var secondResult = (UsersInformation)userCollector.Collect();
 
-            // Assert
             Assert.AreNotSame(firstResult, secondResult, "Chaque appel à Collect devrait renvoyer une nouvelle instance de UsersInformation.");
         }
     }
