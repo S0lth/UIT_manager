@@ -11,6 +11,9 @@ public class Program {
 
         IpsAddressesCollector ipsAddressesCollector = new();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
+
+        DomainNameCollector domainNameCollector = new DomainNameCollector();
+        Console.WriteLine(domainNameCollector.Collect().ToString());
         return Task.CompletedTask;
     }
 }
