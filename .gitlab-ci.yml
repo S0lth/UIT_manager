@@ -9,8 +9,6 @@ variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
-  DOC_OUTPUT: "$env:CI_PROJECT_DIR\\Code\\docs"
-  DOC_XML_PATH: "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\bin\\$env:BUILD_CONFIGURATION\\net8.0\\Documentation.xml"
 
 build:
   extends: .windows_job
@@ -20,8 +18,8 @@ build:
     - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\bin\\$env:BUILD_CONFIGURATION"
-      - "$CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME_TEST\\bin\\$env:BUILD_CONFIGURATION"
+      - "Code/UITManagerAgent/bin/Debug"
+      - "Code/UITManagerAgent.Tests/bin/Debug"
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
@@ -32,7 +30,7 @@ test:
   stage: test
   script:
     - dotnet --version
-    - dotnet test --no-build "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
+    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c Debug
   dependencies:
     - build
   artifacts:
@@ -48,7 +46,7 @@ deploy:
     - echo "Déploiement des artefacts depuis ./Code/$env:PROJECT_NAME/bin/$env:BUILD_CONFIGURATION pour l'environnement de développement"
   artifacts:
     paths:
-      - "./Code/$env:PROJECT_NAME/bin/$env:BUILD_CONFIGURATION"
+      - "Code/UITManagerAgent/bin/Debug"
     expire_in: 1 week
   dependencies:
     - build
