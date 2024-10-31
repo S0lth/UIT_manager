@@ -64,12 +64,14 @@ publish_docs:
     - build
   before_script:
     - apt-get update && apt-get install -y unzip
-    - dotnet tool install --global xmldoc2md || true
-    - export PATH="$PATH:/root/.dotnet/tools"
+    - curl -L https://github.com/dotnet/docfx/releases/download/v2.56/docfx.zip -o docfx.zip
+    - unzip docfx.zip -d /docfx
+    - export PATH="$PATH:/docfx"
   script:
     - cd Code
     - mkdir -p $DOC_OUTPUT
-    - xmldoc2md "$DOC_XML_PATH" -o "$DOC_OUTPUT" --gitlab-wiki
+    - /docfx/docfx metadata "$DOC_XML_PATH" --output "$DOC_OUTPUT" || echo "Metadata generation failed, moving to build"
+    - /docfx/docfx build --output "$DOC_OUTPUT"
     - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.wiki.git" ../wiki
     - cp -r "$DOC_OUTPUT"/* ../wiki/
     - cd ../wiki
