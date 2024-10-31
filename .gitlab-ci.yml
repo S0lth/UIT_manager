@@ -63,15 +63,15 @@ publish_docs:
   dependencies:
     - build
   before_script:
-    - apt-get update && apt-get install -y unzip 
+    - apt-get update && apt-get install -y unzip
     - curl -L https://github.com/dotnet/docfx/releases/download/v2.56/docfx.zip -o docfx.zip
     - unzip docfx.zip -d /docfx
-    - export PATH=$PATH:/docfx
+    - export PATH=$PATH:/docfx 
   script:
     - mkdir -p $DOC_OUTPUT
     - chmod +x Code/generate_docfx_json.sh
-    - ./Code/generate_docfx_json.sh 
-    - docfx docfx.json
+    - ./Code/generate_docfx_json.sh
+    - /docfx/docfx.exe docfx.json
     - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.wiki.git" wiki
     - cp -r $DOC_OUTPUT/* wiki/
     - cd wiki
