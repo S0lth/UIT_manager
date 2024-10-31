@@ -7,7 +7,8 @@ cat << EOF > docfx.json
       "src": [
         {
           "files": ["${DOC_XML_PATH}"],
-          "cwd": "."
+          "cwd": ".",
+          "type": "xml"
         }
       ],
       "dest": "obj/api"
