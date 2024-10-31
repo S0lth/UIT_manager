@@ -67,7 +67,7 @@ publish_docs:
     - dotnet tool install -g docfx
     - export PATH="$PATH:/root/.dotnet/tools"
   script:
-    - cd Code 
+    - cd Code
     - mkdir -p $DOC_OUTPUT
     - chmod +x generate_docfx_json.sh
     - ./generate_docfx_json.sh
