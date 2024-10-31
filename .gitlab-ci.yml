@@ -1,37 +1,38 @@
-image: mcr.microsoft.com/dotnet/sdk:8.0
-
-stages:
-  - build
-  - test
-  - deploy
-  - publish_docs
+.windows_job:
+  tags:
+    - saas-windows-medium-amd64
+  before_script:
+    - Set-Variable -Name "time" -Value (Get-Date -Format "HH:mm")
+    - Write-Host "started by $env:GITLAB_USER_NAME / @$env:GITLAB_USER_LOGIN"
 
 variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
-  DOC_OUTPUT: "$CI_PROJECT_DIR/Code/docs"
-  DOC_XML_PATH: "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/net8.0/Documentation.xml"
+  DOC_OUTPUT: "$env:CI_PROJECT_DIR\\Code\\docs"
+  DOC_XML_PATH: "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\bin\\$env:BUILD_CONFIGURATION\\net8.0\\Documentation.xml"
 
 build:
+  extends: .windows_job
   stage: build
   script:
-    - dotnet restore $CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln  
-    - dotnet build --no-restore $CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION
+    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln"
+    - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
-      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME_TEST/bin/$BUILD_CONFIGURATION"
+      - "$CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\bin\\$env:BUILD_CONFIGURATION"
+      - "$CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME_TEST\\bin\\$env:BUILD_CONFIGURATION"
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 test:
+  extends: .windows_job
   stage: test
   script:
-    - dotnet --version 
-    - dotnet test --no-build "$CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
+    - dotnet --version
+    - dotnet test --no-build "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   dependencies:
     - build
   artifacts:
@@ -41,12 +42,13 @@ test:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 deploy:
+  extends: .windows_job
   stage: deploy
   script:
-    - echo "Déploiement des artefacts depuis ./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION pour l'environnement de développement"
+    - echo "Déploiement des artefacts depuis ./Code/$env:PROJECT_NAME/bin/$env:BUILD_CONFIGURATION pour l'environnement de développement"
   artifacts:
     paths:
-      - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
+      - "./Code/$env:PROJECT_NAME/bin/$env:BUILD_CONFIGURATION"
     expire_in: 1 week
   dependencies:
     - build
@@ -56,5 +58,3 @@ deploy:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-
-
