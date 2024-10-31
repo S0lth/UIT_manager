@@ -1,4 +1,3 @@
-﻿using JetBrains.Annotations;
 using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.Tests.Basicinformation;
@@ -7,7 +6,6 @@ namespace UITManagerAgent.Tests.Basicinformation;
 /// Contains unit tests for the <see cref="RamInformation"/> class.
 /// </summary>
 [TestClass]
-[TestSubject(typeof(RamInformation))]
 public class RamInformationTest
 {
     private RamInformation _ramInformation;
