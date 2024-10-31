@@ -16,6 +16,9 @@ public class Program
         
         IpsAddressesCollector ipsAddressesCollector = new IpsAddressesCollector();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
+        
+        RamCollector ramCollector = new RamCollector();
+        Console.WriteLine(ramCollector.Collect().ToString());
         return Task.CompletedTask;
     }
 }
