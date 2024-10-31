@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
 using UITManagerAgent.DataCollectors;
 
-public class Program
-{
-    public static async Task Main(string[] args)
-    {
+public class Program {
+    public static async Task Main(string[] args) {
         await RunOnce();
     }
 
-    private static Task RunOnce()
-    {
-        UserCollector userCollector = new UserCollector();
+    private static Task RunOnce() {
+        UserCollector userCollector = new();
         Console.WriteLine(userCollector.Collect().ToString());
-        
-        IpsAddressesCollector ipsAddressesCollector = new IpsAddressesCollector();
+
+        IpsAddressesCollector ipsAddressesCollector = new();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
 
         DomainNameCollector domainNameCollector = new DomainNameCollector();

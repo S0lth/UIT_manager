@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+
+#! /bin/sh
+dotnet format Code/UITManagerAgent/UITManagerAgent.sln
+dotnet format Code/UITManagerAgent.Tests/UITManagerAgent.Tests.csproj
