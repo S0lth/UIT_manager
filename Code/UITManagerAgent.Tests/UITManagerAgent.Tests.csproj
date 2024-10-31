@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EditorConfigFiles Include=".editorconfig"/>
+      <EditorConfigFiles Include=".editorconfig" />
     </ItemGroup>
 
 </Project>
