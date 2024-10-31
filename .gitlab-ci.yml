@@ -13,6 +13,7 @@ variables:
   DOC_OUTPUT: "$CI_PROJECT_DIR/Code/docs"
   DOC_XML_PATH: "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/net8.0/Documentation.xml"
 
+
 build:
   stage: build
   script:
@@ -69,10 +70,7 @@ publish_docs:
   script:
     - cd Code
     - mkdir -p $DOC_OUTPUT
-    - chmod +x generate_docfx_json.sh
-    - ./generate_docfx_json.sh
-    - ls $DOC_XML_PATH || echo "Documentation file not found at $DOC_XML_PATH"
-    - docfx docfx.json
+    - docfx metadata --input $DOC_XML_PATH --output $DOC_OUTPUT
     - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.wiki.git" ../wiki
     - cp -r $DOC_OUTPUT/* ../wiki/
     - cd ../wiki
