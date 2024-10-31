@@ -28,8 +28,4 @@
         <Folder Include="BasicInformation\"/>
     </ItemGroup>
 
-    <ItemGroup>
-      <EditorConfigFiles Include=".editorconfig" />
-    </ItemGroup>
-
 </Project>
