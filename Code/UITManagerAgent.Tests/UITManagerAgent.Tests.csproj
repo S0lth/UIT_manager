@@ -10,7 +10,6 @@
 
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <DocumentationFile>bin\Debug\net8.0\Documentation.xml</DocumentationFile>
-
     </PropertyGroup>
     
     <ItemGroup>
