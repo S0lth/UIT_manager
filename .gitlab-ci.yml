@@ -68,8 +68,8 @@ publish_docs:
     - export PATH=$PATH:/docfx
   script:
     - mkdir -p $DOC_OUTPUT
-    - chmod +x generate_docfx_json.sh
-    - ./generate_docfx_json.sh 
+    - chmod +x Code/generate_docfx_json.sh
+    - ./Code/generate_docfx_json.sh  # Exécute le script depuis /Code
     - docfx docfx.json
     - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.wiki.git" wiki
     - cp -r $DOC_OUTPUT/* wiki/
