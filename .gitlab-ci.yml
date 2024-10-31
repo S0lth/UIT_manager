@@ -4,11 +4,14 @@ stages:
   - build
   - test
   - deploy
+  - publish_docs
 
 variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
+  DOC_OUTPUT: "$CI_PROJECT_DIR/Code/docs"
+  DOC_XML_PATH: "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/net8.0/Documentation.xml"
 
 build:
   stage: build
@@ -53,3 +56,5 @@ deploy:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+
