@@ -14,7 +14,10 @@ public class Program
         UserCollector userCollector = new UserCollector();
         Console.WriteLine(userCollector.Collect().ToString());
         CpuCollectors cupCollected = new CpuCollectors();
-        Console.WriteLine(cupCollected.Collect().ToString());
+
+        System.Diagnostics.Debug.WriteLine(cupCollected.Collect().ToString());
+
+
         return Task.CompletedTask;
     }
 }
