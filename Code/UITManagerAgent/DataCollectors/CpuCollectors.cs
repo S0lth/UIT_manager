@@ -9,6 +9,9 @@ namespace UITManagerAgent.DataCollectors;
 
 public class CpuCollectors : DataCollector
 {
+
+    ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from Win32_Processor");
+
     /// <summary>
     /// Collects CPU information including logical CPU count, core count, and clock speed.
     /// </summary>
@@ -26,6 +29,7 @@ public class CpuCollectors : DataCollector
             cpu.setLogicalCpu(getProcessorCount());
             cpu.setCoreCount(getNumberOfCores());
             cpu.setClockSpeed(getCurrentClockSpeed());
+            cpu.setModel(getModelCPU());
       
         }
         catch (Exception ex)
@@ -38,33 +42,53 @@ public class CpuCollectors : DataCollector
     /// <summary>
     /// Get CPU count
     /// </summary>
-    /// <returns>Core Count: Number of physical processor cores.</returns>
+    /// <returns>Logical CPU Count: Number of logical processors.</returns>
     public int getProcessorCount()
     {
         return Environment.ProcessorCount;
     }
 
+    /// <summary>
+    /// Get Number of logical CPU
+    /// </summary>
+    /// <returns>Core Count: Number of physical processor cores.</returns>
     public int getNumberOfCores()
     {
         int res = 0;
-        var searcher = new ManagementObjectSearcher("select * from Win32_Processor");
         foreach (ManagementObject obj in searcher.Get())
         {
             res = (Convert.ToInt32(obj["NumberOfCores"]));
         }
         return res;
     }
-
+    /// <summary>
+    /// get the curente clockSpeed 
+    /// </summary>
+    /// <returns>Clock Speed: Current clock speed in MHz</returns>
     public int getCurrentClockSpeed()
     {
         int res = 0;
-        var searcher = new ManagementObjectSearcher("select * from Win32_Processor");
 
         foreach (ManagementObject obj in searcher.Get())
         {
            res = Convert.ToInt32(obj["CurrentClockSpeed"]);
         }
         return res;
+    }
+    /// <summary>
+    /// get the name of the processor
+    /// </summary>
+    /// <returns>A string for the name of the cpu</returns>
+
+    public string getModelCPU()
+    {
+        string cpuModel = "";
+        foreach (ManagementObject obj in searcher.Get())
+        {
+            cpuModel = obj["Name"].ToString();
+            
+        }
+        return cpuModel;
     }
 }
 

@@ -8,9 +8,10 @@ namespace UITManagerAgent.DataCollectors;
 
 public class CpuInformation : Information
  {
-    private int LogicalCpu; 
-    private int CoreCount; 
-    private int ClockSpeed;
+    private int _LogicalCpu; 
+    private int _CoreCount; 
+    private int _ClockSpeed;
+    private string _Model;
 
     /// <summary>
     /// Gets the number of logical CPUs.
@@ -18,7 +19,7 @@ public class CpuInformation : Information
     /// <returns>The logical CPU count.</returns>
     public int getLogicalCpu()
     {
-        return LogicalCpu;
+        return _LogicalCpu;
     }
 
     /// <summary>
@@ -27,7 +28,7 @@ public class CpuInformation : Information
     /// <param name="logicalCpu">The number of logical CPUs to set.</param>
     public void setLogicalCpu(int logicalCpu)
     {
-        this.LogicalCpu = logicalCpu;
+        this._LogicalCpu = logicalCpu;
     }
 
     /// <summary>
@@ -36,7 +37,7 @@ public class CpuInformation : Information
     /// <returns>The core count.</returns>
     public int getCoreCount()
     {
-        return CoreCount;
+        return _CoreCount;
     }
 
     /// <summary>
@@ -45,7 +46,7 @@ public class CpuInformation : Information
     /// <param name="coreCount">The number of cores to set.</param>
     public void setCoreCount(int coreCount)
     {
-        this.CoreCount = coreCount;
+        this._CoreCount = coreCount;
     }
 
     /// <summary>
@@ -54,7 +55,7 @@ public class CpuInformation : Information
     /// <returns>The clock speed.</returns>
     public int getClockSpeed()
     {
-        return ClockSpeed;
+        return _ClockSpeed;
     }
 
     /// <summary>
@@ -63,7 +64,23 @@ public class CpuInformation : Information
     /// <param name="clockSpeed">The clock speed to set.</param>
     public void setClockSpeed(int clockSpeed)
     {
-        this.ClockSpeed = clockSpeed;
+        this._ClockSpeed = clockSpeed;
+    }
+    /// <summary>
+    /// Gets the current cpu model
+    /// </summary>
+    /// <returns>Cpu model</returns>
+    public string getModel()
+    {
+        return this._Model;
+    }
+    /// <summary>
+    /// Sets the current model name
+    /// </summary>
+    /// <param name="model">the model to set</param>
+    public void setModel(string model)
+    {
+        this._Model = model;
     }
 
     /// <summary>
@@ -75,9 +92,10 @@ public class CpuInformation : Information
     public override string ToString()
     {
         return $"CPU Information:\n" +
-               $"  Logical CPU Count: {LogicalCpu}\n" +
-               $"  Core Count: {CoreCount}\n" +
-               $"  Clock Speed: {ClockSpeed} MHz";
+               $"  Logical CPU Count: {_LogicalCpu}\n" +
+               $"  Core Count: {_CoreCount}\n" +
+               $"  Clock Speed: {_ClockSpeed} MHz \n" + 
+               $"  Model: {_Model}";
     }
 }
 
