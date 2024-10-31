@@ -6,8 +6,8 @@ cat << EOF > docfx.json
     {
       "src": [
         {
-          "files": ["${PROJECT_NAME}/**/*.csproj"],
-          "cwd": "${CI_PROJECT_DIR}/Code"
+          "files": ["${DOC_XML_PATH}"],
+          "cwd": "."
         }
       ],
       "dest": "obj/api"
@@ -16,7 +16,7 @@ cat << EOF > docfx.json
   "build": {
     "content": [
       {
-        "files": ["api/**/*.yml", "toc.yml"]
+        "files": ["obj/api/**/*.yml"]
       }
     ],
     "dest": "${DOC_OUTPUT}",
