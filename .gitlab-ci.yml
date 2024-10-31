@@ -71,6 +71,7 @@ publish_docs:
     - mkdir -p $DOC_OUTPUT
     - chmod +x generate_docfx_json.sh
     - ./generate_docfx_json.sh
+    - ls $DOC_XML_PATH || echo "Documentation file not found at $DOC_XML_PATH"
     - docfx docfx.json
     - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.wiki.git" ../wiki
     - cp -r $DOC_OUTPUT/* ../wiki/
