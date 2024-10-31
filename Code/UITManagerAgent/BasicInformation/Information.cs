@@ -1,5 +1,4 @@
-namespace UITManagerAgent.DataCollectors;
-
-public abstract class Information {
-
+namespace UITManagerAgent.DataCollectors {
+    public abstract class Information {
+    }
 }

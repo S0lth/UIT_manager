@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UITManagerAgent.DataCollectors;
 
 public class Program {
@@ -8,10 +6,10 @@ public class Program {
     }
 
     private static Task RunOnce() {
-        UserCollector userCollector = new UserCollector();
+        UserCollector userCollector = new();
         Console.WriteLine(userCollector.Collect().ToString());
 
-        IpsAddressesCollector ipsAddressesCollector = new IpsAddressesCollector();
+        IpsAddressesCollector ipsAddressesCollector = new();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
         return Task.CompletedTask;
     }
