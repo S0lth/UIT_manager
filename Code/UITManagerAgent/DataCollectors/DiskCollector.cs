@@ -18,9 +18,9 @@ namespace UITManagerAgent.DataCollectors
                 if (drive.IsReady)
                 {
                     diskCount++;
-                    diskInformation.addDiskName(drive.Name);
-                    diskInformation.addDiskTotalSize(drive.TotalSize / (1024 * 1024 * 1024));
-                    diskInformation.addDisksFreeSizesk(drive.TotalFreeSpace / (1024 * 1024 * 1024));
+                    diskInformation.getDiskName().Add(drive.Name);
+                    diskInformation.getDiskTotalSize().Add(drive.TotalSize / (1024 * 1024 * 1024));
+                    diskInformation.getDisksFreeSizes().Add(drive.TotalFreeSpace / (1024 * 1024 * 1024));
                 }
             }
 

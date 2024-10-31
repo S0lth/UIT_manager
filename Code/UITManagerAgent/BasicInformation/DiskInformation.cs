@@ -9,19 +9,19 @@ namespace UITManagerAgent.BasicInformation
         private List<long> _disksFreeSize = new();
         private int _numberDisk;
 
-        public void addDiskName(string diskName)
+        public List<string> getDiskName()
         {
-            _disksName.Add(diskName);
+            return _disksName;
         }
 
-        public void addDiskTotalSize(long diskTotalSize)
+        public List<long> getDiskTotalSize()
         {
-            _diskTotalSize.Add(diskTotalSize);
+            return _diskTotalSize;
         }
 
-        public void addDisksFreeSizesk(long disksFreeSize)
+        public List<long> getDisksFreeSizes()
         {
-            _disksFreeSize.Add(disksFreeSize);
+            return _disksFreeSize;
         }
 
         public void setNumberDisk(int numberDisk)
