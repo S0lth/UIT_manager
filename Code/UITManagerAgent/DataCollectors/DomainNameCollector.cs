@@ -8,8 +8,15 @@ using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.DataCollectors;
 
+/// <summary>
+/// A data collector that retrieves the domain name of the computer system and retruns it as an <see cref="DomainNameInformation"/>.
+/// </summary>
 public class DomainNameCollector : DataCollector
 {
+    /// <summary>
+    /// Collects domain name form the system.
+    /// </summary>
+    /// <returns>An <see cref="DomainNameInformation"/> object containing the system's domain name.</returns>
     public Information Collect()
     {
         DomainNameInformation domainNameInformation = new DomainNameInformation();
