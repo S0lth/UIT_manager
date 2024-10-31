@@ -24,4 +24,8 @@
     <ProjectReference Include="..\UITManagerAgent\UITManagerAgent.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BasicInformation\" />
+  </ItemGroup>
+
 </Project>
