@@ -63,12 +63,14 @@ publish_docs:
   dependencies:
     - build
   before_script:
-    - dotnet tool install --global XmlDocMarkdown
-    - export PATH="$PATH:/root/.dotnet/tools"
+    - curl -L https://github.com/dotnet/docfx/releases/download/v2.56/docfx.zip -o docfx.zip
+    - unzip docfx.zip -d /docfx
+    - export PATH=$PATH:/docfx
   script:
     - mkdir -p $DOC_OUTPUT
-    - dotnet build $CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION
-    - XmlDocMarkdown --input $DOC_XML_PATH --output $DOC_OUTPUT
+    - chmod +x generate_docfx_json.sh
+    - ./generate_docfx_json.sh 
+    - docfx docfx.json
     - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME.wiki.git" wiki
     - cp -r $DOC_OUTPUT/* wiki/
     - cd wiki
@@ -77,3 +79,4 @@ publish_docs:
     - git push origin main
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
+
