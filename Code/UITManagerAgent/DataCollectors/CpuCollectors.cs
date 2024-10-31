@@ -23,15 +23,10 @@ public class CpuCollectors : DataCollector
         CpuInformation cpu = new CpuInformation();
         try
         {
-            cpu.setLogicalCpu(Environment.ProcessorCount);
-
-            var searcher = new ManagementObjectSearcher("select * from Win32_Processor");
-
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                cpu.setCoreCount(Convert.ToInt32(obj["NumberOfCores"]));
-                cpu.setClockSpeed(Convert.ToInt32(obj["CurrentClockSpeed"]));
-            }
+            cpu.setLogicalCpu(getProcessorCount());
+            cpu.setCoreCount(getNumberOfCores());
+            cpu.setClockSpeed(getCurrentClockSpeed());
+      
         }
         catch (Exception ex)
         {
@@ -39,6 +34,37 @@ public class CpuCollectors : DataCollector
         }
 
         return cpu;
+    }
+    /// <summary>
+    /// Get CPU count
+    /// </summary>
+    /// <returns>Core Count: Number of physical processor cores.</returns>
+    public int getProcessorCount()
+    {
+        return Environment.ProcessorCount;
+    }
+
+    public int getNumberOfCores()
+    {
+        int res = 0;
+        var searcher = new ManagementObjectSearcher("select * from Win32_Processor");
+        foreach (ManagementObject obj in searcher.Get())
+        {
+            res = (Convert.ToInt32(obj["NumberOfCores"]));
+        }
+        return res;
+    }
+
+    public int getCurrentClockSpeed()
+    {
+        int res = 0;
+        var searcher = new ManagementObjectSearcher("select * from Win32_Processor");
+
+        foreach (ManagementObject obj in searcher.Get())
+        {
+           res = Convert.ToInt32(obj["CurrentClockSpeed"]);
+        }
+        return res;
     }
 }
 
