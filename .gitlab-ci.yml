@@ -13,7 +13,6 @@ variables:
   DOC_OUTPUT: "$CI_PROJECT_DIR/Code/docs"
   DOC_XML_PATH: "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/net8.0/Documentation.xml"
 
-
 build:
   stage: build
   script:
@@ -65,12 +64,12 @@ publish_docs:
     - build
   before_script:
     - apt-get update && apt-get install -y unzip
-    - dotnet tool install -g docfx
+    - dotnet tool install --global XmlDocMarkdown
     - export PATH="$PATH:/root/.dotnet/tools"
   script:
     - cd Code
     - mkdir -p $DOC_OUTPUT
-    - docfx metadata --input $DOC_XML_PATH --output $DOC_OUTPUT
+    - XmlDocMarkdown --input $DOC_XML_PATH --output $DOC_OUTPUT
     - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.wiki.git" ../wiki
     - cp -r $DOC_OUTPUT/* ../wiki/
     - cd ../wiki
