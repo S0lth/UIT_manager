@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITManagerAgent", "UITManagerAgent.csproj", "{4C0F2A3B-56A6-4DCB-A341-21E0B3339B25}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35219.272
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UITManagerAgent", "UITManagerAgent.csproj", "{4C0F2A3B-56A6-4DCB-A341-21E0B3339B25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITManagerAgent.Tests", "..\UITManagerAgent.Tests\UITManagerAgent.Tests.csproj", "{0741BA3B-3673-43EE-846B-7D23BBB6FD58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +17,15 @@ Global
 		{4C0F2A3B-56A6-4DCB-A341-21E0B3339B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C0F2A3B-56A6-4DCB-A341-21E0B3339B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C0F2A3B-56A6-4DCB-A341-21E0B3339B25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0741BA3B-3673-43EE-846B-7D23BBB6FD58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0741BA3B-3673-43EE-846B-7D23BBB6FD58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0741BA3B-3673-43EE-846B-7D23BBB6FD58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0741BA3B-3673-43EE-846B-7D23BBB6FD58}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8F923763-8B24-4B71-A2C8-68386F619A62}
 	EndGlobalSection
 EndGlobal
