@@ -64,15 +64,14 @@ publish_docs:
     - build
   before_script:
     - apt-get update && apt-get install -y unzip
-    - dotnet tool install -g docfx  
-    - export PATH="$PATH:/root/.dotnet/tools"  
+    - dotnet tool install -g xmldoc2md 
+    - export PATH="$PATH:/root/.dotnet/tools"
   script:
     - cd Code
     - mkdir -p $DOC_OUTPUT
-    - docfx metadata "$DOC_XML_PATH" --output "$DOC_OUTPUT" 
-    - docfx build --output "$DOC_OUTPUT" 
+    - xmldoc2md "$DOC_XML_PATH" > "$DOC_OUTPUT/Documentation.md" 
     - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.wiki.git" ../wiki
-    - cp -r $DOC_OUTPUT/* ../wiki/
+    - cp "$DOC_OUTPUT/Documentation.md" ../wiki/
     - cd ../wiki
     - git config user.email "ci@example.com"
     - git config user.name "CI Bot"
