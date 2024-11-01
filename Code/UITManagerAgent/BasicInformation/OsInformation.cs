@@ -1,4 +1,5 @@
 ﻿using System.Management;
+using System.Runtime.Versioning;
 using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.BasicInformation;
@@ -6,8 +7,9 @@ namespace UITManagerAgent.BasicInformation;
 /// <summary>
 /// Represents OS information.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public class OsInformation : Information {
-    private ManagementObjectSearcher _wmiSearcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+    private ManagementObjectSearcher _wmiSearcher = new ("SELECT * FROM Win32_OperatingSystem");
     private ManagementObject? _queryObj;
     private string? _osName;
     private string? _osVersion;

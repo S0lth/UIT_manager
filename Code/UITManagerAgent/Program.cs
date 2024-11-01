@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using UITManagerAgent.DataCollectors;
 
 public class Program {
@@ -5,6 +6,7 @@ public class Program {
         await RunOnce();
     }
 
+    [SupportedOSPlatform("windows")]
     private static Task RunOnce() {
         UserCollector userCollector = new();
         Console.WriteLine(userCollector.Collect().ToString());
