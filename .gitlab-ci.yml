@@ -1,37 +1,37 @@
-image: mcr.microsoft.com/dotnet/sdk:8.0
-
-stages:
-  - build
-  - test
-  - deploy
-  - publish_docs
+.windows_job:
+  tags:
+    - saas-windows-medium-amd64
+  before_script:
+    - Set-Variable -Name "time" -Value (Get-Date -Format "HH:mm")
+    - Write-Host "started by $env:GITLAB_USER_NAME / @$env:GITLAB_USER_LOGIN"
 
 variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
-  DOC_OUTPUT: "$CI_PROJECT_DIR/Code/docs"
-  DOC_XML_PATH: "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION/net8.0/Documentation.xml"
 
 build:
+  extends: .windows_job
   stage: build
   script:
-    - dotnet restore $CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln  
-    - dotnet build --no-restore $CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln -c $BUILD_CONFIGURATION
+    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln"
+    - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
-      - "$CI_PROJECT_DIR/Code/$PROJECT_NAME_TEST/bin/$BUILD_CONFIGURATION"
+      - "Code/UITManagerAgent/bin/Debug"
+      - "Code/UITManagerAgent.Tests/bin/Debug"
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
 
 test:
+  extends: .windows_job
   stage: test
   script:
-    - dotnet --version 
-    - dotnet test --no-build "$CI_PROJECT_DIR/Code/$PROJECT_NAME/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
+    - dotnet --version
+    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c Debug
   dependencies:
     - build
   artifacts:
@@ -39,14 +39,16 @@ test:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
 
 deploy:
+  extends: .windows_job
   stage: deploy
   script:
-    - echo "Déploiement des artefacts depuis ./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION pour l'environnement de développement"
+    - echo "Déploiement des artefacts depuis ./Code/$env:PROJECT_NAME/bin/$env:BUILD_CONFIGURATION pour l'environnement de développement"
   artifacts:
     paths:
-      - "./Code/$PROJECT_NAME/bin/$BUILD_CONFIGURATION"
+      - "Code/UITManagerAgent/bin/Debug"
     expire_in: 1 week
   dependencies:
     - build
@@ -56,29 +58,4 @@ deploy:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-
-publish_docs:
-  stage: publish_docs
-  image: mcr.microsoft.com/dotnet/sdk:8.0
-  dependencies:
-    - build
-  before_script:
-    - apt-get update && apt-get install -y unzip
-    - curl -L https://github.com/dotnet/docfx/releases/download/v2.56/docfx.zip -o docfx.zip
-    - unzip docfx.zip -d /docfx
-    - export PATH="$PATH:/docfx"
-  script:
-    - cd Code
-    - mkdir -p $DOC_OUTPUT
-    - /docfx/docfx metadata "$DOC_XML_PATH" --output "$DOC_OUTPUT" || echo "Metadata generation failed, moving to build"
-    - /docfx/docfx build --output "$DOC_OUTPUT"
-    - git clone "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.wiki.git" ../wiki
-    - cp -r "$DOC_OUTPUT"/* ../wiki/
-    - cd ../wiki
-    - git config user.email "ci@example.com"
-    - git config user.name "CI Bot"
-    - git add .
-    - git commit -m "Mise à jour automatique de la documentation"
-    - git push origin main
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: '$CI_PIPELINE_SOURCE == "web"'

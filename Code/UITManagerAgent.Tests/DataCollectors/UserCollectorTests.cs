@@ -6,14 +6,14 @@ using UITManagerAgent.DataCollectors;
 /// </summary>
 [TestClass]
 public class UserCollectorTests {
-    private UserCollector userCollector;
+    private UserCollector? _userCollector;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="UserCollector" /> class before each test.
     /// </summary>
     [TestInitialize]
     public void Setup() {
-        userCollector = new UserCollector();
+        _userCollector = new UserCollector();
     }
 
     /// <summary>
@@ -26,10 +26,12 @@ public class UserCollectorTests {
             return;
         }
 
-        Information result = userCollector.Collect();
+        if (_userCollector != null) {
+            Information result = _userCollector.Collect();
 
-        Assert.IsNotNull(result, "Result should not be null.");
-        Assert.IsInstanceOfType(result, typeof(UsersInformation), "Result should be of type UsersInformation.");
+            Assert.IsNotNull(result, "Result should not be null.");
+            Assert.IsInstanceOfType(result, typeof(UsersInformation), "Result should be of type UsersInformation.");
+        }
     }
 
     /// <summary>
@@ -43,9 +45,11 @@ public class UserCollectorTests {
         }
 
         try {
-            Information result = userCollector.Collect();
+            if (_userCollector != null) {
+                Information result = _userCollector.Collect();
 
-            Assert.IsNotNull(result, "Result should not be null even in case of an exception.");
+                Assert.IsNotNull(result, "Result should not be null even in case of an exception.");
+            }
         }
         catch (Exception ex) {
             Assert.Fail($"The Collect method threw an unexpected exception: {ex.Message}");
@@ -63,10 +67,12 @@ public class UserCollectorTests {
             return;
         }
 
-        UsersInformation result = (UsersInformation)userCollector.Collect();
+        if (_userCollector != null) {
+            UsersInformation result = (UsersInformation)_userCollector.Collect();
 
-        Assert.IsNotNull(result.GetUsersList(), "User list should not be null.");
-        Assert.IsTrue(result.GetUsersList().Count >= 1, "User list should contain at least one item.");
+            Assert.IsNotNull(result.usersList, "User list should not be null.");
+            Assert.IsTrue(result.usersList.Count >= 1, "User list should contain at least one item.");
+        }
     }
 
     /// <summary>
@@ -80,10 +86,12 @@ public class UserCollectorTests {
             return;
         }
 
-        UsersInformation firstResult = (UsersInformation)userCollector.Collect();
-        UsersInformation secondResult = (UsersInformation)userCollector.Collect();
+        if (_userCollector != null) {
+            UsersInformation firstResult = (UsersInformation)_userCollector.Collect();
+            UsersInformation secondResult = (UsersInformation)_userCollector.Collect();
 
-        Assert.AreNotSame(firstResult, secondResult,
-            "Each call to Collect should return a new instance of UsersInformation.");
+            Assert.AreNotSame(firstResult, secondResult,
+                "Each call to Collect should return a new instance of UsersInformation.");
+        }
     }
 }

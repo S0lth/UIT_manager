@@ -1,5 +1,9 @@
+using System.Runtime.Versioning;
 using UITManagerAgent.DataCollectors;
 
+namespace UITManagerAgent;
+
+[SupportedOSPlatform("windows")]
 public class Program {
     public static async Task Main(string[] args) {
         await RunOnce();
@@ -11,6 +15,13 @@ public class Program {
 
         IpsAddressesCollector ipsAddressesCollector = new();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
+
+        RamCollector ramCollector = new RamCollector();
+        Console.WriteLine(ramCollector.Collect().ToString());
+
+        DomainNameCollector domainNameCollector = new DomainNameCollector();
+        Console.WriteLine(domainNameCollector.Collect().ToString());
+
         return Task.CompletedTask;
     }
 }

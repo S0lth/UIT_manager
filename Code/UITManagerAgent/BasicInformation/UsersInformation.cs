@@ -1,3 +1,4 @@
+
 using UITManagerAgent.DataCollectors;
 
 /// <summary>
@@ -8,16 +9,11 @@ public class UsersInformation : Information {
     /// <summary>
     ///     List of collected usernames.
     /// </summary>
-    private readonly List<string> _usersList = new();
+    private List<string> _usersList = new();
 
-    /// <summary>
-    ///     Retrieves the list of collected usernames.
-    /// </summary>
-    /// <returns>
-    ///     A list of strings containing the usernames.
-    /// </returns>
-    public List<string> GetUsersList() {
-        return _usersList;
+    public List<string> usersList {
+        get => _usersList;
+        set => _usersList = value;
     }
 
     /// <summary>
@@ -27,6 +23,6 @@ public class UsersInformation : Information {
     ///     A comma-separated string of usernames.
     /// </returns>
     public override string ToString() {
-        return $"{string.Join(", ", GetUsersList())}";
+        return $"{string.Join(", ", usersList)}";
     }
 }
