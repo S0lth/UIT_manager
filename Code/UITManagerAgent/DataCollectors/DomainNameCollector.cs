@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Management;
 using UITManagerAgent.BasicInformation;
+using System.Runtime.Versioning;
 
 namespace UITManagerAgent.DataCollectors;
 
@@ -17,6 +18,7 @@ public class DomainNameCollector : DataCollector
     /// Collects domain name form the system.
     /// </summary>
     /// <returns>An <see cref="DomainNameInformation"/> object containing the system's domain name.</returns>
+    [SupportedOSPlatform("windows")]
     public Information Collect()
     {
         DomainNameInformation domainNameInformation = new DomainNameInformation();
@@ -25,16 +27,19 @@ public class DomainNameCollector : DataCollector
         {
             var searcher = new ManagementObjectSearcher("select * from Win32_ComputerSystem");
 
-            var querry = searcher.Get().OfType<ManagementObject>().FirstOrDefault();
+            var query = searcher.Get().OfType<ManagementObject>().FirstOrDefault();
 
-            domainNameInformation.SetDomainName(querry["Domain"].ToString());
+            // If a machine doesn't have a domain name, No domain is assigned.
+            domainNameInformation.DomainName = query?["Domain"]?.ToString() ?? "No domain";
         }
         catch (ManagementException ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine("WMI error: " + ex.Message);
         }
-
-
+        catch (Exception ex)
+        {
+            Console.WriteLine("General error: " + ex.Message);
+        }
 
         return domainNameInformation;
     }
