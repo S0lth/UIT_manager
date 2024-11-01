@@ -15,7 +15,7 @@ public class OsInformation : Information {
     /// <summary>
     /// accessors of the wmiSearcher field
     /// </summary>
-    public ManagementObjectSearcher wmiSearcher {
+    public ManagementObjectSearcher WmiSearcher {
         get => _wmiSearcher;
         set => _wmiSearcher = value;
     }
@@ -47,8 +47,11 @@ public class OsInformation : Information {
     /// <summary>
     /// Returns a string representation of the operating system name and version.
     /// </summary>
-    /// <returns>A string in the format "OS name: {Name}; Version: {Version}".</returns>
+    /// <returns>A string in the format
+    /// "OS name: {Name}
+    /// OS version: {Version}".
+    /// </returns>
     public override string ToString() {
-        return "OS name : " + _osName + Environment.NewLine + "Version de l'OS : " + _osVersion;
+        return "OS name : " + _osName + Environment.NewLine + "OS version : " + _osVersion;
     }
 }

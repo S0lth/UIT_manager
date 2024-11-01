@@ -15,7 +15,7 @@ public class OsCollector : DataCollector {
 
         try {
             ManagementObject? queryObj =
-                osInformation.wmiSearcher.Get().OfType<ManagementObject>().FirstOrDefault();
+                osInformation.WmiSearcher.Get().OfType<ManagementObject>().FirstOrDefault();
 
             if (queryObj != null) {
                 string? osName = queryObj["Caption"].ToString();
