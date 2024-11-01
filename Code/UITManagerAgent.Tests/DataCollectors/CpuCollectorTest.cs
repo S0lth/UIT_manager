@@ -22,7 +22,7 @@ public class CpuCollectorTest
     }
 
     /// <summary>
-    /// Tests the <see cref="CpuCollecors.GetProcessorCount"/> method to ensure it sets memory values correctly.
+    /// Tests the <see cref="CpuCollecors.GetProcessorCount"/> method to ensure it sets ProcessorCount correctly.
     /// </summary>
     [TestMethod]
     public void Test_GetProcessorCount()
@@ -33,7 +33,10 @@ public class CpuCollectorTest
         Assert.IsTrue(ProcessorCount > 0, "Total Cpu count should be greater than 0");
 
     }
-
+    /// <summary>
+    /// Tests the <see cref="CpuCollecors.GetCurrentClockSpeedt"/> method to ensure it sets ClockSpeed correctly.
+    /// </summary>
+    
     [TestMethod]
     public void Test_GetCurrentClockSpeed() {
         int ClockSpeed = _CpuCollector.GetCurrentClockSpeed();
@@ -42,7 +45,9 @@ public class CpuCollectorTest
         Assert.IsTrue(ClockSpeed > 0, "Clock speed should be greater than 0");
 
     }
-
+    /// <summary>
+    /// Tests the <see cref="CpuCollecor.GetNumberOfCores"/> method to ensure it sets Core correctly.
+    /// </summary>
     [TestMethod]
     public void Test_GetNumberOfCores() {
         int Core = _CpuCollector.GetNumberOfCores();
@@ -51,7 +56,9 @@ public class CpuCollectorTest
         Assert.IsTrue(Core > 0, "Number of Core should be greater than 0");
 
     }
-
+    /// <summary>
+    /// Tests the <see cref="CpuCollecor.GetModelCPU"/> method to ensure it sets Model correctly.
+    /// </summary>
     [TestMethod]
     public void Test_GetModelCPU() {
         string Model = _CpuCollector.GetModelCPU();
