@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using UITManagerAgent.DataCollectors;
 
+[SupportedOSPlatform("windows")]
 public class Program {
     public static async Task Main(string[] args) {
         await RunOnce();
@@ -23,7 +24,6 @@ public class Program {
         OsCollector osCollector = new();
         Console.WriteLine(osCollector.Collect().ToString());
         
-
         DiskCollector diskCollector = new DiskCollector();
         Console.WriteLine(diskCollector.Collect().ToString());
 
