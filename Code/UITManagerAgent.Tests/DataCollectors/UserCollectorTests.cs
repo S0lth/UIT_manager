@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using UITManagerAgent.DataCollectors;
 
 /// <summary>
@@ -6,46 +7,42 @@ using UITManagerAgent.DataCollectors;
 /// </summary>
 [TestClass]
 public class UserCollectorTests {
-    private UserCollector userCollector;
+    private UserCollector? _userCollector;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="UserCollector" /> class before each test.
     /// </summary>
     [TestInitialize]
     public void Setup() {
-        userCollector = new UserCollector();
+        _userCollector = new UserCollector();
     }
 
     /// <summary>
     ///     Tests if the <see cref="UserCollector.Collect" /> method returns an instance of <see cref="UsersInformation" />.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Collect_ShouldReturnUsersInformationInstance() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            Assert.Inconclusive("This test only runs on Windows.");
-            return;
+        if (_userCollector != null) {
+            Information result = _userCollector.Collect();
+
+            Assert.IsNotNull(result, "Result should not be null.");
+            Assert.IsInstanceOfType(result, typeof(UsersInformation), "Result should be of type UsersInformation.");
         }
-
-        Information result = userCollector.Collect();
-
-        Assert.IsNotNull(result, "Result should not be null.");
-        Assert.IsInstanceOfType(result, typeof(UsersInformation), "Result should be of type UsersInformation.");
     }
 
     /// <summary>
     ///     Tests if the <see cref="UserCollector.Collect" /> method handles exceptions gracefully.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Collect_ShouldHandleExceptionsGracefully() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            Assert.Inconclusive("This test only runs on Windows.");
-            return;
-        }
-
         try {
-            Information result = userCollector.Collect();
+            if (_userCollector != null) {
+                Information result = _userCollector.Collect();
 
-            Assert.IsNotNull(result, "Result should not be null even in case of an exception.");
+                Assert.IsNotNull(result, "Result should not be null even in case of an exception.");
+            }
         }
         catch (Exception ex) {
             Assert.Fail($"The Collect method threw an unexpected exception: {ex.Message}");
@@ -57,16 +54,14 @@ public class UserCollectorTests {
     ///     exist.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Collect_UsersListShouldNotBeNullOrEmpty_WhenUsersExist() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            Assert.Inconclusive("This test only runs on Windows.");
-            return;
+        if (_userCollector != null) {
+            UsersInformation result = (UsersInformation)_userCollector.Collect();
+
+            Assert.IsNotNull(result.usersList, "User list should not be null.");
+            Assert.IsTrue(result.usersList.Count >= 1, "User list should contain at least one item.");
         }
-
-        UsersInformation result = (UsersInformation)userCollector.Collect();
-
-        Assert.IsNotNull(result.GetUsersList(), "User list should not be null.");
-        Assert.IsTrue(result.GetUsersList().Count >= 1, "User list should contain at least one item.");
     }
 
     /// <summary>
@@ -74,16 +69,14 @@ public class UserCollectorTests {
     ///     on each call.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Collect_ShouldReturnNewInstanceOnEachCall() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            Assert.Inconclusive("This test only runs on Windows.");
-            return;
+        if (_userCollector != null) {
+            UsersInformation firstResult = (UsersInformation)_userCollector.Collect();
+            UsersInformation secondResult = (UsersInformation)_userCollector.Collect();
+
+            Assert.AreNotSame(firstResult, secondResult,
+                "Each call to Collect should return a new instance of UsersInformation.");
         }
-
-        UsersInformation firstResult = (UsersInformation)userCollector.Collect();
-        UsersInformation secondResult = (UsersInformation)userCollector.Collect();
-
-        Assert.AreNotSame(firstResult, secondResult,
-            "Each call to Collect should return a new instance of UsersInformation.");
     }
 }

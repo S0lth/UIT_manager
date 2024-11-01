@@ -1,4 +1,5 @@
 using System.DirectoryServices;
+using System.Runtime.Versioning;
 using UITManagerAgent.DataCollectors;
 
 /// <summary>
@@ -11,17 +12,17 @@ public class UserCollector : DataCollector {
     /// <returns>
     ///     A <see cref="UsersInformation" /> object containing the list of usernames.
     /// </returns>
+
+
+    [SupportedOSPlatform("windows")]
     public Information Collect() {
-        UsersInformation? users = new();
+        UsersInformation users = new();
 
         try {
-            using (DirectoryEntry? localMachine = new("WinNT://" + Environment.MachineName)) {
-                foreach (DirectoryEntry child in localMachine.Children) {
-                    if (child.SchemaClassName == "User") {
-                        if (child != null) {
-                            users.GetUsersList().Add(child.Name);
-                        }
-                    }
+            using DirectoryEntry localMachine = new("WinNT://" + Environment.MachineName);
+            foreach (DirectoryEntry child in localMachine.Children) {
+                if (child.SchemaClassName == "User") {
+                    users.usersList.Add(child.Name);
                 }
             }
         }

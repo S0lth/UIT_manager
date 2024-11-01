@@ -7,9 +7,6 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <DocumentationFile>bin\Debug\net8.0\Documentation.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
