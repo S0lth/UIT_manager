@@ -12,75 +12,29 @@ public class CpuInformation : Information
     private int _CoreCount; 
     private int _ClockSpeed;
     private string _Model;
-
-    /// <summary>
-    /// Gets the number of logical CPUs.
-    /// </summary>
-    /// <returns>The logical CPU count.</returns>
-    public int GetLogicalCpu()
+    
+    public int LogicalCpu
     {
-        return _LogicalCpu;
+        get => _LogicalCpu;
+        set => _LogicalCpu = value;
     }
 
-    /// <summary>
-    /// Sets the number of logical CPUs.
-    /// </summary>
-    /// <param name="logicalCpu">The number of logical CPUs to set.</param>
-    public void SetLogicalCpu(int logicalCpu)
+    public int CoreCount
     {
-        this._LogicalCpu = logicalCpu;
+        get => _CoreCount;
+        set => _CoreCount = value;
     }
 
-    /// <summary>
-    /// Gets the number of physical cores.
-    /// </summary>
-    /// <returns>The core count.</returns>
-    public int GetCoreCount()
+    public int ClockSpeed
     {
-        return _CoreCount;
+        get => _ClockSpeed;
+        set => _ClockSpeed = value;
     }
 
-    /// <summary>
-    /// Sets the number of physical cores.
-    /// </summary>
-    /// <param name="coreCount">The number of cores to set.</param>
-    public void SetCoreCount(int coreCount)
+    public string Model
     {
-        this._CoreCount = coreCount;
-    }
-
-    /// <summary>
-    /// Gets the current clock speed in MHz.
-    /// </summary>
-    /// <returns>The clock speed.</returns>
-    public int GetClockSpeed()
-    {
-        return _ClockSpeed;
-    }
-
-    /// <summary>
-    /// Sets the current clock speed in MHz.
-    /// </summary>
-    /// <param name="clockSpeed">The clock speed to set.</param>
-    public void SetClockSpeed(int clockSpeed)
-    {
-        this._ClockSpeed = clockSpeed;
-    }
-    /// <summary>
-    /// Gets the current cpu model
-    /// </summary>
-    /// <returns>Cpu model</returns>
-    public string GetModel()
-    {
-        return this._Model;
-    }
-    /// <summary>
-    /// Sets the current model name
-    /// </summary>
-    /// <param name="model">the model to set</param>
-    public void SetModel(string model)
-    {
-        this._Model = model;
+        get => _Model;
+        set => _Model = value;
     }
 
     /// <summary>

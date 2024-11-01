@@ -26,10 +26,10 @@ public class CpuCollectors : DataCollector
         CpuInformation cpu = new CpuInformation();
         try
         {
-            cpu.SetLogicalCpu(GetProcessorCount());
-            cpu.SetCoreCount(GetNumberOfCores());
-            cpu.SetClockSpeed(GetCurrentClockSpeed());
-            cpu.SetModel(GetModelCPU());
+            cpu.LogicalCpu = GetProcessorCount();
+            cpu.CoreCount =GetNumberOfCores();
+            cpu.ClockSpeed = GetCurrentClockSpeed();
+            cpu.Model = GetModelCPU();
       
         }
         catch (Exception ex)
