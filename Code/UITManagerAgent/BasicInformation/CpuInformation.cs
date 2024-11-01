@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-namespace UITManagerAgent.DataCollectors;
+﻿namespace UITManagerAgent.DataCollectors;
 
 
 public class CpuInformation : Information
  {
-    private int _LogicalCpu; 
-    private int _CoreCount; 
-    private int _ClockSpeed;
-    private string _Model;
+    private int _logicalCpu; 
+    private int _coreCount; 
+    private int _clockSpeed;
+    private string _model;
+
+    public CpuInformation() {
+        _logicalCpu = 0;
+        _coreCount = 0;
+        _clockSpeed = 0;
+        _model = "";
+    }
 
     /// <summary>
     /// Gets or sets the number of logical CPUs.
@@ -23,8 +25,8 @@ public class CpuInformation : Information
     /// </value>
     public int LogicalCpu
     {
-        get => _LogicalCpu;
-        set => _LogicalCpu = value;
+        get => _logicalCpu;
+        set => _logicalCpu = value;
     }
 
     /// <summary>
@@ -37,8 +39,8 @@ public class CpuInformation : Information
     /// </value>
     public int CoreCount
     {
-        get => _CoreCount;
-        set => _CoreCount = value;
+        get => _coreCount;
+        set => _coreCount = value;
     }
 
     /// <summary>
@@ -51,8 +53,8 @@ public class CpuInformation : Information
     /// </value>
     public int ClockSpeed
     {
-        get => _ClockSpeed;
-        set => _ClockSpeed = value;
+        get => _clockSpeed;
+        set => _clockSpeed = value;
     }
 
     /// <summary>
@@ -64,8 +66,8 @@ public class CpuInformation : Information
     /// purposes.
     public string Model
     {
-        get => _Model;
-        set => _Model = value;
+        get => _model;
+        set => _model = value;
     }
 
     /// <summary>
@@ -77,10 +79,10 @@ public class CpuInformation : Information
     public override string ToString()
     {
         return $"CPU Information:\n" +
-               $"  Logical CPU Count: {_LogicalCpu}\n" +
-               $"  Core Count: {_CoreCount}\n" +
-               $"  Clock Speed: {_ClockSpeed} MHz \n" + 
-               $"  Model: {_Model}";
+               $"  Logical CPU Count: {_logicalCpu}\n" +
+               $"  Core Count: {_coreCount}\n" +
+               $"  Clock Speed: {_clockSpeed} MHz \n" + 
+               $"  Model: {_model}";
     }
 }
 

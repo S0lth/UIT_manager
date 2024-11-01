@@ -1,4 +1,4 @@
-﻿using UITManagerAgent.BasicInformation;
+﻿using System.Runtime.Versioning;
 using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.Tests.DataCollectors;
@@ -7,63 +7,78 @@ namespace UITManagerAgent.Tests.DataCollectors;
 /// Contains unit tests for the <see cref="RamCollector"/> class.
 /// </summary>
 [TestClass]
+
 public class CpuCollectorTest
 {
-    private CpuCollectors _CpuCollector ;
+    private CpuCollectors? _cpuCollector ;
 
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RamCollector"/> class and the <see cref="RamInformation"/> class before each test.
+    /// Initializes a new instance of the <see cref="CpuCollectors"/> class.
     /// </summary>
     [TestInitialize]
     public void Setup()
     {
-        _CpuCollector = new CpuCollectors();
+        _cpuCollector = new CpuCollectors();
     }
 
     /// <summary>
-    /// Tests the <see cref="CpuCollecors.GetProcessorCount"/> method to ensure it sets ProcessorCount correctly.
+    /// Tests the <see cref="CpuCollectors.GetProcessorCount"/> method to ensure it sets ProcessorCount correctly.
     /// </summary>
+    /// 
+    [SupportedOSPlatform("windows")]
     [TestMethod]
     public void Test_GetProcessorCount()
     {
-        int ProcessorCount = _CpuCollector.GetProcessorCount();
+        if (_cpuCollector != null) 
+        {
+            int ProcessorCount = _cpuCollector.GetProcessorCount();
 
-        Assert.IsNotNull(ProcessorCount);
-        Assert.IsTrue(ProcessorCount > 0, "Total Cpu count should be greater than 0");
-
+            Assert.IsNotNull(ProcessorCount);
+            Assert.IsTrue(ProcessorCount > 0, "Total Cpu count should be greater than 0");
+        }
     }
     /// <summary>
-    /// Tests the <see cref="CpuCollecors.GetCurrentClockSpeedt"/> method to ensure it sets ClockSpeed correctly.
+    /// Tests the <see cref="CpuCollectors.GetCurrentClockSpeedt"/> method to ensure it sets ClockSpeed correctly.
     /// </summary>
-    
+    [SupportedOSPlatform("windows")]
     [TestMethod]
     public void Test_GetCurrentClockSpeed() {
-        int ClockSpeed = _CpuCollector.GetCurrentClockSpeed();
+        if (_cpuCollector != null) {
+            int ClockSpeed = _cpuCollector.GetCurrentClockSpeed();
 
-        Assert.IsNotNull(ClockSpeed);
-        Assert.IsTrue(ClockSpeed > 0, "Clock speed should be greater than 0");
+            Assert.IsNotNull(ClockSpeed);
+            Assert.IsTrue(ClockSpeed > 0, "Clock speed should be greater than 0");
+        }
 
     }
     /// <summary>
-    /// Tests the <see cref="CpuCollecor.GetNumberOfCores"/> method to ensure it sets Core correctly.
+    /// Tests the <see cref="CpuCollectors.GetNumberOfCores"/> method to ensure it sets Core correctly.
     /// </summary>
+    /// 
+    [SupportedOSPlatform("windows")]
     [TestMethod]
     public void Test_GetNumberOfCores() {
-        int Core = _CpuCollector.GetNumberOfCores();
+        if (_cpuCollector != null) {
+            int Core = _cpuCollector.GetNumberOfCores();
 
-        Assert.IsNotNull(Core);
-        Assert.IsTrue(Core > 0, "Number of Core should be greater than 0");
+            Assert.IsNotNull(Core);
+            Assert.IsTrue(Core > 0, "Number of Core should be greater than 0");
+        }
 
     }
     /// <summary>
-    /// Tests the <see cref="CpuCollecor.GetModelCPU"/> method to ensure it sets Model correctly.
+    /// Tests the <see cref="CpuCollectors.GetModelCPU"/> method to ensure it sets Model correctly.
     /// </summary>
+    /// 
+    [SupportedOSPlatform("windows")]
     [TestMethod]
     public void Test_GetModelCPU() {
-        string Model = _CpuCollector.GetModelCPU();
+        if (_cpuCollector != null) {
+            string Model = _cpuCollector.GetModelCPU();
 
-        Assert.IsNotNull(Model);
+            Assert.IsNotNull(Model);
+        }
 
     }
 
