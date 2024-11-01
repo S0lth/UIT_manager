@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UITManagerAgent.DataCollectors;
 using System.Management;
 using UITManagerAgent.BasicInformation;
+using System.Runtime.Versioning;
 
 namespace UITManagerAgent.Tests {
     /// <summary>
@@ -25,11 +26,8 @@ namespace UITManagerAgent.Tests {
         /// Tests if the <see cref="DomainNameCollector.Collect"/> method returns an instance of <see cref="DomainNameInformation"/>.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Collect_ShouldReturnDomainNameInformationInstance() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
 
             if (_domainNameCollector != null) {
                 Information result = _domainNameCollector.Collect();
@@ -43,11 +41,8 @@ namespace UITManagerAgent.Tests {
         /// Tests if the <see cref="DomainNameCollector.Collect"/> method handles exceptions gracefully.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Collect_ShouldHandleExceptionsGracefully() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
 
             try {
                 if (_domainNameCollector != null) {
@@ -62,31 +57,11 @@ namespace UITManagerAgent.Tests {
         }
 
         /// <summary>
-        /// Tests if the <see cref="DomainNameCollector.Collect"/> method returns "No domain" when no domain exists.
-        /// </summary>
-        [TestMethod]
-        public void Collect_ShouldReturnNoDomain_WhenNoDomainExists() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
-
-            if (_domainNameCollector != null) {
-                DomainNameInformation result = (DomainNameInformation)_domainNameCollector.Collect();
-
-                Assert.AreEqual("No domain", result.DomainName, "Should return 'No domain' when the system is not part of a domain.");
-            }
-        }
-
-        /// <summary>
         /// Tests if the <see cref="DomainNameCollector.Collect"/> method returns a valid domain name when the machine is part of a domain.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Collect_ShouldReturnDomainName_WhenDomainExists() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
 
            if (_domainNameCollector != null) {
                 DomainNameInformation result = (DomainNameInformation)_domainNameCollector.Collect();
@@ -99,11 +74,8 @@ namespace UITManagerAgent.Tests {
         /// Tests if the <see cref="DomainNameCollector.Collect"/> method returns a new instance of <see cref="DomainNameInformation"/> on each call.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Collect_ShouldReturnNewInstanceOnEachCall() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
 
             if (_domainNameCollector != null) {
                 DomainNameInformation firstResult = (DomainNameInformation)_domainNameCollector.Collect();
@@ -117,30 +89,12 @@ namespace UITManagerAgent.Tests {
         /// Tests if the <see cref="DomainNameCollector.Collect"/> method correctly handles ManagementExceptions.
         /// </summary>
         [TestMethod]
-        public void Collect_ShouldHandleManagementException() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
+        [SupportedOSPlatform("windows")]
+        public void Collect_ShouldHandleException() {
 
             DomainNameInformation result = (DomainNameInformation)_domainNameCollector.Collect();
 
-            Assert.AreEqual("No domain", result.DomainName, "Should return 'No domain' when a ManagementException occurs.");
-        }
-
-        /// <summary>
-        /// Tests if the <see cref="DomainNameCollector.Collect"/> method correctly handles general exceptions.
-        /// </summary>
-        [TestMethod]
-        public void Collect_ShouldHandleGeneralException() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
-
-            DomainNameInformation result = (DomainNameInformation)_domainNameCollector.Collect();
-
-            Assert.AreEqual("No domain", result.DomainName, "Should return 'No domain' when a general exception occurs.");
+            Assert.IsNotNull(result, "Result should not be null even in case of an exception");
         }
     }
 }

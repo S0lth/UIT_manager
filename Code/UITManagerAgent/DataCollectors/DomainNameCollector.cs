@@ -30,11 +30,8 @@ public class DomainNameCollector : DataCollector {
 
             domainNameInformation.DomainName = query?["Domain"]?.ToString() ?? "No domain";
         }
-        catch (ManagementException ex) {
-            Console.WriteLine("WMI error: " + ex.Message);
-        }
         catch (Exception ex) {
-            Console.WriteLine("General error: " + ex.Message);
+            Console.WriteLine("Error: " + ex.Message);
         }
 
         return domainNameInformation;
