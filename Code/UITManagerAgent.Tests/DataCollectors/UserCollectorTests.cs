@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using UITManagerAgent.DataCollectors;
 
 /// <summary>
@@ -20,12 +21,8 @@ public class UserCollectorTests {
     ///     Tests if the <see cref="UserCollector.Collect" /> method returns an instance of <see cref="UsersInformation" />.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Collect_ShouldReturnUsersInformationInstance() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            Assert.Inconclusive("This test only runs on Windows.");
-            return;
-        }
-
         if (_userCollector != null) {
             Information result = _userCollector.Collect();
 
@@ -38,12 +35,8 @@ public class UserCollectorTests {
     ///     Tests if the <see cref="UserCollector.Collect" /> method handles exceptions gracefully.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Collect_ShouldHandleExceptionsGracefully() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            Assert.Inconclusive("This test only runs on Windows.");
-            return;
-        }
-
         try {
             if (_userCollector != null) {
                 Information result = _userCollector.Collect();
@@ -61,12 +54,8 @@ public class UserCollectorTests {
     ///     exist.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Collect_UsersListShouldNotBeNullOrEmpty_WhenUsersExist() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            Assert.Inconclusive("This test only runs on Windows.");
-            return;
-        }
-
         if (_userCollector != null) {
             UsersInformation result = (UsersInformation)_userCollector.Collect();
 
@@ -80,12 +69,8 @@ public class UserCollectorTests {
     ///     on each call.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Collect_ShouldReturnNewInstanceOnEachCall() {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-            Assert.Inconclusive("This test only runs on Windows.");
-            return;
-        }
-
         if (_userCollector != null) {
             UsersInformation firstResult = (UsersInformation)_userCollector.Collect();
             UsersInformation secondResult = (UsersInformation)_userCollector.Collect();

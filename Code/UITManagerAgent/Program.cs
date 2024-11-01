@@ -26,6 +26,9 @@ public class Program {
         UpTimeCollector upTimeCollector = new();
         Console.WriteLine(upTimeCollector.Collect().ToString());
 
+        DiskCollector diskCollector = new DiskCollector();
+        Console.WriteLine(diskCollector.Collect().ToString());
+
         return Task.CompletedTask;
     }
 }
