@@ -16,7 +16,7 @@ namespace UITManagerAgent.BasicInformation
         /// <summary>
         /// accessors of the disksName field
         /// </summary>
-        public List<string>? DisksName {
+        public List<string> DisksName {
             get => _disksName;
             set => _disksName = value;
         }
@@ -24,7 +24,7 @@ namespace UITManagerAgent.BasicInformation
         /// <summary>
         /// accessors of the diskTotalSize field
         /// </summary>
-        public List<long>? DiskTotalSize {
+        public List<long> DiskTotalSize {
             get => _diskTotalSize;
             set => _diskTotalSize = value;
         }
@@ -33,7 +33,12 @@ namespace UITManagerAgent.BasicInformation
         /// <summary>
         /// accessors of the disksFreeSize field
         /// </summary>
-        public List<long>? DisksFreeSize {
+        public List<long> DisksFreeSize {
+            get => _disksFreeSize;
+            set => _disksFreeSize = value;
+        }
+
+        public List<long> DiskFreeSize {
             get => _disksFreeSize;
             set => _disksFreeSize = value;
         }

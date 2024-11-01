@@ -31,7 +31,7 @@ namespace UITManagerAgent.DataCollectors
                         diskCount++;
                         diskInformation.DisksName.Add(drive.Name);
                         diskInformation.DiskTotalSize.Add(drive.TotalSize / (1024 * 1024 * 1024));
-                        diskInformation.DisksFreeSize.Add(drive.TotalFreeSpace / (1024 * 1024 * 1024));
+                        diskInformation.DiskFreeSize.Add(drive.TotalFreeSpace / (1024 * 1024 * 1024));
                     }
                 }
 
