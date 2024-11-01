@@ -16,21 +16,12 @@ public class DomainNameInformation : Information
     private string _domainName;
 
     /// <summary>
-    /// Retrieves the domain name.
+    /// accessors of the domainName field
     /// </summary>
-    /// <returns>A string containing the domain name.</returns>
-    public string GetDomainName()
+    public string DomainName
     {
-        return _domainName;
-    }
-
-    /// <summary>
-    /// Sets the domain name to a specified value.
-    /// </summary>
-    /// <param name="domainName">A string containing the domain name to set.</param>
-    public void SetDomainName(string domainName)
-    {
-        _domainName = domainName;
+        get { return _domainName; }
+        set { _domainName = value ; }
     }
 
     /// <summary>
