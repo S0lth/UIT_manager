@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent;
@@ -21,6 +22,9 @@ public class Program {
 
         DomainNameCollector domainNameCollector = new DomainNameCollector();
         Console.WriteLine(domainNameCollector.Collect().ToString());
+        
+        UpTimeCollector upTimeCollector = new();
+        Console.WriteLine(upTimeCollector.Collect().ToString());
 
         return Task.CompletedTask;
     }
