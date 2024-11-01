@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.DataCollectors; 
@@ -21,6 +22,8 @@ public class IpsAddressesCollector : DataCollector
     /// In case of error, the method returns an empty
     /// <see cref="IpsAddressesInformation"/> object.
     /// </remarks>
+    
+    [SupportedOSPlatform("windows")]
     public Information Collect()
     {
         IpsAddressesInformation ipsAddressesInformation = new();

@@ -7,19 +7,11 @@ namespace UITManagerAgent.BasicInformation;
     public class IpsAddressesInformation : Information {
         private List<string> _ipsList = new();
         /// <summary>
-        /// assessors of IpsAddresses List
+        /// accessors of IpsAddresses List
         /// </summary>
         public List<string> IpsList {
             get => _ipsList;
             set => _ipsList = value;
-        }
-
-        /// <summary>
-        ///     Get the list of IP addresses.
-        /// </summary>
-        /// <returns>A list of IP addresses.</returns>
-        public List<string> GetIpsList() {
-            return _ipsList;
         }
 
         /// <summary>
