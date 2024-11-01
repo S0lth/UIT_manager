@@ -10,7 +10,7 @@ namespace UITManagerAgent.BasicInformation
     {
         private List<string> _disksName = new();
         private List<long> _diskTotalSize = new();
-        private List<long> _disksFreeSize = new();
+        private List<long> _diskFreeSize = new();
         private int _numberDisk;
 
         /// <summary>
@@ -31,16 +31,11 @@ namespace UITManagerAgent.BasicInformation
 
 
         /// <summary>
-        /// accessors of the disksFreeSize field
+        /// accessors of the diskFreeSize field
         /// </summary>
-        public List<long> DisksFreeSize {
-            get => _disksFreeSize;
-            set => _disksFreeSize = value;
-        }
-
         public List<long> DiskFreeSize {
-            get => _disksFreeSize;
-            set => _disksFreeSize = value;
+            get => _diskFreeSize;
+            set => _diskFreeSize = value;
         }
 
         /// <summary>
