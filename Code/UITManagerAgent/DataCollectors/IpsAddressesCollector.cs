@@ -32,7 +32,7 @@ public class IpsAddressesCollector : DataCollector
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    ipsAddressesInformation.GetIpsList().Add(ip.ToString());
+                    ipsAddressesInformation.IpsList.Add(ip.ToString());
                 }
             }
         }

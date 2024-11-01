@@ -1,11 +1,18 @@
 using UITManagerAgent.DataCollectors;
 
-namespace UITManagerAgent.BasicInformation {
+namespace UITManagerAgent.BasicInformation;
     /// <summary>
     ///     Represents a collection of IP addresses.
     /// </summary>
     public class IpsAddressesInformation : Information {
-        private readonly List<string> _ipsList = new();
+        private List<string> _ipsList = new();
+        /// <summary>
+        /// assessors of IpsAddresses List
+        /// </summary>
+        public List<string> IpsList {
+            get => _ipsList;
+            set => _ipsList = value;
+        }
 
         /// <summary>
         ///     Get the list of IP addresses.
@@ -23,4 +30,3 @@ namespace UITManagerAgent.BasicInformation {
             return $"{string.Join(", ", _ipsList)}";
         }
     }
-}
