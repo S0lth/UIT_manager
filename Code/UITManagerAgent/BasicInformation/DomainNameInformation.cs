@@ -12,7 +12,7 @@ namespace UITManagerAgent.BasicInformation;
 /// Represents information about a domain name.
 /// </summary>
 public class DomainNameInformation : Information {
-    private string _domainName;
+    private string _domainName = "";
 
     /// <summary>
     /// accessors of the domainName field
