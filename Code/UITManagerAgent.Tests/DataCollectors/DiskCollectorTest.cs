@@ -11,7 +11,7 @@ using System.Runtime.Versioning;
 namespace UITManagerAgent.Tests.DataCollectors {
     [TestClass]
     public class DiskCollectorTest {
-        private DiskCollector _diskCollector;
+        private DiskCollector? _diskCollector;
 
         [TestInitialize]
         public void Setup() {
