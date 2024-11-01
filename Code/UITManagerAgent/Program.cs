@@ -13,17 +13,13 @@ public class Program
     {
         UserCollector userCollector = new UserCollector();
         Console.WriteLine(userCollector.Collect().ToString());
-        CpuCollectors cupCollected = new CpuCollectors();
 
-
-        Console.WriteLine(cupCollected.Collect().ToString());
-
-
-
-        Console.WriteLine(cupCollected.Collect().ToString());
+        CpuCollectors cpuCollected = new CpuCollectors();
+        Console.WriteLine(cpuCollected.Collect().ToString());
         
         IpsAddressesCollector ipsAddressesCollector = new IpsAddressesCollector();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
+
         return Task.CompletedTask;
     }
 }
