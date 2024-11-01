@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UITManagerAgent.DataCollectors;
 using UITManagerAgent.BasicInformation;
+using System.Runtime.Versioning;
 
 namespace UITManagerAgent.Tests.DataCollectors {
     [TestClass]
@@ -21,12 +22,8 @@ namespace UITManagerAgent.Tests.DataCollectors {
         /// Tests if the <see cref="DiskCollector.Collect" /> method returns an instance of <see cref="DiskInformation" />.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Collect_ShouldReturnDiskInformationInstance() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
-
             if (_diskCollector != null) {
                 Information result = _diskCollector.Collect();
 
@@ -39,12 +36,8 @@ namespace UITManagerAgent.Tests.DataCollectors {
         ///     Tests if the <see cref="DiskCollector.Collect" /> method handles exceptions gracefully.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Collect_ShouldHandleExceptionsGracefully() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
-
             try {
                 if (_diskCollector != null) {
                     Information result = _diskCollector.Collect();
@@ -62,12 +55,8 @@ namespace UITManagerAgent.Tests.DataCollectors {
         ///     exist.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Collect_DiskListShouldNotBeNullOrEmpty_WhenDiskExist() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
-
             if (_diskCollector != null) {
                 DiskInformation result = (DiskInformation)_diskCollector.Collect();
 
@@ -81,12 +70,8 @@ namespace UITManagerAgent.Tests.DataCollectors {
         ///     on each call.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Collect_ShouldReturnNewInstanceOnEachCall() {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-                Assert.Inconclusive("This test only runs on Windows.");
-                return;
-            }
-
             if (_diskCollector != null) {
                 DiskInformation firstResult = (DiskInformation)_diskCollector.Collect();
                 DiskInformation secondResult = (DiskInformation)_diskCollector.Collect();
