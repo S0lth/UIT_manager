@@ -11,7 +11,7 @@ public class Program {
 
         IpsAddressesCollector ipsAddressesCollector = new();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
-        
+
         RamCollector ramCollector = new RamCollector();
         Console.WriteLine(ramCollector.Collect().ToString());
 
@@ -21,6 +21,10 @@ public class Program {
         OsCollector osCollector = new();
         Console.WriteLine(osCollector.Collect().ToString());
         
+
+        DiskCollector diskCollector = new DiskCollector();
+        Console.WriteLine(diskCollector.Collect().ToString());
+
         return Task.CompletedTask;
     }
 }

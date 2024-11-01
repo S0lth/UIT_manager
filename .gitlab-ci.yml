@@ -24,6 +24,7 @@ build:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
 
 test:
   extends: .windows_job
@@ -38,21 +39,4 @@ test:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-
-deploy:
-  extends: .windows_job
-  stage: deploy
-  script:
-    - echo "Déploiement des artefacts depuis ./Code/$env:PROJECT_NAME/bin/$env:BUILD_CONFIGURATION pour l'environnement de développement"
-  artifacts:
-    paths:
-      - "Code/UITManagerAgent/bin/Debug"
-    expire_in: 1 week
-  dependencies:
-    - build
-    - test
-  environment:
-    name: development
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_PIPELINE_SOURCE == "web"'

@@ -16,10 +16,10 @@ public class UserCollector : DataCollector {
 
     [SupportedOSPlatform("windows")]
     public Information Collect() {
-        UsersInformation? users = new();
+        UsersInformation users = new();
 
         try {
-            using DirectoryEntry? localMachine = new("WinNT://" + Environment.MachineName);
+            using DirectoryEntry localMachine = new("WinNT://" + Environment.MachineName);
             foreach (DirectoryEntry child in localMachine.Children) {
                 if (child.SchemaClassName == "User") {
                     users.usersList.Add(child.Name);

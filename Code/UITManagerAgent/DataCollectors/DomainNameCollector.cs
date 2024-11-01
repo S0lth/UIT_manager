@@ -5,36 +5,34 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Management;
 using UITManagerAgent.BasicInformation;
+using System.Runtime.Versioning;
 
 namespace UITManagerAgent.DataCollectors;
 
 /// <summary>
 /// A data collector that retrieves the domain name of the computer system and retruns it as an <see cref="DomainNameInformation"/>.
 /// </summary>
-public class DomainNameCollector : DataCollector
-{
+public class DomainNameCollector : DataCollector {
     /// <summary>
     /// Collects domain name form the system.
     /// </summary>
     /// <returns>An <see cref="DomainNameInformation"/> object containing the system's domain name.</returns>
-    public Information Collect()
-    {
+    [SupportedOSPlatform("windows")]
+    public Information Collect() {
+
         DomainNameInformation domainNameInformation = new DomainNameInformation();
 
-        try
-        {
+        try {
+
             var searcher = new ManagementObjectSearcher("select * from Win32_ComputerSystem");
 
-            var querry = searcher.Get().OfType<ManagementObject>().FirstOrDefault();
+            var query = searcher.Get().OfType<ManagementObject>().FirstOrDefault();
 
-            domainNameInformation.SetDomainName(querry["Domain"].ToString());
+            domainNameInformation.DomainName = query?["Domain"]?.ToString() ?? "No domain";
         }
-        catch (ManagementException ex)
-        {
-            Console.WriteLine(ex.Message);
+        catch (Exception ex) {
+            Console.WriteLine("Error: " + ex.Message);
         }
-
-
 
         return domainNameInformation;
     }
