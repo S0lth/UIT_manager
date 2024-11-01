@@ -26,10 +26,10 @@ public class CpuCollectors : DataCollector
         CpuInformation cpu = new CpuInformation();
         try
         {
-            cpu.setLogicalCpu(getProcessorCount());
-            cpu.setCoreCount(getNumberOfCores());
-            cpu.setClockSpeed(getCurrentClockSpeed());
-            cpu.setModel(getModelCPU());
+            cpu.SetLogicalCpu(GetProcessorCount());
+            cpu.SetCoreCount(GetNumberOfCores());
+            cpu.SetClockSpeed(GetCurrentClockSpeed());
+            cpu.SetModel(GetModelCPU());
       
         }
         catch (Exception ex)
@@ -43,7 +43,7 @@ public class CpuCollectors : DataCollector
     /// Get CPU count
     /// </summary>
     /// <returns>Logical CPU Count: Number of logical processors.</returns>
-    public int getProcessorCount()
+    public int GetProcessorCount()
     {
         return Environment.ProcessorCount;
     }
@@ -52,7 +52,7 @@ public class CpuCollectors : DataCollector
     /// Get Number of logical CPU
     /// </summary>
     /// <returns>Core Count: Number of physical processor cores.</returns>
-    public int getNumberOfCores()
+    public int GetNumberOfCores()
     {
         int res = 0;
         foreach (ManagementObject obj in searcher.Get())
@@ -65,7 +65,7 @@ public class CpuCollectors : DataCollector
     /// get the curente clockSpeed 
     /// </summary>
     /// <returns>Clock Speed: Current clock speed in MHz</returns>
-    public int getCurrentClockSpeed()
+    public int GetCurrentClockSpeed()
     {
         int res = 0;
 
@@ -80,7 +80,7 @@ public class CpuCollectors : DataCollector
     /// </summary>
     /// <returns>A string for the name of the cpu</returns>
 
-    public string getModelCPU()
+    public string GetModelCPU()
     {
         string cpuModel = "";
         foreach (ManagementObject obj in searcher.Get())

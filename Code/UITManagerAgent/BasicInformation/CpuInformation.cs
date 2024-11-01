@@ -17,7 +17,7 @@ public class CpuInformation : Information
     /// Gets the number of logical CPUs.
     /// </summary>
     /// <returns>The logical CPU count.</returns>
-    public int getLogicalCpu()
+    public int GetLogicalCpu()
     {
         return _LogicalCpu;
     }
@@ -26,7 +26,7 @@ public class CpuInformation : Information
     /// Sets the number of logical CPUs.
     /// </summary>
     /// <param name="logicalCpu">The number of logical CPUs to set.</param>
-    public void setLogicalCpu(int logicalCpu)
+    public void SetLogicalCpu(int logicalCpu)
     {
         this._LogicalCpu = logicalCpu;
     }
@@ -35,7 +35,7 @@ public class CpuInformation : Information
     /// Gets the number of physical cores.
     /// </summary>
     /// <returns>The core count.</returns>
-    public int getCoreCount()
+    public int GetCoreCount()
     {
         return _CoreCount;
     }
@@ -44,7 +44,7 @@ public class CpuInformation : Information
     /// Sets the number of physical cores.
     /// </summary>
     /// <param name="coreCount">The number of cores to set.</param>
-    public void setCoreCount(int coreCount)
+    public void SetCoreCount(int coreCount)
     {
         this._CoreCount = coreCount;
     }
@@ -53,7 +53,7 @@ public class CpuInformation : Information
     /// Gets the current clock speed in MHz.
     /// </summary>
     /// <returns>The clock speed.</returns>
-    public int getClockSpeed()
+    public int GetClockSpeed()
     {
         return _ClockSpeed;
     }
@@ -62,7 +62,7 @@ public class CpuInformation : Information
     /// Sets the current clock speed in MHz.
     /// </summary>
     /// <param name="clockSpeed">The clock speed to set.</param>
-    public void setClockSpeed(int clockSpeed)
+    public void SetClockSpeed(int clockSpeed)
     {
         this._ClockSpeed = clockSpeed;
     }
@@ -70,7 +70,7 @@ public class CpuInformation : Information
     /// Gets the current cpu model
     /// </summary>
     /// <returns>Cpu model</returns>
-    public string getModel()
+    public string GetModel()
     {
         return this._Model;
     }
@@ -78,7 +78,7 @@ public class CpuInformation : Information
     /// Sets the current model name
     /// </summary>
     /// <param name="model">the model to set</param>
-    public void setModel(string model)
+    public void SetModel(string model)
     {
         this._Model = model;
     }
