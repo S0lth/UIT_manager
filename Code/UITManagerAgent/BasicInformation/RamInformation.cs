@@ -1,11 +1,13 @@
 ﻿using UITManagerAgent.DataCollectors;
 using System.Management;
+using System.Runtime.Versioning;
 
 namespace UITManagerAgent.BasicInformation;
 
 /// <summary>
 /// Provides information about RAM usage, including total and used memory.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public class RamInformation : Information
 {
     private ulong _totalMemory;
