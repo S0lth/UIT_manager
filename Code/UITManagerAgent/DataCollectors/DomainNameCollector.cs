@@ -12,19 +12,18 @@ namespace UITManagerAgent.DataCollectors;
 /// <summary>
 /// A data collector that retrieves the domain name of the computer system and retruns it as an <see cref="DomainNameInformation"/>.
 /// </summary>
-public class DomainNameCollector : DataCollector
-{
+public class DomainNameCollector : DataCollector {
     /// <summary>
     /// Collects domain name form the system.
     /// </summary>
     /// <returns>An <see cref="DomainNameInformation"/> object containing the system's domain name.</returns>
     [SupportedOSPlatform("windows")]
-    public Information Collect()
-    {
+    public Information Collect() {
+
         DomainNameInformation domainNameInformation = new DomainNameInformation();
 
-        try
-        {
+        try {
+
             var searcher = new ManagementObjectSearcher("select * from Win32_ComputerSystem");
 
             var query = searcher.Get().OfType<ManagementObject>().FirstOrDefault();
@@ -32,12 +31,10 @@ public class DomainNameCollector : DataCollector
             // If a machine doesn't have a domain name, No domain is assigned.
             domainNameInformation.DomainName = query?["Domain"]?.ToString() ?? "No domain";
         }
-        catch (ManagementException ex)
-        {
+        catch (ManagementException ex) {
             Console.WriteLine("WMI error: " + ex.Message);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             Console.WriteLine("General error: " + ex.Message);
         }
 
