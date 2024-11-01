@@ -18,6 +18,9 @@ public class Program {
         DomainNameCollector domainNameCollector = new DomainNameCollector();
         Console.WriteLine(domainNameCollector.Collect().ToString());
         
+        OsCollector osCollector = new();
+        Console.WriteLine(osCollector.Collect().ToString());
+        
         return Task.CompletedTask;
     }
 }
