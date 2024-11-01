@@ -22,6 +22,9 @@ public class Program {
         DomainNameCollector domainNameCollector = new DomainNameCollector();
         Console.WriteLine(domainNameCollector.Collect().ToString());
 
+        DiskCollector diskCollector = new DiskCollector();
+        Console.WriteLine(diskCollector.Collect().ToString());
+
         return Task.CompletedTask;
     }
 }
