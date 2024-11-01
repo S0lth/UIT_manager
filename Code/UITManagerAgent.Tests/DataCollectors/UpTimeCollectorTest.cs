@@ -1,8 +1,10 @@
-﻿using UITManagerAgent.BasicInformation;
+﻿using System.Runtime.Versioning;
+using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.Tests.DataCollectors {
     [TestClass]
+    [SupportedOSPlatform("windows")]
     public class UpTimeCollectorTest {
 
         private UpTimeCollector? _upTimeCollector;

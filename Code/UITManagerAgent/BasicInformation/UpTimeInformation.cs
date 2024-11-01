@@ -1,10 +1,12 @@
-﻿using UITManagerAgent.DataCollectors;
+﻿using System.Runtime.Versioning;
+using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.BasicInformation;
 
 /// <summary>
 /// Represents information about the system's uptime, in milliseconds, with a formatted string representation.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public class UpTimeInformation : Information {
     private int _milliseconds;
 
