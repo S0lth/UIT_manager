@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Management;
+using System.Runtime.Versioning;
 namespace UITManagerAgent.DataCollectors;
 
 
@@ -21,6 +22,7 @@ public class CpuCollectors : DataCollector
     /// Core Count: Number of physical processor cores.
     /// Clock Speed: Current clock speed in MHz
     /// </returns>
+    [SupportedOSPlatform("windows")]
     public Information Collect()
     {
         CpuInformation cpu = new CpuInformation();
