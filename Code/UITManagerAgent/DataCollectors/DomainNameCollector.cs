@@ -28,7 +28,6 @@ public class DomainNameCollector : DataCollector {
 
             var query = searcher.Get().OfType<ManagementObject>().FirstOrDefault();
 
-            // If a machine doesn't have a domain name, No domain is assigned.
             domainNameInformation.DomainName = query?["Domain"]?.ToString() ?? "No domain";
         }
         catch (ManagementException ex) {
