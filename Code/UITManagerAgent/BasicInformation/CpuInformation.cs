@@ -12,25 +12,56 @@ public class CpuInformation : Information
     private int _CoreCount; 
     private int _ClockSpeed;
     private string _Model;
-    
+
+    /// <summary>
+    /// Gets or sets the number of logical CPUs.
+    /// </summary>
+    /// <value>
+    /// The number of logical CPUs. This property allows you to specify or retrieve 
+    /// the count of logical processors available for computation. 
+    /// The value should be a non-negative integer.
+    /// </value>
     public int LogicalCpu
     {
         get => _LogicalCpu;
         set => _LogicalCpu = value;
     }
 
+    /// <summary>
+    /// Gets or sets the number of CPU cores.
+    /// </summary>
+    /// <value>
+    /// The number of CPU cores. This property allows you to specify or retrieve 
+    /// the total count of physical CPU cores available in the system.
+    /// The value should be a non-negative integer.
+    /// </value>
     public int CoreCount
     {
         get => _CoreCount;
         set => _CoreCount = value;
     }
 
+    /// <summary>
+    /// Gets or sets the clock speed of the CPU.
+    /// </summary>
+    /// <value>
+    /// The clock speed in megahertz (MHz). This property allows you to specify or 
+    /// retrieve the operating frequency of the CPU, which can influence performance.
+    /// The value should be a non-negative integer representing the clock speed.
+    /// </value>
     public int ClockSpeed
     {
         get => _ClockSpeed;
         set => _ClockSpeed = value;
     }
 
+    /// <summary>
+    /// Gets or sets the model of the CPU.
+    /// </summary>
+    /// <value>
+    /// A string representing the model name or identifier of the CPU. This property 
+    /// allows you to specify or retrieve the model of the CPU for identification 
+    /// purposes.
     public string Model
     {
         get => _Model;
