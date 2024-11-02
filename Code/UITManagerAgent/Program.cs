@@ -26,6 +26,9 @@ public class Program {
         
         DiskCollector diskCollector = new DiskCollector();
         Console.WriteLine(diskCollector.Collect().ToString());
+        
+        MachineNameCollector machineNameCollector = new();
+        Console.WriteLine(machineNameCollector.Collect().ToString());
 
         return Task.CompletedTask;
     }
