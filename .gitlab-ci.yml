@@ -49,5 +49,4 @@ test:
       - Code/UITManagerAgent.Tests/TestResults
     reports:
       junit: test-results.trx
-      cobertura: Code/UITManagerAgent.Tests/TestResults/coverage.cobertura.xml
     expire_in: 1 week
