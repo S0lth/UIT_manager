@@ -14,6 +14,7 @@ build:
   extends: .windows_job
   stage: build
   script:
+    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln"
     - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
