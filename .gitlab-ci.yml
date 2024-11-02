@@ -14,7 +14,9 @@ variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
-  OUTPUT_PATH: "Code/$env:PROJECT_NAME/bin/$env:BUILD_CONFIGURATION"
+  BASE_DIR: "$CI_PROJECT_DIR\\Code"
+  TEST_RESULTS_PATH: "$CI_PROJECT_DIR\\Code\\UITManagerAgent.Tests\\TestResults"
+  TRX_FILE_PATH: "$CI_PROJECT_DIR\\Code\\UITManagerAgent.Tests\\TestResults\\test-results.trx"
 
 cache:
   key: "$CI_COMMIT_REF_SLUG"
@@ -40,13 +42,12 @@ test:
   extends: .windows_job
   stage: test
   script:
-    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c $env:BUILD_CONFIGURATION --logger "trx;LogFileName=Code/UITManagerAgent.Tests/TestResults/test-results.trx" --collect:"XPlat Code Coverage"
+    - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=$TRX_FILE_PATH"
   dependencies:
     - build
   artifacts:
     paths:
-      - Code/UITManagerAgent.Tests/TestResults/test-results.trx
-      - Code/UITManagerAgent.Tests/TestResults
+      - "$TEST_RESULTS_PATH"
     reports:
-      junit: Code/UITManagerAgent.Tests/TestResults/test-results.trx
+      junit: "$TRX_FILE_PATH"
     expire_in: 1 week
