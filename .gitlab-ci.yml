@@ -3,12 +3,26 @@
     - saas-windows-medium-amd64
   before_script:
     - Set-Variable -Name "time" -Value (Get-Date -Format "HH:mm")
-    - Write-Host "started by $env:GITLAB_USER_NAME / @$env:GITLAB_USER_LOGIN"
+    - Write-Host "Pipeline started by $env:GITLAB_USER_NAME (@$env:GITLAB_USER_LOGIN) at $time for configuration $env:BUILD_CONFIGURATION"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
+  OUTPUT_PATH: "Code/$env:PROJECT_NAME/bin/$env:BUILD_CONFIGURATION"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - "Code/UITManagerAgent/obj/"
+    - "Code/UITManagerAgent/bin/"
+    - "Code/UITManagerAgent.Tests/obj/"
+    - "Code/UITManagerAgent.Tests/bin/"
 
 build:
   extends: .windows_job
@@ -18,30 +32,22 @@ build:
     - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
-      - "Code/UITManagerAgent/bin/Debug"
-      - "Code/UITManagerAgent.Tests/bin/Debug"
+      - "$env:OUTPUT_PATH"
+      - "$env:OUTPUT_PATH.Tests"
     expire_in: 1 week
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: '$CI_PIPELINE_SOURCE == "web"'
-    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 test:
   extends: .windows_job
   stage: test
   script:
-    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c $env:BUILD_CONFIGURATION --logger "trx;LogFileName=test-results.trx"
+    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c $env:BUILD_CONFIGURATION --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
   dependencies:
     - build
   artifacts:
     paths:
       - test-results.trx
+      - Code/UITManagerAgent.Tests/TestResults
     reports:
       junit: test-results.trx
+      cobertura: Code/UITManagerAgent.Tests/TestResults/coverage.cobertura.xml
     expire_in: 1 week
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: '$CI_PIPELINE_SOURCE == "web"'
-    - if: $CI_PIPELINE_SOURCE == "schedule"
