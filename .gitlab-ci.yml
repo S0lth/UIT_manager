@@ -40,14 +40,13 @@ test:
   extends: .windows_job
   stage: test
   script:
-    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c $env:BUILD_CONFIGURATION --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
+    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c $env:BUILD_CONFIGURATION --logger "trx;LogFileName=Code/UITManagerAgent.Tests/test-results.trx" --collect:"XPlat Code Coverage"
   dependencies:
     - build
   artifacts:
     paths:
-      - test-results.trx
+      - Code/UITManagerAgent.Tests/test-results.trx
       - Code/UITManagerAgent.Tests/TestResults
     reports:
-      junit: test-results.trx
+      junit: Code/UITManagerAgent.Tests/test-results.trx
     expire_in: 1 week
-
