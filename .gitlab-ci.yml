@@ -30,10 +30,14 @@ test:
   extends: .windows_job
   stage: test
   script:
-    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c $env:BUILD_CONFIGURATION
+    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c $env:BUILD_CONFIGURATION --logger "trx;LogFileName=test-results.trx"
   dependencies:
     - build
   artifacts:
+    paths:
+      - test-results.trx
+    reports:
+      junit: test-results.trx
     expire_in: 1 week
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
