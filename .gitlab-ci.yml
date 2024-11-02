@@ -14,7 +14,6 @@ build:
   extends: .windows_job
   stage: build
   script:
-    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln"
     - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
@@ -25,13 +24,13 @@ build:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 test:
   extends: .windows_job
   stage: test
   script:
-    - dotnet --version
-    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c Debug
+    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c $env:BUILD_CONFIGURATION
   dependencies:
     - build
   artifacts:
@@ -40,3 +39,4 @@ test:
     - if: $CI_PIPELINE_SOURCE == "push"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
