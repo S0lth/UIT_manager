@@ -32,8 +32,8 @@ build:
     - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
-      - "$env:OUTPUT_PATH"
-      - "$env:OUTPUT_PATH.Tests"
+      - "Code/UITManagerAgent/bin/Debug"
+      - "Code/UITManagerAgent.Tests/bin/Debug"
     expire_in: 1 week
 
 test:
@@ -50,3 +50,4 @@ test:
     reports:
       junit: test-results.trx
     expire_in: 1 week
+
