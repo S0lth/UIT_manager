@@ -57,7 +57,7 @@ namespace UITManagerAgent.BasicInformation
         /// </returns>
         public override string ToString()
         {
-            return "Disk name : " + string.Join(" , ", _disksName) + ", disk total size : " + string.Join(" Go, ", _diskTotalSize) + " Go , disk total free size : " + string.Join(" Go, ", _disksFreeSize) + " G" + Environment.NewLine +
+            return "Disk name : " + string.Join(" , ", _disksName) + ", disk total size : " + string.Join(" Go, ", _diskTotalSize) + " Go , disk total free size : " + string.Join(" Go, ", _disksFreeSize) + " Go" + Environment.NewLine +
                   "Number disk : " + _numberDisk;
         }
 
