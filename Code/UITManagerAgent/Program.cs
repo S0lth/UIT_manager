@@ -31,6 +31,9 @@ public class Program {
         DiskCollector diskCollector = new DiskCollector();
         Console.WriteLine(diskCollector.Collect().ToString());
 
+        DirectXCollector directXCollector = new DirectXCollector();
+        Console.WriteLine(directXCollector.Collect().ToString());
+
         return Task.CompletedTask;
     }
 }
