@@ -1,7 +1,6 @@
 using System.Runtime.Versioning;
+using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
-
-namespace UITManagerAgent;
 
 [SupportedOSPlatform("windows")]
 public class Program {
@@ -9,6 +8,7 @@ public class Program {
         await RunOnce();
     }
 
+    [SupportedOSPlatform("windows")]
     private static Task RunOnce() {
         UserCollector userCollector = new();
         Console.WriteLine(userCollector.Collect().ToString());
@@ -21,6 +21,15 @@ public class Program {
 
         DomainNameCollector domainNameCollector = new DomainNameCollector();
         Console.WriteLine(domainNameCollector.Collect().ToString());
+        
+        UpTimeCollector upTimeCollector = new();
+        Console.WriteLine(upTimeCollector.Collect().ToString());
+
+        OsCollector osCollector = new();
+        Console.WriteLine(osCollector.Collect().ToString());
+        
+        DiskCollector diskCollector = new DiskCollector();
+        Console.WriteLine(diskCollector.Collect().ToString());
 
         return Task.CompletedTask;
     }

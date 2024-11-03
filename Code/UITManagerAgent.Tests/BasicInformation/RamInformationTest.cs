@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.Tests.Basicinformation;
@@ -6,9 +7,10 @@ namespace UITManagerAgent.Tests.Basicinformation;
 /// Contains unit tests for the <see cref="RamInformation"/> class.
 /// </summary>
 [TestClass]
+[SupportedOSPlatform("windows")]
 public class RamInformationTest
 {
-    private RamInformation _ramInformation;
+    private RamInformation? _ramInformation;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RamInformation"/> class before each test.
@@ -23,15 +25,24 @@ public class RamInformationTest
     /// Tests the <see cref="RamInformation.ToString"/> method to ensure it returns the correct format.
     /// </summary>
     [TestMethod]
-    public void Test_ToString_ReturnsCorrectFormat()
-    {
-        _ramInformation.SetTotalMemory(8 * 1024 * 1024);
-        _ramInformation.SetFreeMemory(3 * 1024 * 1024);
-        _ramInformation.SetUsedMemory(5 * 1024 * 1024);
+    public void Test_ToString_ReturnsCorrectFormat() {
+        ulong totalMemory = 8 * 1024 * 1024;
+        ulong usedMemory = 5 * 1024 * 1024;
+        ulong freeMemory = totalMemory - usedMemory;
 
-        string result = _ramInformation.ToString();
+        if (_ramInformation != null) {
+            _ramInformation.TotalMemory = 8 * 1024 * 1024;
+            _ramInformation.UsedMemory = 5 * 1024 * 1024;
+            _ramInformation.FreeMemory = 3 * 1024 * 1024;
 
-        Assert.AreEqual("Total: 8.00 GB; Used: 5.00 GB", result);
+            string result = _ramInformation.ToString();
+
+            string expected = $"Total memory : {totalMemory / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
+                              $"Used memory : {usedMemory / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
+                              $"Free memory : {freeMemory / (float)(1024 * 1024):F2} GB";
+
+            Assert.AreEqual(expected, result);
+        }
     }
 
     /// <summary>
@@ -43,27 +54,38 @@ public class RamInformationTest
         ulong totalMemory = 16 * 1024 * 1024;
         ulong freeMemory = 6 * 1024 * 1024;
 
-        _ramInformation.SetTotalMemory(totalMemory);
-        _ramInformation.SetFreeMemory(freeMemory);
-        _ramInformation.SetUsedMemory(totalMemory - freeMemory);
+        if (_ramInformation != null) {
+            _ramInformation.TotalMemory = totalMemory;
+            _ramInformation.FreeMemory = freeMemory;
+            _ramInformation.UsedMemory = totalMemory - freeMemory;
 
-        Assert.AreEqual(totalMemory, _ramInformation.GetTotalMemory());
-        Assert.AreEqual(freeMemory, _ramInformation.GetFreeMemory());
-        Assert.AreEqual<ulong>(10 * 1024 * 1024, _ramInformation.GetUsedMemory());
+            Assert.AreEqual(totalMemory, _ramInformation.TotalMemory);
+            Assert.AreEqual(freeMemory, _ramInformation.FreeMemory);
+            Assert.AreEqual<ulong>(10 * 1024 * 1024, _ramInformation.UsedMemory);
+        }
     }
 
     /// <summary>
     /// Tests the <see cref="RamInformation.ToString"/> method to ensure it returns "0.00 GB" when all memory values are zero.
     /// </summary>
     [TestMethod]
-    public void Test_ToString_ReturnsZeroGB_WhenMemoryIsZero()
-    {
-        _ramInformation.SetTotalMemory(0);
-        _ramInformation.SetFreeMemory(0);
-        _ramInformation.SetUsedMemory(0);
+    public void Test_ToString_ReturnsZeroGB_WhenMemoryIsZero() {
+        ulong totalMemory = 0;
+        ulong usedMemory = 0;
+        ulong freeMemory = 0;
 
-        string result = _ramInformation.ToString();
+        if (_ramInformation != null) {
+            _ramInformation.TotalMemory = 0;
+            _ramInformation.FreeMemory = 0;
+            _ramInformation.UsedMemory = 0;
 
-        Assert.AreEqual("Total: 0.00 GB; Used: 0.00 GB", result);
+            string result = _ramInformation.ToString();
+
+            string expected = $"Total memory : {totalMemory / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
+                              $"Used memory : {usedMemory / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
+                              $"Free memory : {freeMemory / (float)(1024 * 1024):F2} GB";
+
+            Assert.AreEqual(expected, result);
+        }
     }
 }
