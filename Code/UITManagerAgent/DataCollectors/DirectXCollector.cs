@@ -1,13 +1,6 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Management;
+﻿using System.Diagnostics;
 using System.Runtime.Versioning;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.DataCollectors;
