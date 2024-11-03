@@ -14,9 +14,9 @@ variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
-  BASE_DIR: "$CI_PROJECT_DIR/Code"
-  TEST_RESULTS_PATH: "$CI_PROJECT_DIR/Code/UITManagerAgent.Tests/TestResults"
-  TRX_FILE_PATH: "$CI_PROJECT_DIR/Code/UITManagerAgent.Tests/TestResults/test-results.trx"
+  BASE_DIR: "$CI_PROJECT_DIR\\Code"
+  TEST_RESULTS_PATH: "$CI_PROJECT_DIR\\Code\\UITManagerAgent.Tests\\TestResults"
+  TRX_FILE_PATH: "$CI_PROJECT_DIR\\Code\\UITManagerAgent.Tests\\TestResults\\test-results.trx"
 
 cache:
   key: "$CI_COMMIT_REF_SLUG"
@@ -30,8 +30,8 @@ build:
   extends: .windows_job
   stage: build
   script:
-    - dotnet restore "$BASE_DIR/$PROJECT_NAME.sln"
-    - dotnet build --no-restore "$BASE_DIR/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
+    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln"
+    - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:PROJECT_NAME\\$env:PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
       - "Code/UITManagerAgent/bin/Debug"
@@ -42,7 +42,7 @@ test:
   extends: .windows_job
   stage: test
   script:
-    - dotnet test --no-build "$BASE_DIR/$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION --logger "trx;LogFileName=$TRX_FILE_PATH"
+    - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
   dependencies:
     - build
   artifacts:
