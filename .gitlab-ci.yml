@@ -40,6 +40,6 @@ test:
   extends: .windows_job
   stage: test
   script:
-    - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
+    - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME\\$PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   dependencies:
     - build
