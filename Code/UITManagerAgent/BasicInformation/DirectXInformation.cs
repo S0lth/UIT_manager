@@ -13,16 +13,15 @@ public class DirectXInformation : Information {
     /// <summary>
     /// Holds the DirectX version as a string.
     /// </summary>
-    private string _directXVersion = "";
+    private string? _directXVersion;
 
     /// <summary>
     /// accessors of the domainName field
     /// </summary>
-    public string DirectX {
-        get { return _directXVersion; }
-        set { _directXVersion = value; }
+    public string? DirectX {
+        get => _directXVersion;
+        set => _directXVersion = value; 
     }
-
 
     /// <summary>
     /// Returns a string representation of the DirectX information.

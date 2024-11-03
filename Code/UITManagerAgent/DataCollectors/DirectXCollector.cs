@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -21,9 +22,10 @@ public class DirectXCollector : DataCollector {
     /// A <see cref="DirectXInformation"/> object containing the DirectX version.
     /// If the DirectX version cannot be retrieved, the object will contain: DirectX not found.
     /// </returns>
+    [SupportedOSPlatform("windows")]
     public Information Collect() {
 
-        DirectXInformation directXInformation = new DirectXInformation();
+       DirectXInformation directXInformation = new DirectXInformation();
 
         try {
             ProcessStartInfo startInfo = new ProcessStartInfo("dxdiag.exe") {
@@ -43,9 +45,6 @@ public class DirectXCollector : DataCollector {
             Match match = Regex.Match(dxDiagOutput, @"DirectX Version:\s*DirectX\s*(\d+)");
             if (match.Success) {
                 directXInformation.DirectX = "DirectX " + match.Groups[1].Value;
-            }
-            else {
-                directXInformation.DirectX = "DirectX not found";
             }
         }
         catch (Exception ex) {
