@@ -15,8 +15,6 @@ variables:
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
   BASE_DIR: "$CI_PROJECT_DIR\\Code"
-  TEST_RESULTS_PATH: "$CI_PROJECT_DIR\\Code\\UITManagerAgent.Tests\\TestResults"
-  TRX_FILE_PATH: "$CI_PROJECT_DIR\\Code\\UITManagerAgent.Tests\\TestResults\\test-results.trx"
 
 cache:
   key: "$CI_COMMIT_REF_SLUG"
@@ -45,9 +43,3 @@ test:
     - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME.sln" -c $BUILD_CONFIGURATION
   dependencies:
     - build
-  artifacts:
-    paths:
-      - "$TEST_RESULTS_PATH"
-    reports:
-      junit: "$TRX_FILE_PATH"
-    expire_in: 1 week
