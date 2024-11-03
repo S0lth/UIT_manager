@@ -2,14 +2,13 @@ using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
 
-namespace UITManagerAgent;
-
 [SupportedOSPlatform("windows")]
 public class Program {
     public static async Task Main(string[] args) {
         await RunOnce();
     }
 
+    [SupportedOSPlatform("windows")]
     private static Task RunOnce() {
         UserCollector userCollector = new();
         Console.WriteLine(userCollector.Collect().ToString());
@@ -26,6 +25,9 @@ public class Program {
         UpTimeCollector upTimeCollector = new();
         Console.WriteLine(upTimeCollector.Collect().ToString());
 
+        OsCollector osCollector = new();
+        Console.WriteLine(osCollector.Collect().ToString());
+        
         DiskCollector diskCollector = new DiskCollector();
         Console.WriteLine(diskCollector.Collect().ToString());
 

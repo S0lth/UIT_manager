@@ -3,12 +3,26 @@
     - saas-windows-medium-amd64
   before_script:
     - Set-Variable -Name "time" -Value (Get-Date -Format "HH:mm")
-    - Write-Host "started by $env:GITLAB_USER_NAME / @$env:GITLAB_USER_LOGIN"
+    - Write-Host "Pipeline started by $env:GITLAB_USER_NAME (@$env:GITLAB_USER_LOGIN) at $time for configuration $env:BUILD_CONFIGURATION"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
 
 variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   BUILD_CONFIGURATION: Debug
+  BASE_DIR: "$CI_PROJECT_DIR\\Code"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - "Code/UITManagerAgent/obj/"
+    - "Code/UITManagerAgent/bin/"
+    - "Code/UITManagerAgent.Tests/obj/"
+    - "Code/UITManagerAgent.Tests/bin/"
 
 build:
   extends: .windows_job
@@ -21,22 +35,11 @@ build:
       - "Code/UITManagerAgent/bin/Debug"
       - "Code/UITManagerAgent.Tests/bin/Debug"
     expire_in: 1 week
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: '$CI_PIPELINE_SOURCE == "web"'
 
 test:
   extends: .windows_job
   stage: test
   script:
-    - dotnet --version
-    - dotnet test --no-build "Code\\UITManagerAgent\\UITManagerAgent.sln" -c Debug
+    - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME\\$PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   dependencies:
     - build
-  artifacts:
-    expire_in: 1 week
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: '$CI_PIPELINE_SOURCE == "web"'
