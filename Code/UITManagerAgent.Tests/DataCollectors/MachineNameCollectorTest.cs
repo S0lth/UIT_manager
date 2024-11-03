@@ -24,14 +24,11 @@ public class MachineNameCollectorTest {
     [TestMethod]
     [SupportedOSPlatform("windows")]
     public void Collect_ShouldReturnMachineNameInformationInstance() {
-        Information? result = null;
         if (_machineNameCollector is not null) {
-            result = _machineNameCollector.Collect();
+            Information result = _machineNameCollector.Collect();
+            Assert.IsNotNull(result, "Result should not be null.");
+            Assert.IsInstanceOfType(result, typeof(MachineNameInformation), "Result should be of type MachineNameInformation.");
         }
-
-        Assert.IsNotNull(result, "Result should not be null.");
-        Assert.IsInstanceOfType(result, typeof(MachineNameInformation), "Result should be of type MachineNameInformation.");
-
     }
     
     /// <summary>
