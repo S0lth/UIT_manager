@@ -30,6 +30,9 @@ public class Program {
         
         DiskCollector diskCollector = new DiskCollector();
         Console.WriteLine(diskCollector.Collect().ToString());
+        
+        MachineNameCollector machineNameCollector = new();
+        Console.WriteLine(machineNameCollector.Collect().ToString());
 
         DirectXCollector directXCollector = new DirectXCollector();
         Console.WriteLine(directXCollector.Collect().ToString());
