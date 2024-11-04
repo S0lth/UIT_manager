@@ -3,8 +3,7 @@ using System.Runtime.Versioning;
 namespace UITManagerAgent.DataCollectors;
 
 
-public class CpuCollectors : DataCollector
-{
+public class CpuCollectors : DataCollector {
     [SupportedOSPlatform("windows")]
     private ManagementObjectSearcher _searcher = new ManagementObjectSearcher("select * from Win32_Processor");
 
@@ -18,19 +17,16 @@ public class CpuCollectors : DataCollector
     /// Clock Speed: Current clock speed in MHz
     /// </returns>
     [SupportedOSPlatform("windows")]
-    public Information Collect()
-    {
+    public Information Collect() {
         CpuInformation cpu = new CpuInformation();
-        try
-        {
+        try {
             cpu.LogicalCpu = GetProcessorCount();
-            cpu.CoreCount =GetNumberOfCores();
+            cpu.CoreCount = GetNumberOfCores();
             cpu.ClockSpeed = GetCurrentClockSpeed();
             cpu.Model = GetModelCPU();
-      
+
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             Console.WriteLine($"Erreur : {ex.Message}");
         }
 
@@ -43,8 +39,7 @@ public class CpuCollectors : DataCollector
     /// 
     [SupportedOSPlatform("windows")]
 
-    public int GetProcessorCount()
-    {
+    public int GetProcessorCount() {
         return Environment.ProcessorCount;
     }
 
@@ -55,11 +50,9 @@ public class CpuCollectors : DataCollector
     /// 
     [SupportedOSPlatform("windows")]
 
-    public int GetNumberOfCores()
-    {
+    public int GetNumberOfCores() {
         int res = 0;
-        foreach (ManagementObject obj in _searcher.Get())
-        {
+        foreach (ManagementObject obj in _searcher.Get()) {
             res = (Convert.ToInt32(obj["NumberOfCores"]));
         }
         return res;
@@ -71,13 +64,11 @@ public class CpuCollectors : DataCollector
     /// 
     [SupportedOSPlatform("windows")]
 
-    public int GetCurrentClockSpeed()
-    {
+    public int GetCurrentClockSpeed() {
         int res = 0;
 
-        foreach (ManagementObject obj in _searcher.Get())
-        {
-           res = Convert.ToInt32(obj["CurrentClockSpeed"]);
+        foreach (ManagementObject obj in _searcher.Get()) {
+            res = Convert.ToInt32(obj["CurrentClockSpeed"]);
         }
         return res;
     }
@@ -87,13 +78,10 @@ public class CpuCollectors : DataCollector
     /// <returns>A string for the name of the cpu</returns>
 
     [SupportedOSPlatform("windows")]
-    public string GetModelCPU()
-    {
-        string? cpuModel ="" ;
-        foreach (ManagementObject obj in _searcher.Get())
-        {
-            if (obj["Name"] != null)
-            {
+    public string GetModelCPU() {
+        string? cpuModel = "";
+        foreach (ManagementObject obj in _searcher.Get()) {
+            if (obj["Name"] != null) {
                 cpuModel = obj["Name"].ToString()!;
             }
 
