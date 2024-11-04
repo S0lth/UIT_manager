@@ -8,17 +8,15 @@ namespace UITManagerAgent.Tests.DataCollectors;
 /// </summary>
 [TestClass]
 
-public class CpuCollectorTest
-{
-    private CpuCollectors? _cpuCollector ;
+public class CpuCollectorTest {
+    private CpuCollectors? _cpuCollector;
 
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CpuCollectors"/> class.
     /// </summary>
     [TestInitialize]
-    public void Setup()
-    {
+    public void Setup() {
         _cpuCollector = new CpuCollectors();
     }
 
@@ -28,10 +26,8 @@ public class CpuCollectorTest
     /// 
     [SupportedOSPlatform("windows")]
     [TestMethod]
-    public void Test_GetProcessorCount()
-    {
-        if (_cpuCollector != null) 
-        {
+    public void Test_ShouldHaveOneProcessorAtLeast() {
+        if (_cpuCollector != null) {
             int ProcessorCount = _cpuCollector.GetProcessorCount();
 
             Assert.IsNotNull(ProcessorCount);
@@ -43,7 +39,7 @@ public class CpuCollectorTest
     /// </summary>
     [SupportedOSPlatform("windows")]
     [TestMethod]
-    public void Test_GetCurrentClockSpeed() {
+    public void Test_ShouldHaveClockSpeedGreaterThanZero() {
         if (_cpuCollector != null) {
             int ClockSpeed = _cpuCollector.GetCurrentClockSpeed();
 
@@ -58,7 +54,7 @@ public class CpuCollectorTest
     /// 
     [SupportedOSPlatform("windows")]
     [TestMethod]
-    public void Test_GetNumberOfCores() {
+    public void Test_ShouldHaveOneCoreAtLeast() {
         if (_cpuCollector != null) {
             int Core = _cpuCollector.GetNumberOfCores();
 
@@ -73,7 +69,7 @@ public class CpuCollectorTest
     /// 
     [SupportedOSPlatform("windows")]
     [TestMethod]
-    public void Test_GetModelCPU() {
+    public void Test_CpuShouldHaveName() {
         if (_cpuCollector != null) {
             string Model = _cpuCollector.GetModelCPU();
 
