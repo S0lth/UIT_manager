@@ -1,10 +1,9 @@
 ﻿namespace UITManagerAgent.BasicInformation;
 
 
-public class CpuInformation : Information
- {
-    private int _logicalCpu; 
-    private int _coreCount; 
+public class CpuInformation : Information {
+    private int _logicalCpu;
+    private int _coreCount;
     private int _clockSpeed;
     private string _model;
 
@@ -23,8 +22,7 @@ public class CpuInformation : Information
     /// the count of logical processors available for computation. 
     /// The value should be a non-negative integer.
     /// </value>
-    public int LogicalCpu
-    {
+    public int LogicalCpu {
         get => _logicalCpu;
         set => _logicalCpu = value;
     }
@@ -37,8 +35,7 @@ public class CpuInformation : Information
     /// the total count of physical CPU cores available in the system.
     /// The value should be a non-negative integer.
     /// </value>
-    public int CoreCount
-    {
+    public int CoreCount {
         get => _coreCount;
         set => _coreCount = value;
     }
@@ -51,8 +48,7 @@ public class CpuInformation : Information
     /// retrieve the operating frequency of the CPU, which can influence performance.
     /// The value should be a non-negative integer representing the clock speed.
     /// </value>
-    public int ClockSpeed
-    {
+    public int ClockSpeed {
         get => _clockSpeed;
         set => _clockSpeed = value;
     }
@@ -64,8 +60,7 @@ public class CpuInformation : Information
     /// A string representing the model name or identifier of the CPU. This property 
     /// allows you to specify or retrieve the model of the CPU for identification 
     /// purposes.
-    public string Model
-    {
+    public string Model {
         get => _model;
         set => _model = value;
     }
@@ -76,13 +71,11 @@ public class CpuInformation : Information
     /// the current clock speed in MHz.
     /// </summary>
     /// <returns>A formatted string with the CPU details.</returns>
-    public override string ToString()
-    {
-        return $"CPU Information:\n" +
-               $"  Logical CPU Count: {_logicalCpu}\n" +
-               $"  Core Count: {_coreCount}\n" +
-               $"  Clock Speed: {_clockSpeed} MHz \n" + 
-               $"  Model: {_model}";
+    public override string ToString() {
+        return "CPU Information : " +
+               "Logical CPU Count : " + string.Join(" , ", _logicalCpu) + ", " +
+               "Core Count : " + string.Join(" , ", _coreCount) + ", " +
+               "Clock Speed : " + string.Join(" MHz , ", _clockSpeed) + " MHz, " +
+               "Model : " + string.Join(" , ", _model);
     }
 }
-

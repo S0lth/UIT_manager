@@ -11,7 +11,7 @@ public class DomainNameInformation : Information {
     /// </summary>
     public string DomainName {
         get { return _domainName; }
-        set { _domainName = value ; }
+        set { _domainName = value; }
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
 
-namespace   UITManagerAgent.Tests.DataCollectors;
+namespace UITManagerAgent.Tests.DataCollectors;
 
 /// <summary>
 ///     Contains unit tests for the <see cref="UserCollector" /> class.

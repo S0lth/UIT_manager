@@ -2,9 +2,9 @@
 /// <summary>
 /// Represent information about the machine name  
 /// </summary>
-public class MachineNameInformation : Information{
+public class MachineNameInformation : Information {
     private string _machineName = String.Empty;
-    
+
     /// <summary>
     /// accessors of the machineName field 
     /// </summary>

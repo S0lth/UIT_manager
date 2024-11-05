@@ -1,6 +1,6 @@
-﻿using UITManagerAgent.DataCollectors;
+﻿using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
-using System.Runtime.Versioning;
+using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.Tests.DataCollectors;
 

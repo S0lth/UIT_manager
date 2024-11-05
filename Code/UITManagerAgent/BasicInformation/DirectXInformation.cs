@@ -13,7 +13,7 @@ public class DirectXInformation : Information {
     /// </summary>
     public string? DirectX {
         get => _directXVersion;
-        set => _directXVersion = value; 
+        set => _directXVersion = value;
     }
 
     /// <summary>
@@ -24,4 +24,3 @@ public class DirectXInformation : Information {
         return "DirectX Version: " + _directXVersion;
     }
 }
-
