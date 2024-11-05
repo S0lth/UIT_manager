@@ -1,4 +1,5 @@
-@startuml
+@startuml 
+title Partial Conceptual Class Diagram: Information Retrieval
 skinparam groupInheritance 2
 skinparam Monochrome true
 package UITManagerAgent{
@@ -6,33 +7,55 @@ package UITManagerAgent{
         abstract DataColector{
             + Information Collect()
         }
-        class CpuCollect {}
+        class CpuCollectors {
+            + int GetProcessorCount()
+            + int GetNumberOfCores()
+            + int GetCurrentClockSpeed()
+            + string GetModelCPU()
+        }
         class RamCollector {}
         class UserCollector {}
         class IpsAddressesCollector {}
-        class OsCollect {}
+        class OsCollector {}
         class MachineNameCollect {}
         class DomainNameCollector {}
-        class UpTimeCollect {}
-        class DirectXCollect {}
-        class StorageCollect {}
+        class UpTimeCollector {}
+        class DirectXCollector {}
+        class DiskCollector {}
 
     }
     package BasicInformation{
         abstract Information{}
 
-        class CpuInfo {}
+        class CpuInformation {
+            - int _logicalCpu
+            - int _coreCount
+            - int _clockSpeed
+            - string _model
+            + int LogicalCpu {get ; set}
+            + int CoreCount {get ; set}
+            + int ClockSpeed {get ; set}
+            + string Model {get ; set}
+            + override string ToString()
+        }
         class RamInformation {
 
-                - ulong _totalMemory;
+            - ulong _totalMemory;
             - ulong _usedMemory;
             - ulong _freeMemory;
+            - ManagementObjectSearcher _wmiSearcher
+
+            + ulong TotalMemory {get ; set }
+            + ulong UsedMemory {get ; set }
+            + ulong FreeMemory {get ; set}
+            + ManagementObjectSearcher WmiSearcher {get ; set}
 
             + override string ToString()
 
         }
-        class UsersInformation {
+       class UsersInformation {
             -  List<string> _usersList
+            + List<string> userList {get; set;}
             + override string ToString()
         }
         class IpsAddressesInformation {
@@ -40,49 +63,86 @@ package UITManagerAgent{
             + List<string> GetIpsList()
             + override string ToString()
         }
-        class OsInfo {}
-        class MachineNameInfo {}
+        class OsInformation {
+            - string _osName
+            - string _osVersion
+            - ManagementObjectSearcher _wmiSearcher
+            - ManagementObject _queryObj
+            + string OsName{get ; set}
+            + string OsVersion{get ; set}
+            + ManagementObjectSearcher WmiSearcher {get ; set}
+            + ManagementObject QueryObj {get ; set}
+            + string ToString()
+        }
+        class MachineNameInformation {
+            - string _machineName
+            + string MachineName {get ; set}
+
+        }
         class DomainNameInformation {
 
             - string _domainName
+            + string DomainName{get ; set}
             + override string ToString()
         }
-        class UptimeInfo {}
-        class DirectXInfo {}
-        class StorageInfo {}
+        class UpTimeInformation {
+            - int _milliseconds
+            + int Milliseconds {get ; set}
+            + string ToString()
+
+        }
+        class DirectXInformation {
+            - string _directXVersion
+            + string DirectX {get ; set}
+            + string ToString()
+        }
+        class DiskInformation {
+            - List<string> _disksName
+            - List<long> _diskTotalSize
+            - List<long> _disksFreeSize
+            - int _numberDisk
+
+            + List<string> DisksName {get ; set}
+            + List<long> DiskTotalSize {get ; set}
+            + List<long> DiskFreeSize {get ; set}
+            + int NumberDisk {get ; set}
+
+            + override string ToString()
+
+        }
 
     }
-    CpuCollect -up-|> DataColector
-    CpuCollect ..> CpuInfo
+    CpuCollectors -up-|> DataColector
+    CpuCollectors ..> CpuInformation
     RamCollector -up-|> DataColector
     RamCollector ..> RamInformation
     UserCollector -up-|> DataColector
     UserCollector ..> UsersInformation
     IpsAddressesCollector -up-|> DataColector
     IpsAddressesCollector ..> IpsAddressesInformation
-    OsCollect -up-|> DataColector
-    OsCollect ..> OsInfo
+    OsCollector -up-|> DataColector
+    OsCollector ..> OsInformation
     MachineNameCollect -up-|> DataColector
-    MachineNameCollect ..> MachineNameInfo
+    MachineNameCollect ..> MachineNameInformation
     DomainNameCollector -up-|> DataColector
     DomainNameCollector ..> DomainNameInformation
-    UpTimeCollect -up-|> DataColector
-    UpTimeCollect ..> UptimeInfo
-    DirectXCollect -up-|> DataColector
-    DirectXCollect ..> DirectXInfo
-    StorageCollect -up-|> DataColector
-    StorageCollect ..> StorageInfo
+    UpTimeCollector -up-|> DataColector
+    UpTimeCollector ..> UpTimeInformation
+    DirectXCollector -up-|> DataColector
+    DirectXCollector ..> DirectXInformation 
+    DiskCollector -up-|> DataColector
+    DiskCollector ..> DiskInformation
 
-    CpuInfo -down-|> Information
+    CpuInformation -down-|> Information
     RamInformation -down-|> Information
     UsersInformation -down-|> Information
     IpsAddressesInformation -down-|> Information
-    OsInfo -down-|> Information
-    MachineNameInfo -down-|> Information
+    OsInformation -down-|> Information
+    MachineNameInformation -down-|> Information
     DomainNameInformation -down-|> Information
-    UptimeInfo -down-|> Information
-    DirectXInfo -down-|> Information
-    StorageInfo -down-|> Information
+    UpTimeInformation -down-|> Information
+    DirectXInformation -down-|> Information
+    DiskInformation -down-|> Information
 
 }
 
