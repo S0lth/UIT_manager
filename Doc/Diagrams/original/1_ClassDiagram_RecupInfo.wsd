@@ -1,0 +1,89 @@
+@startuml
+skinparam groupInheritance 2
+skinparam Monochrome true
+package UITManagerAgent{
+    package DataCollector{
+        abstract DataColector{
+            + Information Collect()
+        }
+        class CpuCollect {}
+        class RamCollector {}
+        class UserCollector {}
+        class IpsAddressesCollector {}
+        class OsCollect {}
+        class MachineNameCollect {}
+        class DomainNameCollector {}
+        class UpTimeCollect {}
+        class DirectXCollect {}
+        class StorageCollect {}
+
+    }
+    package BasicInformation{
+        abstract Information{}
+
+        class CpuInfo {}
+        class RamInformation {
+
+                - ulong _totalMemory;
+            - ulong _usedMemory;
+            - ulong _freeMemory;
+
+            + override string ToString()
+
+        }
+        class UsersInformation {
+            -  List<string> _usersList
+            + override string ToString()
+        }
+        class IpsAddressesInformation {
+            - List<string> _ipsLis
+            + List<string> GetIpsList()
+            + override string ToString()
+        }
+        class OsInfo {}
+        class MachineNameInfo {}
+        class DomainNameInformation {
+
+            - string _domainName
+            + override string ToString()
+        }
+        class UptimeInfo {}
+        class DirectXInfo {}
+        class StorageInfo {}
+
+    }
+    CpuCollect -up-|> DataColector
+    CpuCollect ..> CpuInfo
+    RamCollector -up-|> DataColector
+    RamCollector ..> RamInformation
+    UserCollector -up-|> DataColector
+    UserCollector ..> UsersInformation
+    IpsAddressesCollector -up-|> DataColector
+    IpsAddressesCollector ..> IpsAddressesInformation
+    OsCollect -up-|> DataColector
+    OsCollect ..> OsInfo
+    MachineNameCollect -up-|> DataColector
+    MachineNameCollect ..> MachineNameInfo
+    DomainNameCollector -up-|> DataColector
+    DomainNameCollector ..> DomainNameInformation
+    UpTimeCollect -up-|> DataColector
+    UpTimeCollect ..> UptimeInfo
+    DirectXCollect -up-|> DataColector
+    DirectXCollect ..> DirectXInfo
+    StorageCollect -up-|> DataColector
+    StorageCollect ..> StorageInfo
+
+    CpuInfo -down-|> Information
+    RamInformation -down-|> Information
+    UsersInformation -down-|> Information
+    IpsAddressesInformation -down-|> Information
+    OsInfo -down-|> Information
+    MachineNameInfo -down-|> Information
+    DomainNameInformation -down-|> Information
+    UptimeInfo -down-|> Information
+    DirectXInfo -down-|> Information
+    StorageInfo -down-|> Information
+
+}
+
+@enduml

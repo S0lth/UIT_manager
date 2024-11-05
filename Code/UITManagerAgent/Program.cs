@@ -13,6 +13,9 @@ public class Program {
         UserCollector userCollector = new();
         Console.WriteLine(userCollector.Collect().ToString());
 
+        CpuCollectors cpuCollected = new CpuCollectors();
+        Console.WriteLine(cpuCollected.Collect().ToString());
+        
         IpsAddressesCollector ipsAddressesCollector = new();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
 
