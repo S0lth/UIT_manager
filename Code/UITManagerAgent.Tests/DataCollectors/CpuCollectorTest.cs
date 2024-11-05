@@ -7,7 +7,6 @@ namespace UITManagerAgent.Tests.DataCollectors;
 /// Contains unit tests for the <see cref="RamCollector"/> class.
 /// </summary>
 [TestClass]
-
 public class CpuCollectorTest {
     private CpuCollectors? _cpuCollector;
 
@@ -34,6 +33,7 @@ public class CpuCollectorTest {
             Assert.IsTrue(ProcessorCount > 0, "Total Cpu count should be greater than 0");
         }
     }
+
     /// <summary>
     /// Tests the <see cref="CpuCollectors.GetCurrentClockSpeedt"/> method to ensure it sets ClockSpeed correctly.
     /// </summary>
@@ -46,8 +46,8 @@ public class CpuCollectorTest {
             Assert.IsNotNull(ClockSpeed);
             Assert.IsTrue(ClockSpeed > 0, "Clock speed should be greater than 0");
         }
-
     }
+
     /// <summary>
     /// Tests the <see cref="CpuCollectors.GetNumberOfCores"/> method to ensure it sets Core correctly.
     /// </summary>
@@ -61,8 +61,8 @@ public class CpuCollectorTest {
             Assert.IsNotNull(Core);
             Assert.IsTrue(Core > 0, "Number of Core should be greater than 0");
         }
-
     }
+
     /// <summary>
     /// Tests the <see cref="CpuCollectors.GetModelCPU"/> method to ensure it sets Model correctly.
     /// </summary>
@@ -75,7 +75,5 @@ public class CpuCollectorTest {
 
             Assert.IsNotNull(Model);
         }
-
     }
-
 }

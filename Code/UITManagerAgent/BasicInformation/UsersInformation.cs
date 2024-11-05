@@ -1,5 +1,4 @@
-
-using UITManagerAgent.DataCollectors;
+using UITManagerAgent.BasicInformation;
 
 /// <summary>
 ///     Represents a collection of user information.

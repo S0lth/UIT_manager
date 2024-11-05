@@ -1,6 +1,4 @@
-﻿using UITManagerAgent.DataCollectors;
-
-namespace UITManagerAgent.BasicInformation;
+﻿namespace UITManagerAgent.BasicInformation;
 /// <summary>
 /// Represent information about the machine name  
 /// </summary>

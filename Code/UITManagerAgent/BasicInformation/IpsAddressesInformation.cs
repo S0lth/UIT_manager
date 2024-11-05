@@ -1,5 +1,3 @@
-using UITManagerAgent.DataCollectors;
-
 namespace UITManagerAgent.BasicInformation;
     /// <summary>
     ///     Represents a collection of IP addresses.

@@ -1,6 +1,4 @@
-﻿using UITManagerAgent.DataCollectors;
-
-namespace UITManagerAgent.BasicInformation;
+﻿namespace UITManagerAgent.BasicInformation;
 /// <summary>
 /// Represents information about the DirectX version installed on the system.
 /// </summary>

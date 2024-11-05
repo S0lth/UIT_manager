@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.DataCollectors;
+
 /// <summary>
 /// Collects information about the DirectX version installed on the system.
 /// </summary>
@@ -17,8 +18,7 @@ public class DirectXCollector : DataCollector {
     /// </returns>
     [SupportedOSPlatform("windows")]
     public Information Collect() {
-
-       DirectXInformation directXInformation = new DirectXInformation();
+        DirectXInformation directXInformation = new DirectXInformation();
 
         try {
             ProcessStartInfo startInfo = new ProcessStartInfo("dxdiag.exe") {
@@ -43,8 +43,7 @@ public class DirectXCollector : DataCollector {
         catch (Exception ex) {
             Console.WriteLine("Error: " + ex.Message);
         }
-        return directXInformation;
 
+        return directXInformation;
     }
 }
-

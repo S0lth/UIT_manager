@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Management;
-using UITManagerAgent.BasicInformation;
+﻿using System.Management;
 using System.Runtime.Versioning;
+using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.DataCollectors;
 
@@ -19,11 +14,9 @@ public class DomainNameCollector : DataCollector {
     /// <returns>An <see cref="DomainNameInformation"/> object containing the system's domain name.</returns>
     [SupportedOSPlatform("windows")]
     public Information Collect() {
-
         DomainNameInformation domainNameInformation = new DomainNameInformation();
 
         try {
-
             var searcher = new ManagementObjectSearcher("select * from Win32_ComputerSystem");
 
             var query = searcher.Get().OfType<ManagementObject>().FirstOrDefault();
@@ -37,4 +30,3 @@ public class DomainNameCollector : DataCollector {
         return domainNameInformation;
     }
 }
-

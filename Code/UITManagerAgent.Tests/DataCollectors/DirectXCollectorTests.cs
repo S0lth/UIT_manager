@@ -2,7 +2,8 @@
 using UITManagerAgent.BasicInformation;
 using System.Runtime.Versioning;
 
-namespace UITManagerAgent.Tests;
+namespace UITManagerAgent.Tests.DataCollectors;
+
 /// <summary>
 /// Contains unit tests for the <see cref="DirectXCollector"/> class.
 /// </summary>
@@ -58,7 +59,8 @@ public class DirectXCollectorTests {
         if (_directXCollector != null) {
             DirectXInformation result = (DirectXInformation)_directXCollector.Collect();
             if (result.DirectX != null) {
-                Assert.IsTrue(result.DirectX.Contains("DirectX"), "The DirectX version should contain the word 'DirectX'.");
+                Assert.IsTrue(result.DirectX.Contains("DirectX"),
+                    "The DirectX version should contain the word 'DirectX'.");
             }
         }
     }
@@ -73,7 +75,8 @@ public class DirectXCollectorTests {
             DirectXInformation firstResult = (DirectXInformation)_directXCollector.Collect();
             DirectXInformation secondResult = (DirectXInformation)_directXCollector.Collect();
 
-            Assert.AreNotSame(firstResult, secondResult, "Each call to Collect should return a new instance of DirectXInformation.");
+            Assert.AreNotSame(firstResult, secondResult,
+                "Each call to Collect should return a new instance of DirectXInformation.");
         }
     }
 }

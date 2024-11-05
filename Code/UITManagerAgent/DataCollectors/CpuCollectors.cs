@@ -1,7 +1,8 @@
 ﻿using System.Management;
 using System.Runtime.Versioning;
-namespace UITManagerAgent.DataCollectors;
+using UITManagerAgent.BasicInformation;
 
+namespace UITManagerAgent.DataCollectors;
 
 public class CpuCollectors : DataCollector {
     [SupportedOSPlatform("windows")]
@@ -24,7 +25,6 @@ public class CpuCollectors : DataCollector {
             cpu.CoreCount = GetNumberOfCores();
             cpu.ClockSpeed = GetCurrentClockSpeed();
             cpu.Model = GetModelCPU();
-
         }
         catch (Exception ex) {
             Console.WriteLine($"Erreur : {ex.Message}");
@@ -32,13 +32,13 @@ public class CpuCollectors : DataCollector {
 
         return cpu;
     }
+
     /// <summary>
     /// Get CPU count
     /// </summary>
     /// <returns>Logical CPU Count: Number of logical processors.</returns>
     /// 
     [SupportedOSPlatform("windows")]
-
     public int GetProcessorCount() {
         return Environment.ProcessorCount;
     }
@@ -49,34 +49,35 @@ public class CpuCollectors : DataCollector {
     /// <returns>Core Count: Number of physical processor cores.</returns>
     /// 
     [SupportedOSPlatform("windows")]
-
     public int GetNumberOfCores() {
         int res = 0;
         foreach (ManagementObject obj in _searcher.Get()) {
             res = (Convert.ToInt32(obj["NumberOfCores"]));
         }
+
         return res;
     }
+
     /// <summary>
     /// get the curente clockSpeed 
     /// </summary>
     /// <returns>Clock Speed: Current clock speed in MHz</returns>
     /// 
     [SupportedOSPlatform("windows")]
-
     public int GetCurrentClockSpeed() {
         int res = 0;
 
         foreach (ManagementObject obj in _searcher.Get()) {
             res = Convert.ToInt32(obj["CurrentClockSpeed"]);
         }
+
         return res;
     }
+
     /// <summary>
     /// get the name of the processor
     /// </summary>
     /// <returns>A string for the name of the cpu</returns>
-
     [SupportedOSPlatform("windows")]
     public string GetModelCPU() {
         string? cpuModel = "";
@@ -84,10 +85,8 @@ public class CpuCollectors : DataCollector {
             if (obj["Name"] != null) {
                 cpuModel = obj["Name"].ToString()!;
             }
-
-
         }
+
         return cpuModel;
     }
 }
-

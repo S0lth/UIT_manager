@@ -3,6 +3,7 @@ using UITManagerAgent.DataCollectors;
 using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.Tests.DataCollectors;
+
 /// <summary>
 /// Contains unit tests for the <see cref="MachineNameCollector"/> class.
 /// </summary>
@@ -27,10 +28,11 @@ public class MachineNameCollectorTest {
         if (_machineNameCollector is not null) {
             Information result = _machineNameCollector.Collect();
             Assert.IsNotNull(result, "Result should not be null.");
-            Assert.IsInstanceOfType(result, typeof(MachineNameInformation), "Result should be of type MachineNameInformation.");
+            Assert.IsInstanceOfType(result, typeof(MachineNameInformation),
+                "Result should be of type MachineNameInformation.");
         }
     }
-    
+
     /// <summary>
     /// Tests to check if <see cref="MachineNameCollector.Collect"/> method returns the expected value
     /// </summary>
@@ -41,7 +43,8 @@ public class MachineNameCollectorTest {
 
         string? actualMachineName = _machineNameCollector?.Collect().ToString();
 
-        Assert.AreEqual(expectedMachineName, actualMachineName, $"{actualMachineName} does not match expected machine name.");
+        Assert.AreEqual(expectedMachineName, actualMachineName,
+            $"{actualMachineName} does not match expected machine name.");
     }
 
     /// <summary>

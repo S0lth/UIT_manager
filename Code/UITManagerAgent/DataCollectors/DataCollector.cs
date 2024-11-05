@@ -1,5 +1,5 @@
-namespace UITManagerAgent.DataCollectors {
-    public interface DataCollector {
-        public Information Collect();
-    }
+using UITManagerAgent.BasicInformation;
+
+public interface DataCollector {
+    public Information Collect();
 }

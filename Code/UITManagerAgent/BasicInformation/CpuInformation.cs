@@ -1,4 +1,4 @@
-﻿namespace UITManagerAgent.DataCollectors;
+﻿namespace UITManagerAgent.BasicInformation;
 
 
 public class CpuInformation : Information

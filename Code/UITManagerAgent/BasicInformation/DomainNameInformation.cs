@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UITManagerAgent.DataCollectors;
-
-
-namespace UITManagerAgent.BasicInformation;
+﻿using UITManagerAgent.BasicInformation;
 
 /// <summary>
 /// Represents information about a domain name.

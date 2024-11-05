@@ -7,7 +7,6 @@ namespace UITManagerAgent.DataCollectors;
 /// Collects information about the system's uptime and provides it as an <see cref="UpTimeInformation"/> instance.
 /// </summary>
 public class UpTimeCollector : DataCollector {
-    
     /// <summary>
     /// Collects the system's uptime information by reading the system tick count.
     /// </summary>

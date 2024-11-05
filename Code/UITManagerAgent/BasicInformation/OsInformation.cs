@@ -1,7 +1,5 @@
 ﻿using System.Management;
 using System.Runtime.Versioning;
-using UITManagerAgent.DataCollectors;
-
 namespace UITManagerAgent.BasicInformation;
 
 /// <summary>

@@ -8,7 +8,6 @@ namespace UITManagerAgent.DataCollectors;
 /// Collects OS information.
 /// </summary>
 public class OsCollector : DataCollector {
-    
     [SupportedOSPlatform("windows")]
     public Information Collect() {
         OsInformation osInformation = new();

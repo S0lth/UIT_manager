@@ -2,6 +2,8 @@
 using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
 
+namespace UITManagerAgent.Tests.DataCollectors;
+
 /// <summary>
 /// Contains unit tests for the <see cref="DomainNameCollector"/> class.
 /// </summary>
@@ -23,12 +25,12 @@ public class DomainNameCollectorTests {
     [TestMethod]
     [SupportedOSPlatform("windows")]
     public void Collect_ShouldReturnDomainNameInformationInstance() {
-
         if (_domainNameCollector != null) {
             Information result = _domainNameCollector.Collect();
 
             Assert.IsNotNull(result, "Result should not be null.");
-            Assert.IsInstanceOfType(result, typeof(DomainNameInformation), "Result should be of type DomainNameInformation.");
+            Assert.IsInstanceOfType(result, typeof(DomainNameInformation),
+                "Result should be of type DomainNameInformation.");
         }
     }
 
@@ -38,7 +40,6 @@ public class DomainNameCollectorTests {
     [TestMethod]
     [SupportedOSPlatform("windows")]
     public void Collect_ShouldHandleExceptionsGracefully() {
-
         try {
             if (_domainNameCollector != null) {
                 Information result = _domainNameCollector.Collect();
@@ -57,11 +58,11 @@ public class DomainNameCollectorTests {
     [TestMethod]
     [SupportedOSPlatform("windows")]
     public void Collect_ShouldReturnDomainName_WhenDomainExists() {
-
         if (_domainNameCollector != null) {
             DomainNameInformation result = (DomainNameInformation)_domainNameCollector.Collect();
 
-            Assert.IsFalse(string.IsNullOrEmpty(result.DomainName), "Domain name should not be empty when the machine is part of a domain.");
+            Assert.IsFalse(string.IsNullOrEmpty(result.DomainName),
+                "Domain name should not be empty when the machine is part of a domain.");
         }
     }
 
@@ -71,12 +72,12 @@ public class DomainNameCollectorTests {
     [TestMethod]
     [SupportedOSPlatform("windows")]
     public void Collect_ShouldReturnNewInstanceOnEachCall() {
-
         if (_domainNameCollector != null) {
             DomainNameInformation firstResult = (DomainNameInformation)_domainNameCollector.Collect();
             DomainNameInformation secondResult = (DomainNameInformation)_domainNameCollector.Collect();
 
-            Assert.AreNotSame(firstResult, secondResult, "Each call to Collect should return a new instance of DomainNameInformation.");
+            Assert.AreNotSame(firstResult, secondResult,
+                "Each call to Collect should return a new instance of DomainNameInformation.");
         }
     }
 
