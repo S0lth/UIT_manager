@@ -7,11 +7,6 @@ namespace UITManagerAgent.DataCollectors;
 /// Collects disk information from the system and returns it as a <see cref="DiskInformation"/> instance.
 /// </summary>
 public class DiskCollector : DataCollector {
-    /// <summary>
-    /// Collects information about all available and ready disk drives on the system.
-    /// </summary>
-    public class DiskCollector : DataCollector
-    {
         /// <summary>
         /// Collects information about all available and ready disk drives on the system.
         /// </summary>
@@ -20,8 +15,7 @@ public class DiskCollector : DataCollector {
         /// including disk names, total sizes, and available free space.
         /// </returns>
         [SupportedOSPlatform("windows")]
-        public Information Collect()
-        {
+        public Information Collect() {
             DiskInformation.Disk disk = new DiskInformation.Disk();
             DiskInformation diskInformation = new DiskInformation();
 
@@ -36,18 +30,15 @@ public class DiskCollector : DataCollector {
                         diskInformation.Disks.Add(disk);
                     }
                 }
+
                 diskInformation.NumberDisk = diskCount;
             }
-            catch(Exception ex) {
+            catch (Exception ex) {
                 Console.WriteLine("Error while retrieving users: " + ex.Message);
             }
 
             diskInformation.NumberDisk = diskCount;
-        }
-        catch (Exception ex) {
-            Console.WriteLine("Error while retrieving users: " + ex.Message);
-        }
 
-        return diskInformation;
-    }
+            return diskInformation;
+        }
 }
