@@ -33,7 +33,7 @@ namespace UITManagerAgent.Tests.DataCollectors {
         }
 
         /// <summary>
-        ///     Tests if the <see cref="DiskCollector.Collect" /> method handles exceptions gracefully.
+        /// Tests if the <see cref="DiskCollector.Collect" /> method handles exceptions gracefully.
         /// </summary>
         [TestMethod]
         [SupportedOSPlatform("windows")]

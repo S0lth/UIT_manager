@@ -37,7 +37,6 @@ namespace UITManagerAgent.DataCollectors
                         diskInformation.Disks.Add(disk);
                     }
                 }
-
                 diskInformation.NumberDisk = diskCount;
             }
             catch(Exception ex) {

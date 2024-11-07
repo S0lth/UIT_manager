@@ -25,7 +25,7 @@ public class Program {
         Console.WriteLine(osCollector.Collect().ToString());
         
         DiskCollector diskCollector = new DiskCollector();
-        System.Diagnostics.Debug.WriteLine(diskCollector.Collect().ToString());
+        Console.WriteLine(diskCollector.Collect().ToString());
 
         return Task.CompletedTask;
     }

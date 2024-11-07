@@ -40,7 +40,7 @@ namespace UITManagerAgent.BasicInformation
             }
 
             public override string ToString() {
-                return "Disk name : " + _diskName + ", disk total size :" + _diskTotalSize +
+                return "Disk name : " + _diskName + ", disk total size : " + _diskTotalSize +
                        "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
             }
         }
@@ -78,7 +78,7 @@ namespace UITManagerAgent.BasicInformation
         /// </returns>
         public override string ToString()
         {
-            return "Disk : " + string.Join(", ", _disks) + "Number disk : " + _numberDisk;
+            return string.Join(", ", _disks) + "Number disk : " + _numberDisk;
         }
 
     }
