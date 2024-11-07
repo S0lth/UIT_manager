@@ -60,8 +60,8 @@ namespace UITManagerAgent.Tests.DataCollectors {
             if (_diskCollector != null) {
                 DiskInformation result = (DiskInformation)_diskCollector.Collect();
 
-                Assert.IsNotNull(result.DisksName, "diskName list should not be null.");
-                Assert.IsTrue(result.DisksName.Count >= 1, "diskName list should contain at least one item.");
+                Assert.IsNotNull(result.GetFirstDiskName(), "diskName list should not be null.");
+                Assert.IsTrue(result.Disks.Count >= 1, "disk list should contain at least one item.");
             }
         }
 

@@ -8,34 +8,55 @@ namespace UITManagerAgent.BasicInformation
     /// </summary>
     public class DiskInformation : Information
     {
-        private List<string> _disksName = new();
-        private List<long> _diskTotalSize = new();
-        private List<long> _disksFreeSize = new();
+
+        public class Disk {
+            private string? _diskName = String.Empty;
+            private long _diskTotalSize;
+            private long _diskFreeSize;
+
+            /// <summary>
+            /// accessors of the disksName field
+            /// </summary>
+            public string? DisksName {
+                get => _diskName;
+                set => _diskName = value;
+            }
+
+            /// <summary>
+            /// accessors of the diskTotalSize field
+            /// </summary>
+            public long DiskTotalSize {
+                get => _diskTotalSize;
+                set => _diskTotalSize = value;
+            }
+
+
+            /// <summary>
+            /// accessors of the diskFreeSize field
+            /// </summary>
+            public long DiskFreeSize {
+                get => _diskFreeSize;
+                set => _diskFreeSize = value;
+            }
+
+            public override string ToString() {
+                return "Disk name : " + _diskName + ", disk total size :" + _diskTotalSize +
+                       "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
+            }
+        }
+        private List<Disk> _disks = new List<Disk>();
         private int _numberDisk;
-
-        /// <summary>
-        /// accessors of the disksName field
-        /// </summary>
-        public List<string> DisksName {
-            get => _disksName;
-            set => _disksName = value;
-        }
-
-        /// <summary>
-        /// accessors of the diskTotalSize field
-        /// </summary>
-        public List<long> DiskTotalSize {
-            get => _diskTotalSize;
-            set => _diskTotalSize = value;
-        }
-
 
         /// <summary>
         /// accessors of the diskFreeSize field
         /// </summary>
-        public List<long> DiskFreeSize {
-            get => _disksFreeSize;
-            set => _disksFreeSize = value;
+        public List<Disk>  Disks {
+            get => _disks;
+            set => _disks = value;
+        }
+
+        public String? GetFirstDiskName() {
+            return _disks.First().DisksName;
         }
 
         /// <summary>
@@ -57,8 +78,7 @@ namespace UITManagerAgent.BasicInformation
         /// </returns>
         public override string ToString()
         {
-            return "Disk name : " + string.Join(" , ", _disksName) + ", disk total size : " + string.Join(" Go, ", _diskTotalSize) + " Go , disk total free size : " + string.Join(" Go, ", _disksFreeSize) + " Go" + Environment.NewLine +
-                  "Number disk : " + _numberDisk;
+            return "Disk : " + string.Join(", ", _disks) + "Number disk : " + _numberDisk;
         }
 
     }

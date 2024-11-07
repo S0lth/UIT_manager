@@ -23,15 +23,18 @@ namespace UITManagerAgent.DataCollectors
         [SupportedOSPlatform("windows")]
         public Information Collect()
         {
+            DiskInformation.Disk disk = new DiskInformation.Disk();
             DiskInformation diskInformation = new DiskInformation();
+
             int diskCount = 0;
             try {
                 foreach (DriveInfo drive in DriveInfo.GetDrives()) {
                     if (drive.IsReady) {
                         diskCount++;
-                        diskInformation.DisksName.Add(drive.Name);
-                        diskInformation.DiskTotalSize.Add(drive.TotalSize / (1024 * 1024 * 1024));
-                        diskInformation.DiskFreeSize.Add(drive.TotalFreeSpace / (1024 * 1024 * 1024));
+                        disk.DisksName = drive.Name;
+                        disk.DiskTotalSize = (drive.TotalSize / (1024 * 1024 * 1024));
+                        disk.DiskFreeSize = (drive.TotalFreeSpace / (1024 * 1024 * 1024));
+                        diskInformation.Disks.Add(disk);
                     }
                 }
 
