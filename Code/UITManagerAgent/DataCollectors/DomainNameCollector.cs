@@ -21,7 +21,7 @@ public class DomainNameCollector : DataCollector {
 
             var query = searcher.Get().OfType<ManagementObject>().FirstOrDefault();
 
-            domainNameInformation.DomainName = query?["Domain"]?.ToString() ?? "No domain";
+            domainNameInformation.DomainName = query?["Domain"]?.ToString();
         }
         catch (Exception ex) {
             Console.WriteLine("Error: " + ex.Message);
