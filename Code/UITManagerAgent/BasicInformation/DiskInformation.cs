@@ -9,6 +9,9 @@ namespace UITManagerAgent.BasicInformation
     public class DiskInformation : Information
     {
 
+        /// <summary>
+        /// Represents a disk with properties for its name, total size, and available free space.
+        /// </summary>
         public class Disk {
             private string? _diskName = String.Empty;
             private long _diskTotalSize;
@@ -39,6 +42,14 @@ namespace UITManagerAgent.BasicInformation
                 set => _diskFreeSize = value;
             }
 
+            /// <summary>
+            /// Returns a formatted string representation of the disk information, 
+            /// including disk names, total sizes, free space, and the number of disks.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="string"/> representing the disk information in a readable format.
+            /// Each property is presented on a new line with appropriate labels.
+            /// </returns>
             public override string ToString() {
                 return "Disk name : " + _diskName + ", disk total size : " + _diskTotalSize +
                        "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
@@ -55,6 +66,12 @@ namespace UITManagerAgent.BasicInformation
             set => _disks = value;
         }
 
+        /// <summary>
+        /// Retrieves the name of the first disk in the list of disks.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string"/> representing the name of the first disk, 
+        /// </returns>
         public String? GetFirstDiskName() {
             return _disks.First().DisksName;
         }
