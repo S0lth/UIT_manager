@@ -1,36 +1,75 @@
-﻿namespace UITManagerAgent.BasicInformation {
+namespace UITManagerAgent.BasicInformation {
     /// <summary>
     /// Provides information on all disk names, total storage capacity, free storage capacity, and number of disks
     /// </summary>
-    public class DiskInformation : Information {
-        private List<string> _disksName = new();
-        private List<long> _diskTotalSize = new();
-        private List<long> _disksFreeSize = new();
+    public class DiskInformation : Information
+    {
+
+        /// <summary>
+        /// Represents a disk with properties for its name, total size, and available free space.
+        /// </summary>
+        public class Disk {
+            private string? _diskName = String.Empty;
+            private long _diskTotalSize;
+            private long _diskFreeSize;
+
+            /// <summary>
+            /// accessors of the disksName field
+            /// </summary>
+            public string? DisksName {
+                get => _diskName;
+                set => _diskName = value;
+            }
+
+            /// <summary>
+            /// accessors of the diskTotalSize field
+            /// </summary>
+            public long DiskTotalSize {
+                get => _diskTotalSize;
+                set => _diskTotalSize = value;
+            }
+
+
+            /// <summary>
+            /// accessors of the diskFreeSize field
+            /// </summary>
+            public long DiskFreeSize {
+                get => _diskFreeSize;
+                set => _diskFreeSize = value;
+            }
+
+            /// <summary>
+            /// Returns a formatted string representation of the disk information, 
+            /// including disk names, total sizes, free space, and the number of disks.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="string"/> representing the disk information in a readable format.
+            /// Each property is presented on a new line with appropriate labels.
+            /// </returns>
+            public override string ToString() {
+                return "Disk name : " + _diskName + ", disk total size : " + _diskTotalSize +
+                       "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
+            }
+        }
+        private List<Disk> _disks = new List<Disk>();
         private int _numberDisk;
 
         /// <summary>
-        /// accessors of the disksName field
+        /// accessors of the list disks field
         /// </summary>
-        public List<string> DisksName {
-            get => _disksName;
-            set => _disksName = value;
+        public List<Disk>  Disks {
+            get => _disks;
+            set => _disks = value;
         }
 
         /// <summary>
-        /// accessors of the diskTotalSize field
+        /// Retrieves the name of the first disk in the list of disks.
         /// </summary>
-        public List<long> DiskTotalSize {
-            get => _diskTotalSize;
-            set => _diskTotalSize = value;
-        }
-
-
-        /// <summary>
-        /// accessors of the diskFreeSize field
-        /// </summary>
-        public List<long> DiskFreeSize {
-            get => _disksFreeSize;
-            set => _disksFreeSize = value;
+        /// <returns>
+        /// A <see cref="string"/> representing the name of the first disk, 
+        /// </returns>
+        public String? GetFirstDiskName() {
+            return _disks.First().DisksName;
         }
 
         /// <summary>
@@ -50,9 +89,9 @@
         /// A <see cref="string"/> representing the disk information in a readable format.
         /// Each property is presented on a new line with appropriate labels.
         /// </returns>
-        public override string ToString() {
-            return "Disk name : " + string.Join(" , ", _disksName) + ", disk total size : " + string.Join(" Go, ", _diskTotalSize) + " Go , disk total free size : " + string.Join(" Go, ", _disksFreeSize) + " Go" + Environment.NewLine +
-                  "Number disk : " + _numberDisk;
+        public override string ToString()
+        {
+            return string.Join(", ", _disks) + "Number disk : " + _numberDisk;
         }
 
     }

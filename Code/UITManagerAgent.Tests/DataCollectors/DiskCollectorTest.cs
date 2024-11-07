@@ -28,7 +28,7 @@ public class DiskCollectorTest {
     }
 
     /// <summary>
-    ///     Tests if the <see cref="DiskCollector.Collect" /> method handles exceptions gracefully.
+    /// Tests if the <see cref="DiskCollector.Collect" /> method handles exceptions gracefully.
     /// </summary>
     [TestMethod]
     [SupportedOSPlatform("windows")]
@@ -36,12 +36,11 @@ public class DiskCollectorTest {
         try {
             if (_diskCollector != null) {
                 Information result = _diskCollector.Collect();
-
                 Assert.IsNotNull(result, "Result should not be null even in case of an exception.");
             }
         }
         catch (Exception ex) {
-            Assert.Fail($"The Collect method threw an unexpected exception: {ex.Message}");
+                Assert.Fail($"The Collect method threw an unexpected exception: {ex.Message}");
         }
     }
 
@@ -55,8 +54,8 @@ public class DiskCollectorTest {
         if (_diskCollector != null) {
             DiskInformation result = (DiskInformation)_diskCollector.Collect();
 
-            Assert.IsNotNull(result.DisksName, "diskName list should not be null.");
-            Assert.IsTrue(result.DisksName.Count >= 1, "diskName list should contain at least one item.");
+            Assert.IsNotNull(result.GetFirstDiskName(), "diskName list should not be null.");
+            Assert.IsTrue(result.Disks.Count >= 1, "disk list should contain at least one item.");
         }
     }
 
@@ -72,7 +71,8 @@ public class DiskCollectorTest {
             DiskInformation secondResult = (DiskInformation)_diskCollector.Collect();
 
             Assert.AreNotSame(firstResult, secondResult,
-                "Each call to Collect should return a new instance of DiskInformation.");
+                    "Each call to Collect should return a new instance of DiskInformation.");
         }
     }
+
 }
