@@ -1,4 +1,4 @@
-﻿namespace UITManagerAgent.BasicInformation {
+namespace UITManagerAgent.BasicInformation {
     /// <summary>
     /// Provides information on all disk names, total storage capacity, free storage capacity, and number of disks
     /// </summary>
@@ -55,7 +55,7 @@
         private int _numberDisk;
 
         /// <summary>
-        /// accessors of the diskFreeSize field
+        /// accessors of the list disks field
         /// </summary>
         public List<Disk>  Disks {
             get => _disks;
