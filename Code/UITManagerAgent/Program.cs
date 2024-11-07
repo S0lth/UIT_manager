@@ -1,4 +1,5 @@
 using System.Runtime.Versioning;
+using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
 
 [SupportedOSPlatform("windows")]
@@ -12,6 +13,9 @@ public class Program {
         UserCollector userCollector = new();
         Console.WriteLine(userCollector.Collect().ToString());
 
+        CpuCollectors cpuCollected = new CpuCollectors();
+        Console.WriteLine(cpuCollected.Collect().ToString());
+        
         IpsAddressesCollector ipsAddressesCollector = new();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
 
@@ -21,11 +25,20 @@ public class Program {
         DomainNameCollector domainNameCollector = new DomainNameCollector();
         Console.WriteLine(domainNameCollector.Collect().ToString());
         
+        UpTimeCollector upTimeCollector = new();
+        Console.WriteLine(upTimeCollector.Collect().ToString());
+
         OsCollector osCollector = new();
         Console.WriteLine(osCollector.Collect().ToString());
         
         DiskCollector diskCollector = new DiskCollector();
         Console.WriteLine(diskCollector.Collect().ToString());
+        
+        MachineNameCollector machineNameCollector = new();
+        Console.WriteLine(machineNameCollector.Collect().ToString());
+
+        DirectXCollector directXCollector = new DirectXCollector();
+        Console.WriteLine(directXCollector.Collect().ToString());
 
         return Task.CompletedTask;
     }
