@@ -1,8 +1,4 @@
-﻿using System.Management;
-using UITManagerAgent.DataCollectors;
-
-namespace UITManagerAgent.BasicInformation
-{
+﻿namespace UITManagerAgent.BasicInformation {
     /// <summary>
     /// Provides information on all disk names, total storage capacity, free storage capacity, and number of disks
     /// </summary>

@@ -1,7 +1,5 @@
 ﻿using System.Management;
 using System.Runtime.Versioning;
-using UITManagerAgent.DataCollectors;
-
 namespace UITManagerAgent.BasicInformation;
 
 /// <summary>
@@ -9,11 +7,11 @@ namespace UITManagerAgent.BasicInformation;
 /// </summary>
 [SupportedOSPlatform("windows")]
 public class OsInformation : Information {
-    private ManagementObjectSearcher _wmiSearcher = new ("SELECT * FROM Win32_OperatingSystem");
+    private ManagementObjectSearcher _wmiSearcher = new("SELECT * FROM Win32_OperatingSystem");
     private ManagementObject? _queryObj;
     private string? _osName;
     private string? _osVersion;
-    
+
     /// <summary>
     /// accessors of the wmiSearcher field
     /// </summary>
@@ -21,7 +19,7 @@ public class OsInformation : Information {
         get => _wmiSearcher;
         set => _wmiSearcher = value;
     }
-    
+
     /// <summary>
     /// accessors of the queryObj field
     /// </summary>
@@ -29,7 +27,7 @@ public class OsInformation : Information {
         get => _queryObj;
         set => _queryObj = value;
     }
-    
+
     /// <summary>
     /// accessors of the osName field
     /// </summary>
@@ -37,7 +35,7 @@ public class OsInformation : Information {
         get => _osName;
         set => _osName = value;
     }
-    
+
     /// <summary>
     /// accessors of the osVersion field
     /// </summary>
@@ -45,7 +43,7 @@ public class OsInformation : Information {
         get => _osVersion;
         set => _osVersion = value;
     }
-    
+
     /// <summary>
     /// Returns a string representation of the operating system name and version.
     /// </summary>

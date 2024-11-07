@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
-using System.Runtime.Versioning;
 
-namespace UITManagerAgent.DataCollectors
-{
+namespace UITManagerAgent.DataCollectors;
+
+/// <summary>
+/// Collects disk information from the system and returns it as a <see cref="DiskInformation"/> instance.
+/// </summary>
+public class DiskCollector : DataCollector {
     /// <summary>
-    /// Collects disk information from the system and returns it as a <see cref="DiskInformation"/> instance.
+    /// Collects information about all available and ready disk drives on the system.
     /// </summary>
     public class DiskCollector : DataCollector
     {
@@ -43,7 +42,12 @@ namespace UITManagerAgent.DataCollectors
                 Console.WriteLine("Error while retrieving users: " + ex.Message);
             }
 
-            return diskInformation;
+            diskInformation.NumberDisk = diskCount;
         }
+        catch (Exception ex) {
+            Console.WriteLine("Error while retrieving users: " + ex.Message);
+        }
+
+        return diskInformation;
     }
 }

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UITManagerAgent.DataCollectors;
-
-
-namespace UITManagerAgent.BasicInformation;
+﻿using UITManagerAgent.BasicInformation;
 
 /// <summary>
 /// Represents information about a domain name.
@@ -19,7 +11,7 @@ public class DomainNameInformation : Information {
     /// </summary>
     public string DomainName {
         get { return _domainName; }
-        set { _domainName = value ; }
+        set { _domainName = value; }
     }
 
     /// <summary>

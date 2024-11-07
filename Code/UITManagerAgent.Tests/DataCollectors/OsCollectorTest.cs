@@ -60,7 +60,8 @@ public class OsCollectorTest {
         if (_osCollector != null) {
             OsInformation osInfo = (OsInformation)_osCollector.Collect();
 
-            Assert.IsTrue(osInfo.OsName != null && osInfo.OsName.Length > 3, "OS name should be a valid non-trivial string");
+            Assert.IsTrue(osInfo.OsName != null && osInfo.OsName.Length > 3,
+                "OS name should be a valid non-trivial string");
             Assert.IsTrue(osInfo.OsVersion != null && osInfo.OsVersion.Contains('.'),
                 "OS version should contain a dot, suggesting a valid version format");
         }

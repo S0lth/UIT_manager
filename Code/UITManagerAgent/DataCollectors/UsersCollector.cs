@@ -1,6 +1,6 @@
 using System.DirectoryServices;
 using System.Runtime.Versioning;
-using UITManagerAgent.DataCollectors;
+using UITManagerAgent.BasicInformation;
 
 /// <summary>
 ///     Collects user information from the system and returns it as a <see cref="UsersInformation" /> instance.
@@ -12,8 +12,6 @@ public class UserCollector : DataCollector {
     /// <returns>
     ///     A <see cref="UsersInformation" /> object containing the list of usernames.
     /// </returns>
-
-
     [SupportedOSPlatform("windows")]
     public Information Collect() {
         UsersInformation users = new();
