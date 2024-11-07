@@ -28,7 +28,6 @@ public class DomainNameCollectorTests {
         if (_domainNameCollector != null) {
             Information result = _domainNameCollector.Collect();
 
-            Assert.IsNotNull(result, "Result should not be null.");
             Assert.IsInstanceOfType(result, typeof(DomainNameInformation),
                 "Result should be of type DomainNameInformation.");
         }
@@ -62,7 +61,8 @@ public class DomainNameCollectorTests {
             DomainNameInformation result = (DomainNameInformation)_domainNameCollector.Collect();
 
             Assert.IsFalse(string.IsNullOrEmpty(result.DomainName),
-                "Domain name should not be empty when the machine is part of a domain.");
+                "Domain name should not be null when the machine is part of a domain.");
+
         }
     }
 
@@ -78,19 +78,6 @@ public class DomainNameCollectorTests {
 
             Assert.AreNotSame(firstResult, secondResult,
                 "Each call to Collect should return a new instance of DomainNameInformation.");
-        }
-    }
-
-    /// <summary>
-    /// Tests if the <see cref="DomainNameCollector.Collect"/> method correctly handles ManagementExceptions.
-    /// </summary>
-    [TestMethod]
-    [SupportedOSPlatform("windows")]
-    public void Collect_ShouldHandleException() {
-        if (_domainNameCollector != null) {
-            DomainNameInformation result = (DomainNameInformation)_domainNameCollector.Collect();
-
-            Assert.IsNotNull(result, "Result should not be null even in case of an exception");
         }
     }
 }

@@ -23,7 +23,8 @@ public class Program {
         Console.WriteLine(ramCollector.Collect().ToString());
 
         DomainNameCollector domainNameCollector = new DomainNameCollector();
-        Console.WriteLine(domainNameCollector.Collect().ToString());
+        DomainNameInformation domainNameInformation = (DomainNameInformation)domainNameCollector.Collect();
+        Console.WriteLine(domainNameInformation.ToJson());
         
         UpTimeCollector upTimeCollector = new();
         Console.WriteLine(upTimeCollector.Collect().ToString());
