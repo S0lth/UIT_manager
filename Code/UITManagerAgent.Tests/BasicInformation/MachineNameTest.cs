@@ -26,7 +26,7 @@ public class MachineNameTest {
     /// returns the correct format with define value
     /// </summary>
     [TestMethod]
-    public void ToJson_ShouldReturnValidJson_WhenDomainNameIsManuallySet() {
+    public void ToJson_ShouldReturnValidJson_WhenMachineNameIsManuallySet() {
         if (_machineNameInformation != null) {
             _machineNameInformation.MachineName = "DESKTOP_AAAAAA";
             string json = _machineNameInformation.ToJson();
@@ -43,7 +43,7 @@ public class MachineNameTest {
     /// </summary>
     [TestMethod]
     [SupportedOSPlatform("windows")]
-    public void ToJson_ShouldReturnValidJson_WithActualDomainName() {
+    public void ToJson_ShouldReturnValidJson_WithActualMachineName() {
         if (_machineNameInformation != null) {
             MachineNameCollector machineNameCollector = new();
             _machineNameInformation = (MachineNameInformation) machineNameCollector.Collect();
