@@ -1,4 +1,4 @@
-﻿using System.Runtime.Versioning;
+using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
 
@@ -8,7 +8,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
         private DiskInformation? _diskInformation;
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="MachineNameInformation"/> class before each test.
+        /// Initialize a new instance of the <see cref="DiskInformation"/> class before each test.
         /// </summary>
         [TestInitialize]
         public void Setup() {
