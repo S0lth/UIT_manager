@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace UITManagerAgent.BasicInformation {
     /// <summary>
     /// Provides information on all disk names, total storage capacity, free storage capacity, and number of disks
@@ -50,6 +52,10 @@ namespace UITManagerAgent.BasicInformation {
                 return "Disk name : " + _diskName + ", disk total size : " + _diskTotalSize +
                        "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
             }
+
+            public string ToJson() {
+                return JsonSerializer.Serialize(this);
+            }
         }
         private List<Disk> _disks = new List<Disk>();
         private int _numberDisk;
@@ -94,5 +100,12 @@ namespace UITManagerAgent.BasicInformation {
             return string.Join(", ", _disks) + "Number disk : " + _numberDisk;
         }
 
+        /// <summary>
+        /// Returns a Json string representation of the diskInformation
+        /// </summary>
+        /// <returns>A Json string that represents the diskInformation .</returns>
+        public string ToJson() {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }
