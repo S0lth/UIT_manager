@@ -23,7 +23,7 @@ Include any extra information or considerations for reviewers, such as impacted 
 
 ---
 
-## Merge Request Checklists
+## Merge Request Checklist
 - [ ] Passed the CI/CD
 - [ ] Code reviewed
 - [ ] Documentation done
