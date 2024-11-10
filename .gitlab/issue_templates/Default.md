@@ -2,11 +2,11 @@
 
 # To-do
 
-- [] **Task 1** : put the details of the task
-- [] **Task 2** : put the details of the task
-- [] **Task 3** : put the details of the task
-- [] **Task 4** : put the details of the task
-- [] **Task 5** : put the details of the task
+- [ ] **Task 1** : put the details of the task
+- [ ] **Task 2** : put the details of the task
+- [ ] **Task 3** : put the details of the task
+- [ ] **Task 4** : put the details of the task
+- [ ] **Task 5** : put the details of the task
 
 --- 
 
