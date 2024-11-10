@@ -29,3 +29,18 @@ Describe what you think should be done to correct. Put a list
 - think about 
 - some things
 - like "move the button to the right corner"
+
+---
+
+# Keep in Mind
+
+- put here some things
+- to not forget
+
+--- 
+
+# Ressources
+
+- put here your links
+- to some ressources
+
