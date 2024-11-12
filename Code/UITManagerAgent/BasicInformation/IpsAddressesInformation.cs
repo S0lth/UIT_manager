@@ -21,7 +21,7 @@ public class IpsAddressesInformation : Information {
         return $"{string.Join(", ", _ipsList)}";
     }
 
-    
+
     /// <summary>
     /// Get a string JSON format of IPS
     /// </summary>
