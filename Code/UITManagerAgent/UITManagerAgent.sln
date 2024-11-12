@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UITManagerAgent", "UITManag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITManagerAgent.Tests", "..\UITManagerAgent.Tests\UITManagerAgent.Tests.csproj", "{0741BA3B-3673-43EE-846B-7D23BBB6FD58}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITManagerWebServer", "..\UITManagerWebServer\UITManagerWebServer\UITManagerWebServer.csproj", "{F0519FD2-1DCE-4B47-B5FB-4812EAE5351B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0741BA3B-3673-43EE-846B-7D23BBB6FD58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0741BA3B-3673-43EE-846B-7D23BBB6FD58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0741BA3B-3673-43EE-846B-7D23BBB6FD58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0519FD2-1DCE-4B47-B5FB-4812EAE5351B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0519FD2-1DCE-4B47-B5FB-4812EAE5351B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0519FD2-1DCE-4B47-B5FB-4812EAE5351B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0519FD2-1DCE-4B47-B5FB-4812EAE5351B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
