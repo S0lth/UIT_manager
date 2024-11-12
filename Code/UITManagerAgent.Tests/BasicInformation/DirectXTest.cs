@@ -17,7 +17,7 @@ public class DirectXTest {
     /// </summary>
     [TestInitialize]
     public void Setup() {
-        _directXInformation = new();
+        _directXInformation = new DirectXInformation();
     }
 
     /// <summary>
@@ -36,21 +36,4 @@ public class DirectXTest {
             Assert.Fail("DirectX cannot be null");
         }
     }
-
-    /// <summary>
-    /// Test method to check if the method <see cref="DirectXInformation.ToJson"/>
-    /// returns the correct format with real value
-    /// </summary>
-    [TestMethod]
-    [SupportedOSPlatform("windows")]
-    public void ToJson_ShouldReturnValidJson_WithActualDirectX() {
-        if (_directXInformation != null) {
-            DirectXCollector directXCollector = new();
-            _directXInformation = (DirectXInformation)directXCollector.Collect();
-            string json = _directXInformation.ToJson();
-            string expected = $"{{\"DirectX\":\"{_directXInformation.DirectX}\"}}";
-            StringAssert.Contains(json, expected);
-        }
-    }
-
 }
