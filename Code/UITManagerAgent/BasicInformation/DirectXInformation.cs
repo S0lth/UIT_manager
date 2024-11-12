@@ -1,4 +1,6 @@
-﻿namespace UITManagerAgent.BasicInformation;
+﻿using System.Text.Json;
+
+namespace UITManagerAgent.BasicInformation;
 /// <summary>
 /// Represents information about the DirectX version installed on the system.
 /// </summary>
@@ -22,5 +24,13 @@ public class DirectXInformation : Information {
     /// <returns>A string in the format "DirectX Version: {version}".</returns>
     public override string ToString() {
         return "DirectX Version: " + _directXVersion;
+    }
+
+    /// <summary>
+    /// Returns a Json string representation of the directX version.
+    /// </summary>
+    /// <returns>A Json string that represents the directX version.</returns>
+    public string ToJson() {
+        return JsonSerializer.Serialize(this);
     }
 }
