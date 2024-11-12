@@ -1,5 +1,6 @@
 ﻿using System.Management;
 using System.Runtime.Versioning;
+using System.Text.Json;
 
 namespace UITManagerAgent.BasicInformation;
 
@@ -56,5 +57,13 @@ public class RamInformation : Information {
     public ManagementObjectSearcher WmiSearcher {
         get => _wmiSearcher;
         set => _wmiSearcher = value;
+    }
+
+    /// <summary>
+    /// Returns a Json string representation of the ramInformation
+    /// </summary>
+    /// <returns>A Json string that represents the ramInformation .</returns>
+    public string ToJson() {
+        return JsonSerializer.Serialize(this);
     }
 }
