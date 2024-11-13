@@ -1,0 +1,27 @@
+@startuml
+skinparam Monochrome true
+left to right direction
+title Partial architecture diagram 
+actor Client
+rectangle "WebApp" {
+    package "View" as view
+    package "Controller" as controller
+    package "Model" as model
+}
+database BDD
+rectangle API
+rectangle Agent
+
+Client --> WebApp : HTTP Request
+WebApp --> Client : Response
+BDD -left-> WebApp : Send data
+WebApp ---> BDD : Request
+
+
+WebApp --up-> API : Send data
+API -> BDD : Interact
+Agent ---> API : Send
+
+@enduml
+
+
