@@ -48,12 +48,11 @@ test:
     - build
 
 build_webapp:
-  extends: .windows_job
-
+  extends: windows_job
   stage: build
   script:
-    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:WEBAPP_NAME\\$env:WEBAPP_NAME.sln"
-    - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:WEBAPP_NAME\\$env:WEBAPP_NAME.sln" -c $env:BUILD_CONFIGURATION
+    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:WEBAPP_NAME\\$env:WEBAPP_NAME.csproj"
+    - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:WEBAPP_NAME\\$env:WEBAPP_NAME.csproj" -c $env:BUILD_CONFIGURATION
   artifacts:
     paths:
       - "Code/UITManagerWebServer/bin/Debug"
