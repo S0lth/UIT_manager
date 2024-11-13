@@ -26,14 +26,14 @@ public class IpsAddressesTest {
     public void ToJson_ShouldReturnValidJson_WhenIPSAddressesAreManuallySet() {
         if (_ipsAddressesInformation != null) {
             _ipsAddressesInformation.IpsList = new() {
-                "192.168.1.64", 
-                "172.16.25.1", 
+                "192.168.1.64",
+                "172.16.25.1",
                 "192.168.2.1",
             };
             List<string> ipsList = _ipsAddressesInformation.IpsList;
             string expectedJson = $"{{\"IpsList\":[\"{ipsList[0]}\",\"{ipsList[1]}\",\"{ipsList[2]}\"]}}";
-            
-            Assert.AreEqual(expectedJson,_ipsAddressesInformation.ToJson());
+
+            Assert.AreEqual(expectedJson, _ipsAddressesInformation.ToJson());
         }
         else {
             Assert.Fail();
@@ -48,9 +48,10 @@ public class IpsAddressesTest {
     public void ToJson_ShouldReturnValidJson_WhenIPSAddressesAreEmpty() {
         string expectedJson = "{\"IpsList\":[]}";
         if (_ipsAddressesInformation != null) {
-            _ipsAddressesInformation.IpsList = new ();
+            _ipsAddressesInformation.IpsList = new();
             Assert.AreEqual(expectedJson, _ipsAddressesInformation.ToJson());
-        }else{
+        }
+        else {
             Assert.Fail();
         }
     }
@@ -64,7 +65,7 @@ public class IpsAddressesTest {
     public void ToJson_ShouldReturnValidJson_WithActualIPSAddresses() {
         IpsAddressesCollector ipsAddressesCollector = new();
         _ipsAddressesInformation = (IpsAddressesInformation)ipsAddressesCollector.Collect();
-        
+
         List<string> actualIPsList = _ipsAddressesInformation.IpsList;
 
         string expected = "{\"IpsList\":[";

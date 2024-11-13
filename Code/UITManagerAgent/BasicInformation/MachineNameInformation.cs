@@ -21,12 +21,12 @@ public class MachineNameInformation : Information {
     public string ToJson() {
         return JsonSerializer.Serialize(this);
     }
-    
+
     /// <summary>
     /// String representation of the machine name
     /// </summary>
     /// <returns>A string representation of the machine name</returns>
     public override string ToString() => MachineName;
-    
-    
+
+
 }

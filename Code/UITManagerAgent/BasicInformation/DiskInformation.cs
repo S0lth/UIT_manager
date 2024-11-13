@@ -4,8 +4,7 @@ namespace UITManagerAgent.BasicInformation {
     /// <summary>
     /// Provides information on all disk names, total storage capacity, free storage capacity, and number of disks
     /// </summary>
-    public class DiskInformation : Information
-    {
+    public class DiskInformation : Information {
 
         /// <summary>
         /// Represents a disk with properties for its name, total size, and available free space.
@@ -63,7 +62,7 @@ namespace UITManagerAgent.BasicInformation {
         /// <summary>
         /// accessors of the list disks field
         /// </summary>
-        public List<Disk>  Disks {
+        public List<Disk> Disks {
             get => _disks;
             set => _disks = value;
         }
@@ -95,8 +94,7 @@ namespace UITManagerAgent.BasicInformation {
         /// A <see cref="string"/> representing the disk information in a readable format.
         /// Each property is presented on a new line with appropriate labels.
         /// </returns>
-        public override string ToString()
-        {
+        public override string ToString() {
             return string.Join(", ", _disks) + "Number disk : " + _numberDisk;
         }
 
