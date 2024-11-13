@@ -12,7 +12,6 @@ public class RamInformation : Information {
     private ulong _totalMemory;
     private ulong _usedMemory;
     private ulong _freeMemory;
-    private ManagementObjectSearcher _wmiSearcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
 
     /// <summary>
     /// Returns a string representation of the RAM information.
@@ -51,19 +50,12 @@ public class RamInformation : Information {
         set => _freeMemory = value;
     }
 
-    /// <summary>
-    /// accessors of the wmi searcher field
-    /// </summary>
-    public ManagementObjectSearcher WmiSearcher {
-        get => _wmiSearcher;
-        set => _wmiSearcher = value;
-    }
 
     /// <summary>
     /// Returns a Json string representation of the ramInformation
     /// </summary>
     /// <returns>A Json string that represents the ramInformation .</returns>
     public string ToJson() {
-        return JsonSerializer.Serialize(this);
+        return $"{{\"TotalMemory\":{_totalMemory / (float)(1024 * 1024):F2},\"UsedMemory\":{_usedMemory / (float)(1024 * 1024):F2},\"FreeMemory\":{_freeMemory / (float)(1024 * 1024):F2}}}";
     }
 }
