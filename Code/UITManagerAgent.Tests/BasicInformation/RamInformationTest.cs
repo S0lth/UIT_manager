@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
+using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.Tests.BasicInformation;
 
@@ -83,6 +84,21 @@ public class RamInformationTest {
                               $"Free memory : {freeMemory / (float)(1024 * 1024):F2} GB";
 
             Assert.AreEqual(expected, result);
+        }
+    }
+
+
+    /// <summary>
+    /// Tests the <see cref="RamInformation.ToJson"/> method to verify that it generates valid JSON 
+    /// containing the value of the <see cref="RamInformation.TotalMemory"/> property when it is set.
+    /// </summary>
+    [TestMethod]
+    public void ToJson_ShouldReturnValidJson_WhenTotalMemoryIsSet() {
+        if (_ramInformation != null) {
+            _ramInformation.TotalMemory = 1000000;
+            string json = _ramInformation.ToJson();
+            string expected = $"{{\"TotalMemory\":{_ramInformation.TotalMemory / (float)(1024 * 1024):F2},\"UsedMemory\":{_ramInformation.UsedMemory / (float)(1024 * 1024):F2},\"FreeMemory\":{_ramInformation.FreeMemory / (float)(1024 * 1024):F2}}}";
+            StringAssert.Contains(json, expected);
         }
     }
 }

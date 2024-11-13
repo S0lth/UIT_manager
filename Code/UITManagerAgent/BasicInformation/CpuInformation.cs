@@ -1,4 +1,6 @@
-﻿namespace UITManagerAgent.BasicInformation;
+﻿using System.Text.Json;
+
+namespace UITManagerAgent.BasicInformation;
 
 
 public class CpuInformation : Information {
@@ -77,5 +79,14 @@ public class CpuInformation : Information {
                "Core Count : " + string.Join(" , ", _coreCount) + ", " +
                "Clock Speed : " + string.Join(" MHz , ", _clockSpeed) + " MHz, " +
                "Model : " + string.Join(" , ", _model);
+    }
+
+
+    /// <summary>
+    /// Returns a Json string representation of the cpuInformation
+    /// </summary>
+    /// <returns>A Json string that represents the cpuInformation .</returns>
+    public string ToJson() {
+        return JsonSerializer.Serialize(this);
     }
 }

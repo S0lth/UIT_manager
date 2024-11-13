@@ -8,6 +8,8 @@ namespace UITManagerAgent.DataCollectors;
 /// Collects ram information from the system and returns it as a <see cref="RamInformation"/> instance.
 /// </summary>
 public class RamCollector : DataCollector {
+    private ManagementObjectSearcher _wmiSearcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
+
     /// <summary>
     /// Retrieves the current RAM information from the system.
     /// </summary>
@@ -19,7 +21,7 @@ public class RamCollector : DataCollector {
     public Information Collect() {
         RamInformation ramInformation = new RamInformation();
 
-        ManagementObjectCollection moc = ramInformation.WmiSearcher.Get();
+        ManagementObjectCollection moc = _wmiSearcher.Get();
         ManagementObject? memObj = moc.Cast<ManagementObject>().FirstOrDefault();
 
         if (memObj != null) {
