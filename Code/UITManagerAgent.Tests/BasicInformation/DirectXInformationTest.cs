@@ -8,7 +8,7 @@ namespace UITManagerAgent.Tests.BasicInformation;
 /// This class contains the Unit Tests for method <see cref="DirectXInformation.ToJson"/>
 /// </summary>
 [TestClass]
-public class DirectXTest {
+public class DirectXInformationTest {
 
     private DirectXInformation? _directXInformation;
 
