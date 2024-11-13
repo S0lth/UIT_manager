@@ -13,6 +13,7 @@
 variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
+  WEBAPP_NAME: UITManagerWebServer
   BUILD_CONFIGURATION: Debug
   BASE_DIR: "$CI_PROJECT_DIR\\Code"
 
@@ -23,6 +24,8 @@ cache:
     - "Code/UITManagerAgent/bin/"
     - "Code/UITManagerAgent.Tests/obj/"
     - "Code/UITManagerAgent.Tests/bin/"
+    - "Code/UITManagerWebServer/obj/"
+    - "Code/UITManagerWebServer/bin/"
 
 build:
   extends: .windows_job
@@ -43,3 +46,14 @@ test:
     - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME\\$PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   dependencies:
     - build
+
+build_webapp:
+  extends: .windows_job
+  stage: build
+  script:
+    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:WEBAPP_NAME\\$env:WEBAPP_NAME.csproj"
+    - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:WEBAPP_NAME\\$env:WEBAPP_NAME.csproj" -c $env:BUILD_CONFIGURATION
+  artifacts:
+    paths:
+      - "Code/UITManagerWebServer/bin/Debug"
+    expire_in: 1 week
