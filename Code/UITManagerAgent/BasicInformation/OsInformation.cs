@@ -1,5 +1,6 @@
 ﻿using System.Management;
 using System.Runtime.Versioning;
+using System.Text.Json;
 namespace UITManagerAgent.BasicInformation;
 
 /// <summary>
@@ -42,6 +43,14 @@ public class OsInformation : Information {
     public string? OsVersion {
         get => _osVersion;
         set => _osVersion = value;
+    }
+    
+    /// <summary>
+    /// Returns a Json string representation of os information.
+    /// </summary>
+    /// <returns>A Json string that represents the os informations.</returns>
+    public string ToJson() {
+        return JsonSerializer.Serialize(this);
     }
 
     /// <summary>
