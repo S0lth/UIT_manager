@@ -1,3 +1,4 @@
+using System.Text.Json;
 using UITManagerAgent.BasicInformation;
 
 /// <summary>
@@ -10,7 +11,7 @@ public class UsersInformation : Information {
     /// </summary>
     private List<string> _usersList = new();
 
-    public List<string> usersList {
+    public List<string> UsersList {
         get => _usersList;
         set => _usersList = value;
     }
@@ -22,6 +23,14 @@ public class UsersInformation : Information {
     ///     A comma-separated string of usernames.
     /// </returns>
     public override string ToString() {
-        return $"{string.Join(", ", usersList)}";
+        return $"{string.Join(", ", UsersList)}";
+    }
+
+    /// <summary>
+    /// Returns a Json string representation of the users
+    /// </summary>
+    /// <returns>A Json string that represents the users.</returns>
+    public string ToJson() {
+        return JsonSerializer.Serialize(this);
     }
 }
