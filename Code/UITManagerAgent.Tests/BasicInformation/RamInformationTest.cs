@@ -89,14 +89,13 @@ public class RamInformationTest {
 
 
     /// <summary>
-    /// Tests the <see cref="DiskInformation.ToJson"/> method to verify that it generates valid JSON 
-    /// containing the value of the <see cref="DiskInformation.NumberDisk"/> property when it is set.
+    /// Tests the <see cref="RamInformation.ToJson"/> method to verify that it generates valid JSON 
+    /// containing the value of the <see cref="RamInformation.TotalMemory"/> property when it is set.
     /// </summary>
     [TestMethod]
-    [SupportedOSPlatform("windows")]
-    public void ToJson_ShouldReturnValidJson_WhenNumberDiskIsSet() {
+    public void ToJson_ShouldReturnValidJson_WhenTotalMemoryIsSet() {
         if (_ramInformation != null) {
-            DiskCollector diskCollector = new();
+            _ramInformation.TotalMemory = 1000000;
             string json = _ramInformation.ToJson();
             string expected = $"{{\"TotalMemory\":{_ramInformation.TotalMemory / (float)(1024 * 1024):F2},\"UsedMemory\":{_ramInformation.UsedMemory / (float)(1024 * 1024):F2},\"FreeMemory\":{_ramInformation.FreeMemory / (float)(1024 * 1024):F2}}}";
             StringAssert.Contains(json, expected);

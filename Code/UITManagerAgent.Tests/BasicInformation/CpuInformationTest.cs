@@ -21,10 +21,9 @@ namespace UITManagerAgent.Tests.BasicInformation {
         /// containing the value of the <see cref="CpuInformation.CoreCount"/> property when it is set.
         /// </summary>
         [TestMethod]
-        [SupportedOSPlatform("windows")]
-        public void ToJson_ShouldReturnValidJson_WhenNumberDiskIsSet() {
+        public void ToJson_ShouldReturnValidJson_WhenCoreCountIsSet() {
             if (_cpuInformation != null) {
-                DiskCollector diskCollector = new();
+                _cpuInformation.CoreCount = 1;
                 string json = _cpuInformation.ToJson();
                 string expected = $"{{\"LogicalCpu\":0,\"CoreCount\":{_cpuInformation.CoreCount},\"ClockSpeed\":0,\"Model\":\"\"}}";
                 StringAssert.Contains(json, expected);
