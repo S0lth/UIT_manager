@@ -15,7 +15,7 @@ public class Program {
 
         CpuCollectors cpuCollected = new CpuCollectors();
         Console.WriteLine(cpuCollected.Collect().ToString());
-        
+
         IpsAddressesCollector ipsAddressesCollector = new();
         Console.WriteLine(ipsAddressesCollector.Collect().ToString());
 
@@ -25,16 +25,16 @@ public class Program {
         DomainNameCollector domainNameCollector = new DomainNameCollector();
         DomainNameInformation domainNameInformation = (DomainNameInformation)domainNameCollector.Collect();
         Console.WriteLine(domainNameInformation.ToJson());
-        
+
         UpTimeCollector upTimeCollector = new();
         Console.WriteLine(upTimeCollector.Collect().ToString());
 
         OsCollector osCollector = new();
         Console.WriteLine(osCollector.Collect().ToString());
-        
+
         DiskCollector diskCollector = new DiskCollector();
         Console.WriteLine(diskCollector.Collect().ToString());
-        
+
         MachineNameCollector machineNameCollector = new();
         Console.WriteLine(machineNameCollector.Collect().ToString());
 

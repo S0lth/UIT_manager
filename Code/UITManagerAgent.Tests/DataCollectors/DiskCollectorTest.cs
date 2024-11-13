@@ -40,7 +40,7 @@ public class DiskCollectorTest {
             }
         }
         catch (Exception ex) {
-                Assert.Fail($"The Collect method threw an unexpected exception: {ex.Message}");
+            Assert.Fail($"The Collect method threw an unexpected exception: {ex.Message}");
         }
     }
 
