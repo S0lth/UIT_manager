@@ -1,4 +1,6 @@
-﻿using System.Runtime.Versioning;
+﻿using System;
+using System.Runtime.Versioning;
+using System.Text.Json;
 
 namespace UITManagerAgent.BasicInformation;
 
@@ -25,5 +27,14 @@ public class UpTimeInformation : Information {
     public int Milliseconds {
         get => _milliseconds;
         set => _milliseconds = value;
+    }
+
+    /// <summary>
+    /// Returns a Json string representation of the up time.
+    /// </summary>
+    /// <returns>A Json string that represents the up time.</returns>
+    public string ToJson() {
+        TimeSpan timeSpan = TimeSpan.FromMilliseconds(_milliseconds);
+        return $"{{\"Days\":{(int)timeSpan.TotalDays},\"Hours\":{timeSpan.Hours:D2},\"Minutes\":{timeSpan.Minutes:D2},\"Seconds\":{timeSpan.Seconds:D2}}}";
     }
 }
