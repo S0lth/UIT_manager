@@ -18,19 +18,23 @@ class Machine {
   name
 }
 
-class Alarm {
-  status
-  priority
-  severity
+class Note {
+  note 
   date
 }
 
-class GroupCriteria {
-  name
+class Alarm {
+  status
+  date
 }
 
-Machine "1" <--- "1" Alarm : is linked to
-Machine "1" ---> "1..*" Alarm : is linked to
-Alarm "1..*" ---> "1" GroupCriteria : is triggered by
-@enduml
+class NormGroup {
+  name
+  priority
+  severity
+}
 
+Machine "1" *-- "1..*" Alarm : is linked to
+Machine "1" *-- "1..*" Note : is written on
+Alarm "1..*" --- "1" NormGroup : is triggered by
+@enduml
