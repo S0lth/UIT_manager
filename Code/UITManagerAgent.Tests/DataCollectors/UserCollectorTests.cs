@@ -60,8 +60,8 @@ public class UserCollectorTests {
         if (_userCollector != null) {
             UsersInformation result = (UsersInformation)_userCollector.Collect();
 
-            Assert.IsNotNull(result.usersList, "User list should not be null.");
-            Assert.IsTrue(result.usersList.Count >= 1, "User list should contain at least one item.");
+            Assert.IsNotNull(result.UsersList, "User list should not be null.");
+            Assert.IsTrue(result.UsersList.Count >= 1, "User list should contain at least one item.");
         }
     }
 

@@ -20,7 +20,7 @@ public class UserCollector : DataCollector {
             using DirectoryEntry localMachine = new("WinNT://" + Environment.MachineName);
             foreach (DirectoryEntry child in localMachine.Children) {
                 if (child.SchemaClassName == "User") {
-                    users.usersList.Add(child.Name);
+                    users.UsersList.Add(child.Name);
                 }
             }
         }
