@@ -1,0 +1,36 @@
+@startuml
+title Partial Diagram Class 
+header Consult alarms
+footer UIT Manager
+
+skinparam monochrome true
+skinparam linetype polyline
+hide class circle
+hide class stereotype
+hide separator
+hide empty members
+skinparam shadowing true
+skinparam roundcorner 10
+left to right direction
+skinparam ArrowThickness 1.
+
+class Machine {
+  name
+}
+
+class Alarm {
+  status
+  priority
+  severity
+  date
+}
+
+class GroupCriteria {
+  name
+}
+
+Machine "1" <--- "1" Alarm : is linked to
+Machine "1" ---> "1..*" Alarm : is linked to
+Alarm "1..*" ---> "1" GroupCriteria : is triggered by
+@enduml
+
