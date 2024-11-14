@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
@@ -9,7 +9,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
         private UpTimeInformation? _upTimeInformation;
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="DiskInformation"/> class before each test.
+        /// Initialize a new instance of the <see cref="UpTimeInformation"/> class before each test.
         /// </summary>
         [TestInitialize]
         public void Setup() {
