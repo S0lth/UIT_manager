@@ -1,0 +1,34 @@
+
+@startuml
+skinparam Monochrome true
+title sequence diagram - get Information [Agent side]
+autonumber "<b>0</b> " 
+actor Machine
+activate Machine
+participant "apiCommunicator : APICommunicator" as api
+participant "machineInformation : MachineInformation" as MachineInfo
+Collections "dc : DataCollector" as DataCollector
+Collections "information : Information" as Information
+boundary API
+activate API
+
+Machine -> Machine : [start the agent]
+Machine --> api  ** : new()
+activate api
+api -> api : getMachineInformation() : MachineInformation
+
+api --> MachineInfo ** : new()
+activate MachineInfo 
+
+MachineInfo -> DataCollector ** : new()
+activate DataCollector
+
+group Loop for each DataCollector
+    MachineInfo -> DataCollector : Collect() : Information
+    MachineInfo -> MachineInfo : this.information.add(information)
+    DataCollector --> Information ** : new()
+    deactivate DataCollector
+end
+
+api -> API : sendMachineInformation(String informationsFormattedJson) : void
+@enduml
