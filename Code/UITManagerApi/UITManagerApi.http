@@ -1,0 +1,6 @@
+@UITManagerApi_HostAddress = http://localhost:5014
+
+GET {{UITManagerApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
