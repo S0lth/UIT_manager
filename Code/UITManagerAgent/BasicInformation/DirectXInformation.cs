@@ -30,7 +30,7 @@ public class DirectXInformation : Information {
     /// Returns a Json string representation of the directX version.
     /// </summary>
     /// <returns>A Json string that represents the directX version.</returns>
-    public string ToJson() {
+    public override string ToJson() {
         return JsonSerializer.Serialize(this);
     }
 }

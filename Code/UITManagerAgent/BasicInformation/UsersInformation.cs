@@ -30,7 +30,7 @@ public class UsersInformation : Information {
     /// Returns a Json string representation of the users
     /// </summary>
     /// <returns>A Json string that represents the users.</returns>
-    public string ToJson() {
+    public override string ToJson() {
         return JsonSerializer.Serialize(this);
     }
 }
