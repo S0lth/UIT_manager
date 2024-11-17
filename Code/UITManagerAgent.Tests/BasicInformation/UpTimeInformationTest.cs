@@ -12,6 +12,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
         /// Initialize a new instance of the <see cref="UpTimeInformation"/> class before each test.
         /// </summary>
         [TestInitialize]
+        [SupportedOSPlatform("windows")]
         public void Setup() {
             _upTimeInformation = new();
         }
@@ -22,6 +23,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
         /// containing the value of the <see cref="UpTimeInformation.Milliseconds"/> property when it is set.
         /// </summary>
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void ToJson_ShouldReturnValidJson_WhenMillisecondsIsSet() {
             if (_upTimeInformation != null) {
                 _upTimeInformation.Milliseconds = 1000;

@@ -26,6 +26,7 @@ public class RamCollectorTest {
     /// Tests the <see cref="RamCollector.Collect"/> method to ensure it sets memory values correctly.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Test_Collect_SetsMemoryValuesCorrectly() {
         if (_ramCollector != null) {
             _ramInformation = (RamInformation)_ramCollector.Collect()!;
@@ -40,6 +41,7 @@ public class RamCollectorTest {
     /// Tests the <see cref="RamCollector.Collect"/> method to ensure it calculates used memory correctly.
     /// </summary>
     [TestMethod]
+    [SupportedOSPlatform("windows")]
     public void Test_Collect_CalculatesUsedMemoryCorrectly() {
         if (_ramCollector != null) {
             _ramInformation = (RamInformation)_ramCollector.Collect();
