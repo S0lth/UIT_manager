@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace UITManagerWebServer.Models {
     public class Note {
@@ -13,5 +14,7 @@ namespace UITManagerWebServer.Models {
 
         public int MachineId { get; set; }
         public Machine Machine { get; set; }
+
+        public bool IsSolution { get; set; }
     }
 }

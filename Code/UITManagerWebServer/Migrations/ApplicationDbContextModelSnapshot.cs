@@ -336,6 +336,9 @@ namespace UITManagerWebServer.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsSolution")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("MachineId")
                         .HasColumnType("integer");
 
