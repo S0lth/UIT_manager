@@ -34,7 +34,13 @@ class NormGroup {
   severity
 }
 
-Machine "1" *-- "1..*" Alarm : is linked to
-Machine "1" *-- "1..*" Note : is written on
-Alarm "1..*" --- "1" NormGroup : is triggered by
+class Norm {
+  name
+}
+
+Machine "1" <-- "1..*" Alarm : is linked to
+Machine "1" --> "1" Alarm : is linked to
+Machine "1" <-- "1..*" Note : is written on
+Alarm "1..*" --> "1" NormGroup : is triggered by
+NormGroup "1" --> "1..*" Norm : has
 @enduml
