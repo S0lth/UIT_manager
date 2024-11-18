@@ -49,7 +49,7 @@ public class OsInformation : Information {
     /// Returns a Json string representation of os information.
     /// </summary>
     /// <returns>A Json string that represents the os informations.</returns>
-    public string ToJson() {
+    public override string ToJson() {
         return JsonSerializer.Serialize(this);
     }
 

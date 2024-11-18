@@ -26,7 +26,7 @@ public class IpsAddressesInformation : Information {
     /// Get a string JSON format of IPS
     /// </summary>
     /// <returns>A Json string that represents IPS List</returns>
-    public string ToJson() {
+    public override string ToJson() {
         return JsonSerializer.Serialize(this);
     }
 }

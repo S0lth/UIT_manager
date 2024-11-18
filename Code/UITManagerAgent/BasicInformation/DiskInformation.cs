@@ -102,7 +102,7 @@ namespace UITManagerAgent.BasicInformation {
         /// Returns a Json string representation of the diskInformation
         /// </summary>
         /// <returns>A Json string that represents the diskInformation .</returns>
-        public string ToJson() {
+        public override string ToJson() {
             return JsonSerializer.Serialize(this);
         }
     }

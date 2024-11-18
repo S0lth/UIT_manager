@@ -15,6 +15,7 @@ public class OsInformationTest {
     /// Initialize a new instance of the <see cref="OsInformation"/> class before each test.
     /// </summary>
     [TestInitialize]
+    [SupportedOSPlatform("windows")]
     public void Setup() {
         _osInformation = new();
     }
