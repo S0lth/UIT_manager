@@ -1,7 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace UITManagerWebServer.Models {
+    /// <summary>
+    /// Represents a note associated with a machine, typically used for documentation or problem resolution.
+    /// </summary>
     public class Note {
         public int Id { get; set; }
 

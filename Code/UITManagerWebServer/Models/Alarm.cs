@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace UITManagerWebServer.Models {
+    /// <summary>
+    /// Represents an alarm associated with a machine, including its status, trigger time, and related entities.
+    /// </summary>
     public class Alarm {
         public int Id { get; set; }
 
@@ -17,6 +22,9 @@ namespace UITManagerWebServer.Models {
         public NormGroup? NormGroup { get; set; }
     }
 
+    /// <summary>
+    /// Enumerates the possible statuses of an alarm during its lifecycle.
+    /// </summary>
     public enum AlarmStatus {
         New,
         Acknowledged,
