@@ -1,45 +1,28 @@
 using System.Runtime.Versioning;
-using UITManagerAgent.BasicInformation;
-using UITManagerAgent.DataCollectors;
+using UITManagerAgent;
+
 
 [SupportedOSPlatform("windows")]
 public class Program {
+
     public static async Task Main(string[] args) {
         await RunOnce();
     }
 
     [SupportedOSPlatform("windows")]
-    private static Task RunOnce() {
-        UserCollector userCollector = new();
-        Console.WriteLine(userCollector.Collect().ToString());
+    private static async Task<Task> RunOnce() {
 
-        CpuCollectors cpuCollected = new CpuCollectors();
-        Console.WriteLine(cpuCollected.Collect().ToString());
+        ApiCommunicator apiCommunicator = new ApiCommunicator("api/v1/agent");
 
-        IpsAddressesCollector ipsAddressesCollector = new();
-        Console.WriteLine(ipsAddressesCollector.Collect().ToString());
+        MachineInformation machineInformation = new MachineInformation();
 
-        RamCollector ramCollector = new RamCollector();
-        Console.WriteLine(ramCollector.Collect().ToString());
+        Console.WriteLine(machineInformation.ToJson());
 
-        DomainNameCollector domainNameCollector = new DomainNameCollector();
-        DomainNameInformation domainNameInformation = (DomainNameInformation)domainNameCollector.Collect();
-        Console.WriteLine(domainNameInformation.ToJson());
+        bool success = await apiCommunicator.SendMachineInformationAsync(machineInformation);
 
-        UpTimeCollector upTimeCollector = new();
-        Console.WriteLine(upTimeCollector.Collect().ToString());
-
-        OsCollector osCollector = new();
-        Console.WriteLine(osCollector.Collect().ToString());
-
-        DiskCollector diskCollector = new DiskCollector();
-        Console.WriteLine(diskCollector.Collect().ToString());
-
-        MachineNameCollector machineNameCollector = new();
-        Console.WriteLine(machineNameCollector.Collect().ToString());
-
-        DirectXCollector directXCollector = new DirectXCollector();
-        Console.WriteLine(directXCollector.Collect().ToString());
+        Console.WriteLine(success
+                ? "Les informations de la machine ont été envoyées avec succès."
+                : "Échec de l'envoi des informations de la machine.");
 
         return Task.CompletedTask;
     }
