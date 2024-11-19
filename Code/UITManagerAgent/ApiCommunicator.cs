@@ -8,14 +8,15 @@ namespace UITManagerAgent;
 /// </summary>
 public class ApiCommunicator {
 
-    private readonly HttpClient _httpClient = new HttpClient();
+    private readonly HttpClient _httpClient;
     private readonly string _apiUrl;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ApiCommunicator"/> class.
     /// </summary>
-    public ApiCommunicator(string apiUrl) {
+    public ApiCommunicator(string apiUrl, HttpClient? httpClient = null) {
         _apiUrl = apiUrl;
+        _httpClient = httpClient ?? new HttpClient();
     }
 
     /// <summary>
