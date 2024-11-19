@@ -56,6 +56,6 @@ public class RamInformation : Information {
     /// </summary>
     /// <returns>A Json string that represents the ramInformation .</returns>
     public override string ToJson() {
-        return $"{{\"TotalMemory\":{_totalMemory / (float)(1024 * 1024):F2},\"UsedMemory\":{_usedMemory / (float)(1024 * 1024):F2},\"FreeMemory\":{_freeMemory / (float)(1024 * 1024):F2}}}";
+        return $"{{\"TotalMemory\":\"{_totalMemory / (float)(1024 * 1024):F2}\",\"UsedMemory\":\"{_usedMemory / (float)(1024 * 1024):F2}\",\"FreeMemory\":\"{_freeMemory / (float)(1024 * 1024):F2}\"}}";
     }
 }

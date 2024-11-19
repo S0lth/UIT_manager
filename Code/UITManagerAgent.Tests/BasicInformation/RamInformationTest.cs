@@ -1,6 +1,5 @@
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
-using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.Tests.BasicInformation;
 
@@ -97,7 +96,7 @@ public class RamInformationTest {
         if (_ramInformation != null) {
             _ramInformation.TotalMemory = 1000000;
             string json = _ramInformation.ToJson();
-            string expected = $"{{\"TotalMemory\":{_ramInformation.TotalMemory / (float)(1024 * 1024):F2},\"UsedMemory\":{_ramInformation.UsedMemory / (float)(1024 * 1024):F2},\"FreeMemory\":{_ramInformation.FreeMemory / (float)(1024 * 1024):F2}}}";
+            string expected = $"{{\"TotalMemory\":\"{_ramInformation.TotalMemory / (float)(1024 * 1024):F2}\",\"UsedMemory\":\"{_ramInformation.UsedMemory / (float)(1024 * 1024):F2}\",\"FreeMemory\":\"{_ramInformation.FreeMemory / (float)(1024 * 1024):F2}\"}}";
             StringAssert.Contains(json, expected);
         }
     }

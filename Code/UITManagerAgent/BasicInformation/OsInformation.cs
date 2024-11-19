@@ -50,7 +50,7 @@ public class OsInformation : Information {
     /// </summary>
     /// <returns>A Json string that represents the os informations.</returns>
     public override string ToJson() {
-        return JsonSerializer.Serialize(this);
+        return $"{{\"OsName\":\"{_osName}\",\"OsVersion\":\"{_osVersion}\"}}";
     }
 
     /// <summary>
