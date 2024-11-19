@@ -1,8 +1,264 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@functions {
+
+    string GetHeaderClass(string currentSortOrder, string column)
+    {
+        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
+        {
+            return "bg-selected-header";
+        }
+
+        return string.Empty;
+    }
+
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@functions {
+
+    string GetSeverityClass(UITManagerWebServer.Models.SeverityLevel severity)
+    {
+        return severity switch
+        {
+            UITManagerWebServer.Models.SeverityLevel.Critical => "text-danger",
+            UITManagerWebServer.Models.SeverityLevel.High => "text-warning",
+            UITManagerWebServer.Models.SeverityLevel.Medium => "text-warning",
+            UITManagerWebServer.Models.SeverityLevel.Low => "text-success",
+            UITManagerWebServer.Models.SeverityLevel.InfoOnly => "text-info",
+            UITManagerWebServer.Models.SeverityLevel.Warning => "text-secondary",
+            UITManagerWebServer.Models.SeverityLevel.NonCritical => "text-muted",
+            _ => "text-body"
+        };
+    }
+
+}
+
+@functions{
+
+    string GetIsSolutionIcon(bool sol)
+    {
+        return sol? "bg-success" : "bg-danger";
+    }
+
+}
+
+@functions {
+
+    string GetSortIcon(string currentSortOrder, string column)
+    {
+        if (currentSortOrder == column)
+        {
+            return "bi bi-sort-down";
+        }
+        else if (currentSortOrder == $"{column}_desc")
+        {
+            return "bi bi-sort-up";
+        }
+
+        return "bi bi-arrow-down-up";
+    }
+
+}
+<div class="container-fluid py-5">
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-12 ">
+            <h1>Welcome O. Roger 👋 </h1>
+        </div>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="row mt-4">
+        <!-- Left Column -->
+        <!-- Right Column -->
+        <div class="col-md-6">
+            <!-- 5 New Data -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Oldest unprocessed alarms</h5>
+
+                    <div class=" align-items-center">
+                        <div>
+                            <div class="row justify-content-center">
+                                <div class="col-lg-12">
+                                    <div class="card shadow-sm border-0 rounded">
+                                        <div class="card-body">
+                                            <table class="table table-hover table-striped table-bordered rounded">
+                                                <thead class="table-light">
+                                                <tr>
+                                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
+                                                            Host 
+                                                            
+                                                    </th>
+                                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
+                                                            Status 
+                                                    </th>
+                                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
+                                                            Severity 
+                                                        
+                                                    </th>
+                                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
+                                                            Alarm 
+                                                    </th>
+                                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
+                                                            Date 
+                                                    </th>                                              
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach (var item in Model.OldestUnprocessedAlarms)
+                                                {
+                                                <tr>
+                                                    <!-- Host -->
+                                                    <td>@item.Machine?.Name</td>
+
+                                                    <!-- Status -->
+                                                    <td>@item.Status</td>
+                                                    <td>
+                                                    <!-- Severity -->
+                                                    <span class="@GetSeverityClass(item.NormGroup.Severity)">
+                                                    @item.NormGroup?.Severity
+                                                    </span>
+                                                    </td>
+                                                    <!-- Alarm -->
+                                                    <td>@item.NormGroup?.Name</td>
+
+                                                    <!-- Date -->
+                                                    <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
+
+
+                                                </tr>
+                                                }
+                                                
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+    
+                    </div>
+                </div>
+            </div>
+
+            <!-- Most Recent Alarms -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Diagram of alarm distribution by arlam type</h5>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-md-6">
+            <!-- 5 New Data -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">5 most recently triggered new alarms</h5>
+                    <table class="table table-hover table-striped table-bordered rounded">
+                        
+                        <thead>
+                        <tr>
+                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
+                                    Host
+                            </th>
+                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
+                                    Status 
+                            </th>
+                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
+                                    Severity 
+                            </th>
+                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
+                                    Alarm 
+                            </th>
+                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
+                                    Date 
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Model.RecentNewAlarms)
+                        {
+                        <tr>
+                            <!-- Host -->
+                            <td>@item.Machine?.Name</td>
+
+                            <!-- Status -->
+                            <td>@item.Status</td>
+
+                            <!-- Severity -->
+         
+
+                            <td>
+                                                   <span class="@GetSeverityClass(item.NormGroup?.Severity)">
+                                @item.NormGroup?.Severity
+                                          </span>
+                            </td>
+                  
+                            <!-- Alarm -->
+                            <td>@item.NormGroup?.Name</td>
+
+                            <!-- Date -->
+                            <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
+
+
+                        </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Last notes</h5>
+                    <h2>Last Notes</h2>
+                    <table class="table table-hover table-striped table-bordered rounded">
+                        
+                        <thead>
+                        <tr>
+                            <th>
+
+                                Created At
+                            </th>
+                            <th>
+
+                                Machine
+                            </th>
+                            <th>
+
+                                Content
+                                
+                            </th>
+                            <th>
+
+                                Is Solution 
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var note in Model.LastNotes)
+                        {
+                            <tr>
+                                <td>@note.CreatedAt</td>
+                                <td>@note.Machine?.Name</td>
+                                <td>@note.Content</td>
+                                <td>
+
+                                    @note.IsSolution
+                                    
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
 </div>

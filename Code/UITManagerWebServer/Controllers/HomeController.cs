@@ -1,26 +1,66 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Controllers;
 
 public class HomeController : Controller {
-    private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger) {
-        _logger = logger;
-    }
+        private readonly ApplicationDbContext _context;
 
-    public IActionResult Index() {
-        return View();
-    }
+        public HomeController(ApplicationDbContext context) {
+            _context = context;
+        }
 
-    public IActionResult Privacy() {
-        return View();
-    }
+        public async Task<IActionResult> Index(string sortOrder)
+        {
+      
+            
+            // Oldest unprocessed alarms
+            List<Alarm> oldestUnprocessedAlarms = await _context.Alarms
+                .Include(a => a.Machine)
+                .Include(a => a.NormGroup)
+                .Where(a => a.Status == AlarmStatus.New)
+                .ToListAsync(); // Charge la liste en mémoire
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error() {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+
+
+            
+            
+            // 5 most recently triggered new alarms
+            var recentNewAlarms = await _context.Alarms
+                .Include(a => a.Machine)
+                .Include(a => a.NormGroup)
+                .OrderByDescending(a => a.TriggeredAt)
+                .Take(5)
+                .ToListAsync();
+
+  
+            // Last notes
+            var lastNotes = await _context.Notes
+                .Include(n => n.Machine)
+                .OrderByDescending(n => n.CreatedAt)
+                .ToListAsync();
+
+            
+            
+            var model = new HomePageViewModel
+            {
+                OldestUnprocessedAlarms = oldestUnprocessedAlarms,
+                RecentNewAlarms = recentNewAlarms,
+                LastNotes = lastNotes
+            };
+
+            return View(model);
+        }
+    
+
+    public class HomePageViewModel
+    {
+        public List<Alarm> OldestUnprocessedAlarms { get; set; }
+        public List<Alarm> RecentNewAlarms { get; set; }
+        public List<Note> LastNotes { get; set; }
     }
 }
