@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,6 +17,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAntiforgery();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,6 +30,27 @@ else {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+
+
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        Populate.Initialize(services);
+        Console.WriteLine("Database populated successfully.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
+    }
+}
+
+
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
