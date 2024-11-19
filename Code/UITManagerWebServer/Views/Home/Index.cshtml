@@ -2,6 +2,11 @@
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+
+<script src=" https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js "></script>
+
+
 @functions {
 
     string GetHeaderClass(string currentSortOrder, string column)
@@ -39,7 +44,12 @@
 
     string GetIsSolutionIcon(bool sol)
     {
-        return sol? "bg-success" : "bg-danger";
+        return sol ? "badge bg-success" : "badge bg-secondary";
+    }
+    
+    string GetIsSolutionText(bool sol)
+    {
+        return sol ? "Solution" : "Follow-Up Note";
     }
 
 }
@@ -61,6 +71,7 @@
     }
 
 }
+
 <div class="container-fluid py-5">
     <div class="row justify-content-center mb-4">
         <div class="col-lg-12 ">
@@ -68,12 +79,13 @@
         </div>
     </div>
 
-    <!-- Main Content Section -->
     <div class="row mt-4">
-        <!-- Left Column -->
-        <!-- Right Column -->
+ 
         <div class="col-md-6">
-            <!-- 5 New Data -->
+            <div class="fs-5 card shadow-sm border-0 rounded flex-row mb-4 py-3 ">
+                <span class="text-danger fw-bold  mx-2">@Model.MachinesWithAlarms</span> machines with alarms triggered out of
+                <span class="fw-bold  mx-2">@Model.TotalMachines</span>.
+            </div>            
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Oldest unprocessed alarms</h5>
@@ -88,58 +100,58 @@
                                                 <thead class="table-light">
                                                 <tr>
                                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
-                                                            Host 
-                                                            
+                                                        Host
+
                                                     </th>
                                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
-                                                            Status 
+                                                        Status
                                                     </th>
                                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
-                                                            Severity 
-                                                        
+                                                        Severity
+
                                                     </th>
                                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
-                                                            Alarm 
+                                                        Alarm
                                                     </th>
                                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
-                                                            Date 
-                                                    </th>                                              
+                                                        Date
+                                                    </th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 @foreach (var item in Model.OldestUnprocessedAlarms)
                                                 {
-                                                <tr>
-                                                    <!-- Host -->
-                                                    <td>@item.Machine?.Name</td>
+                                                    <tr>
+                                                        <!-- Host -->
+                                                        <td>@item.Machine?.Name</td>
 
-                                                    <!-- Status -->
-                                                    <td>@item.Status</td>
-                                                    <td>
-                                                    <!-- Severity -->
-                                                    <span class="@GetSeverityClass(item.NormGroup.Severity)">
-                                                    @item.NormGroup?.Severity
-                                                    </span>
-                                                    </td>
-                                                    <!-- Alarm -->
-                                                    <td>@item.NormGroup?.Name</td>
+                                                        <!-- Status -->
+                                                        <td>@item.Status</td>
+                                                        <td>
+                                                            <!-- Severity -->
+                                                            <span class="@GetSeverityClass(item.NormGroup.Severity)">
+                                                                @item.NormGroup?.Severity
+                                                            </span>
+                                                        </td>
+                                                        <!-- Alarm -->
+                                                        <td>@item.NormGroup?.Name</td>
 
-                                                    <!-- Date -->
-                                                    <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                                        <!-- Date -->
+                                                        <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
 
 
-                                                </tr>
+                                                    </tr>
                                                 }
-                                                
+
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
-    
+
                     </div>
                 </div>
             </div>
@@ -147,8 +159,54 @@
             <!-- Most Recent Alarms -->
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Diagram of alarm distribution by arlam type</h5>
-                    
+                    <h5 class="card-title">Alarm distribution by arlam type</h5>
+                    <div>
+                        <canvas id="myChart"></canvas>
+
+                        <script>
+                                const alarmData = @Html.Raw(ViewData["AlarmTypeOccurrences"]);
+
+                                const labels = Object.keys(alarmData);
+                                const data = Object.values(alarmData);
+
+                                const ctx = document.getElementById('myChart').getContext('2d');
+                                new Chart(ctx, {
+                                type: 'pie', 
+                                data: {
+                                labels: labels, 
+                                datasets: [{
+                                label: 'Number of Occurrences',
+                                data: data, 
+                                borderWidth: 1
+                            }]
+                            },
+                                options: {
+                                responsive: true,
+                                maintainAspectRatio: true, // Maintient un ratio ajusté
+                                aspectRatio: 3, 
+                                responsive: true,
+                                plugins: {
+                                legend: {
+                                display: true,
+                                position: 'top',
+                            },
+                                title: {
+                                display: true,
+                                text: 'Alarm Type Distribution'
+                            }
+                            },
+                                    scales: {
+                                        x: {
+                                            display: false // Désactive l'axe X
+                                        },
+                                        y: {
+                                            display: false // Désactive l'axe Y
+                                        }
+                                    }
+                            }
+                            });
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
@@ -160,84 +218,65 @@
                 <div class="card-body">
                     <h5 class="card-title">5 most recently triggered new alarms</h5>
                     <table class="table table-hover table-striped table-bordered rounded">
-                        
+
                         <thead>
                         <tr>
                             <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
-                                    Host
+                                Host
                             </th>
                             <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
-                                    Status 
+                                Status
                             </th>
                             <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
-                                    Severity 
+                                Severity
                             </th>
                             <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
-                                    Alarm 
+                                Alarm
                             </th>
                             <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
-                                    Date 
+                                Date
                             </th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach (var item in Model.RecentNewAlarms)
                         {
-                        <tr>
-                            <!-- Host -->
-                            <td>@item.Machine?.Name</td>
-
-                            <!-- Status -->
-                            <td>@item.Status</td>
-
-                            <!-- Severity -->
-         
-
-                            <td>
-                                                   <span class="@GetSeverityClass(item.NormGroup?.Severity)">
-                                @item.NormGroup?.Severity
-                                          </span>
-                            </td>
-                  
-                            <!-- Alarm -->
-                            <td>@item.NormGroup?.Name</td>
-
-                            <!-- Date -->
-                            <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
-
-
-                        </tr>
+                            <tr>
+                                <td>@item.Machine?.Name</td>
+                                <td>@item.Status</td>
+                                <td>
+                                    <span class="@GetSeverityClass(item.NormGroup?.Severity)">
+                                        @item.NormGroup?.Severity
+                                    </span>
+                                </td>
+                                <td>@item.NormGroup?.Name</td>
+                                <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
+                            </tr>
                         }
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Status -->
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Last notes</h5>
-                    <h2>Last Notes</h2>
                     <table class="table table-hover table-striped table-bordered rounded">
-                        
+
                         <thead>
                         <tr>
+      
                             <th>
-
-                                Created At
-                            </th>
-                            <th>
-
                                 Machine
                             </th>
                             <th>
-
                                 Content
-                                
                             </th>
                             <th>
-
-                                Is Solution 
+                                Created At
+                            </th>
+                            <th>
+                                Tag
                             </th>
                         </tr>
                         </thead>
@@ -245,13 +284,16 @@
                         @foreach (var note in Model.LastNotes)
                         {
                             <tr>
-                                <td>@note.CreatedAt</td>
                                 <td>@note.Machine?.Name</td>
                                 <td>@note.Content</td>
+                                <td>@note.CreatedAt</td>
+
                                 <td>
 
-                                    @note.IsSolution
-                                    
+                                    <span class="@GetIsSolutionIcon(note.IsSolution)">
+                                        @GetIsSolutionText(note.IsSolution)
+                                    </span>
+
                                 </td>
                             </tr>
                         }
@@ -260,5 +302,5 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 </div>

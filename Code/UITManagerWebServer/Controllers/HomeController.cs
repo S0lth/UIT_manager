@@ -18,41 +18,52 @@ public class HomeController : Controller {
         {
       
             
-            // Oldest unprocessed alarms
             List<Alarm> oldestUnprocessedAlarms = await _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Where(a => a.Status == AlarmStatus.New)
                 .ToListAsync(); // Charge la liste en mémoire
-
-
-
             
-            
-            // 5 most recently triggered new alarms
             var recentNewAlarms = await _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .OrderByDescending(a => a.TriggeredAt)
                 .Take(5)
                 .ToListAsync();
+            
+            var totalMachines = await _context.Machines.CountAsync();
 
-  
-            // Last notes
+            // Nombre de machines avec au moins une alarme
+            var machinesWithAlarms = await _context.Alarms
+                .Select(a => a.MachineId)
+                .Distinct()
+                .CountAsync();
+            
             var lastNotes = await _context.Notes
                 .Include(n => n.Machine)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
 
-            
+            var alarmTypeOccurrences = await _context.Alarms
+                .Include(a => a.NormGroup)
+                .GroupBy(a => a.NormGroup.Name)
+                .Select(group => new
+                {
+                    Type = group.Key, 
+                    Count = group.Count() 
+                })
+                .ToDictionaryAsync(g => g.Type, g => g.Count);
             
             var model = new HomePageViewModel
             {
                 OldestUnprocessedAlarms = oldestUnprocessedAlarms,
                 RecentNewAlarms = recentNewAlarms,
-                LastNotes = lastNotes
+                LastNotes = lastNotes,
+                AlarmTypeOccurrences = alarmTypeOccurrences,
+                TotalMachines = totalMachines,
+                MachinesWithAlarms = machinesWithAlarms
             };
-
+            ViewData["AlarmTypeOccurrences"] = System.Text.Json.JsonSerializer.Serialize(model.AlarmTypeOccurrences);
             return View(model);
         }
     
@@ -62,5 +73,8 @@ public class HomeController : Controller {
         public List<Alarm> OldestUnprocessedAlarms { get; set; }
         public List<Alarm> RecentNewAlarms { get; set; }
         public List<Note> LastNotes { get; set; }
+        public Dictionary<string, int> AlarmTypeOccurrences { get; set; } 
+        public int TotalMachines { get; set; } 
+        public int MachinesWithAlarms { get; set; }
     }
 }
