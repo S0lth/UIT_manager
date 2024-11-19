@@ -8,7 +8,6 @@ public static class Populate {
         using var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
 
-        // Vérifiez si la base de données est déjà peuplée
         if (context.Machines.Any() || context.NormGroups.Any()) {
             context.Alarms.RemoveRange(context.Alarms);
             context.Notes.RemoveRange(context.Notes);
@@ -20,10 +19,9 @@ public static class Populate {
             Console.WriteLine("Database cleared successfully.");
         }
 
-        // Créer des NormGroups
         var normGroups = new List<NormGroup> {
             new NormGroup {
-                Name = "Obsolete operating system" ,
+                Name = "Obsolete operating ................. ................ ................" ,
                 Priority = 8,
                 Severity = SeverityLevel.Critical,
                 Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" } }
@@ -59,40 +57,34 @@ public static class Populate {
         };
         context.Machines.AddRange(machines);
 
-// Créer des Alarms pour certaines machines
         var alarms = new List<Alarm> {
             new Alarm {
                 Status = AlarmStatus.New,
                 TriggeredAt = DateTime.UtcNow,
-                Description = "The Windows version in not up to date",
                 Machine = machines[0],
                 NormGroup = normGroups[0]
             },
             new Alarm {
                 Status = AlarmStatus.Acknowledged,
                 TriggeredAt = DateTime.UtcNow.AddHours(-2),
-                Description = "Storage capacity is under 20% left",
                 Machine = machines[1],
                 NormGroup = normGroups[1]
             },
             new Alarm {
                 Status = AlarmStatus.Acknowledged,
                 TriggeredAt = DateTime.UtcNow.AddHours(-2),
-                Description = "Storage capacity is under 20% left",
                 Machine = machines[5],
                 NormGroup = normGroups[1]
             },
             new Alarm {
                 Status = AlarmStatus.New,
                 TriggeredAt = DateTime.UtcNow,
-                Description = "The Windows version in not up to date",
                 Machine = machines[5],
                 NormGroup = normGroups[0]
             },
             new Alarm {
                 Status = AlarmStatus.New,
                 TriggeredAt = DateTime.UtcNow,
-                Description = "The Windows version in not up to date",
                 Machine = machines[6],
                 NormGroup = normGroups[0]
             },
@@ -100,7 +92,6 @@ public static class Populate {
         };
         context.Alarms.AddRange(alarms);
 
-// Créer des Notes pour certaines machines
         var notes = new List<Note> {
 
             new Note {
@@ -130,7 +121,6 @@ public static class Populate {
         };
         context.Notes.AddRange(notes);
 
-// Enregistrer les modifications
         context.SaveChanges();
     }
 }
