@@ -21,7 +21,7 @@ public static class Populate {
 
         var normGroups = new List<NormGroup> {
             new NormGroup {
-                Name = "Obsolete operating ................. ................ ................" ,
+                Name = "Obsolete operating system" ,
                 Priority = 8,
                 Severity = SeverityLevel.Critical,
                 Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" } }

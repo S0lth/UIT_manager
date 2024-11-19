@@ -1,0 +1,14 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "chartjs@0.3.24",
+      "destination": "/home/solth/RiderProjects/PIBAC3/Code/UITManagerWebServer/wwwroot/chartjs",
+      "files": [
+        "chart.min.js",
+        "chart.js"
+      ]
+    }
+  ]
+}
