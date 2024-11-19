@@ -7,6 +7,8 @@ namespace UITManagerAgent.DataCollectors;
 /// <summary>
 /// Collects ram information from the system and returns it as a <see cref="RamInformation"/> instance.
 /// </summary>
+/// 
+[SupportedOSPlatform("windows")]
 public class RamCollector : DataCollector {
     private ManagementObjectSearcher _wmiSearcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem");
 

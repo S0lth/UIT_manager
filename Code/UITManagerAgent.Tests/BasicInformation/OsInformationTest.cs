@@ -54,7 +54,6 @@ public class OsInformationTest {
         string json = _osInformation.ToJson();
         
         List<string> informations = new() {
-            "WmiSearcher",
             "OsName",
             "OsVersion",
         };
