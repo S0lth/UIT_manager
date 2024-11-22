@@ -33,6 +33,8 @@ public class MachineInformation{
             new RamCollector().Collect(),
             new UpTimeCollector().Collect(),
             new UserCollector().Collect(),
+            new ModelCollectors().Collect(),
+            new TagCollector().Collect(),
         };
     }
 
