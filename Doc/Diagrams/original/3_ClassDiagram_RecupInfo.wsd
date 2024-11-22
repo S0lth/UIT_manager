@@ -1,0 +1,227 @@
+@startuml 
+title Partial Conceptual Class Diagram: Information Retrieval
+skinparam groupInheritance 2
+skinparam Monochrome true
+package UITManagerAgent{
+    package DataCollector{
+        abstract DataColector{
+            + Information Collect()
+        }
+        class CpuCollectors {
+            + int GetProcessorCount()
+            + int GetNumberOfCores()
+            + int GetCurrentClockSpeed()
+            + string GetModelCPU()
+        }
+        class RamCollector {}
+        class UserCollector {
+            + bool IsDomainUser()
+        }
+        class IpsAddressesCollector {}
+        class OsCollector {}
+        class MachineNameCollect {}
+        class DomainNameCollector {}
+        class UpTimeCollector {}
+        class DirectXCollector {}
+        class DiskCollector {}
+        class TagCollector {}
+        class ModelCollector {}
+
+    }
+    package BasicInformation{
+        abstract Information{}
+
+        class ModelInformation{
+            - string _model
+            + string Model {get; set}
+            + override string ToJson()
+        }
+
+        class TagInformation{
+            - string _tagService
+            + string TagService {get; set}
+            + override string ToJson()
+        }
+
+
+        class CpuInformation {
+            - int _logicalCpu
+            - int _coreCount
+            - int _clockSpeed
+            - string _model
+            + int LogicalCpu {get ; set}
+            + int CoreCount {get ; set}
+            + int ClockSpeed {get ; set}
+            + string Model {get ; set}
+            + override string ToString()
+            + override string ToJson()
+        }
+        class RamInformation {
+
+            - ulong _totalMemory;
+            - ulong _usedMemory;
+            - ulong _freeMemory;
+            - ManagementObjectSearcher _wmiSearcher
+
+            + ulong TotalMemory {get ; set }
+            + ulong UsedMemory {get ; set }
+            + ulong FreeMemory {get ; set}
+            + ManagementObjectSearcher WmiSearcher {get ; set}
+
+            + override string ToString()
+            + override string ToJson()
+        }
+       class UsersInformation {
+            -  List<User> _usersList
+            + List<string> userList {get; set;}
+            + override string ToString()
+            + override string ToJson()
+        }
+
+        class User{
+            - string _name
+            - string _scope
+            + User()
+            + User(name : String, scope : String)
+            + string Name {get; set}
+            + string Scope {get; set}
+            + override string ToJson()
+        }
+
+        class IpsAddressesInformation {
+            - List<string> _ipsLis
+            + List<string> GetIpsList()
+            + override string ToString()
+            + override string ToJson()
+        }
+        class OsInformation {
+            - string _osName
+            - string _osVersion
+            - string _osBuild
+            - ManagementObjectSearcher _wmiSearcher
+            - ManagementObject _queryObj
+            + string OsName{get ; set}
+            + string OsVersion{get ; set}
+            + string OsBuild{get ; set}
+            + ManagementObjectSearcher WmiSearcher {get ; set}
+            + ManagementObject QueryObj {get ; set}
+            + override string ToString()
+            + override string ToJson()
+        }
+        class MachineNameInformation {
+            - string _machineName
+            + string MachineName {get ; set}
+            + override string ToString()
+            + override string ToJson()
+        }
+        class DomainNameInformation {
+            - string _domainName
+            + string DomainName{get ; set}
+            + override string ToString()
+            + override string ToJson()
+        }
+        class UpTimeInformation {
+            - int _milliseconds
+            + int Milliseconds {get ; set}
+            + override string ToString()
+            + override string ToJson()
+
+        }
+        class DirectXInformation {
+            - string _directXVersion
+            + string DirectX {get ; set}
+            + override string ToString()
+            + override string ToJson()
+        }
+        class DiskInformation {
+            - List<Disk> _disks
+            - int _numberDisk
+
+            + List<Disk> Disks {get ; set}
+            + int NumberDisk {get ; set}
+            + string GetFirstDiskName()
+
+            + override string ToString()
+            + override string ToJson()
+
+        }
+
+        class Disk{
+            - string _disksName
+            - long _diskTotalSize
+            - long _diskFreeSize
+
+            + string DiskName {get; set}
+            + long DiskTotalSize {get ; set}
+            + long DiskFreeSize {get ; set}
+            + override string ToString()
+            + override string ToJson()
+        }
+
+    }
+    class MachineInformation{
+        + List<Information> Information {get ; set}
+        + override string ToString()
+        + override string ToJson()
+
+    }
+
+    class ApiCommunicator{
+        + bool sendMachineInformation(MachineInformation)
+    }
+
+
+
+    CpuCollectors -up-|> DataColector
+    CpuCollectors ..> CpuInformation
+    RamCollector -up-|> DataColector
+    RamCollector ..> RamInformation
+    UserCollector -up-|> DataColector
+    UserCollector ..> UsersInformation
+    IpsAddressesCollector -up-|> DataColector
+    IpsAddressesCollector ..> IpsAddressesInformation
+    OsCollector -up-|> DataColector
+    OsCollector ..> OsInformation
+    MachineNameCollect -up-|> DataColector
+    MachineNameCollect ..> MachineNameInformation
+    DomainNameCollector -up-|> DataColector
+    DomainNameCollector ..> DomainNameInformation
+    UpTimeCollector -up-|> DataColector
+    UpTimeCollector ..> UpTimeInformation
+    DirectXCollector -up-|> DataColector
+    DirectXCollector ..> DirectXInformation 
+    DiskCollector -up-|> DataColector
+    DiskCollector ..> DiskInformation
+    TagCollector -up-|> DataColector
+    TagCollector ..> TagInformation
+    ModelCollector -up-|> DataColector
+    ModelCollector ..> ModelInformation
+
+    ApiCommunicator ..> MachineInformation : Uses
+
+    MachineInformation .> Information : Uses
+    MachineInformation .> DataCollector : uses
+
+    Note left of MachineInformation
+        uses one of the instence for each class that inherits from datacollector
+    end Note
+
+
+    CpuInformation -down-|> Information
+    RamInformation -down-|> Information
+    UsersInformation -down-|> Information
+    IpsAddressesInformation -down-|> Information
+    OsInformation -down-|> Information
+    MachineNameInformation -down-|> Information
+    DomainNameInformation -down-|> Information
+    UpTimeInformation -down-|> Information
+    DirectXInformation -down-|> Information
+    DiskInformation -down-|> Information
+    TagInformation -down-|> Information
+    ModelInformation -down-|> Information
+    Disk -up-+ DiskInformation
+    User -up-+ UsersInformation
+
+}
+
+@enduml
