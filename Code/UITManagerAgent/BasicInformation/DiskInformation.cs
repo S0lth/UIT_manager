@@ -52,6 +52,10 @@ namespace UITManagerAgent.BasicInformation {
                        "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
             }
 
+            /// <summary>
+            /// Returns a Json string representation of the disk
+            /// </summary>
+            /// <returns>A Json string that represents the disk.</returns>
             public string ToJson() {
                 return JsonSerializer.Serialize(this);
             }

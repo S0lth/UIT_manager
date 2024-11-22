@@ -30,13 +30,13 @@ public class UsersInformationTest {
     public void ToJson_ShouldReturnValidJson_WhenIPSAddressesAreManuallySet() {
         if (_usersInformation != null) {
             _usersInformation.UsersList = new() {
-            "admin",
-            "guest",
-            "bob",
+            new UsersInformation.User("admin", "local"),
+            new UsersInformation.User("guest", "local"),
+            new UsersInformation.User("bob", "local"),
             };
 
-            List<string> usersList = _usersInformation.UsersList;
-            string expectedJson = $"{{\"UsersList\":[\"{usersList[0]}\",\"{usersList[1]}\",\"{usersList[2]}\"]}}";
+            List<UsersInformation.User> usersList = _usersInformation.UsersList;
+            string expectedJson = $"{{\"UsersList\":[{usersList[0].ToJson()},{usersList[1].ToJson()},{usersList[2].ToJson()}]}}";
 
             Assert.AreEqual(expectedJson, _usersInformation.ToJson());
         }

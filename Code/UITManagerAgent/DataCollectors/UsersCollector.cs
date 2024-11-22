@@ -20,7 +20,10 @@ public class UserCollector : DataCollector {
             using DirectoryEntry localMachine = new("WinNT://" + Environment.MachineName);
             foreach (DirectoryEntry child in localMachine.Children) {
                 if (child.SchemaClassName == "User") {
-                    users.UsersList.Add(child.Name);
+                    UsersInformation.User user= new ();
+                    user.Name = child.Name;
+                    user.Scope = IsDomainUser() ? "Domaine" : "Local";
+                    users.UsersList.Add(user);
                 }
             }
         }
@@ -29,5 +32,17 @@ public class UserCollector : DataCollector {
         }
 
         return users;
+    }
+    
+    /// <summary>
+    /// Verrify if the user is a local user or a domain
+    /// </summary>
+    /// <returns>return true if user is local or false if is a domain</returns>
+    private bool IsDomainUser()
+    {
+        string userDomain = Environment.UserDomainName;
+        string machineName = Environment.MachineName;
+
+        return !userDomain.Equals(machineName, StringComparison.OrdinalIgnoreCase);
     }
 }
