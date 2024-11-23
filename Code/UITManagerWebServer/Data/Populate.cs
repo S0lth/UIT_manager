@@ -71,22 +71,22 @@ public static class Populate {
         var alarmStatuses = new List<AlarmStatus> {
             new AlarmStatus {
                 ModificationDate = DateTime.UtcNow.AddHours(-2),
-                StatusTypeId = alarmStatusTypes[2].Id,
-                ModifierId = employees[0].Id,
+                StatusType = alarmStatusTypes[2],
+                Modifier = employees[0],
             },
             new AlarmStatus {
                 ModificationDate = DateTime.UtcNow.AddHours(-5),
-                StatusTypeId = alarmStatusTypes[1].Id,
-                ModifierId = employees[1].Id,
+                StatusType = alarmStatusTypes[1],
+                Modifier = employees[1],
             },
             new AlarmStatus {
                 ModificationDate = DateTime.UtcNow.AddHours(-8),
-                StatusTypeId = alarmStatusTypes[4].Id,
-                ModifierId = employees[2].Id,
+                StatusType = alarmStatusTypes[4],
+                Modifier = employees[2],
             },
-            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusTypeId = alarmStatusTypes[0].Id, },
-            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusTypeId = alarmStatusTypes[0].Id, },
-            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusTypeId = alarmStatusTypes[0].Id, }
+            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusType = alarmStatusTypes[0], },
+            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusType = alarmStatusTypes[0], },
+            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusType = alarmStatusTypes[0], }
         };
 
         context.AlarmStatuses.AddRange(alarmStatuses);
@@ -161,7 +161,7 @@ public static class Populate {
                 int alarmCount = random.Next(1, 4);
                 for (int i = 0; i < alarmCount; i++) {
                     alarms.Add(new Alarm {
-                        AlarmStatusId = alarmStatuses[i].Id,
+                        AlarmStatus = alarmStatuses[i],
                         TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
                         Machine = machine,
                         NormGroup = normGroups[random.Next(normGroups.Count)]

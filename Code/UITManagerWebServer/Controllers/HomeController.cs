@@ -22,9 +22,11 @@ public class HomeController : Controller {
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmStatus)
-                .ThenInclude(aStatus => aStatus.StatusType)
+                .ThenInclude(s => s.StatusType)
                 .Where(a => a.AlarmStatus.StatusType.Name == "New") 
                 .ToListAsync(); // Charge la liste en mémoire
+            
+            ViewData["AlarmStatusTypes"] = _context.AlarmStatusTypes.ToList();
             
             
             var recentNewAlarms = await _context.Alarms

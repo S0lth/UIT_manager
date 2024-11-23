@@ -11,11 +11,12 @@ namespace UITManagerWebServer.Models {
 
         public int AlarmStatusId { get; set; }
         
-        public AlarmStatus AlarmStatus { get; set; }
+        public AlarmStatus? AlarmStatus { get; set; }
 
         public DateTime TriggeredAt { get; set; }
 
         public int MachineId { get; set; }
+        
         public Machine? Machine { get; set; }
 
         public int NormGroupId { get; set; }
