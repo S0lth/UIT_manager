@@ -1,0 +1,35 @@
+@startuml
+title Partial Diagram Class
+header Consult alarms
+footer UIT Manager
+skinparam monochrome true
+skinparam linetype polyline
+hide class circle
+hide class stereotype
+hide separator
+hide empty members
+skinparam shadowing true
+skinparam roundcorner 10
+left to right direction
+skinparam ArrowThickness 1.
+class NormGroup {
+name
+priority
+maxExpectedProcessingTime
+}
+class Severity {
+name
+description
+}
+class SeverityHistory{
+updateDate
+}
+class Employee {
+lastName
+firstName
+role
+}
+NormGroup "1.." <-- "1" SeverityHistory: is linked to
+SeverityHistory "1" --> "1.." Severity: is linked to
+Employee "0..*" <-- "1" SeverityHistory: is update by
+@enduml
