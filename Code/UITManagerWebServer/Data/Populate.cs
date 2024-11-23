@@ -67,30 +67,6 @@ public static class Populate {
         
         context.Employees.AddRange(employees);
         context.SaveChanges();
-        
-        var alarmStatuses = new List<AlarmStatus> {
-            new AlarmStatus {
-                ModificationDate = DateTime.UtcNow.AddHours(-2),
-                StatusType = alarmStatusTypes[2],
-                Modifier = employees[0],
-            },
-            new AlarmStatus {
-                ModificationDate = DateTime.UtcNow.AddHours(-5),
-                StatusType = alarmStatusTypes[1],
-                Modifier = employees[1],
-            },
-            new AlarmStatus {
-                ModificationDate = DateTime.UtcNow.AddHours(-8),
-                StatusType = alarmStatusTypes[4],
-                Modifier = employees[2],
-            },
-            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusType = alarmStatusTypes[0], },
-            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusType = alarmStatusTypes[0], },
-            new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusType = alarmStatusTypes[0], }
-        };
-
-        context.AlarmStatuses.AddRange(alarmStatuses);
-        context.SaveChanges();
 
         var normGroups = new List<NormGroup> {
             new NormGroup {
@@ -157,15 +133,31 @@ public static class Populate {
         var alarms = new List<Alarm>();
 
         foreach (var machine in machines) {
-            if (random.NextDouble() > 0.5) {
-                int alarmCount = random.Next(1, 4);
+            bool hasAlarm = random.Next(0, 100) < 45; // 45% des machines auront des alarmes
+
+            if (hasAlarm) {
+                int alarmCount = random.Next(0, 5);
+
                 for (int i = 0; i < alarmCount; i++) {
-                    alarms.Add(new Alarm {
-                        AlarmStatus = alarmStatuses[i],
+                    var alarmStatusType = alarmStatusTypes[random.Next(alarmStatusTypes.Count)];
+
+                    bool isNewAlarm = random.Next(0, 100) < 70; 
+
+                    var alarmStatus = new AlarmStatus {
+                        ModificationDate = isNewAlarm ? null : DateTime.UtcNow.AddHours(-random.Next(1, 72)),
+                        StatusType = alarmStatusType,
+                        Modifier = isNewAlarm ? null : employees[random.Next(employees.Count)] 
+                    };
+
+                    var alarm = new Alarm {
+                        AlarmStatus = alarmStatus,
                         TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
                         Machine = machine,
                         NormGroup = normGroups[random.Next(normGroups.Count)]
-                    });
+                    };
+
+                    context.AlarmStatuses.Add(alarmStatus);
+                    context.Alarms.Add(alarm);
                 }
             }
         }

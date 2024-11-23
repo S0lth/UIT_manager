@@ -12,7 +12,7 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241123131835_InitialCreate")]
+    [Migration("20241123143740_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -264,7 +264,7 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("ModificationDate")
+                    b.Property<DateTime?>("ModificationDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ModifierId")

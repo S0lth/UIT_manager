@@ -7,7 +7,7 @@
         
         public int Id { get; set; }
         
-        public DateTime ModificationDate { get; set; }
+        public DateTime? ModificationDate { get; set; }
         
         public int StatusTypeId { get; set; }
         

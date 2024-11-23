@@ -33,6 +33,7 @@ public class HomeController : Controller {
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .OrderByDescending(a => a.TriggeredAt)
+                .Where(a => a.AlarmStatus.StatusType.Name == "New")
                 .Take(5)
                 .ToListAsync();
             

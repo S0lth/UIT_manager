@@ -261,7 +261,7 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("ModificationDate")
+                    b.Property<DateTime?>("ModificationDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("ModifierId")

@@ -220,7 +220,7 @@ namespace UITManagerWebServer.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ModificationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ModificationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     StatusTypeId = table.Column<int>(type: "integer", nullable: false),
                     ModifierId = table.Column<int>(type: "integer", nullable: true)
                 },

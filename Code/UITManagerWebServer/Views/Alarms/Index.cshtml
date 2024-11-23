@@ -118,14 +118,17 @@
                                             @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
                                             {
                                                 var currentStatus = item.AlarmStatus?.StatusType?.Name;
-                                                
-                                                if (statusType.Name == currentStatus)
+
+                                                if (statusType.Name != currentStatus)
                                                 {
-                                                    <option value="@statusType.Name" selected="selected">@statusType.Name</option>
-                                                }
-                                                else
-                                                {
-                                                    <option value="@statusType.Name">@statusType.Name</option>
+                                                    if (currentStatus != "New")
+                                                    {
+                                                        <option value="@statusType.Name">@statusType.Name</option>
+                                                    }
+                                                    else if (statusType.Name != "New")
+                                                    {
+                                                        <option value="@statusType.Name">@statusType.Name</option>
+                                                    }
                                                 }
                                             }
                                         </select>
