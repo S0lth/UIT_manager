@@ -222,7 +222,7 @@ namespace UITManagerWebServer.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ModificationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     StatusTypeId = table.Column<int>(type: "integer", nullable: false),
-                    ModifierId = table.Column<int>(type: "integer", nullable: false)
+                    ModifierId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {

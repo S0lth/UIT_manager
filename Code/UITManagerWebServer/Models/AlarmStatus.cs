@@ -11,9 +11,9 @@
         
         public int StatusTypeId { get; set; }
         
-        public AlarmStatusType? StatusType { get; set; }
+        public AlarmStatusType StatusType { get; set; }
         
-        public int ModifierId { get; set; }
+        public int? ModifierId { get; set; }
         
         public Employee? Modifier { get; set; }
     }

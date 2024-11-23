@@ -11,7 +11,7 @@ namespace UITManagerWebServer.Models {
 
         public int AlarmStatusId { get; set; }
         
-        public AlarmStatus? AlarmStatus { get; set; }
+        public AlarmStatus AlarmStatus { get; set; }
 
         public DateTime TriggeredAt { get; set; }
 

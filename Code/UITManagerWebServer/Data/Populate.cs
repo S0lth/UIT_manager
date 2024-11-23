@@ -46,7 +46,9 @@ public static class Populate {
                     "The resolution of the issue causing the alarm depends on action or support from an external party or vendor, and progress is pending their input."
             }
         };
+        
         context.AlarmStatusTypes.AddRange(alarmStatusTypes);
+        context.SaveChanges();
 
         var employees = new List<Employee> {
             new Employee { FirstName = "Roger", LastName = "Ô", Role = "D.S.I." },
@@ -62,8 +64,10 @@ public static class Populate {
             new Employee { FirstName = "Martin-Étienne", LastName = "LEFORT", Role = "Technicien Site B" },
             new Employee { FirstName = "Paul", LastName = "GUILBERT", Role = "Technicien Site B" }
         };
+        
         context.Employees.AddRange(employees);
-
+        context.SaveChanges();
+        
         var alarmStatuses = new List<AlarmStatus> {
             new AlarmStatus {
                 ModificationDate = DateTime.UtcNow.AddHours(-2),
@@ -77,7 +81,7 @@ public static class Populate {
             },
             new AlarmStatus {
                 ModificationDate = DateTime.UtcNow.AddHours(-8),
-                StatusTypeId = alarmStatusTypes[3].Id,
+                StatusTypeId = alarmStatusTypes[4].Id,
                 ModifierId = employees[2].Id,
             },
             new AlarmStatus { ModificationDate = DateTime.UtcNow, StatusTypeId = alarmStatusTypes[0].Id, },
@@ -86,7 +90,7 @@ public static class Populate {
         };
 
         context.AlarmStatuses.AddRange(alarmStatuses);
-
+        context.SaveChanges();
 
         var normGroups = new List<NormGroup> {
             new NormGroup {
@@ -115,6 +119,7 @@ public static class Populate {
             }
         };
         context.NormGroups.AddRange(normGroups);
+        context.SaveChanges();
 
         var brandsAndModels = new[] {
             new { Brand = "Dell", Models = new[] { "Latitude", "OptiPlex", "Precision", "Inspiron" } },
@@ -141,6 +146,7 @@ public static class Populate {
         }
 
         context.Machines.AddRange(machines);
+        context.SaveChanges();
 
         string GenerateRandomWindowsMachineName() {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -165,6 +171,7 @@ public static class Populate {
         }
 
         context.Alarms.AddRange(alarms);
+        context.SaveChanges();
 
         var notes = new List<Note>();
 
@@ -199,7 +206,63 @@ public static class Populate {
 
         context.Notes.AddRange(notes);
         context.SaveChanges();
+        
         Console.WriteLine(
             $"Database populated with {machines.Count} machines, {alarms.Count} alarms, and {notes.Count} notes.");
+
+        Console.WriteLine("\n--- Machines ---");
+        var machines2 = context.Machines.ToList();
+        foreach (var machine in machines2) {
+            Console.WriteLine($"Machine: {machine.Name}");
+        }
+
+        // Afficher toutes les AlarmStatusTypes
+        Console.WriteLine("\n--- Alarm Status Types ---");
+        var alarmStatusTypes2 = context.AlarmStatusTypes.ToList();
+        foreach (var status in alarmStatusTypes2) {
+            Console.WriteLine($"Alarm Status Type: {status.Name}, Description: {status.Description}");
+        }
+
+        // Afficher tous les Employees
+        Console.WriteLine("\n--- Employees ---");
+        var employees2 = context.Employees.ToList();
+        foreach (var employee in employees2) {
+            Console.WriteLine($"Employee: {employee.FirstName} {employee.LastName}, Role: {employee.Role}");
+        }
+
+        // Afficher tous les AlarmStatuses
+        Console.WriteLine("\n--- Alarm Statuses ---");
+        var alarmStatuses2 = context.AlarmStatuses.ToList();
+        foreach (var alarmStatus in alarmStatuses2) {
+            Console.WriteLine(
+                $"Alarm Status: {alarmStatus.ModificationDate}, Status Type: {alarmStatus.StatusTypeId}, Modifier: {alarmStatus.ModifierId}");
+        }
+
+        // Afficher toutes les NormGroups
+        Console.WriteLine("\n--- Norm Groups ---");
+        var normGroups2 = context.NormGroups.ToList();
+        foreach (var normGroup in normGroups2) {
+            Console.WriteLine(
+                $"Norm Group: {normGroup.Name}, Severity: {normGroup.Severity}, Priority: {normGroup.Priority}");
+            foreach (var norm in normGroup.Norms) {
+                Console.WriteLine($"  Norm: {norm.Name}");
+            }
+        }
+
+        // Afficher toutes les Alarms
+        Console.WriteLine("\n--- Alarms ---");
+        var alarms2 = context.Alarms.Include(a => a.Machine).Include(a => a.NormGroup).ToList();
+        foreach (var alarm in alarms2) {
+            Console.WriteLine(
+                $"Alarm Triggered At: {alarm.TriggeredAt}, Machine: {alarm.Machine.Name}, Norm Group: {alarm.NormGroup.Name}");
+        }
+
+        // Afficher toutes les Notes
+        Console.WriteLine("\n--- Notes ---");
+        var notes2 = context.Notes.Include(n => n.Machine).ToList();
+        foreach (var note in notes2) {
+            Console.WriteLine(
+                $"Note: {note.Content}, Machine: {note.Machine.Name}, Is Solution: {note.IsSolution}, Created At: {note.CreatedAt}");
+        }
     }
 }

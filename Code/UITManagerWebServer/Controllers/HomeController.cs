@@ -21,8 +21,11 @@ public class HomeController : Controller {
             List<Alarm> oldestUnprocessedAlarms = await _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
+                .Include(a => a.AlarmStatus)
+                .ThenInclude(aStatus => aStatus.StatusType)
                 .Where(a => a.AlarmStatus.StatusType.Name == "New") 
                 .ToListAsync(); // Charge la liste en mémoire
+            
             
             var recentNewAlarms = await _context.Alarms
                 .Include(a => a.Machine)
@@ -63,7 +66,9 @@ public class HomeController : Controller {
                 TotalMachines = totalMachines,
                 MachinesWithAlarms = machinesWithAlarms
             };
+            
             ViewData["AlarmTypeOccurrences"] = System.Text.Json.JsonSerializer.Serialize(model.AlarmTypeOccurrences);
+            
             return View(model);
         }
     

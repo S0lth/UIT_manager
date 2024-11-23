@@ -264,7 +264,7 @@ namespace UITManagerWebServer.Migrations
                     b.Property<DateTime>("ModificationDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ModifierId")
+                    b.Property<int?>("ModifierId")
                         .HasColumnType("integer");
 
                     b.Property<int>("StatusTypeId")
@@ -499,8 +499,7 @@ namespace UITManagerWebServer.Migrations
                     b.HasOne("UITManagerWebServer.Models.Employee", "Modifier")
                         .WithMany()
                         .HasForeignKey("ModifierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("UITManagerWebServer.Models.AlarmStatusType", "StatusType")
                         .WithMany()

@@ -12,7 +12,7 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241123111302_InitialCreate")]
+    [Migration("20241123122007_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -267,7 +267,7 @@ namespace UITManagerWebServer.Migrations
                     b.Property<DateTime>("ModificationDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ModifierId")
+                    b.Property<int?>("ModifierId")
                         .HasColumnType("integer");
 
                     b.Property<int>("StatusTypeId")
@@ -502,8 +502,7 @@ namespace UITManagerWebServer.Migrations
                     b.HasOne("UITManagerWebServer.Models.Employee", "Modifier")
                         .WithMany()
                         .HasForeignKey("ModifierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("UITManagerWebServer.Models.AlarmStatusType", "StatusType")
                         .WithMany()
