@@ -230,9 +230,6 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<int>("MachineId")
                         .HasColumnType("integer");
 
@@ -299,13 +296,13 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<TimeSpan>("MaxExpectedProcessingTime")
+                        .HasColumnType("interval");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.Property<int>("Priority")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Severity")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -343,6 +340,57 @@ namespace UITManagerWebServer.Migrations
                     b.HasIndex("MachineId");
 
                     b.ToTable("Notes");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.Severity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Severity");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.SeverityHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdNormGroup")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdSeverity")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("NormGroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("SeverityId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormGroupId");
+
+                    b.HasIndex("SeverityId");
+
+                    b.ToTable("SeverityHistory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -443,6 +491,21 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("Machine");
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.SeverityHistory", b =>
+                {
+                    b.HasOne("UITManagerWebServer.Models.NormGroup", "NormGroup")
+                        .WithMany("SeverityHistories")
+                        .HasForeignKey("NormGroupId");
+
+                    b.HasOne("UITManagerWebServer.Models.Severity", "Severity")
+                        .WithMany("SeverityHistories")
+                        .HasForeignKey("SeverityId");
+
+                    b.Navigation("NormGroup");
+
+                    b.Navigation("Severity");
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>
                 {
                     b.Navigation("Alarms");
@@ -453,6 +516,13 @@ namespace UITManagerWebServer.Migrations
             modelBuilder.Entity("UITManagerWebServer.Models.NormGroup", b =>
                 {
                     b.Navigation("Norms");
+
+                    b.Navigation("SeverityHistories");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.Severity", b =>
+                {
+                    b.Navigation("SeverityHistories");
                 });
 #pragma warning restore 612, 618
         }

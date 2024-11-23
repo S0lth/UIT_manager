@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UITManagerWebServer.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -72,11 +72,25 @@ namespace UITManagerWebServer.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Priority = table.Column<int>(type: "integer", nullable: false),
-                    Severity = table.Column<int>(type: "integer", nullable: false)
+                    MaxExpectedProcessingTime = table.Column<TimeSpan>(type: "interval", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_NormGroups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Severity",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Severity", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,7 +235,6 @@ namespace UITManagerWebServer.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     TriggeredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
                     MachineId = table.Column<int>(type: "integer", nullable: false),
                     NormGroupId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -260,6 +273,33 @@ namespace UITManagerWebServer.Migrations
                         principalTable: "NormGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SeverityHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdSeverity = table.Column<int>(type: "integer", nullable: false),
+                    SeverityId = table.Column<int>(type: "integer", nullable: true),
+                    IdNormGroup = table.Column<int>(type: "integer", nullable: false),
+                    NormGroupId = table.Column<int>(type: "integer", nullable: true),
+                    UpdateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SeverityHistory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SeverityHistory_NormGroups_NormGroupId",
+                        column: x => x.NormGroupId,
+                        principalTable: "NormGroups",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SeverityHistory_Severity_SeverityId",
+                        column: x => x.SeverityId,
+                        principalTable: "Severity",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -323,6 +363,16 @@ namespace UITManagerWebServer.Migrations
                 name: "IX_Notes_MachineId",
                 table: "Notes",
                 column: "MachineId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SeverityHistory_NormGroupId",
+                table: "SeverityHistory",
+                column: "NormGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SeverityHistory_SeverityId",
+                table: "SeverityHistory",
+                column: "SeverityId");
         }
 
         /// <inheritdoc />
@@ -353,16 +403,22 @@ namespace UITManagerWebServer.Migrations
                 name: "Notes");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "SeverityHistory");
 
             migrationBuilder.DropTable(
-                name: "NormGroups");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Machines");
+
+            migrationBuilder.DropTable(
+                name: "NormGroups");
+
+            migrationBuilder.DropTable(
+                name: "Severity");
         }
     }
 }

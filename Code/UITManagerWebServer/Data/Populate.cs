@@ -22,25 +22,25 @@ public static class Populate {
             new NormGroup {
                 Name = "Obsolete operating system",
                 Priority = 8,
-                Severity = SeverityLevel.Critical,
+                //Severity = SeverityLevel.Critical,
                 Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" } }
             },
             new NormGroup {
                 Name = "Storage exceeded",
                 Priority = 4,
-                Severity = SeverityLevel.High,
+                //Severity = SeverityLevel.High,
                 Norms = new List<Norm> { new Norm { Name = "Storage over 80%" } }
             },
             new NormGroup {
                 Name = "CPU Usage High",
                 Priority = 2,
-                Severity = SeverityLevel.Medium,
+                //Severity = SeverityLevel.Medium,
                 Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%" } }
             },
             new NormGroup {
                 Name = "Memory Usage Warning",
                 Priority = 1,
-                Severity = SeverityLevel.Low,
+                //Severity = SeverityLevel.Low,
                 Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%" } }
             }
         };

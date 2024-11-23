@@ -41,26 +41,6 @@
 
 }
 
-
-@functions {
-
-    string GetSeverityClass(UITManagerWebServer.Models.SeverityLevel severity)
-    {
-        return severity switch
-        {
-            UITManagerWebServer.Models.SeverityLevel.Critical => "text-danger",
-            UITManagerWebServer.Models.SeverityLevel.High => "text-warning",
-            UITManagerWebServer.Models.SeverityLevel.Medium => "text-warning",
-            UITManagerWebServer.Models.SeverityLevel.Low => "text-success",
-            UITManagerWebServer.Models.SeverityLevel.InfoOnly => "text-info",
-            UITManagerWebServer.Models.SeverityLevel.Warning => "text-secondary",
-            UITManagerWebServer.Models.SeverityLevel.NonCritical => "text-muted",
-            _ => "text-body"
-        };
-    }
-
-}
-
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <div class="row mb-4">
         <div class="col-lg-12">
@@ -128,11 +108,7 @@
                                             }
                                         </select>
                                     </td>
-                                    <td>
-                                        <span class="@GetSeverityClass(item.NormGroup.Severity)">
-                                            @item.NormGroup.Severity
-                                        </span>
-                                    </td>
+                                    <td>N/A</td>
                                     <td class="text-secondary">
                                         @Html.DisplayFor(modelItem => item.NormGroup.Name)
                                     </td>
