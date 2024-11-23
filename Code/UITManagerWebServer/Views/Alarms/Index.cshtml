@@ -117,7 +117,7 @@
                                         <select class="form-select form-select-sm" onchange="updateAlarmStatus(@item.Id, this.value)">
                                             @foreach (var status in Enum.GetValues(typeof(UITManagerWebServer.Models.AlarmStatus)))
                                             {
-                                                if (status.ToString() == item.Status.ToString())
+                                                if (status.ToString() == item.AlarmStatus.ToString())
                                                 {
                                                     <option value="@status" selected="selected">@status</option>
                                                 }

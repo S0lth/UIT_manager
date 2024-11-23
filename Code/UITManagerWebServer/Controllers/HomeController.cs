@@ -21,7 +21,7 @@ public class HomeController : Controller {
             List<Alarm> oldestUnprocessedAlarms = await _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
-                .Where(a => a.Status == AlarmStatus.New)
+                .Where(a => a.AlarmStatus.StatusType.Name == "New") 
                 .ToListAsync(); // Charge la liste en mémoire
             
             var recentNewAlarms = await _context.Alarms

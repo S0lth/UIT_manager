@@ -19,6 +19,12 @@ namespace UITManagerWebServer.Data {
 
         public DbSet<Norm> Norms { get; set; }
 
+        public DbSet<AlarmStatus> AlarmStatuses { get; set; }
+
+        public DbSet<AlarmStatusType> AlarmStatusTypes { get; set; }
+
+        public DbSet<Employee> Employees { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
 
@@ -39,6 +45,24 @@ namespace UITManagerWebServer.Data {
                 .WithMany()
                 .HasForeignKey(a => a.NormGroupId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Alarm>()
+                .HasOne(a => a.AlarmStatus)
+                .WithMany()
+                .HasForeignKey(a => a.AlarmStatusId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<AlarmStatus>()
+                .HasOne(a => a.Modifier)
+                .WithMany()
+                .HasForeignKey(a => a.ModifierId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<AlarmStatus>()
+                .HasOne(a => a.StatusType)
+                .WithMany()
+                .HasForeignKey(a => a.StatusTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

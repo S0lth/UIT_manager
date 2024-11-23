@@ -230,8 +230,8 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
+                    b.Property<int>("AlarmStatusId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("MachineId")
                         .HasColumnType("integer");
@@ -239,19 +239,90 @@ namespace UITManagerWebServer.Migrations
                     b.Property<int>("NormGroupId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("TriggeredAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AlarmStatusId");
 
                     b.HasIndex("MachineId");
 
                     b.HasIndex("NormGroupId");
 
                     b.ToTable("Alarms");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.AlarmStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ModificationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ModifierId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StatusTypeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModifierId");
+
+                    b.HasIndex("StatusTypeId");
+
+                    b.ToTable("AlarmStatuses");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.AlarmStatusType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AlarmStatusTypes");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>
@@ -398,6 +469,12 @@ namespace UITManagerWebServer.Migrations
 
             modelBuilder.Entity("UITManagerWebServer.Models.Alarm", b =>
                 {
+                    b.HasOne("UITManagerWebServer.Models.AlarmStatus", "AlarmStatus")
+                        .WithMany()
+                        .HasForeignKey("AlarmStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("UITManagerWebServer.Models.Machine", "Machine")
                         .WithMany("Alarms")
                         .HasForeignKey("MachineId")
@@ -410,9 +487,30 @@ namespace UITManagerWebServer.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("AlarmStatus");
+
                     b.Navigation("Machine");
 
                     b.Navigation("NormGroup");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.AlarmStatus", b =>
+                {
+                    b.HasOne("UITManagerWebServer.Models.Employee", "Modifier")
+                        .WithMany()
+                        .HasForeignKey("ModifierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("UITManagerWebServer.Models.AlarmStatusType", "StatusType")
+                        .WithMany()
+                        .HasForeignKey("StatusTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Modifier");
+
+                    b.Navigation("StatusType");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Norm", b =>

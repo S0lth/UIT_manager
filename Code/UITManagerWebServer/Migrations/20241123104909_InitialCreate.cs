@@ -7,11 +7,25 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UITManagerWebServer.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AlarmStatusTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AlarmStatusTypes", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -49,6 +63,21 @@ namespace UITManagerWebServer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -186,6 +215,33 @@ namespace UITManagerWebServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AlarmStatuses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ModificationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StatusTypeId = table.Column<int>(type: "integer", nullable: false),
+                    ModifierId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AlarmStatuses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AlarmStatuses_AlarmStatusTypes_StatusTypeId",
+                        column: x => x.StatusTypeId,
+                        principalTable: "AlarmStatusTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AlarmStatuses_Employees_ModifierId",
+                        column: x => x.ModifierId,
+                        principalTable: "Employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Notes",
                 columns: table => new
                 {
@@ -214,35 +270,6 @@ namespace UITManagerWebServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Alarms",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    TriggeredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    MachineId = table.Column<int>(type: "integer", nullable: false),
-                    NormGroupId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Alarms", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Alarms_Machines_MachineId",
-                        column: x => x.MachineId,
-                        principalTable: "Machines",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Alarms_NormGroups_NormGroupId",
-                        column: x => x.NormGroupId,
-                        principalTable: "NormGroups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Norms",
                 columns: table => new
                 {
@@ -262,6 +289,45 @@ namespace UITManagerWebServer.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Alarms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AlarmStatusId = table.Column<int>(type: "integer", nullable: false),
+                    TriggeredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    MachineId = table.Column<int>(type: "integer", nullable: false),
+                    NormGroupId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Alarms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Alarms_AlarmStatuses_AlarmStatusId",
+                        column: x => x.AlarmStatusId,
+                        principalTable: "AlarmStatuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Alarms_Machines_MachineId",
+                        column: x => x.MachineId,
+                        principalTable: "Machines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Alarms_NormGroups_NormGroupId",
+                        column: x => x.NormGroupId,
+                        principalTable: "NormGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Alarms_AlarmStatusId",
+                table: "Alarms",
+                column: "AlarmStatusId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Alarms_MachineId",
                 table: "Alarms",
@@ -271,6 +337,16 @@ namespace UITManagerWebServer.Migrations
                 name: "IX_Alarms_NormGroupId",
                 table: "Alarms",
                 column: "NormGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AlarmStatuses_ModifierId",
+                table: "AlarmStatuses",
+                column: "ModifierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AlarmStatuses_StatusTypeId",
+                table: "AlarmStatuses",
+                column: "StatusTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -353,6 +429,9 @@ namespace UITManagerWebServer.Migrations
                 name: "Notes");
 
             migrationBuilder.DropTable(
+                name: "AlarmStatuses");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -363,6 +442,12 @@ namespace UITManagerWebServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "Machines");
+
+            migrationBuilder.DropTable(
+                name: "AlarmStatusTypes");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
         }
     }
 }

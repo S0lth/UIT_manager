@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,13 +29,15 @@ namespace UITManagerWebServer.Controllers {
             var alarms = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
+                .Include(a => a.AlarmStatus)
+                .ThenInclude(aStatus => aStatus.StatusType)
                 .AsQueryable();
 
             alarms = sortOrder switch {
                 "Machine_desc" => alarms.OrderByDescending(a => a.Machine.Name),
                 "Machine" => alarms.OrderBy(a => a.Machine.Name),
-                "Status_desc" => alarms.OrderByDescending(a => a.Status),
-                "Status" => alarms.OrderBy(a => a.Status),
+                "Status_desc" => alarms.OrderByDescending(a => a.AlarmStatus.StatusType.Name),
+                "Status" => alarms.OrderBy(a => a.AlarmStatus.StatusType.Name),
                 "Severity_desc" => alarms.OrderByDescending(a => a.NormGroup.Severity),
                 "Severity" => alarms.OrderBy(a => a.NormGroup.Severity),
                 "AlarmGroup_desc" => alarms.OrderByDescending(a => a.NormGroup.Name),
@@ -55,12 +58,21 @@ namespace UITManagerWebServer.Controllers {
                 return BadRequest("Invalid data.");
             }
 
-            var alarm = await _context.Alarms.FindAsync(request.Id);
+            var alarm = await _context.Alarms.Include(a => a.AlarmStatus).FirstOrDefaultAsync(a => a.Id == request.Id);
             if (alarm == null) {
                 return NotFound("Alarm not found.");
             }
 
-            alarm.Status = Enum.Parse<AlarmStatus>(request.Status);
+            var statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
+            if (statusType == null) {
+                return BadRequest("Invalid status.");
+            }
+
+            var newAlarmStatus = new AlarmStatus {
+                StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, ModifierId = 1 // A CHANGER PLUS TARD POUR L'ID DE L'UTILISATEUR EN SESSION
+            };
+            
+            alarm.AlarmStatus = newAlarmStatus;
             _context.Alarms.Update(alarm);
             await _context.SaveChangesAsync();
 

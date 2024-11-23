@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Identity;
 
 namespace UITManagerWebServer.Models {
     /// <summary>
-    /// Represents an alarm associated with a machine, including its status, trigger time, and related entities.
+    /// Represents an alarm entity used to track events or conditions in a system.
     /// </summary>
     public class Alarm {
         public int Id { get; set; }
 
-        public AlarmStatus Status { get; set; }
+        public int AlarmStatusId { get; set; }
+        
+        public AlarmStatus? AlarmStatus { get; set; }
 
         public DateTime TriggeredAt { get; set; }
 
@@ -17,28 +19,7 @@ namespace UITManagerWebServer.Models {
         public Machine? Machine { get; set; }
 
         public int NormGroupId { get; set; }
+        
         public NormGroup? NormGroup { get; set; }
-    }
-
-    /// <summary>
-    /// Enumerates the possible statuses of an alarm during its lifecycle.
-    /// </summary>
-    public enum AlarmStatus {
-        New,
-        Acknowledged,
-        InProgress,
-        Escalated,
-        Monitoring,
-        PendingReview,
-        Deferred,
-        Suppressed,
-        FalsePositive,
-        Resolved,
-        Closed,
-        Recurring,
-        Reopened,
-        UnderInvestigation,
-        PendingVendorSupport,
-        ResolvedWithWorkaround
     }
 }
