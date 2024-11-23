@@ -47,6 +47,8 @@ namespace UITManagerWebServer.Controllers {
                 _ => alarms.OrderBy(a => a.NormGroup.Severity)
             };
 
+            ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
+            
             return View(await alarms.ToListAsync());
         }
 
