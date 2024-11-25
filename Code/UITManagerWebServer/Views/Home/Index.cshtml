@@ -21,25 +21,6 @@
 
 }
 
-@functions {
-
-    string GetSeverityClass(UITManagerWebServer.Models.SeverityLevel severity)
-    {
-        return severity switch
-        {
-            UITManagerWebServer.Models.SeverityLevel.Critical => "text-danger",
-            UITManagerWebServer.Models.SeverityLevel.High => "text-warning",
-            UITManagerWebServer.Models.SeverityLevel.Medium => "text-warning",
-            UITManagerWebServer.Models.SeverityLevel.Low => "text-success",
-            UITManagerWebServer.Models.SeverityLevel.InfoOnly => "text-info",
-            UITManagerWebServer.Models.SeverityLevel.Warning => "text-secondary",
-            UITManagerWebServer.Models.SeverityLevel.NonCritical => "text-muted",
-            _ => "text-body"
-        };
-    }
-
-}
-
 @functions{
 
     string GetIsSolutionIcon(bool sol)
@@ -126,11 +107,7 @@
                                                         <td>@item.Machine?.Name</td>
                                                         
                                                         <td>@item.GetLatestAlarmHistory()?.StatusType.Name</td>
-                                                        <td>
-                                                            <span class="@GetSeverityClass(item.NormGroup.Severity)">
-                                                                @item.NormGroup?.Severity
-                                                            </span>
-                                                        </td>
+                                                        <td>N/A</td>
                                                         <td>@item.NormGroup?.Name</td>
 
                                                         <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
@@ -237,11 +214,7 @@
                             <tr>
                                 <td>@item.Machine?.Name</td>
                                 <td>@item.GetLatestAlarmHistory()?.StatusType.Name</td>
-                                <td>
-                                    <span class="@GetSeverityClass(item.NormGroup?.Severity)">
-                                        @item.NormGroup?.Severity
-                                    </span>
-                                </td>
+                                <td>N/A</td>
                                 <td>@item.NormGroup?.Name</td>
                                 <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
                             </tr>

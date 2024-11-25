@@ -38,13 +38,14 @@ namespace UITManagerWebServer.Controllers {
                 "Machine" => alarms.OrderBy(a => a.Machine.Name),
                 "Status_desc" => alarms.OrderByDescending(a => a.GetLatestAlarmHistory().StatusType.Name),
                 "Status" => alarms.OrderBy(a => a.GetLatestAlarmHistory().StatusType.Name),
-                "Severity_desc" => alarms.OrderByDescending(a => a.NormGroup.Severity),
-                "Severity" => alarms.OrderBy(a => a.NormGroup.Severity),
+                //"Severity_desc" => alarms.OrderByDescending(a => a.NormGroup.Severity),
+                //"Severity" => alarms.OrderBy(a => a.NormGroup.Severity),
                 "AlarmGroup_desc" => alarms.OrderByDescending(a => a.NormGroup.Name),
                 "AlarmGroup" => alarms.OrderBy(a => a.NormGroup.Name),
                 "Date_desc" => alarms.OrderByDescending(a => a.TriggeredAt),
                 "Date" => alarms.OrderBy(a => a.TriggeredAt),
-                _ => alarms.OrderBy(a => a.NormGroup.Severity)
+                //_ => alarms.OrderBy(a => a.NormGroup.Severity)
+                _ => alarms.OrderBy(a => a.Machine.Name)
             };
 
             ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
