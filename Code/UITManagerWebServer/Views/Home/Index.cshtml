@@ -124,25 +124,18 @@
                                                     <tr>
                                                         <!-- Host -->
                                                         <td>@item.Machine?.Name</td>
-
-                                                        <!-- Status -->
-                                                        <td>@item.AlarmStatus?.StatusType.Name</td>
+                                                        
+                                                        <td>@item.GetLatestAlarmHistory()?.StatusType.Name</td>
                                                         <td>
-                                                            <!-- Severity -->
                                                             <span class="@GetSeverityClass(item.NormGroup.Severity)">
                                                                 @item.NormGroup?.Severity
                                                             </span>
                                                         </td>
-                                                        <!-- Alarm -->
                                                         <td>@item.NormGroup?.Name</td>
 
-                                                        <!-- Date -->
                                                         <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
-
-
                                                     </tr>
                                                 }
-
                                                 </tbody>
                                             </table>
                                         </div>
@@ -243,7 +236,7 @@
                         {
                             <tr>
                                 <td>@item.Machine?.Name</td>
-                                <td>@item.AlarmStatus?.StatusType.Name</td>
+                                <td>@item.GetLatestAlarmHistory()?.StatusType.Name</td>
                                 <td>
                                     <span class="@GetSeverityClass(item.NormGroup?.Severity)">
                                         @item.NormGroup?.Severity
