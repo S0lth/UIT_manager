@@ -22,10 +22,20 @@ namespace UITManagerWebServer.Models {
             AlarmHistories = new List<AlarmStatusHistory>();
         }
 
+        /// <summary>
+        /// Gets the most recent status history entry of the alarm.
+        /// The status is determined by the most recent modification date.
+        /// </summary>
+        /// <returns>The most recent status history entry of the alarm, or <c>null</c> if no history is available.</returns>
         public AlarmStatusHistory GetLatestAlarmHistory() {
             return AlarmHistories?.OrderByDescending(h => h.ModificationDate).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Adds a new status history to the alarm.
+        /// If the status history is already present, it will not be added again.
+        /// </summary>
+        /// <param name="alarmStatusHistory">The <see cref="AlarmStatusHistory"/> object to add.</param>
         public void AddAlarmHistory(AlarmStatusHistory alarmStatusHistory) {
             if (!AlarmHistories.Contains(alarmStatusHistory)) {
                 AlarmHistories.Add(alarmStatusHistory);
