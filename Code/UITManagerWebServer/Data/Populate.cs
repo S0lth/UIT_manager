@@ -13,7 +13,7 @@ public static class Populate {
             context.Norms.RemoveRange(context.Norms);
             context.NormGroups.RemoveRange(context.NormGroups);
             context.Machines.RemoveRange(context.Machines);
-            context.AlarmStatuses.RemoveRange(context.AlarmStatuses);
+            context.AlarmHistories.RemoveRange(context.AlarmHistories);
             context.AlarmStatusTypes.RemoveRange(context.AlarmStatusTypes);
             context.Employees.RemoveRange(context.Employees);
 
@@ -143,20 +143,20 @@ public static class Populate {
 
                     bool isNewAlarm = random.Next(0, 100) < 70; 
 
-                    var alarmStatus = new AlarmStatus {
+                    var alarmStatusHistory = new AlarmStatusHistory {
                         ModificationDate = isNewAlarm ? null : DateTime.UtcNow.AddHours(-random.Next(1, 72)),
                         StatusType = alarmStatusType,
                         Modifier = isNewAlarm ? null : employees[random.Next(employees.Count)] 
                     };
 
                     var alarm = new Alarm {
-                        AlarmStatus = alarmStatus,
                         TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
                         Machine = machine,
                         NormGroup = normGroups[random.Next(normGroups.Count)]
                     };
+                    alarm.AddAlarmHistory(alarmStatusHistory);
 
-                    context.AlarmStatuses.Add(alarmStatus);
+                    context.AlarmHistories.Add(alarmStatusHistory);
                     context.Alarms.Add(alarm);
                 }
             }

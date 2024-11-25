@@ -29,15 +29,15 @@ namespace UITManagerWebServer.Controllers {
             var alarms = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
-                .Include(a => a.AlarmStatus)
+                .Include(a => a.AlarmHistories)
                 .ThenInclude(aStatus => aStatus.StatusType)
                 .AsQueryable();
 
             alarms = sortOrder switch {
                 "Machine_desc" => alarms.OrderByDescending(a => a.Machine.Name),
                 "Machine" => alarms.OrderBy(a => a.Machine.Name),
-                "Status_desc" => alarms.OrderByDescending(a => a.AlarmStatus.StatusType.Name),
-                "Status" => alarms.OrderBy(a => a.AlarmStatus.StatusType.Name),
+                "Status_desc" => alarms.OrderByDescending(a => a.GetLatestAlarmHistory().StatusType.Name),
+                "Status" => alarms.OrderBy(a => a.GetLatestAlarmHistory().StatusType.Name),
                 "Severity_desc" => alarms.OrderByDescending(a => a.NormGroup.Severity),
                 "Severity" => alarms.OrderBy(a => a.NormGroup.Severity),
                 "AlarmGroup_desc" => alarms.OrderByDescending(a => a.NormGroup.Name),
@@ -60,7 +60,7 @@ namespace UITManagerWebServer.Controllers {
                 return BadRequest("Invalid data.");
             }
 
-            var alarm = await _context.Alarms.Include(a => a.AlarmStatus).FirstOrDefaultAsync(a => a.Id == request.Id);
+            var alarm = await _context.Alarms.Include(a => a.AlarmHistories).FirstOrDefaultAsync(a => a.Id == request.Id);
             if (alarm == null) {
                 return NotFound("Alarm not found.");
             }
@@ -70,16 +70,48 @@ namespace UITManagerWebServer.Controllers {
                 return BadRequest("Invalid status.");
             }
 
-            var newAlarmStatus = new AlarmStatus {
+            var newAlarmHistory = new AlarmStatusHistory {
                 StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, ModifierId = 1 // A CHANGER PLUS TARD POUR L'ID DE L'UTILISATEUR EN SESSION
             };
             
-            alarm.AlarmStatus = newAlarmStatus;
+            alarm.AddAlarmHistory(newAlarmHistory);
             _context.Alarms.Update(alarm);
             await _context.SaveChangesAsync();
 
             return Ok("Status updated successfully.");
         }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Alarm alarm) {
+            if (ModelState.IsValid) {
+                var newStatusType = _context.AlarmStatusTypes
+                    .FirstOrDefault(s => s.Name == "New");
+
+                if (newStatusType == null) {
+                    ModelState.AddModelError("", "Le statut 'New' est introuvable dans la base de données.");
+                    return View(alarm);
+                }
+
+                var alarmHistory = new AlarmStatusHistory {
+                    StatusTypeId = newStatusType.Id,
+                    ModificationDate = DateTime.Now,
+                    ModifierId = null              
+                };
+
+                alarm.AddAlarmHistory(alarmHistory);
+
+                _context.Alarms.Add(alarm);
+                _context.SaveChanges();
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.MachineId = new SelectList(_context.Machines, "Id", "Name", alarm.MachineId);
+            ViewBag.NormGroupId = new SelectList(_context.NormGroups, "Id", "Name", alarm.NormGroupId);
+            return View(alarm);
+        }
+
     }
 
     public class UpdateStatusRequest {

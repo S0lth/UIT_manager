@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace UITManagerWebServer.Models {
-    /// <summary>
-    /// Represents an alarm entity used to track events or conditions in a system.
-    /// </summary>
+ 
     public class Alarm {
         public int Id { get; set; }
-
-        public int AlarmStatusId { get; set; }
-        
-        public AlarmStatus? AlarmStatus { get; set; }
+        public List<AlarmStatusHistory> AlarmHistories { get; set; }
 
         public DateTime TriggeredAt { get; set; }
 
@@ -22,5 +17,19 @@ namespace UITManagerWebServer.Models {
         public int NormGroupId { get; set; }
         
         public NormGroup? NormGroup { get; set; }
+
+        public Alarm() {
+            AlarmHistories = new List<AlarmStatusHistory>();
+        }
+
+        public AlarmStatusHistory GetLatestAlarmHistory() {
+            return AlarmHistories?.OrderByDescending(h => h.ModificationDate).FirstOrDefault();
+        }
+
+        public void AddAlarmHistory(AlarmStatusHistory alarmStatusHistory) {
+            if (!AlarmHistories.Contains(alarmStatusHistory)) {
+                AlarmHistories.Add(alarmStatusHistory);
+            }
+        }
     }
 }

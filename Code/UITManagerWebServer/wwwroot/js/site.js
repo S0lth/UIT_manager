@@ -24,3 +24,4 @@ function updateAlarmStatus(alarmId, status) {
         alert('Network error updating status.');
     });
 }
+

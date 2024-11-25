@@ -19,7 +19,7 @@ namespace UITManagerWebServer.Data {
 
         public DbSet<Norm> Norms { get; set; }
 
-        public DbSet<AlarmStatus> AlarmStatuses { get; set; }
+        public DbSet<AlarmStatusHistory> AlarmHistories { get; set; }
 
         public DbSet<AlarmStatusType> AlarmStatusTypes { get; set; }
 
@@ -47,18 +47,18 @@ namespace UITManagerWebServer.Data {
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Alarm>()
-                .HasOne(a => a.AlarmStatus)
-                .WithMany()
-                .HasForeignKey(a => a.AlarmStatusId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasMany(a => a.AlarmHistories)
+                .WithOne(h => h.Alarm)             
+                .HasForeignKey(h => h.AlarmId) 
+                .OnDelete(DeleteBehavior.Cascade); 
 
-            builder.Entity<AlarmStatus>()
+            builder.Entity<AlarmStatusHistory>()
                 .HasOne(a => a.Modifier)
                 .WithMany()
                 .HasForeignKey(a => a.ModifierId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<AlarmStatus>()
+            builder.Entity<AlarmStatusHistory>()
                 .HasOne(a => a.StatusType)
                 .WithMany()
                 .HasForeignKey(a => a.StatusTypeId)

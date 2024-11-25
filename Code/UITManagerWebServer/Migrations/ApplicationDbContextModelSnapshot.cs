@@ -230,9 +230,6 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AlarmStatusId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("MachineId")
                         .HasColumnType("integer");
 
@@ -244,8 +241,6 @@ namespace UITManagerWebServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AlarmStatusId");
-
                     b.HasIndex("MachineId");
 
                     b.HasIndex("NormGroupId");
@@ -253,13 +248,16 @@ namespace UITManagerWebServer.Migrations
                     b.ToTable("Alarms");
                 });
 
-            modelBuilder.Entity("UITManagerWebServer.Models.AlarmStatus", b =>
+            modelBuilder.Entity("UITManagerWebServer.Models.AlarmStatusHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AlarmId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModificationDate")
                         .HasColumnType("timestamp with time zone");
@@ -272,11 +270,13 @@ namespace UITManagerWebServer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AlarmId");
+
                     b.HasIndex("ModifierId");
 
                     b.HasIndex("StatusTypeId");
 
-                    b.ToTable("AlarmStatuses");
+                    b.ToTable("AlarmHistories");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.AlarmStatusType", b =>
@@ -469,12 +469,6 @@ namespace UITManagerWebServer.Migrations
 
             modelBuilder.Entity("UITManagerWebServer.Models.Alarm", b =>
                 {
-                    b.HasOne("UITManagerWebServer.Models.AlarmStatus", "AlarmStatus")
-                        .WithMany()
-                        .HasForeignKey("AlarmStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("UITManagerWebServer.Models.Machine", "Machine")
                         .WithMany("Alarms")
                         .HasForeignKey("MachineId")
@@ -487,15 +481,19 @@ namespace UITManagerWebServer.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("AlarmStatus");
-
                     b.Navigation("Machine");
 
                     b.Navigation("NormGroup");
                 });
 
-            modelBuilder.Entity("UITManagerWebServer.Models.AlarmStatus", b =>
+            modelBuilder.Entity("UITManagerWebServer.Models.AlarmStatusHistory", b =>
                 {
+                    b.HasOne("UITManagerWebServer.Models.Alarm", "Alarm")
+                        .WithMany("AlarmHistories")
+                        .HasForeignKey("AlarmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("UITManagerWebServer.Models.Employee", "Modifier")
                         .WithMany()
                         .HasForeignKey("ModifierId")
@@ -506,6 +504,8 @@ namespace UITManagerWebServer.Migrations
                         .HasForeignKey("StatusTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Alarm");
 
                     b.Navigation("Modifier");
 
@@ -538,6 +538,11 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("Machine");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.Alarm", b =>
+                {
+                    b.Navigation("AlarmHistories");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>
