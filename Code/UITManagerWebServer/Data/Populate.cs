@@ -13,10 +13,60 @@ public static class Populate {
             context.Norms.RemoveRange(context.Norms);
             context.NormGroups.RemoveRange(context.NormGroups);
             context.Machines.RemoveRange(context.Machines);
+            context.AlarmHistories.RemoveRange(context.AlarmHistories);
+            context.AlarmStatusTypes.RemoveRange(context.AlarmStatusTypes);
+            context.Employees.RemoveRange(context.Employees);
 
             context.SaveChanges();
             Console.WriteLine("Database cleared successfully.");
         }
+
+        var alarmStatusTypes = new List<AlarmStatusType> {
+            new AlarmStatusType {
+                Name = "New",
+                Description = "An alarm that has been recently created and has not yet been acknowledged or acted upon."
+            },
+            new AlarmStatusType {
+                Name = "In Progress",
+                Description = "The issue that triggered the alarm is actively being investigated or resolved."
+            },
+            new AlarmStatusType {
+                Name = "Resolved",
+                Description =
+                    "The issue that caused the alarm has been fully addressed, and no further action is required."
+            },
+            new AlarmStatusType {
+                Name = "Reopened",
+                Description =
+                    "An issue that previously triggered an alarm has recurred, causing the alarm to be raised again after being marked as resolved."
+            },
+            new AlarmStatusType {
+                Name = "Awaiting Third-Party Assistance",
+                Description =
+                    "The resolution of the issue causing the alarm depends on action or support from an external party or vendor, and progress is pending their input."
+            }
+        };
+        
+        context.AlarmStatusTypes.AddRange(alarmStatusTypes);
+        context.SaveChanges();
+
+        var employees = new List<Employee> {
+            new Employee { FirstName = "Roger", LastName = "Ô", Role = "D.S.I." },
+            new Employee { FirstName = "Pierre", LastName = "BARBE", Role = "D.S.I." },
+            new Employee { FirstName = "Camille", LastName = "MILLET", Role = "Responsable Maintenance Site A" },
+            new Employee { FirstName = "Bernadette", LastName = "HARDY", Role = "Technicienne Site A" },
+            new Employee { FirstName = "Isaac", LastName = "DEVAUX", Role = "Technicien Site A" },
+            new Employee { FirstName = "Aimé", LastName = "BOULAY", Role = "Technicien Site A" },
+            new Employee { FirstName = "Paul", LastName = "DE BERGERAC", Role = "Technicien Site A" },
+            new Employee {
+                FirstName = "Alfred-Emmanuel", LastName = "SEGUIN", Role = "Responsable Maintenance Site B"
+            },
+            new Employee { FirstName = "Martin-Étienne", LastName = "LEFORT", Role = "Technicien Site B" },
+            new Employee { FirstName = "Paul", LastName = "GUILBERT", Role = "Technicien Site B" }
+        };
+        
+        context.Employees.AddRange(employees);
+        context.SaveChanges();
 
         var normGroups = new List<NormGroup> {
             new NormGroup {
@@ -45,6 +95,7 @@ public static class Populate {
             }
         };
         context.NormGroups.AddRange(normGroups);
+        context.SaveChanges();
 
         var brandsAndModels = new[] {
             new { Brand = "Dell", Models = new[] { "Latitude", "OptiPlex", "Precision", "Inspiron" } },
@@ -71,6 +122,7 @@ public static class Populate {
         }
 
         context.Machines.AddRange(machines);
+        context.SaveChanges();
 
         string GenerateRandomWindowsMachineName() {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -81,42 +133,53 @@ public static class Populate {
         var alarms = new List<Alarm>();
 
         foreach (var machine in machines) {
-            if (random.NextDouble() > 0.5) {
-                int alarmCount = random.Next(1, 4);
+            bool hasAlarm = random.Next(0, 100) < 45; // 45% des machines auront des alarmes
+
+            if (hasAlarm) {
+                int alarmCount = random.Next(0, 5);
+
                 for (int i = 0; i < alarmCount; i++) {
-                    alarms.Add(new Alarm {
-                        Status = (AlarmStatus)random.Next(0, Enum.GetValues<AlarmStatus>().Length),
+                    var alarmStatusType = alarmStatusTypes[random.Next(alarmStatusTypes.Count)];
+
+                    bool isNewAlarm = random.Next(0, 100) < 70; 
+
+                    var alarmStatusHistory = new AlarmStatusHistory {
+                        ModificationDate = isNewAlarm ? null : DateTime.UtcNow.AddHours(-random.Next(1, 72)),
+                        StatusType = alarmStatusType,
+                        Modifier = isNewAlarm ? null : employees[random.Next(employees.Count)] 
+                    };
+
+                    var alarm = new Alarm {
                         TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
                         Machine = machine,
                         NormGroup = normGroups[random.Next(normGroups.Count)]
-                    });
+                    };
+                    alarm.AddAlarmHistory(alarmStatusHistory);
+
+                    context.AlarmHistories.Add(alarmStatusHistory);
+                    context.Alarms.Add(alarm);
                 }
             }
         }
 
         context.Alarms.AddRange(alarms);
+        context.SaveChanges();
 
         var notes = new List<Note>();
 
-        var solutionContents = new[]
-        {
-            "Resolved issue with outdated drivers.",
-            "Patched system vulnerabilities successfully.",
+        var solutionContents = new[] {
+            "Resolved issue with outdated drivers.", "Patched system vulnerabilities successfully.",
             "Updated operating system to the latest version."
         };
 
-        var nonSolutionContents = new[]
-        {
-            "Investigating high CPU usage.",
-            "Monitoring storage capacity after warning."
-        };
+        var nonSolutionContents =
+            new[] { "Investigating high CPU usage.", "Monitoring storage capacity after warning." };
 
-        var machinesWithNotes = machines.OrderBy(_ => random.Next()).Take(5).ToList(); // Sélection de 5 machines aléatoires
+        var machinesWithNotes =
+            machines.OrderBy(_ => random.Next()).Take(5).ToList(); // Sélection de 5 machines aléatoires
 
-        for (int i = 0; i < 3; i++)
-        {
-            notes.Add(new Note
-            {
+        for (int i = 0; i < 3; i++) {
+            notes.Add(new Note {
                 Content = solutionContents[i],
                 CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
                 Machine = machinesWithNotes[i],
@@ -124,10 +187,8 @@ public static class Populate {
             });
         }
 
-        for (int i = 0; i < 2; i++)
-        {
-            notes.Add(new Note
-            {
+        for (int i = 0; i < 2; i++) {
+            notes.Add(new Note {
                 Content = nonSolutionContents[i],
                 CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
                 Machine = machinesWithNotes[i + 3],
@@ -136,10 +197,8 @@ public static class Populate {
         }
 
         context.Notes.AddRange(notes);
-
-        context.Notes.AddRange(notes);
-
         context.SaveChanges();
+        
         Console.WriteLine(
             $"Database populated with {machines.Count} machines, {alarms.Count} alarms, and {notes.Count} notes.");
     }

@@ -38,8 +38,10 @@ else {
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    Console.WriteLine("hello");
     try
     {
+        Console.WriteLine("i'm in");
         Populate.Initialize(services);
         Console.WriteLine("Database populated successfully.");
     }
