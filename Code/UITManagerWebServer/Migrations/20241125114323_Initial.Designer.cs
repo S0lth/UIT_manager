@@ -12,7 +12,7 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241125091910_Initial")]
+    [Migration("20241125114323_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
