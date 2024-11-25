@@ -1,6 +1,6 @@
 ﻿namespace UITManagerWebServer.Models {
     /// <summary>
-    /// Represents a group of norms categorized by priority and severity level.
+    /// Represents a group of norms categorized by priority.
     /// </summary>
     public class NormGroup {
         public int Id { get; set; }

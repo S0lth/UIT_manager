@@ -1,5 +1,8 @@
 namespace UITManagerWebServer.Models {
     
+    /// <summary>
+    /// Represents a history of severity categorized by a severity, a group of norm and a username, with a update date
+    /// </summary>
     public class SeverityHistory {
 
         public int Id { get; set; }
@@ -11,5 +14,7 @@ namespace UITManagerWebServer.Models {
         public NormGroup? NormGroup { get; set; }
         
         public DateTime UpdateDate { get; set; }
+
+        public string? Username { get; set; }
     }
 }

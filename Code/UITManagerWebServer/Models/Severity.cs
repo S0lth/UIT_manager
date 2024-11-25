@@ -1,5 +1,8 @@
 namespace UITManagerWebServer.Models {
     
+    /// <summary>
+    /// Represents a severity with a name and a description
+    /// </summary>
     public class Severity {
         
         public int Id { get; set; }
