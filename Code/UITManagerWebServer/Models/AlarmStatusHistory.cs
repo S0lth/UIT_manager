@@ -1,0 +1,24 @@
+﻿namespace UITManagerWebServer.Models {
+
+    /// <summary>
+    /// Represents a record of changes made to the status of an alarm.
+    /// </summary>
+    public class AlarmStatusHistory {
+        
+        public int Id { get; set; }
+        
+        public int AlarmId { get; set; }
+        
+        public Alarm? Alarm { get; set; }
+        
+        public DateTime? ModificationDate { get; set; }
+        
+        public int StatusTypeId { get; set; }
+        
+        public AlarmStatusType StatusType { get; set; }
+        
+        public int? ModifierId { get; set; }
+        
+        public Employee? Modifier { get; set; }
+    }
+}

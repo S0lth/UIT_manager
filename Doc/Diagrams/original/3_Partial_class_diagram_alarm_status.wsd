@@ -1,0 +1,25 @@
+@startuml
+title partial class diagram alarm status
+Class Alarm{
+- date : DateTime
+}
+
+class AlarmStatusHistory{
+-modificationDate : DateTime
+}
+
+class AlarmStatusType{
+- name : String
+- description : string
+}
+
+class Employee{
+- lastName : String
+- firstName : String 
+- role : String
+}
+
+Alarm "1" --right-- "1-N" AlarmStatusHistory: "has >"
+AlarmStatusType "1" <--left-- AlarmStatusHistory: "< has"
+AlarmStatusHistory --> "0..1" Employee : "is modified by >"
+@enduml

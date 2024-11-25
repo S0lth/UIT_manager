@@ -105,21 +105,14 @@
                                                     <tr>
                                                         <!-- Host -->
                                                         <td>@item.Machine?.Name</td>
-
-                                                        <!-- Status -->
-                                                        <td>@item.Status</td>
-                                                        <!-- Severity -->
+                                                        
+                                                        <td>@item.GetLatestAlarmHistory()?.StatusType.Name</td>
                                                         <td>N/A</td>
-                                                        <!-- Alarm -->
                                                         <td>@item.NormGroup?.Name</td>
 
-                                                        <!-- Date -->
                                                         <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
-
-
                                                     </tr>
                                                 }
-
                                                 </tbody>
                                             </table>
                                         </div>
@@ -220,7 +213,7 @@
                         {
                             <tr>
                                 <td>@item.Machine?.Name</td>
-                                <td>@item.Status</td>
+                                <td>@item.GetLatestAlarmHistory()?.StatusType.Name</td>
                                 <td>N/A</td>
                                 <td>@item.NormGroup?.Name</td>
                                 <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>

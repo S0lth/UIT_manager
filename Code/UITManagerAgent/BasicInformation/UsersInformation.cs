@@ -1,5 +1,5 @@
 using System.Text.Json;
-using UITManagerAgent.BasicInformation;
+namespace UITManagerAgent.BasicInformation;
 
 /// <summary>
 ///     Represents a collection of user information.
@@ -9,9 +9,49 @@ public class UsersInformation : Information {
     /// <summary>
     ///     List of collected usernames.
     /// </summary>
-    private List<string> _usersList = new();
+    private List<User> _usersList = new();
 
-    public List<string> UsersList {
+    public class User {
+        private string? _name;
+        private string? _scope;
+        
+        public User() {
+        }
+        
+        public User(string? name, string? scope) {
+            _name = name;   
+            _scope = scope;
+        }
+
+        /// <summary>
+        /// accessors of th Name field
+        /// </summary>
+        public string? Name {
+            get => _name;
+            set => _name = value;
+        }
+
+        /// <summary>
+        /// accessors of th Scope field
+        /// </summary>
+        public string? Scope {
+            get => _scope;
+            set => _scope = value;
+        }
+        
+        /// <summary>
+        /// Returns a Json string representation of the user information
+        /// </summary>
+        /// <returns>A Json string that represents the user information .</returns>
+        public string ToJson() {
+            return JsonSerializer.Serialize(this);
+        }
+    }
+    
+    /// <summary>
+    /// accessors of th usersList field
+    /// </summary>
+    public List<User> UsersList {
         get => _usersList;
         set => _usersList = value;
     }
