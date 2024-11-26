@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity;
 using UITManagerWebServer.Models;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 
 public static class Populate {
-    public static void Initialize(IServiceProvider serviceProvider) {
+    public static async void Initialize(IServiceProvider serviceProvider) {
         using var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
 
@@ -15,86 +16,76 @@ public static class Populate {
             context.Machines.RemoveRange(context.Machines);
             context.AlarmHistories.RemoveRange(context.AlarmHistories);
             context.AlarmStatusTypes.RemoveRange(context.AlarmStatusTypes);
-            context.Employees.RemoveRange(context.Employees);
+            context.Severities.RemoveRange(context.Severities);
+            context.SeverityHistories.RemoveRange(context.SeverityHistories);
 
             context.SaveChanges();
-            Console.WriteLine("Database cleared successfully.");
+            Console.WriteLine("Database cleared successful");
         }
-
-        var alarmStatusTypes = new List<AlarmStatusType> {
-            new AlarmStatusType {
-                Name = "New",
-                Description = "An alarm that has been recently created and has not yet been acknowledged or acted upon."
-            },
-            new AlarmStatusType {
-                Name = "In Progress",
-                Description = "The issue that triggered the alarm is actively being investigated or resolved."
-            },
-            new AlarmStatusType {
-                Name = "Resolved",
-                Description =
-                    "The issue that caused the alarm has been fully addressed, and no further action is required."
-            },
-            new AlarmStatusType {
-                Name = "Reopened",
-                Description =
-                    "An issue that previously triggered an alarm has recurred, causing the alarm to be raised again after being marked as resolved."
-            },
-            new AlarmStatusType {
-                Name = "Awaiting Third-Party Assistance",
-                Description =
-                    "The resolution of the issue causing the alarm depends on action or support from an external party or vendor, and progress is pending their input."
-            }
-        };
         
-        context.AlarmStatusTypes.AddRange(alarmStatusTypes);
-        context.SaveChanges();
-
-        var employees = new List<Employee> {
-            new Employee { FirstName = "Roger", LastName = "Ô", Role = "D.S.I." },
-            new Employee { FirstName = "Pierre", LastName = "BARBE", Role = "D.S.I." },
-            new Employee { FirstName = "Camille", LastName = "MILLET", Role = "Responsable Maintenance Site A" },
-            new Employee { FirstName = "Bernadette", LastName = "HARDY", Role = "Technicienne Site A" },
-            new Employee { FirstName = "Isaac", LastName = "DEVAUX", Role = "Technicien Site A" },
-            new Employee { FirstName = "Aimé", LastName = "BOULAY", Role = "Technicien Site A" },
-            new Employee { FirstName = "Paul", LastName = "DE BERGERAC", Role = "Technicien Site A" },
-            new Employee {
-                FirstName = "Alfred-Emmanuel", LastName = "SEGUIN", Role = "Responsable Maintenance Site B"
-            },
-            new Employee { FirstName = "Martin-Étienne", LastName = "LEFORT", Role = "Technicien Site B" },
-            new Employee { FirstName = "Paul", LastName = "GUILBERT", Role = "Technicien Site B" }
+        var severities = new List<Severity>() {
+            new Severity { Name = "Warning", Description = "Warning Severity" },
+            new Severity { Name = "Low", Description = "Low Severity" },
+            new Severity { Name = "Medium", Description = "Medium Severity" },
+            new Severity { Name = "High", Description = "High Severity" },
+            new Severity { Name = "Critical", Description = "Critical Severity" }
         };
-        
-        context.Employees.AddRange(employees);
-        context.SaveChanges();
 
         var normGroups = new List<NormGroup> {
             new NormGroup {
                 Name = "Obsolete operating system",
                 Priority = 8,
-                //Severity = SeverityLevel.Critical,
                 Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" } }
             },
             new NormGroup {
                 Name = "Storage exceeded",
                 Priority = 4,
-                //Severity = SeverityLevel.High,
                 Norms = new List<Norm> { new Norm { Name = "Storage over 80%" } }
             },
             new NormGroup {
                 Name = "CPU Usage High",
                 Priority = 2,
-                //Severity = SeverityLevel.Medium,
                 Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%" } }
             },
             new NormGroup {
                 Name = "Memory Usage Warning",
                 Priority = 1,
-                //Severity = SeverityLevel.Low,
                 Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%" } }
             }
         };
+        
+        var severityHistories = new List<SeverityHistory>() {
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow,
+                NormGroup = normGroups[0],
+                Severity = severities[4],
+                Username = "O Roger"
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-1),
+                NormGroup = normGroups[1],
+                Severity = severities[3],
+                Username = "O Roger"
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-8),
+                NormGroup = normGroups[2],
+                Severity = severities[2],
+                Username = "O Roger"
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-10),
+                NormGroup = normGroups[3],
+                Severity = severities[1],
+                Username = "O Roger"
+            }
+        };
+        
+        context.Severities.AddRange(severities);
+
         context.NormGroups.AddRange(normGroups);
+        
+        context.SeverityHistories.AddRange(severityHistories);
         context.SaveChanges();
 
         var brandsAndModels = new[] {
@@ -129,39 +120,67 @@ public static class Populate {
             var randomId = new string(Enumerable.Repeat(chars, 7).Select(s => s[random.Next(s.Length)]).ToArray());
             return $"DESKTOP-{randomId}";
         }
-
-        var alarms = new List<Alarm>();
+        
+        var alarmStatusTypes = new List<AlarmStatusType> {
+            new AlarmStatusType {
+                Name = "New",
+                Description = "An alarm that has been recently created and has not yet been acknowledged or acted upon."
+            },
+            new AlarmStatusType {
+                Name = "In Progress",
+                Description = "The issue that triggered the alarm is actively being investigated or resolved."
+            },
+            new AlarmStatusType {
+                Name = "Resolved",
+                Description =
+                    "The issue that caused the alarm has been fully addressed, and no further action is required."
+            },
+            new AlarmStatusType {
+                Name = "Reopened",
+                Description =
+                    "An issue that previously triggered an alarm has recurred, causing the alarm to be raised again after being marked as resolved."
+            },
+            new AlarmStatusType {
+                Name = "Awaiting Third-Party Assistance",
+                Description =
+                    "The resolution of the issue causing the alarm depends on action or support from an external party or vendor, and progress is pending their input."
+            }
+        };
+        
+        context.AlarmStatusTypes.AddRange(alarmStatusTypes);
+        context.SaveChanges();
+        
+        var alarms = new List<Alarm>();                    
+        var alarmStatusHistories = new List<AlarmStatusHistory>();
 
         foreach (var machine in machines) {
-            bool hasAlarm = random.Next(0, 100) < 45; // 45% des machines auront des alarmes
-
-            if (hasAlarm) {
-                int alarmCount = random.Next(0, 5);
-
+            if (random.NextDouble() > 0.5) {
+                int alarmCount = random.Next(1, 4);
                 for (int i = 0; i < alarmCount; i++) {
-                    var alarmStatusType = alarmStatusTypes[random.Next(alarmStatusTypes.Count)];
-
-                    bool isNewAlarm = random.Next(0, 100) < 70; 
-
-                    var alarmStatusHistory = new AlarmStatusHistory {
-                        ModificationDate = isNewAlarm ? null : DateTime.UtcNow.AddHours(-random.Next(1, 72)),
-                        StatusType = alarmStatusType,
-                        Modifier = isNewAlarm ? null : employees[random.Next(employees.Count)] 
-                    };
-
                     var alarm = new Alarm {
                         TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
                         Machine = machine,
                         NormGroup = normGroups[random.Next(normGroups.Count)]
                     };
-                    alarm.AddAlarmHistory(alarmStatusHistory);
-
-                    context.AlarmHistories.Add(alarmStatusHistory);
-                    context.Alarms.Add(alarm);
+                    
+                    int historyCount = random.Next(1, 5);
+                    
+                    for (i = 0; i < historyCount; i++) {
+                        alarmStatusHistories.Add( 
+                            new AlarmStatusHistory {
+                            Alarm = alarm, 
+                            StatusType = alarmStatusTypes[i],
+                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i ),
+                            Username =  "O Roger"
+                        });
+                    }
+                    
+                    alarms.Add(alarm);
                 }
             }
         }
-
+        
+        context.AlarmHistories.AddRange(alarmStatusHistories);
         context.Alarms.AddRange(alarms);
         context.SaveChanges();
 
