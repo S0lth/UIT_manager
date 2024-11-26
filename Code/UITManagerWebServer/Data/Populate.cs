@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 
 public static class Populate {
+    
     public static async void Initialize(IServiceProvider serviceProvider) {
         using var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
@@ -23,6 +24,42 @@ public static class Populate {
             Console.WriteLine("Database cleared successful");
         }
         
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+        var roles = new List<string> { "MaintenanceManager", "Technician", "ITDirector" };
+
+        foreach (var role in roles) {
+            if (!await roleManager.RoleExistsAsync(role)) {
+                var roleResult = await roleManager.CreateAsync(new IdentityRole(role));
+                if (!roleResult.Succeeded) {
+                    Console.WriteLine($"Error creating role {role}: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
+                }
+            }
+        }
+
+        if (!userManager.Users.Any()) {
+            
+            var users = new List<IdentityUser> {
+                new IdentityUser { UserName = "test1", Email = "test1@example.com" },
+                new IdentityUser { UserName = "test2", Email = "test2@example.com" },
+                new IdentityUser { UserName = "test3", Email = "test3@example.com" },
+                new IdentityUser { UserName = "test4", Email = "test4@example.com" },
+            };
+
+            
+            foreach (var user in users) {
+                if (userManager.FindByEmailAsync(user.UserName).Result == null) {
+                    var result = await userManager.CreateAsync(user, "DefaultPassword123!");
+                    if (result.Succeeded) {
+                        Console.WriteLine($"User {user.UserName} created successfully.");
+                    } else {
+                        Console.WriteLine($"Error creating user {user.UserName}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    }
+                }
+            }
+        }
+
         var severities = new List<Severity>() {
             new Severity { Name = "Warning", Description = "Warning Severity" },
             new Severity { Name = "Low", Description = "Low Severity" },

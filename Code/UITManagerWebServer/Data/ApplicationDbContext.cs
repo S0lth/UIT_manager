@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Data {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser> {
+    public class ApplicationDbContext : IdentityDbContext {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) {
         }
