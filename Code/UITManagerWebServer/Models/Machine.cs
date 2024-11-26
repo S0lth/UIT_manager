@@ -11,6 +11,8 @@
 
         public List<Note> Notes { get; set; }
 
+        public Boolean IsWorking { get; set; }
+        
         public Machine() {
             Alarms = new List<Alarm>();
             Notes = new List<Note>();
