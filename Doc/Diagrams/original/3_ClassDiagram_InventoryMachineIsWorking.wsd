@@ -1,0 +1,71 @@
+@startuml
+title Partial Diagram Class
+header Consult alarms
+footer UIT Manager
+skinparam monochrome true
+skinparam linetype polyline
+hide class circle
+hide class stereotype
+hide separator
+hide empty members
+skinparam roundcorner 10
+left to right direction
+skinparam ArrowThickness 1.
+
+class Machine {
+name
+isWorking
+}
+class Note {
+note
+date
+}
+class Alarm {
+date
+}
+class Norm {
+name
+}
+
+Machine "1" <-- "1.." Alarm : is linked to
+Machine "1" --> "1" Alarm : is linked to
+Machine "1" <-- "1.." Note : is written on
+Alarm "1.." --> "1" NormGroup : is triggered by
+NormGroup "1" --> "1.." Norm : has
+
+
+Note "1..*" --> "1" Employee : is written by
+
+class NormGroup {
+name
+priority
+maxExpectedProcessingTime
+}
+class Severity {
+name
+description
+}
+class SeverityHistory{
+updateDate
+}
+class Employee {
+lastName
+firstName
+role
+}
+
+class Statut{
+name
+description
+}
+class StatutHistory{
+updateDate
+}
+Statut "1.." <-up- "1" StatutHistory: is linked to
+Alarm "1.." <-- "1" StatutHistory: is linked to
+Employee "0..*" <-up- "1" StatutHistory: is update by
+
+NormGroup "1.." <-- "1" SeverityHistory: is linked to
+SeverityHistory "1" --> "1.." Severity: is linked to
+Employee "0..*" <-- "1" SeverityHistory: is update by
+@enduml
