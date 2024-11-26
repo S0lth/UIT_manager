@@ -22,9 +22,10 @@ namespace UITManagerWebServer.Data {
         public DbSet<AlarmStatusHistory> AlarmHistories { get; set; }
 
         public DbSet<AlarmStatusType> AlarmStatusTypes { get; set; }
-
-        public DbSet<Employee> Employees { get; set; }
-
+        
+        public DbSet<Severity> Severities { get; set; }
+        
+        public DbSet<SeverityHistory> SeverityHistories { get; set; }
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
 
@@ -40,29 +41,26 @@ namespace UITManagerWebServer.Data {
                 .HasForeignKey(n => n.NormGroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Alarm>()
-                .HasOne(a => a.NormGroup)
-                .WithMany()
-                .HasForeignKey(a => a.NormGroupId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Alarm>()
-                .HasMany(a => a.AlarmHistories)
-                .WithOne(h => h.Alarm)             
-                .HasForeignKey(h => h.AlarmId) 
-                .OnDelete(DeleteBehavior.Cascade); 
+            builder.Entity<AlarmStatusHistory>()
+                .HasOne(ash => ash.Alarm)
+                .WithMany(a => a.AlarmHistories)
+                .HasForeignKey(ash => ash.AlarmId);
 
             builder.Entity<AlarmStatusHistory>()
-                .HasOne(a => a.Modifier)
-                .WithMany()
-                .HasForeignKey(a => a.ModifierId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(ash => ash.StatusType)
+                .WithMany(st => st.AlarmStatusHistories)
+                .HasForeignKey(ash => ash.StatusTypeId);
+            
+            builder.Entity<SeverityHistory>()
+                .HasOne(sh => sh.NormGroup)
+                .WithMany(ng => ng.SeverityHistories)
+                .HasForeignKey(sh => sh.IdNormGroup);
 
-            builder.Entity<AlarmStatusHistory>()
-                .HasOne(a => a.StatusType)
-                .WithMany()
-                .HasForeignKey(a => a.StatusTypeId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<SeverityHistory>()
+                .HasOne(sh => sh.Severity)
+                .WithMany(s => s.SeverityHistories)
+                .HasForeignKey(sh => sh.IdSeverity);
+
         }
     }
 }
