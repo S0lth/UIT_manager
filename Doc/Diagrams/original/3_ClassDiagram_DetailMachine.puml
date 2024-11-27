@@ -1,0 +1,73 @@
+﻿@startuml
+'https://plantuml.com/class-diagram
+
+title Partial Diagram Class 
+header Detail Machine
+footer UIT Manager
+
+skinparam monochrome true
+skinparam linetype polyline
+hide class circle
+hide class stereotype
+hide separator
+hide empty members
+skinparam shadowing true
+skinparam roundcorner 10
+left to right direction
+skinparam ArrowThickness 1.
+
+'    Machine_name : string
+ '    Direct_x : string
+ '    Domain_name : string
+ '    Cpu_model : string
+ '    Cpu_coreCount : int
+ '    Cpu_logicalCore : int
+ '    Cpu_clockSpeed : int
+ '    Disk_number : int
+ '    Os_name : string
+ '    Os_version : string
+ '    Os_build : string
+ '    Ram_totalMemory : string
+ '    Ram_usedMemory : string
+ '    Ram_freeMemory : string
+ '    Uptime_days : int
+ '    Uptime_hours : int
+ '    Uptime_minutes : int
+ '    Uptime_seconds : int
+ '    Model : string
+ '    Tag_service : string
+ '    User_name : string
+ '    User_scope : string
+ '    Disk_name : string
+ '    Disk_total_size : int
+ '    Disk_free_size : int
+ '    ip: string
+ 
+Interface Information{
+    
+}
+
+Class Valeur{
+    Type : string
+    Value : var
+}
+
+Class Composent{
+    Type : string
+    Informations : Information[]
+}
+
+Class Machine{
+    Informations : Information[]
+}
+
+Machine ..> Information : use
+Information ..|> Valeur
+
+Information ..|> Composent
+
+Information <--o Composent
+
+
+
+@enduml
