@@ -45,6 +45,11 @@ namespace UITManagerWebServer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    Discriminator = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -153,8 +158,8 @@ namespace UITManagerWebServer.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: false)
                 },
@@ -198,8 +203,8 @@ namespace UITManagerWebServer.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    LoginProvider = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -259,7 +264,7 @@ namespace UITManagerWebServer.Migrations
                         column: x => x.MachineId,
                         principalTable: "Machines",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Alarms_NormGroups_NormGroupId",
                         column: x => x.NormGroupId,
@@ -296,12 +301,18 @@ namespace UITManagerWebServer.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdSeverity = table.Column<int>(type: "integer", nullable: false),
                     IdNormGroup = table.Column<int>(type: "integer", nullable: false),
-                    UpdateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Username = table.Column<string>(type: "text", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UpdateDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SeverityHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SeverityHistories_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SeverityHistories_NormGroups_IdNormGroup",
                         column: x => x.IdNormGroup,
@@ -313,7 +324,7 @@ namespace UITManagerWebServer.Migrations
                         column: x => x.IdSeverity,
                         principalTable: "Severities",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -325,7 +336,7 @@ namespace UITManagerWebServer.Migrations
                     AlarmId = table.Column<int>(type: "integer", nullable: false),
                     ModificationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     StatusTypeId = table.Column<int>(type: "integer", nullable: false),
-                    Username = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -335,11 +346,17 @@ namespace UITManagerWebServer.Migrations
                         column: x => x.StatusTypeId,
                         principalTable: "AlarmStatusTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_AlarmHistories_Alarms_AlarmId",
                         column: x => x.AlarmId,
                         principalTable: "Alarms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AlarmHistories_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -353,6 +370,11 @@ namespace UITManagerWebServer.Migrations
                 name: "IX_AlarmHistories_StatusTypeId",
                 table: "AlarmHistories",
                 column: "StatusTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AlarmHistories_UserId",
+                table: "AlarmHistories",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Alarms_MachineId",
@@ -425,6 +447,11 @@ namespace UITManagerWebServer.Migrations
                 name: "IX_SeverityHistories_IdSeverity",
                 table: "SeverityHistories",
                 column: "IdSeverity");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SeverityHistories_UserId",
+                table: "SeverityHistories",
+                column: "UserId");
         }
 
         /// <inheritdoc />

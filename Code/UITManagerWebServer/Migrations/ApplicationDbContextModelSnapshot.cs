@@ -85,6 +85,11 @@ namespace UITManagerWebServer.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -135,6 +140,10 @@ namespace UITManagerWebServer.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator().HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -165,12 +174,10 @@ namespace UITManagerWebServer.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("text");
@@ -207,12 +214,10 @@ namespace UITManagerWebServer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
                         .HasColumnType("text");
@@ -265,7 +270,7 @@ namespace UITManagerWebServer.Migrations
                     b.Property<int>("StatusTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -274,6 +279,8 @@ namespace UITManagerWebServer.Migrations
                     b.HasIndex("AlarmId");
 
                     b.HasIndex("StatusTypeId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("AlarmHistories");
                 });
@@ -426,7 +433,8 @@ namespace UITManagerWebServer.Migrations
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Username")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -435,7 +443,30 @@ namespace UITManagerWebServer.Migrations
 
                     b.HasIndex("IdSeverity");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("SeverityHistories");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.ApplicationUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -494,7 +525,7 @@ namespace UITManagerWebServer.Migrations
                     b.HasOne("UITManagerWebServer.Models.Machine", "Machine")
                         .WithMany("Alarms")
                         .HasForeignKey("MachineId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("UITManagerWebServer.Models.NormGroup", "NormGroup")
@@ -519,12 +550,20 @@ namespace UITManagerWebServer.Migrations
                     b.HasOne("UITManagerWebServer.Models.AlarmStatusType", "StatusType")
                         .WithMany("AlarmStatusHistories")
                         .HasForeignKey("StatusTypeId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.HasOne("UITManagerWebServer.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Alarm");
 
                     b.Navigation("StatusType");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Norm", b =>
@@ -566,12 +605,20 @@ namespace UITManagerWebServer.Migrations
                     b.HasOne("UITManagerWebServer.Models.Severity", "Severity")
                         .WithMany("SeverityHistories")
                         .HasForeignKey("IdSeverity")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.HasOne("UITManagerWebServer.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("NormGroup");
 
                     b.Navigation("Severity");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Alarm", b =>

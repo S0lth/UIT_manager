@@ -4,10 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 
 public static class Populate {
-    public static async void Initialize(IServiceProvider serviceProvider) {
+    
+    public static async Task Initialize(IServiceProvider serviceProvider) {
+    
         using var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
+         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        
+         await SeedUsersAsync(userManager,roleManager,context);
+         
+         DeleteDb(context);
+         
+         await SeedDatabase(userManager,context);
+    }
 
+    private static void DeleteDb(ApplicationDbContext context) {
         if (context.Machines.Any() || context.NormGroups.Any()) {
             context.Alarms.RemoveRange(context.Alarms);
             context.Notes.RemoveRange(context.Notes);
@@ -22,7 +34,157 @@ public static class Populate {
             context.SaveChanges();
             Console.WriteLine("Database cleared successful");
         }
+    }
+    
+    private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,ApplicationDbContext context) {
         
+        var roles = new List<string> { "MaintenanceManager", "Technician", "ITDirector" };
+        foreach (var role in roles) {
+            if (!await roleManager.RoleExistsAsync(role)) {
+                var roleResult = await roleManager.CreateAsync(new IdentityRole(role));
+                if (!roleResult.Succeeded) {
+                    Console.WriteLine($"Error creating role {role}: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
+                }
+            }
+        }
+        
+        if (context.Users.Any()) 
+        {
+            context.Users.RemoveRange(context.Users);
+            context.SaveChanges();
+        }
+
+        var users = new List<ApplicationUser> {
+            new ApplicationUser {
+                UserName = "roger",
+                Email = "roger@example.com",
+                FirstName = "Roger",
+                LastName = "Ô",
+                StartDate = DateTime.SpecifyKind(new DateTime(2013, 1, 1), DateTimeKind.Utc)
+            },
+            new ApplicationUser {
+                UserName = "pierre",
+                Email = "pierre@example.com",
+                FirstName = "Pierre",
+                LastName = "BARBE",
+                StartDate = DateTime.SpecifyKind(new DateTime(2008, 1, 1), DateTimeKind.Utc),
+                EndDate = DateTime.SpecifyKind(new DateTime(2012, 12, 31), DateTimeKind.Utc) // Ajout de la date de fin
+            },
+            new ApplicationUser {
+                UserName = "camille",
+                Email = "camille@example.com",
+                FirstName = "Camille",
+                LastName = "MILLET",
+                StartDate = DateTime.SpecifyKind(new DateTime(1998, 8, 8), DateTimeKind.Utc)
+            },
+            new ApplicationUser {
+                UserName = "bernadette",
+                Email = "bernadette@example.com",
+                FirstName = "Bernadette",
+                LastName = "HARDY",
+                StartDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc),
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 3, 15), DateTimeKind.Utc) // Date de fin ajoutée
+            },
+            new ApplicationUser {
+                UserName = "isaac",
+                Email = "isaac@example.com",
+                FirstName = "Isaac",
+                LastName = "DEVAUX",
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc)
+            },
+            new ApplicationUser {
+                UserName = "aime_boulay_1",
+                Email = "aime_boulay_1@example.com",
+                FirstName = "Aimé",
+                LastName = "BOULAY",
+                StartDate = DateTime.SpecifyKind(new DateTime(2022, 7, 1), DateTimeKind.Utc),
+                EndDate = DateTime.SpecifyKind(new DateTime(2022, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+            },
+            new ApplicationUser {
+                UserName = "paul_de_bergerac_1",
+                Email = "paul_de_bergerac_1@example.com",
+                FirstName = "Paul",
+                LastName = "DE BERGERAC",
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 3, 1), DateTimeKind.Utc),
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc) // Date de fin ajoutée
+            },
+            new ApplicationUser {
+                UserName = "aime_boulay_2",
+                Email = "aime_boulay_2@example.com",
+                FirstName = "Aimé",
+                LastName = "BOULAY",
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+            },
+            new ApplicationUser {
+                UserName = "alfred_emmanuel",
+                Email = "alfred_emmanuel@example.com",
+                FirstName = "Alfred-Emmanuel",
+                LastName = "SEGUIN",
+                StartDate = DateTime.SpecifyKind(new DateTime(2000, 3, 15), DateTimeKind.Utc)
+            },
+            new ApplicationUser {
+                UserName = "martin_etienne",
+                Email = "martin_etienne@example.com",
+                FirstName = "Martin-Étienne",
+                LastName = "LEFORT",
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc)
+            },
+            new ApplicationUser {
+                UserName = "paul_guilbert",
+                Email = "paul_guilbert@example.com",
+                FirstName = "Paul",
+                LastName = "GUILBERT",
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+            }
+        };
+        
+        foreach (var user in users) {
+            try {
+                var existingUser = await userManager.FindByEmailAsync(user.Email);
+                if (existingUser == null) {
+                    var result = await userManager.CreateAsync(user, "StrongerPassword!1");
+                    if (result.Succeeded) {
+                        if (result.Succeeded) {
+
+                            if (user.LastName == "Ô" || user.LastName == "BARBE")
+                            {
+                                await userManager.AddToRoleAsync(user, "ITDirector");
+                            }
+                            else if (user.LastName == "MILLET" || user.LastName == "SEGUIN")
+                            {
+                                await userManager.AddToRoleAsync(user, "MaintenanceManager");
+                            }
+                            else
+                            {
+                                await userManager.AddToRoleAsync(user, "Technician");
+                            }
+                        }
+                        Console.WriteLine($"User {user.UserName} created successfully.");
+                    }
+                    else {
+                        Console.WriteLine(
+                            $"Error creating user {user.UserName}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    }
+                }
+                else {
+                    Console.WriteLine($"User {user.UserName} already exists.");
+                }
+            }
+            catch (Exception ex) {
+                Console.WriteLine($"Exception while processing user {user.UserName}: {ex.Message}");
+            }
+
+        }
+        Console.WriteLine(
+            $"Database populated");
+    }
+
+    private static async Task SeedDatabase(UserManager<ApplicationUser> userManager, ApplicationDbContext context) {
+        
+        var random = new Random();
+
         var severities = new List<Severity>() {
             new Severity { Name = "Warning", Description = "Warning Severity" },
             new Severity { Name = "Low", Description = "Low Severity" },
@@ -54,30 +216,65 @@ public static class Populate {
             }
         };
         
+        var rolesToFind = new List<string> { "MaintenanceManager", "ITDirector" };
+        
+        var usersInRoles = new List<ApplicationUser>();
+        
+        foreach (var role in rolesToFind) {
+            var usersInRole = await userManager.GetUsersInRoleAsync(role);
+            usersInRoles.AddRange(usersInRole);
+        }
+        
+        usersInRoles = usersInRoles.Distinct().ToList();
+        
         var severityHistories = new List<SeverityHistory>() {
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-150),
+                NormGroup = normGroups[0],
+                Severity = severities[0],
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-50),
+                NormGroup = normGroups[0],
+                Severity = severities[2],
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+            },
             new SeverityHistory {
                 UpdateDate = DateTime.UtcNow,
                 NormGroup = normGroups[0],
                 Severity = severities[4],
-                Username = "O Roger"
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
             },
             new SeverityHistory {
-                UpdateDate = DateTime.UtcNow.AddHours(-1),
+                UpdateDate = DateTime.UtcNow.AddHours(-19),
+                NormGroup = normGroups[1],
+                Severity = severities[1],
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-5),
                 NormGroup = normGroups[1],
                 Severity = severities[3],
-                Username = "O Roger"
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
             },
             new SeverityHistory {
-                UpdateDate = DateTime.UtcNow.AddHours(-8),
+                UpdateDate = DateTime.UtcNow.AddHours(-46),
+                NormGroup = normGroups[2],
+                Severity = severities[4],
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-146),
                 NormGroup = normGroups[2],
                 Severity = severities[2],
-                Username = "O Roger"
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
             },
             new SeverityHistory {
-                UpdateDate = DateTime.UtcNow.AddHours(-10),
+                UpdateDate = DateTime.UtcNow.AddHours(-200),
                 NormGroup = normGroups[3],
                 Severity = severities[1],
-                Username = "O Roger"
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
             }
         };
         
@@ -97,7 +294,6 @@ public static class Populate {
             new { Brand = "MSI", Models = new[] { "Modern", "Prestige", "Stealth", "Katana" } }
         };
 
-        var random = new Random();
         var machines = new List<Machine>();
 
         for (int i = 1; i <= 50; i++) {
@@ -171,7 +367,7 @@ public static class Populate {
                             Alarm = alarm, 
                             StatusType = alarmStatusTypes[i],
                             ModificationDate = DateTime.UtcNow.AddHours(-10 + i ),
-                            Username =  "O Roger"
+                            UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
                         });
                     }
                     
