@@ -17,6 +17,8 @@
         
         public AlarmStatusType StatusType { get; set; }
         
-        public string Username { get; set; }
+        public string UserId { get; set; }  
+        public ApplicationUser User { get; set; } 
+        
     }
 }

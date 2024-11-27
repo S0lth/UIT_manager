@@ -14,9 +14,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+/*builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>();*/
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(options =>  {
+    options.Password.RequireDigit = true; // Le mot de passe doit contenir au moins un chiffre
+    options.Password.RequiredLength = 8; // Longueur minimale du mot de passe
+    options.Password.RequireNonAlphanumeric = true; // Caractères spéciaux requis
+    options.Password.RequireUppercase = true; // Majuscule obligatoire
+    options.Password.RequireLowercase = true; // Minuscule obligatoire
+
+    options.User.RequireUniqueEmail = true; // Chaque utilisateur doit avoir une adresse e-mail unique
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddAntiforgery();
@@ -44,7 +59,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         Console.WriteLine("i'm in");
-        Populate.Initialize(services);
+        await Populate.Initialize(services);
         Console.WriteLine("Database populated successfully.");
     }
     catch (Exception ex)
@@ -61,6 +76,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
