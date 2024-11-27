@@ -72,7 +72,7 @@ namespace UITManagerWebServer.Controllers {
             }
 
             var newAlarmHistory = new AlarmStatusHistory {
-                StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, ModifierId = 1 // A CHANGER PLUS TARD POUR L'ID DE L'UTILISATEUR EN SESSION
+                StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow // A CHANGER PLUS TARD POUR L'ID DE L'UTILISATEUR EN SESSION
             };
             
             alarm.AddAlarmHistory(newAlarmHistory);
@@ -96,8 +96,7 @@ namespace UITManagerWebServer.Controllers {
 
                 var alarmHistory = new AlarmStatusHistory {
                     StatusTypeId = newStatusType.Id,
-                    ModificationDate = DateTime.Now,
-                    ModifierId = null              
+                    ModificationDate = DateTime.Now             
                 };
 
                 alarm.AddAlarmHistory(alarmHistory);

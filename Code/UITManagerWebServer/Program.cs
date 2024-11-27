@@ -6,11 +6,12 @@ using UITManagerWebServer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -18,19 +19,19 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();*/
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+/*builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders();*/
 
 builder.Services.Configure<IdentityOptions>(options =>  {
-    options.Password.RequireDigit = true; // Le mot de passe doit contenir au moins un chiffre
-    options.Password.RequiredLength = 8; // Longueur minimale du mot de passe
-    options.Password.RequireNonAlphanumeric = true; // Caractères spéciaux requis
-    options.Password.RequireUppercase = true; // Majuscule obligatoire
-    options.Password.RequireLowercase = true; // Minuscule obligatoire
+    options.Password.RequireDigit = true; 
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true; 
 
-    options.User.RequireUniqueEmail = true; // Chaque utilisateur doit avoir une adresse e-mail unique
+    options.User.RequireUniqueEmail = true;
 });
 
 builder.Services.AddControllersWithViews();
@@ -44,7 +45,6 @@ if (app.Environment.IsDevelopment()) {
 }
 else {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

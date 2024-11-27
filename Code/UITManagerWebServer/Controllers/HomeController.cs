@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -8,11 +9,11 @@ namespace UITManagerWebServer.Controllers;
 
 public class HomeController : Controller {
     private readonly ApplicationDbContext _context;
-
+    
     public HomeController(ApplicationDbContext context) {
         _context = context;
     }
-
+[Authorize]
     public async Task<IActionResult> Index(string sortOrder) {
         var alarms = await _context.Alarms
             .Include(a => a.Machine)
