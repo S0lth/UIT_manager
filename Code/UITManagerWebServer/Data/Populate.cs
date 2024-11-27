@@ -229,25 +229,49 @@ public static class Populate {
         
         var severityHistories = new List<SeverityHistory>() {
             new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-150),
+                NormGroup = normGroups[0],
+                Severity = severities[0],
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-50),
+                NormGroup = normGroups[0],
+                Severity = severities[2],
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+            },
+            new SeverityHistory {
                 UpdateDate = DateTime.UtcNow,
                 NormGroup = normGroups[0],
                 Severity = severities[4],
                 UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
             },
             new SeverityHistory {
-                UpdateDate = DateTime.UtcNow.AddHours(-1),
+                UpdateDate = DateTime.UtcNow.AddHours(-19),
+                NormGroup = normGroups[1],
+                Severity = severities[1],
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-5),
                 NormGroup = normGroups[1],
                 Severity = severities[3],
                 UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
             },
             new SeverityHistory {
-                UpdateDate = DateTime.UtcNow.AddHours(-8),
+                UpdateDate = DateTime.UtcNow.AddHours(-46),
+                NormGroup = normGroups[2],
+                Severity = severities[4],
+                UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+            },
+            new SeverityHistory {
+                UpdateDate = DateTime.UtcNow.AddHours(-146),
                 NormGroup = normGroups[2],
                 Severity = severities[2],
                 UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
             },
             new SeverityHistory {
-                UpdateDate = DateTime.UtcNow.AddHours(-10),
+                UpdateDate = DateTime.UtcNow.AddHours(-200),
                 NormGroup = normGroups[3],
                 Severity = severities[1],
                 UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
