@@ -9,5 +9,11 @@
         public string Name { get; set; }
         
         public string Description { get; set; }
+        
+        public List<AlarmStatusHistory> AlarmStatusHistories { get; set; }
+
+        public AlarmStatusType() {
+            AlarmStatusHistories = new List<AlarmStatusHistory>();
+        }
     }
 }

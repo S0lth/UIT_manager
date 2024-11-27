@@ -17,8 +17,8 @@
         
         public AlarmStatusType StatusType { get; set; }
         
-        public int? ModifierId { get; set; }
+        public string UserId { get; set; }  
+        public ApplicationUser User { get; set; } 
         
-        public Employee? Modifier { get; set; }
     }
 }

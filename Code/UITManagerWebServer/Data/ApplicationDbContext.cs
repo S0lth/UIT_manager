@@ -4,11 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Data {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser> {
+    public class ApplicationDbContext : IdentityDbContext {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) {
         }
 
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        
         public DbSet<Machine> Machines { get; set; }
 
         public DbSet<Note> Notes { get; set; }
@@ -22,9 +24,10 @@ namespace UITManagerWebServer.Data {
         public DbSet<AlarmStatusHistory> AlarmHistories { get; set; }
 
         public DbSet<AlarmStatusType> AlarmStatusTypes { get; set; }
-
-        public DbSet<Employee> Employees { get; set; }
-
+        
+        public DbSet<Severity> Severities { get; set; }
+        
+        public DbSet<SeverityHistory> SeverityHistories { get; set; }
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
 
@@ -32,7 +35,7 @@ namespace UITManagerWebServer.Data {
                 .HasOne(a => a.Machine)
                 .WithMany(m => m.Alarms)
                 .HasForeignKey(a => a.MachineId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Norm>()
                 .HasOne(n => n.NormGroup)
@@ -40,29 +43,29 @@ namespace UITManagerWebServer.Data {
                 .HasForeignKey(n => n.NormGroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Alarm>()
-                .HasOne(a => a.NormGroup)
-                .WithMany()
-                .HasForeignKey(a => a.NormGroupId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Alarm>()
-                .HasMany(a => a.AlarmHistories)
-                .WithOne(h => h.Alarm)             
-                .HasForeignKey(h => h.AlarmId) 
-                .OnDelete(DeleteBehavior.Cascade); 
-
             builder.Entity<AlarmStatusHistory>()
-                .HasOne(a => a.Modifier)
-                .WithMany()
-                .HasForeignKey(a => a.ModifierId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<AlarmStatusHistory>()
-                .HasOne(a => a.StatusType)
-                .WithMany()
-                .HasForeignKey(a => a.StatusTypeId)
+                .HasOne(ash => ash.Alarm)
+                .WithMany(a => a.AlarmHistories)
+                .HasForeignKey(ash => ash.AlarmId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<AlarmStatusHistory>()
+                .HasOne(ash => ash.StatusType)
+                .WithMany(st => st.AlarmStatusHistories)
+                .HasForeignKey(ash => ash.StatusTypeId)
+                .OnDelete(DeleteBehavior.SetNull);
+            
+            builder.Entity<SeverityHistory>()
+                .HasOne(sh => sh.NormGroup)
+                .WithMany(ng => ng.SeverityHistories)
+                .HasForeignKey(sh => sh.IdNormGroup)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<SeverityHistory>()
+                .HasOne(sh => sh.Severity)
+                .WithMany(s => s.SeverityHistories)
+                .HasForeignKey(sh => sh.IdSeverity)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
