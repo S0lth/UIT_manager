@@ -1,0 +1,62 @@
+@startuml
+title Partial Diagram Class 
+header NormGroup Creation
+footer UIT Manager
+
+skinparam monochrome true
+skinparam linetype polyline
+hide class circle
+hide class stereotype
+hide separator
+hide empty members
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam ArrowThickness 1.
+
+
+class NormGroup{
+- Name: String
+- MaxExpectedProcessingTime: Integer
+- Priority: Integer
+- IsEnabled: Boolean
+}
+
+class Norm{
+- Name: String
+- Condition: String
+- Format: String
+}
+
+class Severity{
+- Name: String
+}
+
+class SeverityHistory{
+- Date: Date
+
+}
+
+class UserIdentity{
+- Name: String
+}
+
+interface Information{}
+
+class Composant{
+- Type: String
+}
+
+class Attribute{
+- Type: String
+- Value: var
+}
+
+NormGroup "1" --- "1..*" SeverityHistory: has
+SeverityHistory "1" --> "1" UserIdentity
+NormGroup "1" --> "1..*" Norm: "has"
+SeverityHistory "1" --> "1" Severity: has
+Norm "*" --> "1" Information: "concerns"
+Composant "1" o--> "1..*" Information
+Composant .up.|> Information
+Attribute .up.|> Information
+@enduml
