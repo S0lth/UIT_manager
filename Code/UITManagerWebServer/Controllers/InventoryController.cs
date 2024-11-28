@@ -30,6 +30,9 @@ namespace UITManagerWebServer.Controllers
             ViewData["ServiceTagSortParam"] = sortOrder == "ServiceTag" ? "ServiceTag_desc" : "ServiceTag";
             ViewData["StatusSortParm"] = sortOrder == "Status" ? "Status_desc" : "Status";
             ViewData["LastNoteSortParam"] = sortOrder == "LastNote" ? "LastNote_desc" : "LastNote";
+            
+            var machines = _context.Machines
+                .Include(m => )
             return View(await _context.Machines.ToListAsync());
         }
 
