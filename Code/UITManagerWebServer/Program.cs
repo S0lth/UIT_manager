@@ -11,18 +11,16 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
-
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 /*builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();*/
 
-/*builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
-    .AddDefaultTokenProviders();*/
+    .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>  {
     options.Password.RequireDigit = true; 
@@ -48,10 +46,6 @@ else {
     app.UseHsts();
 }
 
-
-
-
-
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -67,9 +61,6 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
     }
 }
-
-
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

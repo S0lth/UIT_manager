@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Data {
-    public class ApplicationDbContext : IdentityDbContext {
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) {
         }
 
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        //public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         
         public DbSet<Machine> Machines { get; set; }
 
