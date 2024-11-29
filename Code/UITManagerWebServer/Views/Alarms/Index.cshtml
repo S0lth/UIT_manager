@@ -329,8 +329,7 @@
 
 
 
-</script>
-<script>
+
     document.addEventListener('DOMContentLoaded', function () {
         const savedValue = localStorage.getItem('selectedFilter'); 
         if (savedValue) {
@@ -340,8 +339,6 @@
             }
         }
     });
-</script>
-<script>
 
     function saveSelection(value) {
         localStorage.setItem('selectedFilter', value);
@@ -355,19 +352,14 @@
         window.location.href = url;
     }
 
-</script>
 
-
-<script>
     function handleSelectChange(selectElement) {
         const selectedValue = selectElement.value;
 
         const url = `/ControllerName/Index?sortOrder=${selectedValue}`; 
         window.location.href = url;
     }
-</script>
 
-<script>
     document.getElementById('Search').addEventListener('keyup', function () {
         const searchValue = this.value.toLowerCase(); 
         const tableRows = document.querySelectorAll('table tbody tr'); 

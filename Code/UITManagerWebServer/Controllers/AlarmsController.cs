@@ -127,7 +127,7 @@ namespace UITManagerWebServer.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Technician")]
+        [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
         [Route("Alarms/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
         {
@@ -177,7 +177,7 @@ namespace UITManagerWebServer.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "MaintenanceManager")]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         [Route("Alarms/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request)
         {
