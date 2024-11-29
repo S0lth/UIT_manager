@@ -92,7 +92,6 @@ namespace UITManagerWebServer.Controllers
                 "Date_desc" => alarms.OrderByDescending(a => a.TriggeredAt),
                 "Date" => alarms.OrderBy(a => a.TriggeredAt),
 
-                //_ => alarms.OrderBy(a => a.NormGroup.Severity)
 
                 "Model" => alarms.OrderBy(a => a.Machine.Model),
                 "Model_desc" => alarms.OrderByDescending(a => a.Machine.Model),
@@ -100,7 +99,7 @@ namespace UITManagerWebServer.Controllers
                 "default" => alarms.OrderBy(a => true),
                 "b" => alarms.Where(a => a.AlarmHistories.Any() &&
                                          a.AlarmHistories
-                                             .OrderByDescending(h => h.ModificationDate) // Tri explicite par la date
+                                             .OrderByDescending(h => h.ModificationDate) 
                                              .First().User.Id == user.Id),
                 "c" => alarms.Where(a => a.UserId == null),
                 _ => alarms.OrderBy(a => a.Machine.Name)
