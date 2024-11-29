@@ -122,7 +122,7 @@
                                asp-route-authorId="@ViewData["AuthorId"]"
                                asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
                                class="text-decoration-none text-dark">
-                                @Html.DisplayNameFor(model => model.Machine)
+                                Host
                                 <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
                             </a>
                         </th>
