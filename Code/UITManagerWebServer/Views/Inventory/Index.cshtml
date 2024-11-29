@@ -45,14 +45,20 @@
     <div class="row justify-content-center col-lg-12 card shadow-sm border-0 rounded">
         <div class="card-body">
             <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
-                <table class="table table-hover table-striped align-middle">
-                    <thead class="table-lightfix">
+                <table class="table table-auto table-hover table-striped align-middle" id="inventoryTable">
+                    <thead class="table-light sticky-top ">
                     <tr>
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
                             <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
                                class="text-decoration-none text-dark">
                                 Host <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
                             </a>
+
+                            <div class="input-group" style="max-width: 200px;">
+                                <div class="form-outline" data-mdb-input-init>
+                                    <input type="search" id="searchBoxHostInventory" class="form-control" placeholder="Search..." onkeyup="searchHostInInventory()"/>
+                                </div>
+                            </div>
                         </th>
 
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastSeenDate")">
@@ -143,17 +149,19 @@
                                 <!-- ajouter ici un lien vers la page pour faire une nouvelle note sur cette machine -->
                                 <a asp-action="Details" asp-route-id="@item.Id"
                                    class="text-primary text-decoration-none">
-                                    +
+                                    <i class="bi bi-file-plus"></i>
                                 </a>
                             </td>
 
                             <td class="text-secondary">
-                                @if (item.LastNote != null)
+                                @if (item.NoteCount != 0)
                                 {
+                                    var maxSize = 25;
+                                    var truncatedNote = @item.LastNote.Content.Length > maxSize ? @item.LastNote.Content.Substring(0, maxSize) + "..." : @item.LastNote.Content;
                                     <a asp-action="Details" asp-route-id="@item.Id"
                                        class="text-primary text-decoration-none">
                                         <!-- ajouter ici un lien vers la page pour faire une nouvelle note sur cette machine -->
-                                        @item.LastNote.Content
+                                        @truncatedNote
                                     </a>
                                 }
                                 else

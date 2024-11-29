@@ -25,3 +25,21 @@ function updateAlarmStatus(alarmId, status) {
     });
 }
 
+function searchHostInInventory() {
+    var input = document.getElementById("searchBoxHostInventory");
+    var filter = input.value.toLowerCase();
+    var table = document.getElementById("inventoryTable");
+    var trs = table.getElementsByTagName("tr");
+
+    for (var i = 1; i < trs.length; i++) {
+        var td = trs[i].getElementsByTagName("td")[0];
+        if (td) {
+            var txtValue = td.textContent || td.innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                trs[i].style.display = "";
+            } else {
+                trs[i].style.display = "none";
+            }
+        }
+    }
+}

@@ -238,16 +238,16 @@ namespace UITManagerWebServer.Controllers {
                 // Créer une machine factice
                 var machine = new Machine {
                     Id = i,
-                    Name = $"Machine {i}",
+                    Name = $"Site-A-DESKTOP-3KIG9BP{i}",
                     IsWorking = random.Next(0, 2) == 1,
                     Model = models[random.Next(models.Length)],
                     Build = builds[random.Next(builds.Length)],
                     ServiceTag = serviceTags[random.Next(serviceTags.Length)],
-                    LastSeenDate = DateTime.Now.AddDays(-random.Next(0, 600000)),
+                    LastSeenDate = DateTime.Now.AddDays(-random.Next(0, 600)),
                     Notes = new List<Note>()
                 };
 
-                int noteCount = random.Next(0, 20);
+                int noteCount = random.Next(0, 90000);
                 for (int j = 1; j <= noteCount; j++) {
                     machine.Notes.Add(new Note {
                         Id = j,
