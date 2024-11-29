@@ -114,27 +114,27 @@
                     <div >
                         <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
                             <table class="table table-hover table-striped align-middle">
-                                <thead class="table-lightfix ">
+                                <thead class="table-lightfix sticky-top ">
                                 <tr>
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine") fix">
+                                    <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine") fix">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
                                            class="text-decoration-none text-dark ">
                                             Host <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
                                         </a>
                                     </th>
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Model")">
+                                    <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Model")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["ModelSortParam"]"
                                            class="text-decoration-none text-dark">
                                             Model <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Model")"></i>
                                         </a>
                                     </th>
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
+                                    <th class=" bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]"
                                            class="text-decoration-none text-dark">
                                             Status <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
                                         </a>
                                     </th>
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
+                                    <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParm"]"
                                            class="text-decoration-none text-dark">
                                             Severity
@@ -143,7 +143,7 @@
                                             </i>
                                         </a>
                                     </th>
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
+                                    <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]"
                                            class="text-decoration-none text-dark">
                                             Alarm
@@ -152,13 +152,13 @@
                                             </i>
                                         </a>
                                     </th>
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
+                                    <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
                                            class="text-decoration-none text-dark">
                                             Date <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
                                         </a>
                                     </th>
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Attribution")">
+                                    <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Attribution")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["AttributionSortParam"]"
                                            class="text-decoration-none text-dark">
                                             Attribution <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Attribution")"></i>
