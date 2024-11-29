@@ -81,7 +81,15 @@ namespace UITManagerWebServer.Data {
                 .HasMany(c => c.Children)
                 .WithOne(c => c.Parent)
                 .HasForeignKey(c => c.ParentId)
-                .OnDelete(DeleteBehavior.Restrict);*/
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.Entity<Machine>()
+                .HasMany(m => m.Composites)
+                .WithOne(c => c.Machine)
+                .HasForeignKey(c => c.MachinesId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+                */
         }
     }
 }
