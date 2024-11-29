@@ -110,7 +110,6 @@ return "bi bi-arrow-down-up";
     </div>
 
 
-
     <div class="row justify-content-center">
         <div class="col-lg-12">
             <div class="card shadow-sm border-0 rounded">
@@ -189,21 +188,21 @@ return "bi bi-arrow-down-up";
                                                 onchange="updateAlarmStatus(@item.Id, this.value)">
                                             @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
                                             {
-                                            @if (statusType.Name == @item.AlarmHistories
-                                            ?.OrderByDescending(ah => ah.ModificationDate)
-                                            .FirstOrDefault()?.StatusType?.Name.ToString())
-                                            {
-                                            <option selected value="@statusType.Name">@statusType.Name </option>
+                                                @if (statusType.Name == @item.AlarmHistories
+                                                         ?.OrderByDescending(ah => ah.ModificationDate)
+                                                         .FirstOrDefault()?.StatusType?.Name.ToString())
+                                                {
+                                                    <option selected value="@statusType.Name">@statusType.Name </option>
 
 
-                                            }
-                                            else
-                                            {
-                                            <option value="@statusType.Name">@statusType.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@statusType.Name">@statusType.Name</option>
 
-                                            }
+                                                }
 
-                                            <option disabled class="text-secondary fst-italic fw-light" label="">@statusType.Description</option>
+                                                <option disabled class="text-secondary fst-italic fw-light" label="">@statusType.Description</option>
                                             }
                                         </select>
                                     </td>
@@ -222,36 +221,47 @@ return "bi bi-arrow-down-up";
                                     </td>
                                     <td>
                                        
-                                        <select class="form-select form-select-sm @GetBGColorForAttribution(@item.GetLatestAlarmHistory()?.UserId )"
-                                                >
-                                            @{
-                                                bool isFirst = true;
-
+                                            @if ( @User.IsInRole("Technician"))
+                                            {
+                                                <p clasx="text-secondary">@item.GetLatestAlarmHistory()?.User.FirstName @item.GetLatestAlarmHistory()?.User.LastName </p>
                                             }
-                                            @foreach (var user in ViewData["user"] as IEnumerable<UITManagerWebServer.Models.ApplicationUser>)
+                                            else
                                             {
                                                 
-                                          
-                                                    if (@user.Id == @item.GetLatestAlarmHistory()?.UserId && isFirst == true)
-                                                    {                                                        isFirst = false;
-                                                        
-                                                        <option selected value = "@user.Id" onclick="updateAlarmAttribution('@item.Id', '@user.Id')" > @user.FirstName @user.LastName</option>
+                                                <select class="form-select form-select-sm @GetBGColorForAttribution(@item.GetLatestAlarmHistory()?.UserId)">
+                                                    @{ bool isFirst = true; }
 
-                                                    }else if (@item.GetLatestAlarmHistory()?.UserId == null && isFirst==true  )
+                                                
+                                                @foreach (var user in ViewData["user"] as IEnumerable<UITManagerWebServer.Models.ApplicationUser>)
+                                                {
+
+
+                                                    if (@user.Id == @item.GetLatestAlarmHistory()?.UserId && isFirst == true)
                                                     {
                                                         isFirst = false;
-                                                            <option onclick="updateAlarmAttribution('@item.Id', '@user.Id')"  selected value="">Unattribued</option>
+
+                                                        <option selected value="@user.Id" onclick="updateAlarmAttribution('@item.Id', '@user.Id')"> @user.FirstName @user.LastName</option>
+
+                                                    }
+                                                    else if (@item.GetLatestAlarmHistory()?.UserId == null && isFirst == true)
+                                                    {
+                                                        isFirst = false;
+                                                        <option onclick="updateAlarmAttribution('@item.Id', '@user.Id')" selected value="">Unattribued</option>
                                                     }
                                                     else
                                                     {
                                                         <option onclick="updateAlarmAttribution('@item.Id', '@user.Id')" value="@user.Id">@user.FirstName @user.LastName</option>
 
                                                     }
-                                                
-                                        
-                                            }
 
-                                        </select>
+
+                                                }
+                                                </select>
+
+                                        }
+
+                                            
+
                                     </td>
 
                                 </tr>

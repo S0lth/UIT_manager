@@ -109,11 +109,25 @@ namespace UITManagerWebServer.Controllers
             ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
             ViewData["user"] = users;
             ViewData["WhoIsAssigned"] = sortOrder ?? "a";
+            
+            if (User.IsInRole("Admin"))
+            {
+                ViewData["Role"] = "Admin";
+            }
+            else if (User.IsInRole("User"))
+            {
+                ViewData["Role"] = "User";
+            }
+            else
+            {
+                ViewData["Role"] = "Unknown";
+            }
             return View(await alarms.ToListAsync());
         }
 
 
         [HttpPost]
+        [Authorize(Roles = "Technician")]
         [Route("Alarms/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
         {
@@ -163,15 +177,14 @@ namespace UITManagerWebServer.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "MaintenanceManager")]
         [Route("Alarms/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request)
         {
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
             if (request == null || string.IsNullOrEmpty(request.Id) || string.IsNullOrEmpty(request.UserId))
             {
                 return BadRequest(new { success = false, message = "Invalid request data." });
             }
-            Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
             try
             {
@@ -185,7 +198,6 @@ namespace UITManagerWebServer.Controllers
                 {
                     return NotFound(new { success = false, message = "Alarm not found." });
                 }
-                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
                 // Vérifier si l'utilisateur existe
                 var user = await _userManager.FindByIdAsync(request.UserId);
@@ -193,7 +205,6 @@ namespace UITManagerWebServer.Controllers
                 {
                     return NotFound(new { success = false, message = "User not found." });
                 }
-                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
                 // Mettre à jour l'utilisateur associé à l'alarme
                 alarm.UserId = request.UserId;
@@ -208,11 +219,9 @@ namespace UITManagerWebServer.Controllers
                 };
 
                 _context.AlarmHistories.Add(alarmStatusHistory);
-                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
                 // Enregistrer les modifications
                 await _context.SaveChangesAsync();
-                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
                 return Ok(new { success = true, message = "Alarm attribution updated successfully." });
             }
