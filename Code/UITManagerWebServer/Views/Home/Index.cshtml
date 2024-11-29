@@ -91,6 +91,7 @@
                                         data-bs-target="#unprocessedModal">
                                     <i class="bi bi-info-circle"></i>
                                 </button>
+                                <span class="badge bg-info">@Model.UnprocessedAlarms.Count</span>
                             </h5>
                             <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                                 <table class="table table-hover table-striped table-bordered rounded">
@@ -206,6 +207,7 @@
                                         data-bs-target="#newestModal">
                                     <i class="bi bi-info-circle"></i>
                                 </button>
+                                <span class="badge bg-info">@Model.NewestAlarms.Count</span>
                             </h5>
                             <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                                 <table class="table table-hover table-striped table-bordered rounded">
@@ -315,11 +317,12 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <h5 class="card-title">
-                                Overdue Alarms
+                                Alarms Exceeding Estimated Processing Time
                                 <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                         data-bs-target="#overdueModal">
                                     <i class="bi bi-info-circle"></i>
                                 </button>
+                                <span class="badge bg-info">@Model.OverdueAlarms.Count</span>
                             </h5>
                             <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                                 <table class="table table-hover table-striped table-bordered rounded">
@@ -559,9 +562,6 @@
                                 const labels_assign = Object.keys(alarm_assign_Data);
                                 const data_assign = Object.values(alarm_assign_Data);
 
-                                console.log(labels_assign)
-                                console.log(data_assign)
-
                                 const ctx_assign = document.getElementById('myChart1').getContext('2d');
                                 new Chart(ctx_assign, {
                                     type: 'pie',
@@ -612,55 +612,54 @@
                                     data-bs-target="#notesModal">
                                 <i class="bi bi-info-circle"></i>
                             </button>
+                            <form method="get"
+                                  class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start">
+                                <!-- Filtres à droite -->
+                                <div class="d-flex ms-auto flex-wrap">
+                                    <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
+                                        <span>Filter</span>
+                                        <span class="ms-1">by</span>
+                                    </div>
+                                    <div class="dropdown me-2 mb-2 mb-md-0">
+                                        <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
+                                                class="form-control form-control-sm">
+                                            <option value="" disabled selected>Note Type</option>
+                                            <option value="all">All</option>
+                                            <option value="true">Solution</option>
+                                            <option value="false">Follow-up</option>
+                                        </select>
+                                    </div>
 
-                            <!-- Filtres à droite -->
-                            <div class="d-flex ms-auto flex-wrap">
-                                <select asp-for="@ViewData["solutionFilter"]" name="IsSolution" class="form-control form-control-sm">
-                                    <option value="" disabled selected>Note Type</option>
-                                    <option value="">All</option>
-                                    <option value="true">Solution</option>
-                                    <option value="false">Follow-up</option>
-                                </select>
-                                <div class="dropdown me-2 mb-2 mb-md-0">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button"
-                                            id="solutionFilterDropdown"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        Note Type
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="solutionFilterDropdown">
-                                        <li><a class="dropdown-item" href="?solutionFilter=all">All</a></li>
-                                        <li><a class="dropdown-item" href="?solutionFilter=true">Solutions</a></li>
-                                        <li><a class="dropdown-item" href="?solutionFilter=false">Follow-ups</a></li>
-                                    </ul>
-                                </div>
+                                    <div class="dropdown me-2 mb-2 mb-md-0">
+                                        <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter"
+                                                class="form-control form-control-sm">
+                                            <option value="" disabled selected>Author</option>
+                                            <option value="all">All Authors</option>
+                                            @foreach (var author in ViewBag.Authors)
+                                            {
+                                                <option value="@author.Id">
+                                                    @author.LastName @author.FirstName
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
 
-                                <div class="dropdown me-2 mb-2 mb-md-0">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button"
-                                            id="authorFilterDropdown"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        Author
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="authorFilterDropdown">
-                                        <li><a class="dropdown-item" href="?authorFilter=all">All Authors</a></li>
-                                        @foreach (var author in Model.Authors)
-                                        {
-                                            <li><a class="dropdown-item" href="?authorFilter=@author">@author</a></li>
-                                        }
-                                    </ul>
-                                </div>
 
-                                <div class="dropdown mb-2 mb-md-0">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button"
-                                            id="dateSortDropdown"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        Sort by Date
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dateSortDropdown">
-                                        <li><a class="dropdown-item" href="?sortOrder=date">Newest First</a></li>
-                                        <li><a class="dropdown-item" href="?sortOrder=date_desc">Oldest First</a></li>
-                                    </ul>
+                                    <div class="dropdown me-2 mb-2 mb-md-0">
+                                        <select asp-for="@ViewData["SortOrderNote"]" name="SortOrderNote"
+                                                class="form-control form-control-sm">
+                                            <option value="" disabled selected>Date</option>
+                                            <option value="ndate">Newest First</option>
+                                            <option value="ndate_desc">Oldest First</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                        <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm">Reset</a>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </h5>
 
                         <div class="list-group list-group-flush">
@@ -731,7 +730,8 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="overdueModalLabel">Information on Overdue Alarms</h5>
+                        <h5 class="modal-title" id="overdueModalLabel">Information on Alarms Exceeding Estimated
+                            Processing Time</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
