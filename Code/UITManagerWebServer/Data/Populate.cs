@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using UITManagerWebServer.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using UITManagerWebServer.Data;
 
 public static class Populate {
@@ -26,6 +27,7 @@ public static class Populate {
             context.Norms.RemoveRange(context.Norms);
             context.NormGroups.RemoveRange(context.NormGroups);
             context.Machines.RemoveRange(context.Machines);
+            context.Components.RemoveRange(context.Components);
             context.AlarmHistories.RemoveRange(context.AlarmHistories);
             context.AlarmStatusTypes.RemoveRange(context.AlarmStatusTypes);
             context.Severities.RemoveRange(context.Severities);
@@ -294,18 +296,279 @@ public static class Populate {
             new { Brand = "MSI", Models = new[] { "Modern", "Prestige", "Stealth", "Katana" } }
         };
 
+        var directX = new[] {"Direct X 12", "Direct X 11", "Direct X 10"};
+        var Os = new[] { "Microsoft Windows 10 Entreprise", "Microsoft Windows 11 Entreprise"};
+        var OsV = new[] { "23h2", "24h2", "22h2", };
+        var OsB = new[] { "22631", "26100", "19045"};
+
         var machines = new List<Machine>();
 
         for (int i = 1; i <= 50; i++) {
             var brandAndModel = brandsAndModels[random.Next(brandsAndModels.Length)];
             var brand = brandAndModel.Brand;
             var model = brandAndModel.Models[random.Next(brandAndModel.Models.Length)];
+            var seen = random.Next(1, 101) <= 30 ? DateTime.UtcNow.AddDays(-3) : DateTime.UtcNow;
 
             var machineId = GenerateRandomWindowsMachineName();
 
             var machineName = $"{machineId}";
-            var Model = $"{brand} {model}"; 
-            machines.Add(new Machine { Name = machineName , Model = Model });
+            var Model = $"{brand} {model}";
+            var Machine = new Machine {
+                Name = machineName, 
+                Model = Model,
+                IsWorking = random.Next(1, 101) <= 90,
+                LastSeen = seen,
+            };
+            
+            Machine.Informations.Add(
+                new Value {
+                    Machine = Machine,
+                    Name = "Direct X",
+                    Values = directX[random.Next(directX.Length)]
+                });
+            
+            Machine.Informations.Add(
+                new Value {
+                    Machine = Machine,
+                    Name = "Domain name",
+                    Values = "WORKGROUP"
+                });
+            
+            Machine.Informations.Add(
+                new Value {
+                    Machine = Machine,
+                    Name = "Tag Service",
+                    Values = "AB45CD78"
+                });
+
+
+            var date = new TimeSpan( random.Next(0, 151), random.Next(0, 24), random.Next(0, 60), random.Next(0, 60));
+            Machine.Informations.Add(
+                new Value {
+                    Machine = Machine,
+                    Name = "UpTimes",
+                    Values = date.ToString()
+                });
+
+            var modeltype = new [] {"AMD Ryzen 7 7700X", "Intel Core i9-13900K", "Intel Core i7-13700K", "Intel Xeon W-3175X"};
+            var locgical = new [] {"16", "32", "64", "126"};
+            var coreCount = new [] {"8", "16", "32", "64"};
+            var clock = new [] {"3601", "5204", "2500", "3100", "4600"};
+            Machine.Informations.Add(
+                new Component {
+                    Name = "CPU",
+                    Machine = Machine,
+                    Children = new List<Informations> {
+                        new Value {
+                            Name = "Logical core",
+                            Machine = Machine,
+                            Values = locgical[random.Next(locgical.Length)],
+                        },
+                        new Value {
+                            Name = "Core count",
+                            Machine = Machine,
+                            Values = coreCount[random.Next(coreCount.Length)],
+                        },
+                        new Value {
+                            Name = "Clockspeed",
+                            Machine = Machine,
+                            Values = clock[random.Next(clock.Length)],
+                        },
+                        new Value {
+                            Name = "Model",
+                            Machine = Machine,
+                            Values = modeltype[random.Next(modeltype.Length)],
+                        } 
+                    } 
+                });
+
+            var ramT = new [] {"16", "15.2", "32", "64"};
+            var ramU = new [] {"10", "12.8", "25.6", "51.2", "40.4", "60", "20"};
+            var ramF = new [] {"6", "3.2", "10", "20", "40"};
+            Machine.Informations.Add(
+                new Component {
+                    Name = "Ram",
+                    Machine = Machine,
+                    Children = new List<Informations> {
+                        new Value {
+                            Name = "Total RAM",
+                            Machine = Machine,
+                            Values = ramT[random.Next(ramT.Length)],
+                        },
+                        new Value {
+                            Name = "Used RAM",
+                            Machine = Machine,
+                            Values = ramU[random.Next(ramT.Length)],
+                        },
+                        new Value {
+                            Name = "Free RAM",
+                            Machine = Machine,
+                            Values = ramF[random.Next(ramT.Length)],
+                        } 
+                    } 
+                });
+
+
+            Machine.Informations.Add(
+                new Component {
+                    Name = "OS",
+                    Machine = Machine,
+                    Children = new List<Informations> {
+                        new Value {
+                            Name = "OS Name",
+                            Machine = Machine,
+                            Values = Os[random.Next(Os.Length)],
+                        },
+                        new Value {
+                            Name = "Os Version",
+                            Machine = Machine,
+                            Values = OsV[random.Next(OsV.Length)],
+                        },
+                        new Value {
+                            Name = "Os Build",
+                            Machine = Machine,
+                            Values = OsB[random.Next(OsB.Length)],
+                        },
+                    } 
+                });
+            
+            var ipAddresses = new []
+            {
+                "192.168.1.15", "10.0.0.87", "172.16.24.65", "203.0.113.42", "8.8.8.8",
+                "172.18.99.22", "192.168.10.200", "10.1.1.1", "192.0.2.33", "198.51.100.5",
+                "100.64.0.1", "172.19.45.88", "192.168.0.254", "10.255.255.254", "203.0.113.120",
+                "8.8.4.4", "192.168.56.1", "10.100.200.5", "172.20.14.1", "192.168.2.25",
+                "172.21.13.50", "10.10.10.10", "192.168.100.100", "198.51.100.1", "203.0.113.55",
+                "10.0.5.5", "172.22.99.88", "192.168.3.3", "10.123.45.67", "172.23.7.77",
+                "192.168.4.1", "203.0.113.150", "10.10.20.30", "172.24.56.78", "192.168.5.5",
+                "198.51.100.99", "172.25.1.1", "192.168.50.2", "10.20.30.40", "172.26.33.44",
+                "192.168.6.6", "10.30.40.50", "172.27.99.100", "192.168.7.7", "198.51.100.2",
+                "203.0.113.3", "10.40.50.60", "172.28.88.77", "192.168.8.8", "10.50.60.70",
+                "172.29.11.22", "192.168.9.9", "198.51.100.10", "203.0.113.99", "10.60.70.80",
+                "172.30.99.123", "192.168.10.10", "10.70.80.90", "172.31.99.45", "192.168.11.11",
+                "198.51.100.20", "203.0.113.56", "10.80.90.100", "172.32.14.88", "192.168.12.12",
+                "10.90.100.110", "172.33.33.33", "192.168.13.13", "198.51.100.30", "203.0.113.12",
+                "10.100.110.120", "172.34.56.78", "192.168.14.14", "10.110.120.130", "172.35.88.99",
+                "192.168.15.15", "198.51.100.40", "203.0.113.22", "10.120.130.140", "172.36.10.11",
+            };
+            List<Informations> ip = new List<Informations>();
+            for (int j = 0; j < random.Next(1, 3); j++) {
+                var val = new Value {
+                    Name = "Ip Address", Machine = Machine, Values = ipAddresses[random.Next(ipAddresses.Length)],
+                };
+                ip.Add(val);
+            }
+            
+            Machine.Informations.Add(
+                new Component {
+                    Name = "IPs",
+                    Machine = Machine,
+                    Children = ip,
+                });
+
+            var diskNames = new string[]
+            {"C:System_Disk", "D:Data_Drive", "E:Backup_Disk", "F:Media_Storage", "G:Games_Drive",
+                "H:VM_Storage", "I:Archive_1", "J:Personal_Files", "K:Shared_Drive", "L:Encrypted_Vault"
+            };
+            List<Informations> Disks = new List<Informations>();
+            for (int j = 0; j < random.Next(1, 3); j++) {
+                var val = new Component {
+                    Name = diskNames[random.Next(diskNames.Length)], 
+                    Machine = Machine, 
+                    Children = new List<Informations> {
+                        new Value {
+                            Name ="Disk Free Size", 
+                            Values = random.Next(255, 700).ToString(), 
+                            Machine = Machine
+                        },
+                        new Value {
+                            Name ="Disk Total Size", 
+                            Values = random.Next(255, 952).ToString(), Machine = 
+                                Machine
+                        },
+                    }
+                };
+                Disks.Add(val);
+            }
+            
+            Machine.Informations.Add(
+                new Component {
+                    Name = "List Disk",
+                    Machine = Machine,
+                    Children = new List<Informations> {
+                        new Component {
+                            Name = "Disks",
+                            Machine = Machine,
+                            Children = Disks,
+                        },
+                        new Value {
+                            Name = "Number disks",
+                            Machine = Machine,
+                            Values = Disks.Count.ToString(),
+                        },
+                    } 
+                });
+            
+            var scoop = new[] { "local", "domain"};
+            var name = new[] { "Secretary", "Commercial", "Employee"};
+            Machine.Informations.Add(
+                new Component {
+                    Name = "Users List",
+                    Machine = Machine,
+                    Children = new List<Informations> {
+                        new Component {
+                            Name = "Ip Address",
+                            Machine = Machine,
+                            Children = new List<Informations> {
+                                new Value {
+                                    Name = "User Name",
+                                    Machine = Machine,
+                                    Values = "Admin",
+                                },
+                                new Value {
+                                    Name = "User Scope",
+                                    Machine = Machine,
+                                    Values = "Local",
+                                },
+                            }
+                        },
+                        new Component {
+                            Name = "Ip Address",
+                            Machine = Machine,
+                            Children = new List<Informations> {
+                                new Value {
+                                    Name = "User Name",
+                                    Machine = Machine,
+                                    Values = "DefaultAccount",
+                                },
+                                new Value {
+                                    Name = "User Scope",
+                                    Machine = Machine,
+                                    Values = "Local",
+                                },
+                            }
+                        },
+                        
+                        new Component {
+                            Name = "Ip Address",
+                            Machine = Machine,
+                            Children = new List<Informations> {
+                                new Value {
+                                    Name = "User Name",
+                                    Machine = Machine,
+                                    Values = name[random.Next(name.Length)],
+                                },
+                                new Value {
+                                    Name = "User Scope",
+                                    Machine = Machine,
+                                    Values = scoop[random.Next(scoop.Length)],
+                                },
+                            }
+                        },
+                    } 
+                });
+            
+            machines.Add(Machine);
         }
 
         context.Machines.AddRange(machines);

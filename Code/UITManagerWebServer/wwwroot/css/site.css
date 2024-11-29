@@ -22,7 +22,7 @@ body {
 }
 
 .bg-selected-header {
-  background-color: rgba(0, 123, 255, 0.3) !important;
+  background-color: #007bff !important;
   color: #fff;
   font-weight: bold;
 }
@@ -45,5 +45,13 @@ body {
   color: #0056b3;
   border-bottom: 3px solid #0056b3;
   padding-bottom: 4px;
+}
+
+.text-High{
+  color: #FF5B02;
+}
+
+.text-low{
+  color: #6B8909;
 }
 
