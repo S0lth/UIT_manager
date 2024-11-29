@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Models;
+using Information = Microsoft.VisualBasic.Information;
 
 namespace UITManagerWebServer.Data {
     public class ApplicationDbContext : IdentityDbContext {
@@ -26,6 +27,10 @@ namespace UITManagerWebServer.Data {
         public DbSet<AlarmStatusType> AlarmStatusTypes { get; set; }
         
         public DbSet<Severity> Severities { get; set; }
+        
+        public DbSet<Informations> Components { get; set; }
+        public DbSet<Value> Leafs { get; set; }
+        public DbSet<Component> Composites { get; set; }
         
         public DbSet<SeverityHistory> SeverityHistories { get; set; }
         protected override void OnModelCreating(ModelBuilder builder) {
@@ -66,6 +71,17 @@ namespace UITManagerWebServer.Data {
                 .WithMany(s => s.SeverityHistories)
                 .HasForeignKey(sh => sh.IdSeverity)
                 .OnDelete(DeleteBehavior.SetNull);
+            
+            /*builder.Entity<Information>()
+                .HasDiscriminator<string>("ComponentType")
+                .HasValue<Value>("Leaf")
+                .HasValue<Component>("Composite");
+            
+            builder.Entity<Information>()
+                .HasMany(c => c.Children)
+                .WithOne(c => c.Parent)
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);*/
         }
     }
 }
