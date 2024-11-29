@@ -372,8 +372,9 @@ public static class Populate {
                             Alarm = alarm, 
                             StatusType = alarmStatusTypes[i],
                             ModificationDate = DateTime.UtcNow.AddHours(-10 + i ),
-                            UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                         });
+                        
                     }
 
                     
@@ -404,7 +405,7 @@ public static class Populate {
             new[] { "Investigating high CPU usage.", "Monitoring storage capacity after warning." };
 
         var machinesWithNotes =
-            machines.OrderBy(_ => random.Next()).Take(5).ToList(); // Sélection de 5 machines aléatoires
+            machines.OrderBy(_ => random.Next()).Take(5).ToList(); 
 
         for (int i = 0; i < 3; i++) {
             notes.Add(new Note {

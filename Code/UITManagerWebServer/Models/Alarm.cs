@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace UITManagerWebServer.Models {
- 
     public class Alarm {
         public int Id { get; set; }
         public List<AlarmStatusHistory> AlarmHistories { get; set; }
@@ -11,16 +10,20 @@ namespace UITManagerWebServer.Models {
         public DateTime TriggeredAt { get; set; }
 
         public int MachineId { get; set; }
-        
+
         public Machine? Machine { get; set; }
 
         public int NormGroupId { get; set; }
-        
+
         public NormGroup? NormGroup { get; set; }
         
         public string? UserId { get; set; }
         
         public ApplicationUser User { get; set; }
+
+        public string? UserId { get; set; }
+        
+        public ApplicationUser? User { get; set; }
 
         public Alarm() {
             AlarmHistories = new List<AlarmStatusHistory>();
