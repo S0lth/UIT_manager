@@ -17,7 +17,7 @@
         
         public string? Model { get; set; }
         
-        public TimeSpan LastSeen { get; set; }
+        public DateTime? LastSeen { get; set; }
         
         public Machine() {
             Alarms = new List<Alarm>();

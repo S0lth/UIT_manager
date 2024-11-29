@@ -72,24 +72,24 @@ namespace UITManagerWebServer.Data {
                 .HasForeignKey(sh => sh.IdSeverity)
                 .OnDelete(DeleteBehavior.SetNull);
             
-            /*builder.Entity<Information>()
+            builder.Entity<Informations>()
                 .HasDiscriminator<string>("ComponentType")
                 .HasValue<Value>("Leaf")
                 .HasValue<Component>("Composite");
             
-            builder.Entity<Information>()
+            builder.Entity<Informations>()
                 .HasMany(c => c.Children)
                 .WithOne(c => c.Parent)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
             
             builder.Entity<Machine>()
-                .HasMany(m => m.Composites)
+                .HasMany(m => m.Informations)
                 .WithOne(c => c.Machine)
                 .HasForeignKey(c => c.MachinesId)
                 .OnDelete(DeleteBehavior.Restrict);
             
-                */
+                
         }
     }
 }

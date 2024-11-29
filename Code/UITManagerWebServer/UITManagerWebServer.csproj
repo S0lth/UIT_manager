@@ -30,5 +30,9 @@
     <ItemGroup>
       <Folder Include="Areas\" />
       <Folder Include="Data\Migrations\" />
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Machine\Index.cshtml" />
     </ItemGroup>
 </Project>
