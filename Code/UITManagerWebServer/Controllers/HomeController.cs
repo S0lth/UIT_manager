@@ -112,7 +112,7 @@ namespace UITManagerWebServer.Controllers {
                 Id = n.Id,
                 Date = n.CreatedAt,
                 IsSolution = n.IsSolution,
-                Content = n.Content
+                Title = n.Title
             }).ToList();
         }
 
@@ -316,7 +316,7 @@ namespace UITManagerWebServer.Controllers {
             public int Id { get; set; }
             public DateTime Date { get; set; }
             public bool IsSolution { get; set; }
-            public string Content { get; set; }
+            public string Title { get; set; }
         }
 
         // ViewModel de la page d'accueil
