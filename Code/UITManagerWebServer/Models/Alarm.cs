@@ -16,11 +16,11 @@ namespace UITManagerWebServer.Models {
         public int NormGroupId { get; set; }
 
         public NormGroup? NormGroup { get; set; }
+        
+        public ApplicationUser User { get; set; }
 
         public string? UserId { get; set; }
         
-        public ApplicationUser? User { get; set; }
-
         public Alarm() {
             AlarmHistories = new List<AlarmStatusHistory>();
         }
