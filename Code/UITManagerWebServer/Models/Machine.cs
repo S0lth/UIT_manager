@@ -15,6 +15,8 @@
 
         public Boolean IsWorking { get; set; }
         
+        public string? Model { get; set; }
+        
         public TimeSpan LastSeen { get; set; }
         
         public Machine() {

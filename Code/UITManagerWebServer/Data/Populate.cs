@@ -303,9 +303,9 @@ public static class Populate {
 
             var machineId = GenerateRandomWindowsMachineName();
 
-            var machineName = $"{brand} {model} ({machineId})";
-
-            machines.Add(new Machine { Name = machineName });
+            var machineName = $"{machineId}";
+            var Model = $"{brand} {model}"; 
+            machines.Add(new Machine { Name = machineName , Model = Model });
         }
 
         context.Machines.AddRange(machines);
@@ -313,8 +313,12 @@ public static class Populate {
 
         string GenerateRandomWindowsMachineName() {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string charsForSite = "ABC";
+
             var randomId = new string(Enumerable.Repeat(chars, 7).Select(s => s[random.Next(s.Length)]).ToArray());
-            return $"DESKTOP-{randomId}";
+            var site ="Site-" + new string(Enumerable.Repeat(charsForSite, 1).Select(s => s[random.Next(s.Length)]).ToArray());
+
+            return $"{site}-DESKTOP-{randomId}";
         }
         
         var alarmStatusTypes = new List<AlarmStatusType> {
@@ -356,7 +360,8 @@ public static class Populate {
                     var alarm = new Alarm {
                         TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
                         Machine = machine,
-                        NormGroup = normGroups[random.Next(normGroups.Count)]
+                        NormGroup = normGroups[random.Next(normGroups.Count)],
+                        UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
                     };
                     
                     int historyCount = random.Next(1, 5);
@@ -367,15 +372,24 @@ public static class Populate {
                             Alarm = alarm, 
                             StatusType = alarmStatusTypes[i],
                             ModificationDate = DateTime.UtcNow.AddHours(-10 + i ),
-                            UserId = usersInRoles[random.Next(0,usersInRoles.Count-1)].Id
+                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                         });
+                        
                     }
+
                     
                     alarms.Add(alarm);
                 }
             }
         }
         
+        var alarme = new Alarm {
+            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
+            Machine = machines[0],
+            NormGroup = normGroups[random.Next(normGroups.Count)],
+        };
+        alarms.Add(alarme);
+
         context.AlarmHistories.AddRange(alarmStatusHistories);
         context.Alarms.AddRange(alarms);
         context.SaveChanges();
@@ -391,14 +405,16 @@ public static class Populate {
             new[] { "Investigating high CPU usage.", "Monitoring storage capacity after warning." };
 
         var machinesWithNotes =
-            machines.OrderBy(_ => random.Next()).Take(5).ToList(); // Sélection de 5 machines aléatoires
+            machines.OrderBy(_ => random.Next()).Take(5).ToList(); 
 
         for (int i = 0; i < 3; i++) {
             notes.Add(new Note {
                 Content = solutionContents[i],
                 CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
                 Machine = machinesWithNotes[i],
-                IsSolution = true
+                IsSolution = true,
+                AuthorId = usersInRoles[random.Next(0, usersInRoles.Count)].Id
+                
             });
         }
 
@@ -407,7 +423,8 @@ public static class Populate {
                 Content = nonSolutionContents[i],
                 CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
                 Machine = machinesWithNotes[i + 3],
-                IsSolution = false
+                IsSolution = false,
+                AuthorId = usersInRoles[random.Next(0, usersInRoles.Count)].Id
             });
         }
 
