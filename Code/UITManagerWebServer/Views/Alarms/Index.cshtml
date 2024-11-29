@@ -1,8 +1,8 @@
 @model IEnumerable<UITManagerWebServer.Models.Alarm>
 
 @{
-    ViewData["Title"] = "Alarms";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+ViewData["Title"] = "Alarms";
+Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <form method="post" id="alarm-status-update">
@@ -11,89 +11,167 @@
 
 @functions {
 
-    string GetHeaderClass(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
-        {
-            return "bg-selected-header";
-        }
+string GetSeveryticolor(string currentSeverity)
+{
+switch (currentSeverity)
+{
+case("Critical"):
+return "text-danger";
+case("High"):
+return "text-High";
+case("Medium"):
+return "text-warning";
+case("Low"):
+return "text-low";
+case("Warning"):
+return "text-secondary";
+}
 
-        return string.Empty;
-    }
+return "text-secondary";
+}
+}
+
+@functions
+{
+string GetBGColorForAttribution(string? attribution)
+{
+
+    return attribution == null ? "bg-danger text-white" : "bg-success text-white";
+
+    
+
+}
+}
+
+@functions {
+
+string GetHeaderClass(string currentSortOrder, string column)
+{
+if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
+{
+return "bg-selected-header";
+}
+
+return string.Empty;
+}
 
 }
 
 @functions {
 
-    string GetSortIcon(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column)
-        {
-            return "bi bi-sort-down";
-        }
-        else if (currentSortOrder == $"{column}_desc")
-        {
-            return "bi bi-sort-up";
-        }
+string GetSortIcon(string currentSortOrder, string column)
+{
+if (currentSortOrder == column)
+{
+return "bi bi-sort-down";
+}
+else if (currentSortOrder == $"{column}_desc")
+{
+return "bi bi-sort-up";
+}
 
-        return "bi bi-arrow-down-up";
-    }
+return "bi bi-arrow-down-up";
+}
 
 }
 
+<!--// host | model | status| severity | Alarm | Date | Attribution-->
+
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
-    <div class="row mb-4">
+    <div class="row mb-4 fixed">
         <div class="col-lg-12">
-            <h1 class="h2 text-start fw-bold">Alarms</h1>
-            <p class="text-start text-muted">Manage and monitor alarm statuses efficiently.</p>
+            <h1 class="h2 fw-bold me-3">Alarms</h1>
+
+            <div class="d-flex justify-content-between ">
+                <div class=" align-items-center">
+
+
+
+                    <div class="input-group" style="max-width: 400px;">
+
+
+                        <div class="form-outline" data-mdb-input-init>
+                            <input type="search" id="Search" class="form-control" placeholder="Search..."/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <span class="me-2 text-muted">Filtered by</span>
+                    <select id="filter" class="form-select" style="max-width: 150px;" onchange="redirectToSortOrder(this.value)">
+                        <option value="a">All</option>
+                        <option value="b">Assigned to me</option>
+                        <option value="c">Unassigned</option>
+                    </select>
+
+                </div>
+            </div>
         </div>
     </div>
+
+
 
     <div class="row justify-content-center">
         <div class="col-lg-12">
             <div class="card shadow-sm border-0 rounded">
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped align-middle">
-                            <thead class="table-light">
-                            <tr>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
-                                       class="text-decoration-none text-dark">
-                                        Host <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
-                                    </a>
-                                </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]"
-                                       class="text-decoration-none text-dark">
-                                        Status <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
-                                    </a>
-                                </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParm"]"
-                                       class="text-decoration-none text-dark">
-                                        Severity <i
-                                            class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Severity")"></i>
-                                    </a>
-                                </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]"
-                                       class="text-decoration-none text-dark">
-                                        Alarm <i
-                                            class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "AlarmGroup")"></i>
-                                    </a>
-                                </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
-                                       class="text-decoration-none text-dark">
-                                        Date <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
-                                    </a>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var item in Model)
-                            {
+                    <div >
+                        <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="table-lightfix ">
+                                <tr>
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine") fix">
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
+                                           class="text-decoration-none text-dark ">
+                                            Host <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
+                                        </a>
+                                    </th>
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Model")">
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["ModelSortParam"]"
+                                           class="text-decoration-none text-dark">
+                                            Model <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Model")"></i>
+                                        </a>
+                                    </th>
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]"
+                                           class="text-decoration-none text-dark">
+                                            Status <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
+                                        </a>
+                                    </th>
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParm"]"
+                                           class="text-decoration-none text-dark">
+                                            Severity
+                                            <i
+                                                class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Severity")"></i>
+                                        </a>
+                                    </th>
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]"
+                                           class="text-decoration-none text-dark">
+                                            Alarm
+                                            <i
+                                                class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "AlarmGroup")"></i>
+                                        </a>
+                                    </th>
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
+                                           class="text-decoration-none text-dark">
+                                            Date <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
+                                        </a>
+                                    </th>
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Attribution")">
+                                        <a asp-action="Index" asp-route-sortOrder="@ViewData["AttributionSortParam"]"
+                                           class="text-decoration-none text-dark">
+                                            Attribution <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Attribution")"></i>
+                                        </a>
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody >
+                                @foreach (var item in Model)
+                                {
                                 <tr>
                                     <td>
                                         <a asp-action="Details" asp-route-id="@item.Machine.Id"
@@ -101,26 +179,86 @@
                                             @item.Machine.Name
                                         </a>
                                     </td>
+
+
+                                    <td class="text-secondary">
+                                        @item.Machine.Model
+                                    </td>
                                     <td>
-                                        <select class="form-select form-select-sm"
+                                        <select style="max-width: 300px "class="form-select form-select-sm"
                                                 onchange="updateAlarmStatus(@item.Id, this.value)">
                                             @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
                                             {
-                                                <option value="@statusType.Name">@statusType.Name</option>
+                                            @if (statusType.Name == @item.AlarmHistories
+                                            ?.OrderByDescending(ah => ah.ModificationDate)
+                                            .FirstOrDefault()?.StatusType?.Name.ToString())
+                                            {
+                                            <option selected value="@statusType.Name">@statusType.Name </option>
+
+
+                                            }
+                                            else
+                                            {
+                                            <option value="@statusType.Name">@statusType.Name</option>
+
+                                            }
+
+                                            <option disabled class="text-secondary fst-italic fw-light" label="">@statusType.Description</option>
                                             }
                                         </select>
                                     </td>
-                                    <td>N/A</td>
+                                    <td class="@GetSeveryticolor(@item.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name)">@item.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name</td>
+
                                     <td class="text-secondary">
-                                        @Html.DisplayFor(modelItem => item.NormGroup.Name)
+                                        <a asp-action="Details" asp-route-id="@item.NormGroup.Id"
+                                           class="text-primary text-decoration-none">
+                                            @Html.DisplayFor(modelItem => item.NormGroup.Name)
+                                        </a>
                                     </td>
+
+
                                     <td class="text-secondary">
                                         @Html.DisplayFor(modelItem => item.TriggeredAt)
                                     </td>
+                                    <td>
+                                       
+                                        <select class="form-select form-select-sm @GetBGColorForAttribution(@item.GetLatestAlarmHistory()?.UserId )"
+                                                >
+                                            @{
+                                                bool isFirst = true;
+
+                                            }
+                                            @foreach (var user in ViewData["user"] as IEnumerable<UITManagerWebServer.Models.ApplicationUser>)
+                                            {
+                                                
+                                          
+                                                    if (@user.Id == @item.GetLatestAlarmHistory()?.UserId && isFirst == true)
+                                                    {                                                        isFirst = false;
+                                                        
+                                                        <option selected value = "@user.Id" onclick="updateAlarmAttribution('@item.Id', '@user.Id')" > @user.FirstName @user.LastName</option>
+
+                                                    }else if (@item.GetLatestAlarmHistory()?.UserId == null && isFirst==true  )
+                                                    {
+                                                        isFirst = false;
+                                                            <option onclick="updateAlarmAttribution('@item.Id', '@user.Id')"  selected value="">Unattribued</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option onclick="updateAlarmAttribution('@item.Id', '@user.Id')" value="@user.Id">@user.FirstName @user.LastName</option>
+
+                                                    }
+                                                
+                                        
+                                            }
+
+                                        </select>
+                                    </td>
+
                                 </tr>
-                            }
-                            </tbody>
-                        </table>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -152,4 +290,119 @@
             alert('Network error updating status.');
         });
     }
+
+
+    async function updateAlarmAttribution(alarmId, userId) {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+        if (!token) {
+            alert('CSRF token is missing.');
+            return;
+        }
+
+        if (!alarmId || !userId) {
+            alert('Invalid alarm or user ID.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/Alarms/Attribution', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token // Ajout du token pour la protection CSRF
+                },
+                body: JSON.stringify({
+                    id: alarmId, // ID de l'alarme
+                    userId: userId // ID de l'utilisateur
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    alert('Attribution updated successfully: ' + result.message);
+                    // Ajoutez ici des actions supplémentaires pour mettre à jour l'interface utilisateur
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } else {
+                alert('Error: Failed to update attribution. Status code: ' + response.status);
+            }
+        } catch (error) {
+            console.error('Network or server error:', error);
+            alert('An error occurred while updating the attribution.');
+        }
+    }
+    
+
+
+
+</script>
+<script>
+    // Pré-sélectionner l'option avant que la page soit rendue
+    document.addEventListener('DOMContentLoaded', function () {
+        const savedValue = localStorage.getItem('selectedFilter'); // Récupérer la valeur sauvegardée
+        if (savedValue) {
+            const selectElement = document.getElementById('filter');
+            if (selectElement) {
+                selectElement.value = savedValue; // Appliquer la sélection
+            }
+        }
+    });
+</script>
+<script>
+
+    function saveSelection(value) {
+        localStorage.setItem('selectedFilter', value);
+    }
+
+
+
+    function redirectToSortOrder(sortOrder) {
+        saveSelection(sortOrder);
+        const url = `/Alarms/Index?sortOrder=${encodeURIComponent(sortOrder)}`;
+        window.location.href = url;
+    }
+
+</script>
+
+
+<script>
+    function handleSelectChange(selectElement) {
+        // Récupérer la valeur sélectionnée
+        const selectedValue = selectElement.value;
+
+        // Construire l'URL pour appeler l'action 'Index' avec les paramètres nécessaires
+        const url = `/ControllerName/Index?sortOrder=${selectedValue}`; // Remplacez 'ControllerName' par le nom réel de votre contrôleur
+
+        // Rediriger vers l'URL
+        window.location.href = url;
+    }
+</script>
+
+<script>
+    document.getElementById('Search').addEventListener('keyup', function () {
+        const searchValue = this.value.toLowerCase(); // Convertir la recherche en minuscule
+        const tableRows = document.querySelectorAll('table tbody tr'); // Sélectionner toutes les lignes
+
+        tableRows.forEach(row => {
+            // Rechercher dans chaque cellule de la ligne
+            const cells = row.querySelectorAll('td');
+            let match = false;
+
+            cells.forEach(cell => {
+                if (cell.textContent.toLowerCase().includes(searchValue)) {
+                    match = true; // Si une correspondance est trouvée
+                }
+            });
+
+            // Afficher ou masquer la ligne selon le résultat
+            if (match) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
 </script>
