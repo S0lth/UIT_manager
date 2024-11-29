@@ -74,7 +74,7 @@
                 <li class="nav-item" role="presentation">
                     <a class="nav-link @((Context.Request.Query["tab"] == "overdue") ? "active" : "")"
                        id="overdue-tab" href="?tab=overdue&sortOrder=@ViewData["SortOrder"]">
-                        Overdue Alarms
+                        Alarms Exceeding Estimated Processing Time
                     </a>
                 </li>
             </ul>
@@ -615,11 +615,17 @@
 
                             <!-- Filtres à droite -->
                             <div class="d-flex ms-auto flex-wrap">
+                                <select asp-for="@ViewData["solutionFilter"]" name="IsSolution" class="form-control form-control-sm">
+                                    <option value="" disabled selected>Note Type</option>
+                                    <option value="">All</option>
+                                    <option value="true">Solution</option>
+                                    <option value="false">Follow-up</option>
+                                </select>
                                 <div class="dropdown me-2 mb-2 mb-md-0">
                                     <button class="btn btn-secondary dropdown-toggle" type="button"
                                             id="solutionFilterDropdown"
                                             data-bs-toggle="dropdown" aria-expanded="false">
-                                        Solution Filter
+                                        Note Type
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="solutionFilterDropdown">
                                         <li><a class="dropdown-item" href="?solutionFilter=all">All</a></li>
@@ -632,7 +638,7 @@
                                     <button class="btn btn-secondary dropdown-toggle" type="button"
                                             id="authorFilterDropdown"
                                             data-bs-toggle="dropdown" aria-expanded="false">
-                                        Author Filter
+                                        Author
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="authorFilterDropdown">
                                         <li><a class="dropdown-item" href="?authorFilter=all">All Authors</a></li>
