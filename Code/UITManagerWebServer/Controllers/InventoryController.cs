@@ -247,7 +247,7 @@ namespace UITManagerWebServer.Controllers {
                     Notes = new List<Note>()
                 };
 
-                int noteCount = random.Next(0, 90000);
+                int noteCount = random.Next(0, 2000);
                 for (int j = 1; j <= noteCount; j++) {
                     machine.Notes.Add(new Note {
                         Id = j,

@@ -49,14 +49,18 @@
                     <thead class="table-light sticky-top ">
                     <tr>
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
-                               class="text-decoration-none text-dark">
-                                Host <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
-                            </a>
+                            <div class="d-flex align-items-center">
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
+                                   class="text-decoration-none text-dark">
+                                    Host <i
+                                        class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")">&emsp;</i>
+                                </a>
 
-                            <div class="input-group" style="max-width: 200px;">
-                                <div class="form-outline" data-mdb-input-init>
-                                    <input type="search" id="searchBoxHostInventory" class="form-control" placeholder="Search..." onkeyup="searchHostInInventory()"/>
+                                <div class="input-group" style="max-width: 150px;">
+                                    <div class="form-outline" data-mdb-input-init>
+                                        <input type="search" id="searchBoxHostInventory" class="form-control"
+                                               placeholder="Search..." onkeyup="searchHostInInventory()"/>
+                                    </div>
                                 </div>
                             </div>
                         </th>
@@ -145,12 +149,18 @@
                             </td>
 
                             <td class="text-secondary">
-                                @item.NoteCount
-                                <!-- ajouter ici un lien vers la page pour faire une nouvelle note sur cette machine -->
-                                <a asp-action="Details" asp-route-id="@item.Id"
-                                   class="text-primary text-decoration-none">
-                                    <i class="bi bi-file-plus"></i>
-                                </a>
+                                <div class="d-flex align-items-center">
+                                    <!-- ajouter ici un lien vers la page pour aller sur les notes de cette machine -->
+                                    <a asp-action="Details" asp-route-id="@item.Id"
+                                       class="text-primary text-decoration-none">
+                                        @item.NoteCount
+                                    </a>
+                                    <!-- ajouter ici un lien vers la page pour faire une nouvelle note sur cette machine -->
+                                    <a asp-action="Details" asp-route-id="@item.Id"
+                                       class="ms-auto me-4 text-primary text-decoration-none">
+                                        <i class="bi bi-file-plus"></i>
+                                    </a>
+                                </div>
                             </td>
 
                             <td class="text-secondary">
@@ -160,13 +170,13 @@
                                     var truncatedNote = @item.LastNote.Content.Length > maxSize ? @item.LastNote.Content.Substring(0, maxSize) + "..." : @item.LastNote.Content;
                                     <a asp-action="Details" asp-route-id="@item.Id"
                                        class="text-primary text-decoration-none">
-                                        <!-- ajouter ici un lien vers la page pour faire une nouvelle note sur cette machine -->
+                                        <!-- ajouter ici un lien vers la page des notes de la machine avec cette note ouverte -->
                                         @truncatedNote
                                     </a>
                                 }
                                 else
                                 {
-                                    <span>No notes</span>
+                                    <span>No note</span>
                                 }
                             </td>
 
