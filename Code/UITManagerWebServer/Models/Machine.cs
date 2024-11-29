@@ -13,6 +13,8 @@
 
         public Boolean IsWorking { get; set; }
         
+        public string? Model { get; set; }
+        
         public Machine() {
             Alarms = new List<Alarm>();
             Notes = new List<Note>();
