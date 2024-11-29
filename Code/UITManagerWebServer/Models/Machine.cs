@@ -36,8 +36,5 @@
         public Note? GetLatestNote() {
             return Notes.OrderByDescending(n => n.CreatedAt).FirstOrDefault();
         }
-
-        
-
     }
 }

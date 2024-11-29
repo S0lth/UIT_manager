@@ -1,7 +1,6 @@
 ﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
-// Write your JavaScript code.
 function updateAlarmStatus(alarmId, status) {
     const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
     if (!token) {
@@ -25,6 +24,11 @@ function updateAlarmStatus(alarmId, status) {
     });
 }
 
+/**
+ * Filters rows in the "inventoryTable" dynamically based on the search query entered in the search box with ID "searchBoxHostInventory".
+ *
+ * This function is triggered on every keystroke in the search box (via the `onkeyup` event).
+ */
 function searchHostInInventory() {
     var input = document.getElementById("searchBoxHostInventory");
     var filter = input.value.toLowerCase();

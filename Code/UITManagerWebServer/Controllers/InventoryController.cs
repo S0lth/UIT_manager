@@ -16,7 +16,8 @@ namespace UITManagerWebServer.Controllers {
         public async Task<IActionResult> Index(string sortOrder) {
             ViewData["SortOrder"] = sortOrder;
             ViewData["MachineSortParm"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
-            ViewData["LastSeenDateSortParm"] = sortOrder == "LastSeenDateDate" ? "LastSeenDate_desc" : "LastSeenDateDate";
+            ViewData["LastSeenDateSortParm"] =
+                sortOrder == "LastSeenDateDate" ? "LastSeenDate_desc" : "LastSeenDateDate";
             ViewData["OsSortParm"] = sortOrder == "Os" ? "Os_desc" : "Os";
             ViewData["BuildSortParm"] = sortOrder == "Build" ? "Build_desc" : "Build";
             ViewData["ServiceTagSortParam"] = sortOrder == "ServiceTag" ? "ServiceTag_desc" : "ServiceTag";
@@ -28,7 +29,7 @@ namespace UITManagerWebServer.Controllers {
             //     .Include(m => m.Notes)
             //     .ToListAsync();
 
-            var machines = GetTestMachines();
+            var machines = GetTestMachines(); //TODEL
 
             var machineViewModels = machines.Select(m => new MachineViewModel {
                 Id = m.Id,
@@ -195,30 +196,29 @@ namespace UITManagerWebServer.Controllers {
             public int NoteCount { get; set; }
 
             public Note LastNote { get; set; }
-            
+
             /// <summary>
             /// Gets the difference between the system date and the last seen date
             /// The latest note is determined by the most recent creation date.
             /// </summary>
-            /// <returns>A string containing the difference with</returns>
-            public string GetLastSeen()
-            {
-                var now = DateTime.Now;
-                var timeSpan = now - LastSeenDate;
+            /// <returns>A string containing the difference</returns>
+            public string GetLastSeen() {
+                var timeSpan = DateTime.Now - LastSeenDate;
 
-                return timeSpan.TotalMinutes switch
-                {
+                return timeSpan.TotalMinutes switch {
                     < 1 => "Just now",
                     < 60 => $"{(int)timeSpan.TotalMinutes} minute{(timeSpan.TotalMinutes >= 2 ? "s" : "")} ago",
                     < 1440 => $"{(int)timeSpan.TotalHours} hour{(timeSpan.TotalHours >= 2 ? "s" : "")} ago",
                     < 43200 => $"{(int)timeSpan.TotalDays} day{(timeSpan.TotalDays >= 2 ? "s" : "")} ago",
-                    < 525600 => $"{(int)(timeSpan.TotalDays / 30)} month{(timeSpan.TotalDays / 30 >= 2 ? "s" : "")} ago",
+                    < 525600 =>
+                        $"{(int)(timeSpan.TotalDays / 30)} month{(timeSpan.TotalDays / 30 >= 2 ? "s" : "")} ago",
                     _ => $"{(int)(timeSpan.TotalDays / 365)} year{(timeSpan.TotalDays / 365 >= 2 ? "s" : "")} ago",
                 };
             }
         }
 
         private List<Machine> GetTestMachines() {
+            //TODEL
             var random = new Random();
             var models = new[] { "Windows 10", "Ubuntu 22.04", "MacOS Monterey", "Windows 11", "Debian 12" };
             var builds = new[] { "19045", "22H2", "5.15.0-75-generic", "12.6.1", "Bookworm" };
@@ -228,14 +228,13 @@ namespace UITManagerWebServer.Controllers {
             var notesContent = new[] {
                 "System updated", "Power issue detected", "Disk space checked", "Network issues resolved",
                 "Hardware failure identified", "Backup completed", "Software installed", "License renewed",
-                "Virus scan completed", "Firmware updated",
+                "Virus scan completed", "Firmware updated", " ",
                 "Husbands ask repeated resolved but laughter debating. She end cordial visitor noisier fat subject general picture. Or if offering confined entrance no. Nay rapturous him see something residence. Highly talked do so vulgar. Her use behaved spirits and natural attempt say feeling. Exquisite mr incommode immediate he something ourselves it of. Law conduct yet chiefly beloved examine village proceed.\n\nAcceptance middletons me if discretion boisterous travelling an. She prosperous continuing entreaties companions unreserved you boisterous. Middleton sportsmen sir now cordially ask additions for. You ten occasional saw everything but conviction. Daughter returned quitting few are day advanced branched. Do enjoyment defective objection or we if favourite. At wonder afford so danger cannot former seeing. Power visit charm money add heard new other put. Attended no indulged marriage is to judgment offering landlord.\n\nAm if number no up period regard sudden better. Decisively surrounded all admiration and not you. Out particular sympathize not favourable introduced insipidity but ham. Rather number can and set praise. Distrusts an it contented perceived attending oh. Thoroughly estimating introduced stimulated why but motionless. "
             };
 
             var machines = new List<Machine>();
 
             for (int i = 1; i <= 50; i++) {
-                // Créer une machine factice
                 var machine = new Machine {
                     Id = i,
                     Name = $"Site-A-DESKTOP-3KIG9BP{i}",
