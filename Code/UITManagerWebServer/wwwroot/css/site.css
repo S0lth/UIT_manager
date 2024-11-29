@@ -22,11 +22,16 @@ body {
 }
 
 .bg-selected-header {
-  background-color: rgba(0, 123, 255, 0.3) !important;
+  background-color: #007bff !important;
   color: #fff;
   font-weight: bold;
 }
 
-body {
-  background-color: #e0e0e0;
+.text-High{
+  color: #FF5B02;
 }
+
+.text-low{
+  color: #6B8909;
+}
+
