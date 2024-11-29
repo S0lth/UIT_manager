@@ -13,7 +13,9 @@ public class HomeController : Controller {
     public HomeController(ApplicationDbContext context) {
         _context = context;
     }
-[Authorize]
+    
+    
+    [Authorize]
     public async Task<IActionResult> Index(string sortOrder) {
         var alarms = await _context.Alarms
             .Include(a => a.Machine)
