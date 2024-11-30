@@ -195,26 +195,63 @@ public static class Populate {
             new Severity { Name = "Critical", Description = "Critical Severity" }
         };
 
+        var directXName = new InformationName { Id = 1, Name = "Direct X" };
+        var domainNameName = new InformationName {Id = 2, Name = "Domain Name" };
+        var tagServiceName = new InformationName { Id = 3,Name = "Tag Service" };
+        var uptimeName = new InformationName { Id = 4, Name = "Uptime" };
+        var cpuName = new InformationName { Id = 5, Name = "CPU" };
+        var logicalCoreName = new InformationName { Id = 6, Name = "Logical Core" };
+        var coreCountName = new InformationName { Id = 7, Name = "Core Count" };
+        var clockSpeedName = new InformationName { Id = 8, Name = "Clock Speed" };
+        var modelName = new InformationName { Id = 9, Name = "Model" };
+        var ramName = new InformationName { Id = 10, Name = "Ram" };
+        var totalRamName = new InformationName {Id = 11, Name = "Total Ram" };
+        var usedRamName = new InformationName { Id = 12, Name = "Used Ram" };
+        var freeRamName = new InformationName { Id = 13, Name = "Free Ram" };
+        var osName = new InformationName { Id = 14, Name = "OS" };
+        var osNameName = new InformationName { Id = 15, Name = "OS Name" };
+        var osVersionName = new InformationName { Id = 16, Name = "OS Version" };
+        var osBuildName = new InformationName { Id = 17, Name = "OS Build" };
+        var ipName = new InformationName { Id = 18, Name = "IP Address" };
+        var IPsName = new InformationName { Id = 19, Name = "IPs" };
+        var freeSizeName = new InformationName{Id = 20, Name = "Disk Free Size"};
+        var totalSizeName = new InformationName{Id = 21, Name = "Disk Total Size"};
+        var disksName = new InformationName { Id = 22, Name = "Disks" };
+        var userScopeName = new InformationName { Id = 23, Name = "User Scope" };
+        var userNameName = new InformationName { Id = 24, Name = "User Name" };
+        var usersListName = new InformationName { Id = 25, Name = "Users List" };
+        var listDisksName = new InformationName { Id = 26,Name = "List Disks" };
+        var numberDisksName = new InformationName {Id = 27, Name = "Number Disks" };
+        var diskUsed = new InformationName {Id = 28, Name = "Disks Used Memory" };
+        context.InformationNames.AddRange(
+            directXName, domainNameName, tagServiceName, uptimeName,
+            cpuName, logicalCoreName, coreCountName, clockSpeedName,
+            modelName, ramName, totalRamName, usedRamName, freeRamName,
+            osName, osNameName, osVersionName, osBuildName, ipName, IPsName,
+            freeSizeName, totalSizeName, disksName, userScopeName, userNameName,
+            usersListName, listDisksName, numberDisksName, diskUsed
+        );
+        context.SaveChanges();
         var normGroups = new List<NormGroup> {
             new NormGroup {
                 Name = "Obsolete operating system",
                 Priority = 8,
-                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" } }
+                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected", InformationName = osName, Condition = "IN", Format = "TEXT", Value = "WINDOWS 10"} }
             },
             new NormGroup {
                 Name = "Storage exceeded",
                 Priority = 4,
-                Norms = new List<Norm> { new Norm { Name = "Storage over 80%" } }
+                Norms = new List<Norm> { new Norm { Name = "Storage over 80%", InformationName = diskUsed} }
             },
             new NormGroup {
                 Name = "CPU Usage High",
                 Priority = 2,
-                Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%" } }
+                Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%", InformationName = cpuName} }
             },
             new NormGroup {
                 Name = "Memory Usage Warning",
                 Priority = 1,
-                Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%" } }
+                Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%", InformationName = diskUsed} }
             }
         };
         
