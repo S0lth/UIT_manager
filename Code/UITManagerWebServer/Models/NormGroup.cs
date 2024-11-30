@@ -1,15 +1,19 @@
-﻿namespace UITManagerWebServer.Models {
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UITManagerWebServer.Models {
     /// <summary>
     /// Represents a group of norms categorized by priority.
     /// </summary>
     public class NormGroup {
         public int Id { get; set; }
-
+        
         public string? Name { get; set; }
 
         public int Priority { get; set; }
         
         public TimeSpan MaxExpectedProcessingTime { get; set; }
+        
+        public bool IsEnable { get; set; }
 
         public List<SeverityHistory> SeverityHistories { get; set; }
 
@@ -19,6 +23,7 @@
             Norms = new List<Norm>();
             SeverityHistories = new List<SeverityHistory>();
         }
+        
         /// <summary>
         /// Récupère la sévérité la plus récente de l'historique des sévérités du groupe de normes.
         /// </summary>

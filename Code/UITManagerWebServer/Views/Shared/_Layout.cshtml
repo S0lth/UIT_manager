@@ -32,6 +32,14 @@
                             Notes
                         </a>
                     </li>
+                    <li class="nav-item">
+                        @if (!User.IsInRole("Technician")){
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AlarmSettings" ? "active-link" : "") text-fs-1"
+                               asp-area="" asp-controller="AlarmSettings" asp-action="Index">
+                                Alarm Settings
+                            </a>
+                        }
+                    </li>
                 </ul>
                 <partial name="_LoginPartial"/>
             </div>

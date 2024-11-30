@@ -236,22 +236,32 @@ public static class Populate {
             new NormGroup {
                 Name = "Obsolete operating system",
                 Priority = 8,
-                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected", InformationName = osName, Condition = "IN", Format = "TEXT", Value = "WINDOWS 10"} }
+                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" } },
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true
             },
             new NormGroup {
                 Name = "Storage exceeded",
                 Priority = 4,
-                Norms = new List<Norm> { new Norm { Name = "Storage over 80%", InformationName = diskUsed} }
+                Norms = new List<Norm> { new Norm { Name = "Storage over 80%" } },
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true
+
             },
             new NormGroup {
                 Name = "CPU Usage High",
                 Priority = 2,
-                Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%", InformationName = cpuName} }
+                Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%" } },
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true
+
             },
             new NormGroup {
                 Name = "Memory Usage Warning",
                 Priority = 1,
-                Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%", InformationName = diskUsed} }
+                Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%" } },
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = false
             }
         };
         
