@@ -25,3 +25,25 @@ function updateAlarmStatus(alarmId, status) {
     });
 }
 
+document.getElementById('Search').addEventListener('keyup', function () {
+    const searchValue = this.value.toLowerCase();
+    const tableRows = document.querySelectorAll('table tbody tr');
+
+    tableRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        let match = false;
+
+        cells.forEach(cell => {
+            if (cell.textContent.toLowerCase().includes(searchValue)) {
+                match = true;
+            }
+        });
+
+
+        if (match) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
