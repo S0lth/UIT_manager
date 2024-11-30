@@ -19,11 +19,17 @@ namespace UITManagerWebServer.Controllers {
 
         [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string solutionFilter, string authorFilter,
-            string tab) {
+            string tab, string sortOrderNote) {
+            
+            ViewData["SolutionFilter"] = solutionFilter;
+            ViewData["AuthorFilter"] = authorFilter;
+            ViewData["SortOrder"] = sortOrder;
+            ViewData["SortOrderNote"] = sortOrderNote;
+            
             var user = await _userManager.GetUserAsync(User);
 
             if (string.IsNullOrEmpty(tab) || (tab != "unprocessed" && tab != "newest" && tab != "overdue")) {
-                return RedirectToAction("Index", new { sortOrder, solutionFilter, authorFilter, tab = "unprocessed" });
+                return RedirectToAction("Index", new { sortOrder, solutionFilter, authorFilter, sortOrderNote, tab = "unprocessed" });
             }
 
             List<AlarmViewModel> selectedAlarms;
@@ -40,8 +46,8 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
 
-            var notes = await GetFilteredNotes(solutionFilter, authorFilter, sortOrder);
-            var authors = notes.Select(n => n.Author).Distinct().ToList();
+            var notes = await GetFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
+            var authors = ViewBag.Authors = await _context.Users.ToListAsync();
             var alarmCountsBySiteAndSeverity = await GetAlarmCountsBySiteAndSeverity();
 
             var viewModel = new HomePageViewModel {
@@ -61,8 +67,9 @@ namespace UITManagerWebServer.Controllers {
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "date_desc";
             }
-
+            
             ViewData["SortOrder"] = sortOrder;
+            ViewData["SortOrderNote"] = sortOrderNote;
             ViewData["MachineSortParm"] = sortOrder.Contains("machine_desc") ? "machine" : "machine_desc";
             ViewData["ModelSortParm"] = sortOrder.Contains("model_desc") ? "model" : "model_desc";
             ViewData["StatusSortParm"] = sortOrder.Contains("status_desc") ? "status" : "status_desc";
@@ -76,15 +83,14 @@ namespace UITManagerWebServer.Controllers {
             ViewData["AssignedOrNotAlarmCount"] = JsonConvert.SerializeObject(viewModel.AssignedOrNotAlarmCount);
             
             ViewData["AlarmCountsBySiteAndSeverity"] = JsonConvert.SerializeObject(viewModel.AlarmCountsBySiteAndSeverity);
-            
+
             var alarmCountsBySit1eAndSeverity = await GetAlarmCountsBySiteAndSeverity();
-            Console.WriteLine(JsonConvert.SerializeObject(alarmCountsBySit1eAndSeverity)); // ou utiliser Debug.WriteLine()
 
             return View(viewModel);
         }
 
         private async Task<List<NoteViewModel>> GetFilteredNotes(string solutionFilter, string authorFilter,
-            string sortOrder) {
+            string sortOrderNote) {
             var notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
 
             if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
@@ -92,7 +98,7 @@ namespace UITManagerWebServer.Controllers {
                 notesQuery = notesQuery.Where(n => n.IsSolution == isSolution);
             }
 
-            if (sortOrder == "date_desc") {
+            if (sortOrderNote == "ndate_desc") {
                 notesQuery = notesQuery.OrderByDescending(n => n.CreatedAt);
             }
             else {
@@ -101,10 +107,8 @@ namespace UITManagerWebServer.Controllers {
 
             var notes = await notesQuery.ToListAsync();
 
-            if (!string.IsNullOrEmpty(authorFilter) && authorFilter != "all") {
-                notes = notes.Where(n =>
-                    (n.Author.FirstName + " " + n.Author.LastName).Contains(authorFilter,
-                        StringComparison.OrdinalIgnoreCase)).ToList();
+            if (!string.IsNullOrEmpty(authorFilter)) {
+                notes = notes.Where(n => n.AuthorId == authorFilter).ToList();
             }
 
             return notes.Select(n => new NoteViewModel {
@@ -112,7 +116,7 @@ namespace UITManagerWebServer.Controllers {
                 Id = n.Id,
                 Date = n.CreatedAt,
                 IsSolution = n.IsSolution,
-                Content = n.Content
+                Title = n.Title
             }).ToList();
         }
 
@@ -316,7 +320,7 @@ namespace UITManagerWebServer.Controllers {
             public int Id { get; set; }
             public DateTime Date { get; set; }
             public bool IsSolution { get; set; }
-            public string Content { get; set; }
+            public string Title { get; set; }
         }
 
         // ViewModel de la page d'accueil
@@ -330,7 +334,7 @@ namespace UITManagerWebServer.Controllers {
             public List<AlarmViewModel> UnprocessedAlarms { get; set; }
             public List<AlarmViewModel> NewestAlarms { get; set; }
             public List<AlarmViewModel> OverdueAlarms { get; set; }
-            public List<string> Authors { get; set; }
+            public List<ApplicationUser> Authors { get; set; }
             public string ActiveTab { get; set; }
         }
     }
