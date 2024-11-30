@@ -696,30 +696,41 @@ public static class Populate {
 
         var notes = new List<Note>();
 
-        var solutionContents = new[] {
-            "Resolved issue with outdated drivers.", "Patched system vulnerabilities successfully.",
-            "Updated operating system to the latest version."
+        var solutionTitles = new[] {
+            "Driver Update", "System Vulnerability Patch", "OS Upgrade"
         };
 
-        var nonSolutionContents =
-            new[] { "Investigating high CPU usage.", "Monitoring storage capacity after warning." };
+        var solutionContents = new[] {
+            "Resolved issue with outdated drivers. ![Driver Image](image1.jpg)",
+            "Patched system vulnerabilities successfully. ![Vulnerability Image](image2.jpg)",
+            "Updated operating system to the latest version. ![OS Upgrade Image](image3.jpg)"
+        };
 
-        var machinesWithNotes =
-            machines.OrderBy(_ => random.Next()).Take(5).ToList(); 
+        var nonSolutionTitles = new[] {
+            "Investigating CPU Usage", "Storage Monitoring"
+        };
+
+        var nonSolutionContents = new[] {
+            "Investigating high CPU usage. ![CPU](image4.jpg)",
+            "Monitoring storage capacity after warning. ![Storage](image5.jpg)"
+        };
+
+        var machinesWithNotes = machines.OrderBy(_ => random.Next()).Take(5).ToList(); 
 
         for (int i = 0; i < 3; i++) {
             notes.Add(new Note {
-                Content = solutionContents[i],
+                Title = solutionTitles[i],  
+                Content = solutionContents[i],  
                 CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
                 Machine = machinesWithNotes[i],
                 IsSolution = true,
                 AuthorId = usersInRoles[random.Next(0, usersInRoles.Count)].Id
-                
             });
         }
 
         for (int i = 0; i < 2; i++) {
             notes.Add(new Note {
+                Title = nonSolutionTitles[i],
                 Content = nonSolutionContents[i],
                 CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
                 Machine = machinesWithNotes[i + 3],
@@ -730,6 +741,7 @@ public static class Populate {
 
         context.Notes.AddRange(notes);
         context.SaveChanges();
+
         
         Console.WriteLine(
             $"Database populated with {machines.Count} machines, {alarms.Count} alarms, and {notes.Count} notes.");
