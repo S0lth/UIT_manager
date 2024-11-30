@@ -256,7 +256,8 @@ namespace UITManagerWebServer.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Content = table.Column<string>(type: "text", nullable: true),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AuthorId = table.Column<string>(type: "text", nullable: true),
                     MachineId = table.Column<int>(type: "integer", nullable: false),
@@ -363,6 +364,28 @@ namespace UITManagerWebServer.Migrations
                         principalTable: "Severities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "File",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FileName = table.Column<string>(type: "text", nullable: false),
+                    FileContent = table.Column<byte[]>(type: "bytea", nullable: false),
+                    MimeType = table.Column<string>(type: "text", nullable: false),
+                    NoteId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_File", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_File_Notes_NoteId",
+                        column: x => x.NoteId,
+                        principalTable: "Notes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -477,6 +500,11 @@ namespace UITManagerWebServer.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_File_NoteId",
+                table: "File",
+                column: "NoteId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Norms_NormGroupId",
                 table: "Norms",
                 column: "NormGroupId");
@@ -532,10 +560,10 @@ namespace UITManagerWebServer.Migrations
                 name: "Components");
 
             migrationBuilder.DropTable(
-                name: "Norms");
+                name: "File");
 
             migrationBuilder.DropTable(
-                name: "Notes");
+                name: "Norms");
 
             migrationBuilder.DropTable(
                 name: "SeverityHistories");
@@ -550,16 +578,19 @@ namespace UITManagerWebServer.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Notes");
+
+            migrationBuilder.DropTable(
                 name: "Severities");
+
+            migrationBuilder.DropTable(
+                name: "NormGroups");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Machines");
-
-            migrationBuilder.DropTable(
-                name: "NormGroups");
         }
     }
 }

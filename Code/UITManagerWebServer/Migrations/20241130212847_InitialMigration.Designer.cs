@@ -12,7 +12,7 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241130153140_InitialMigration")]
+    [Migration("20241130212847_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -319,6 +319,36 @@ namespace UITManagerWebServer.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.File", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("FileContent")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MimeType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("NoteId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NoteId");
+
+                    b.ToTable("File");
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
                 {
                     b.Property<int>("Id")
@@ -438,6 +468,7 @@ namespace UITManagerWebServer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -448,6 +479,10 @@ namespace UITManagerWebServer.Migrations
 
                     b.Property<int>("MachineId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -630,6 +665,17 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.File", b =>
+                {
+                    b.HasOne("UITManagerWebServer.Models.Note", "Note")
+                        .WithMany("Files")
+                        .HasForeignKey("NoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Note");
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
                 {
                     b.HasOne("UITManagerWebServer.Models.Machine", "Machine")
@@ -731,6 +777,11 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("Norms");
 
                     b.Navigation("SeverityHistories");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.Note", b =>
+                {
+                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Severity", b =>
