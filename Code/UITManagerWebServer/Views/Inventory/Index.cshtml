@@ -65,11 +65,11 @@
                             </div>
                         </th>
 
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastSeenDate")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastSeenDateSortParm"]"
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastSeen")">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastSeenSortParm"]"
                                class="text-decoration-none text-dark">
                                 Last Seen <i
-                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastSeenDate")"></i>
+                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastSeen")"></i>
                             </a>
                         </th>
 
@@ -124,24 +124,24 @@
                             <td>
                                 <a asp-action="Details" asp-route-id="@item.Id"
                                    class="text-primary text-decoration-none">
-                                    @item.Name
+                                    @(string.IsNullOrEmpty(item.Name) ? "N/A" : item.Name)
                                 </a>
                             </td>
 
                             <td class="text-secondary">
-                                @item.GetLastSeen()
+                                @(string.IsNullOrEmpty(item.GetLastSeen()) ? "N/A" : item.GetLastSeen())
                             </td>
 
                             <td class="text-secondary">
-                                @item.Os
+                                @(string.IsNullOrEmpty(item.Os) ? "N/A" : item.Os)
                             </td>
 
                             <td class="text-secondary">
-                                @item.Build
+                                @(string.IsNullOrEmpty(item.Build) ? "N/A" : item.Build)
                             </td>
 
                             <td class="text-secondary">
-                                @item.ServiceTag
+                                @(string.IsNullOrEmpty(item.ServiceTag) ? "N/A" : item.ServiceTag)
                             </td>
 
                             <td class="@((item.IsWorking) ? "text-success" : "text-danger")">
@@ -171,12 +171,12 @@
                                     <a asp-action="Details" asp-route-id="@item.Id"
                                        class="text-primary text-decoration-none">
                                         <!-- ajouter ici un lien vers la page des notes de la machine avec cette note ouverte -->
-                                        @truncatedNote
+                                        @(string.IsNullOrEmpty(truncatedNote) ? "N/A" : truncatedNote)
                                     </a>
                                 }
                                 else
                                 {
-                                    <span>No note</span>
+                                    <span>No notes written</span>
                                 }
                             </td>
 

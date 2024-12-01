@@ -78,10 +78,7 @@ namespace UITManagerWebServer.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     IsWorking = table.Column<bool>(type: "boolean", nullable: false),
                     Model = table.Column<string>(type: "text", nullable: true),
-                    LastSeenDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Build = table.Column<string>(type: "text", nullable: true),
-                    Os = table.Column<string>(type: "text", nullable: true),
-                    ServiceTag = table.Column<string>(type: "text", nullable: true)
+                    LastSeen = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -221,6 +218,35 @@ namespace UITManagerWebServer.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Components",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: true),
+                    MachinesId = table.Column<int>(type: "integer", nullable: true),
+                    ComponentType = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
+                    Values = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Components", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Components_Components_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Components",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Components_Machines_MachinesId",
+                        column: x => x.MachinesId,
+                        principalTable: "Machines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -440,6 +466,16 @@ namespace UITManagerWebServer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Components_MachinesId",
+                table: "Components",
+                column: "MachinesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Components_ParentId",
+                table: "Components",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Norms_NormGroupId",
                 table: "Norms",
                 column: "NormGroupId");
@@ -490,6 +526,9 @@ namespace UITManagerWebServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Components");
 
             migrationBuilder.DropTable(
                 name: "Norms");

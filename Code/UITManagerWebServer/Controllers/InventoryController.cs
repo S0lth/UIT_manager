@@ -16,8 +16,8 @@ namespace UITManagerWebServer.Controllers {
         public async Task<IActionResult> Index(string sortOrder) {
             ViewData["SortOrder"] = sortOrder;
             ViewData["MachineSortParm"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
-            ViewData["LastSeenDateSortParm"] =
-                sortOrder == "LastSeenDateDate" ? "LastSeenDate_desc" : "LastSeenDateDate";
+            ViewData["LastSeenSortParm"] =
+                sortOrder == "LastSeenDate" ? "LastSeen_desc" : "LastSeenDate";
             ViewData["OsSortParm"] = sortOrder == "Os" ? "Os_desc" : "Os";
             ViewData["BuildSortParm"] = sortOrder == "Build" ? "Build_desc" : "Build";
             ViewData["ServiceTagSortParam"] = sortOrder == "ServiceTag" ? "ServiceTag_desc" : "ServiceTag";
@@ -25,19 +25,19 @@ namespace UITManagerWebServer.Controllers {
             ViewData["NoteCountSortParm"] = sortOrder == "NoteCount" ? "NoteCount_desc" : "NoteCount";
             ViewData["LastNoteSortParam"] = sortOrder == "LastNote" ? "LastNote_desc" : "LastNote";
 
-            // var machines = await _context.Machines
-            //     .Include(m => m.Notes)
-            //     .ToListAsync();
-
-            var machines = GetTestMachines(); //TODEL
+            var machines = await _context.Machines
+                .Include(m => m.Informations)
+                .Include(m => m.Notes)
+                .ToListAsync();
 
             var machineViewModels = machines.Select(m => new MachineViewModel {
                 Id = m.Id,
                 Name = m.Name,
-                LastSeenDate = m.LastSeenDate,
-                Os = m.Model,
-                Build = m.Build,
-                ServiceTag = m.ServiceTag,
+                LastSeen = m.LastSeen,
+                Model = m.Model,
+                Os = m.GetOsName() + " " + m.GetOsVersion(),
+                Build = m.GetOsBuild(),
+                ServiceTag = m.GetServiceTag(),
                 IsWorking = m.IsWorking,
                 NoteCount = m.Notes.Count,
                 LastNote = m.GetLatestNote()
@@ -46,8 +46,8 @@ namespace UITManagerWebServer.Controllers {
             machineViewModels = sortOrder switch {
                 "Machine_desc" => machineViewModels.OrderByDescending(m => m.Name),
                 "Machine" => machineViewModels.OrderBy(m => m.Name),
-                "LastSeenDate_desc" => machineViewModels.OrderByDescending(m => m.LastSeenDate),
-                "LastSeenDate" => machineViewModels.OrderBy(m => m.LastSeenDate),
+                "LastSeen_desc" => machineViewModels.OrderByDescending(m => m.LastSeen),
+                "LastSeen" => machineViewModels.OrderBy(m => m.LastSeen),
                 "Os_desc" => machineViewModels.OrderByDescending(m => m.Os),
                 "Os" => machineViewModels.OrderBy(m => m.Os),
                 "Build_desc" => machineViewModels.OrderByDescending(m => m.Build),
@@ -60,7 +60,7 @@ namespace UITManagerWebServer.Controllers {
                 "NoteCount" => machineViewModels.OrderBy(m => m.NoteCount),
                 "LastNote_desc" => machineViewModels.OrderByDescending(m => m.LastNote.Content),
                 "LastNote" => machineViewModels.OrderBy(m => m.LastNote.Content),
-                _ => machineViewModels.OrderByDescending(m => m.LastSeenDate),
+                _ => machineViewModels.OrderByDescending(m => m.LastSeen),
             };
 
             return View(machineViewModels.ToList());
@@ -183,7 +183,9 @@ namespace UITManagerWebServer.Controllers {
 
             public string Name { get; set; }
 
-            public DateTime LastSeenDate { get; set; }
+            public string Model { get; set; }
+
+            public DateTime LastSeen { get; set; }
 
             public string Os { get; set; }
 
@@ -203,7 +205,7 @@ namespace UITManagerWebServer.Controllers {
             /// </summary>
             /// <returns>A string containing the difference</returns>
             public string GetLastSeen() {
-                var timeSpan = DateTime.Now - LastSeenDate;
+                TimeSpan timeSpan = DateTime.Now - LastSeen;
 
                 return timeSpan.TotalMinutes switch {
                     < 1 => "Just now",
@@ -215,51 +217,6 @@ namespace UITManagerWebServer.Controllers {
                     _ => $"{(int)(timeSpan.TotalDays / 365)} year{(timeSpan.TotalDays / 365 >= 2 ? "s" : "")} ago",
                 };
             }
-        }
-
-        private List<Machine> GetTestMachines() {
-            //TODEL
-            var random = new Random();
-            var models = new[] { "Windows 10", "Ubuntu 22.04", "MacOS Monterey", "Windows 11", "Debian 12" };
-            var builds = new[] { "19045", "22H2", "5.15.0-75-generic", "12.6.1", "Bookworm" };
-            var serviceTags = new[] {
-                "ABC123", "XYZ789", "MAC456", "DEF987", "GHI654", "JKL321", "MNO111", "PQR222", "STU333", "VWX444"
-            };
-            var notesContent = new[] {
-                "System updated", "Power issue detected", "Disk space checked", "Network issues resolved",
-                "Hardware failure identified", "Backup completed", "Software installed", "License renewed",
-                "Virus scan completed", "Firmware updated", " ",
-                "Husbands ask repeated resolved but laughter debating. She end cordial visitor noisier fat subject general picture. Or if offering confined entrance no. Nay rapturous him see something residence. Highly talked do so vulgar. Her use behaved spirits and natural attempt say feeling. Exquisite mr incommode immediate he something ourselves it of. Law conduct yet chiefly beloved examine village proceed.\n\nAcceptance middletons me if discretion boisterous travelling an. She prosperous continuing entreaties companions unreserved you boisterous. Middleton sportsmen sir now cordially ask additions for. You ten occasional saw everything but conviction. Daughter returned quitting few are day advanced branched. Do enjoyment defective objection or we if favourite. At wonder afford so danger cannot former seeing. Power visit charm money add heard new other put. Attended no indulged marriage is to judgment offering landlord.\n\nAm if number no up period regard sudden better. Decisively surrounded all admiration and not you. Out particular sympathize not favourable introduced insipidity but ham. Rather number can and set praise. Distrusts an it contented perceived attending oh. Thoroughly estimating introduced stimulated why but motionless. "
-            };
-
-            var machines = new List<Machine>();
-
-            for (int i = 1; i <= 50; i++) {
-                var machine = new Machine {
-                    Id = i,
-                    Name = $"Site-A-DESKTOP-3KIG9BP{i}",
-                    IsWorking = random.Next(0, 2) == 1,
-                    Model = models[random.Next(models.Length)],
-                    Build = builds[random.Next(builds.Length)],
-                    ServiceTag = serviceTags[random.Next(serviceTags.Length)],
-                    LastSeenDate = DateTime.Now.AddDays(-random.Next(0, 600)),
-                    Notes = new List<Note>()
-                };
-
-                int noteCount = random.Next(0, 2000);
-                for (int j = 1; j <= noteCount; j++) {
-                    machine.Notes.Add(new Note {
-                        Id = j,
-                        Content = notesContent[random.Next(notesContent.Length)],
-                        CreatedAt = DateTime.Now.AddDays(-random.Next(1, 600000)),
-                        IsSolution = random.Next(0, 2) == 1
-                    });
-                }
-
-                machines.Add(machine);
-            }
-
-            return machines;
         }
     }
 }

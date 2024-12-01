@@ -12,7 +12,7 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241129135604_Initial")]
+    [Migration("20241201002610_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -319,6 +319,42 @@ namespace UITManagerWebServer.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ComponentType")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
+
+                    b.Property<int?>("MachinesId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MachinesId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Components");
+
+                    b.HasDiscriminator<string>("ComponentType").HasValue("Informations");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>
                 {
                     b.Property<int>("Id")
@@ -327,25 +363,16 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Build")
-                        .HasColumnType("text");
-
                     b.Property<bool>("IsWorking")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("LastSeenDate")
+                    b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Model")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Os")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ServiceTag")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -479,6 +506,24 @@ namespace UITManagerWebServer.Migrations
                     b.ToTable("SeverityHistories");
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.Component", b =>
+                {
+                    b.HasBaseType("UITManagerWebServer.Models.Informations");
+
+                    b.HasDiscriminator().HasValue("Composite");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.Value", b =>
+                {
+                    b.HasBaseType("UITManagerWebServer.Models.Informations");
+
+                    b.Property<string>("Values")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasDiscriminator().HasValue("Leaf");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -582,6 +627,23 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
+                {
+                    b.HasOne("UITManagerWebServer.Models.Machine", "Machine")
+                        .WithMany("Informations")
+                        .HasForeignKey("MachinesId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("UITManagerWebServer.Models.Informations", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Machine");
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Norm", b =>
                 {
                     b.HasOne("UITManagerWebServer.Models.NormGroup", "NormGroup")
@@ -647,9 +709,16 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("AlarmStatusHistories");
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
+                {
+                    b.Navigation("Children");
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>
                 {
                     b.Navigation("Alarms");
+
+                    b.Navigation("Informations");
 
                     b.Navigation("Notes");
                 });
