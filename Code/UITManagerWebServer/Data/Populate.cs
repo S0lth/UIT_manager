@@ -403,6 +403,7 @@ public static class Populate {
                 new Component {
                     Name = "CPU",
                     Machine = Machine,
+                    Values = "Null",
                     Children = new List<Informations> {
                         new Value {
                             Name = "Logical core",
@@ -427,28 +428,37 @@ public static class Populate {
                     } 
                 });
 
-            var ramT = new [] {"16", "15.2", "32", "64"};
-            var ramU = new [] {"10", "12.8", "25.6", "51.2", "40.4", "60", "20"};
-            var ramF = new [] {"6", "3.2", "10", "20", "40"};
+            var ramT = new [] {16, 32, 64};
+            var ramU = new [] {10, 12.8, 25.6, 51.2, 40.4, 60, 20};
+            int ramt ;
+            double ramu ;
+            double ramF;
+            do {
+                ramt = ramT[random.Next(ramT.Length)];
+                ramu = ramU[random.Next(ramU.Length)];
+                ramF = ramt - ramu;
+            } while (ramF < 0);
+
             Machine.Informations.Add(
                 new Component {
                     Name = "Ram",
                     Machine = Machine,
+                    Values = "Null",
                     Children = new List<Informations> {
                         new Value {
                             Name = "Total RAM",
                             Machine = Machine,
-                            Values = ramT[random.Next(ramT.Length)],
+                            Values = ramt + " Go", 
                         },
                         new Value {
                             Name = "Used RAM",
                             Machine = Machine,
-                            Values = ramU[random.Next(ramT.Length)],
+                            Values = ramu + " Go", 
                         },
                         new Value {
                             Name = "Free RAM",
                             Machine = Machine,
-                            Values = ramF[random.Next(ramT.Length)],
+                            Values = ramF + " Go", 
                         } 
                     } 
                 });
@@ -458,6 +468,7 @@ public static class Populate {
                 new Component {
                     Name = "OS",
                     Machine = Machine,
+                    Values = "Null",
                     Children = new List<Informations> {
                         new Value {
                             Name = "OS Name",
@@ -508,6 +519,7 @@ public static class Populate {
                 new Component {
                     Name = "IPs",
                     Machine = Machine,
+                    Values = "Null",
                     Children = ip,
                 });
 
@@ -520,16 +532,17 @@ public static class Populate {
                 var val = new Component {
                     Name = diskNames[random.Next(diskNames.Length)], 
                     Machine = Machine, 
+                    Values = "Null",
                     Children = new List<Informations> {
                         new Value {
                             Name ="Disk Free Size", 
-                            Values = random.Next(255, 700).ToString(), 
+                            Values = random.Next(255, 700) + "Go", 
                             Machine = Machine
                         },
                         new Value {
                             Name ="Disk Total Size", 
-                            Values = random.Next(255, 952).ToString(), Machine = 
-                                Machine
+                            Values = random.Next(255, 952) + "Go", 
+                            Machine = Machine
                         },
                     }
                 };
@@ -540,10 +553,12 @@ public static class Populate {
                 new Component {
                     Name = "List Disk",
                     Machine = Machine,
+                    Values = "Null",
                     Children = new List<Informations> {
                         new Component {
                             Name = "Disks",
                             Machine = Machine,
+                            Values = "Null",
                             Children = Disks,
                         },
                         new Value {
@@ -560,9 +575,11 @@ public static class Populate {
                 new Component {
                     Name = "Users List",
                     Machine = Machine,
+                    Values = "Null",
                     Children = new List<Informations> {
                         new Component {
-                            Name = "Ip Address",
+                            Name = "User",
+                            Values = "Null",
                             Machine = Machine,
                             Children = new List<Informations> {
                                 new Value {
@@ -578,7 +595,8 @@ public static class Populate {
                             }
                         },
                         new Component {
-                            Name = "Ip Address",
+                            Name = "User",
+                            Values = "Null",
                             Machine = Machine,
                             Children = new List<Informations> {
                                 new Value {
@@ -595,8 +613,9 @@ public static class Populate {
                         },
                         
                         new Component {
-                            Name = "Ip Address",
+                            Name = "User",
                             Machine = Machine,
+                            Values = "Null",
                             Children = new List<Informations> {
                                 new Value {
                                     Name = "User Name",

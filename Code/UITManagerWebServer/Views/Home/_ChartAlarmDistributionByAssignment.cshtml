@@ -1,0 +1,58 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            Alarms Distribution by Assignment
+            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                    data-bs-target="#chart1Modal">
+                <i class="bi bi-info-circle"></i>
+            </button>
+        </h5>
+        <canvas id="ChartAlarmDistributionByAssignment"></canvas>
+        <script>
+            const alarm_assign_Data = @Html.Raw(ViewData["AssignedOrNotAlarmCount"])
+
+            const labels_assign = Object.keys(alarm_assign_Data);
+            const data_assign = Object.values(alarm_assign_Data);
+
+            const ctx_assign = document.getElementById('ChartAlarmDistributionByAssignment').getContext('2d');
+            new Chart(ctx_assign, {
+                type: 'pie',
+                data: {
+                    labels: labels_assign,
+                    datasets: [{
+                        label: 'Number of Occurrences',
+                        data: data_assign,
+                        borderWidth: 1,
+                        backgroundColor: ['#4caf50', '#f44336'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.8,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '\n' +
+                                'Alarms Distribution by Assignment'
+                        }
+                    },
+                    scales: {
+                        x: {display: false},
+                        y: {display: false}
+                    }
+                }
+            });
+        </script>
+    </div>
+</div>
