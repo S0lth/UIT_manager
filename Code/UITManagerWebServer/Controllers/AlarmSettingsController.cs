@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,15 +7,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Controllers {
     public class AlarmSettingsController : Controller {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AlarmSettingsController(ApplicationDbContext context) {
+        public AlarmSettingsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
+            _userManager = userManager;
         }
 
         [Authorize(Roles = "MaintenanceManager,ITDirector")]
@@ -105,6 +109,116 @@ namespace UITManagerWebServer.Controllers {
 
             return RedirectToAction(nameof(Index));
         }
+        
+        [Authorize(Roles = "MaintenanceManager,ITDirector")]
+        public async Task<IActionResult> Details(int? id) {
+            if (id == null) return NotFound();
+            
+            var normGroup = await _context.NormGroups
+                .Include(ng => ng.Norms)
+                .Include(ng => ng.SeverityHistories)
+                .FirstOrDefaultAsync(ng => ng.Id == id);
+            if(normGroup == null) return NotFound();
+            var severities = await _context.Severities
+                .ToListAsync();
+            ViewData["Severities"] = severities;
+            ViewData["id"] = id;
+            ViewData["Info"] = await _context.InformationNames.ToListAsync();
+            List<SeverityHistory> severityHistories =  await _context.SeverityHistories
+                .Where(s => s.IdNormGroup == id)
+                .ToListAsync();
+            ViewData["History"] = severityHistories;
+            return View(normGroup);
+        }
+        
+        [HttpPost]
+        public IActionResult DeleteNorm(int normId) {
+            int id = 0;
+            var norm = _context.Norms.FirstOrDefault(n => n.Id == normId);
+            if (norm != null)
+            {
+                id = norm.NormGroupId;
+                _context.Norms.Remove(norm);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("Details", new { id = id });
+        }
+
+
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, NormGroup normGroup, int SeverityId, int DefaultSeverityId, List<Norm> Norms) {
+            ApplicationUser? user = await _userManager.GetUserAsync(User);
+            
+            string userId = user.Id;
+            string userName = user.LastName + " " + user.FirstName;
+            if (user?.Id == null) {
+                NotFound(("You have to reconnect"));
+            }
+                
+            if (id != normGroup.Id)
+            {
+                return NotFound();
+            }
+            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var existingNormGroup = await _context.NormGroups
+                        .Include(ng => ng.Norms)
+                        .Include((ng=>ng.SeverityHistories))
+                        .FirstOrDefaultAsync(ng => ng.Id == id);
+                    if (existingNormGroup == null) return NotFound();
+                    
+                    existingNormGroup.Name = normGroup.Name;
+                    existingNormGroup.MaxExpectedProcessingTime = normGroup.MaxExpectedProcessingTime;
+                    existingNormGroup.Priority = normGroup.Priority;
+                    existingNormGroup.IsEnable = normGroup.IsEnable;
+
+                    if(SeverityId != DefaultSeverityId)
+                    {
+                        existingNormGroup.SeverityHistories.Add(
+                            new SeverityHistory{
+                                NormGroup = await _context.NormGroups.FindAsync(existingNormGroup.Id),
+                                Severity = await _context.Severities.FirstOrDefaultAsync(s => s.Id == SeverityId),
+                                UpdateDate = DateTime.UtcNow,
+                                UserId = userId
+                            });
+                    }
+
+                    
+                    
+                    foreach (var norm in Norms)
+                    {
+                        var existingNorm = existingNormGroup.Norms.FirstOrDefault(n => n.Id == norm.Id);
+                        if (existingNorm != null)
+                        {
+                            existingNorm.Name = norm.Name;
+                            existingNorm.InformationNameId = norm.InformationNameId;
+                            existingNorm.Condition = norm.Condition;
+                            existingNorm.Value = norm.Value;
+                            existingNorm.Format = norm.Format;
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateConcurrencyException e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            else {
+                Console.WriteLine(("Rien ne marche"));
+            }
+
+            return RedirectToAction("Index");
+        }
 
         
         [HttpPost]
@@ -117,11 +231,11 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound();
             }
             
-            normGroup.IsEnable = isEnable;  // Mise à jour du champ IsEnable
-            _context.Update(normGroup);     // Mettre à jour l'entité
-            await _context.SaveChangesAsync();  // Sauvegarder les modifications en base de données
+            normGroup.IsEnable = isEnable;  
+            _context.Update(normGroup);    
+            await _context.SaveChangesAsync(); 
         
-            return RedirectToAction(nameof(Index)); // Rediriger vers l'index après modification
+            return RedirectToAction(nameof(Index)); 
         }
 
 

@@ -33,6 +33,8 @@ namespace UITManagerWebServer.Data {
         public DbSet<Component> Composites { get; set; }
         
         public DbSet<SeverityHistory> SeverityHistories { get; set; }
+        public DbSet<InformationName> InformationNames { get; set; } 
+
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
 
@@ -82,14 +84,20 @@ namespace UITManagerWebServer.Data {
                 .WithOne(c => c.Parent)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
-            
+
             builder.Entity<Machine>()
                 .HasMany(m => m.Informations)
                 .WithOne(c => c.Machine)
                 .HasForeignKey(c => c.MachinesId)
                 .OnDelete(DeleteBehavior.Restrict);
             
-                
+            builder.Entity<InformationName>()
+                .HasKey(inf => inf.Id);
+
+            builder.Entity<Norm>()
+                .HasOne(n => n.InformationName)
+                .WithMany()
+                .HasForeignKey(n => n.InformationNameId);
         }
     }
 }

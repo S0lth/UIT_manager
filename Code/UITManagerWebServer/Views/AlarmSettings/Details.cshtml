@@ -1,0 +1,518 @@
+﻿@model UITManagerWebServer.Models.NormGroup;
+@{
+    ViewData["Title"] = "Edit Alarms";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var severities = ViewData["Severities"] as List<Severity>;
+    var defaultSeverity = Model.GetLatestSeverityHistory()?.Severity;
+    var history = ViewData["History"] as List<SeverityHistory>;
+
+    List<Norm> norms = Model.Norms.FindAll(s=>s.NormGroupId == Model.Id).ToList();
+    var components = ViewData["Info"] as List<InformationName>;
+    List<string> possibleConditions = new List<string>()
+    {
+        ">", "<", "IN", "NOT IN", "=", "!="
+    };
+    List<string> possibleFormats = new List<string>()
+    {
+        "GB", "%", "TEXT"
+    };
+}
+<div class="container-fluid py-5 px-4" style="max-width: 1700px;">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <h1 class="h2 text-start fw-bold">@Model.Name?.ToUpper() - DETAILS</h1>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded">
+        <form method="POST" asp-action="Edit" asp-route-id="@Model.Id">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>
+                                Name
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#nameModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Max Expected Processing Time
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#maxProcessingModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Priority
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#PriorityModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Severity
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#severityModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Enabled
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#enabledModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Delete
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" class="form-control" value="@Model.Name" name="Name" asp-for="Name" placeholder="Name" required/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control" name="MaxExpectedProcessingTime" asp-for="MaxExpectedProcessingTime" value="@Model.MaxExpectedProcessingTime" placeholder="Expected Processing Time" required/>
+                            </td>
+
+                            <td>
+                                <input type="number" class="form-control" name="Priority" asp-for="Priority" value="@Model.Priority" placeholder="Priority" min="1" max="9" required/>
+                            </td>
+
+                            <td>
+                                @if (severities != null)
+                                {
+                                    <input type="hidden" value="@defaultSeverity?.Id" name="DefaultSeverityId" required/>
+                                    <select class="form-select" name="SeverityId" required>
+                                        @foreach (var severity in severities){
+                                            if (defaultSeverity == severity)
+                                            {
+                                                <option value="@severity.Id" selected>@severity.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@severity.Id">@severity.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+
+                            </td>
+
+                            <td>
+                                <input type="checkbox" name="isEnable" value="true"
+                                       @(Model.IsEnable ? "checked" : "")
+                                       />
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-link" 
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteNormGroupModal">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-sm align-middle small">
+                        <thead class="table-light">
+                        <tr>
+                            <th>
+                                Norm Name
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#normnameModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                        
+                            <th>
+                                Type
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#typeModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Condition
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#conditionModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Value
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#PriorityModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Format
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#severityModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                <a class="btn btn-success rounded-circle" style="text-align: center;">
+                                    +
+                                </a>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for (int i = 0; i<Model.Norms.Count;i++)
+                        {
+                            
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control" name="Norms[@i].Name" value="@Model.Norms[i].Name" required placeholder="Norm name"/>
+                                </td>
+                                <td>
+                                    <select class="form-select" name="Norms[@i].InformationNameId" required>
+                                        @foreach (InformationName info in components)
+                                        {
+                                            if(String.Equals(Model.Norms[i].InformationName?.Name, info.Name) )
+                                            {
+                                                <option value="@info.Id" selected>@info.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@info.Id" >@info.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-select" name="Norms[@i].Condition">
+                                        @foreach (string cdt in possibleConditions)
+                                        {
+                                            if (String.Equals(Model.Norms[i].Condition, cdt))
+                                            {
+                                                <option value="@cdt" selected>@cdt</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@cdt">@cdt</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" name="Norms[@i].Value" value="@Model.Norms[i].Value"/>
+                                </td>
+                                <td>
+                                    <select class="form-select">
+                                        @foreach (string elem in possibleFormats)
+                                        {
+                                            if (String.Equals(Model.Norms[i].Format, elem))
+                                            {
+                                                <option value="@elem" selected>@elem</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@elem">@elem</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                            data-bs-target="#deleteNormModal"
+                                            data-norm-id="@Model.Norms[i].Id">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end p-3">
+                <input type="submit" value="Submit change" class="btn btn-primary align-content-center"/>
+            </div>
+        </form>
+        
+    <div class="d-flex justify-content-center">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>
+                        Severity
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#normnameModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Date
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#normnameModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        User
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#normnameModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (history != null && history.Any())
+                {
+                    foreach (var h in history)
+                    {
+                        <tr>
+                            @if (h.Severity != null)
+                            {
+                                <td>@(h.Severity.Name)</td>
+                            }
+                            @if (h?.UpdateDate != null)
+                            {
+                                <td>@h.UpdateDate</td>
+                            }
+                            @if (h?.UserId != null)
+                            {
+                                <td>@(h.UserId)</td>
+                            }
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteNormGroupModal" tabindex="-1" aria-labelledby="deleteNormGroupModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" asp-action="Delete">
+                <input type="hidden" name="id" value="@Model.Id"/>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteNormGroupModalLabel">Delete normgroup</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this NormGroup?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Condition -->
+<div class="modal fade" id="conditionModal" tabindex="-1" aria-labelledby="conditionModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="conditionModalLabel">Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The condition which will trigger alarms. </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Type -->
+<div class="modal fade" id="typeModal" tabindex="-1" aria-labelledby="typeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="typeModalLabel">Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The type of information which will trigger the alarm. </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Name -->
+<div class="modal fade" id="nameModal" tabindex="-1" aria-labelledby="nameModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nameModalLabel">Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The name of the normgroup which will be displayed when an alarm is triggered.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal MaxProcessingExpectedTime-->
+<div class="modal fade" id="maxProcessingModal" tabindex="-1" aria-labelledby="maxProcessingModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="maxProcessingModalLabel">Max expected Processing Time</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Enter a timestamp to determine when a machine will be displayed in "Overdue Alarm" </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Priority-->
+<div class="modal fade" id="PriorityModal" tabindex="-1" aria-labelledby="PriorityModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="PriorityModalLabel">Priority</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Set a priority in [1-9].</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Severity-->
+<div class="modal fade" id="severityModal" tabindex="-1" aria-labelledby="severityModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="severityModalLabel">Severity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Set the severity of this normgroup.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="enabledModal" tabindex="-1" aria-labelledby="enabledModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="enabledModalLabel">Enabled</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>You can disable this normgroup.<br/>
+                    Alarm which is triggered with this normgroup will not beeing triggered again.<br/>
+                    You can enable this normgroup later
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Delete this normgroup, irreversible action</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteNormModal" tabindex="-1" aria-labelledby="deleteNormModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" asp-action="DeleteNorm">
+                <input type="hidden" name="normId" id="normIdToDelete" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteNormModalLabel">Delete Norm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this Norm? This action is irreversible.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const deleteButtons = document.querySelectorAll('[data-bs-target="#deleteNormModal"]');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-norm-id');
+            document.getElementById('normIdToDelete').value = id;
+        });
+    });
+</script>
