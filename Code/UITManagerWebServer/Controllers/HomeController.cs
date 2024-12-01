@@ -1,35 +1,35 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
+using UITManagerWebServer.Models.ModelsView;
 
 namespace UITManagerWebServer.Controllers {
     public class HomeController : Controller {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
+        public HomeController(ApplicationDbContext context) {
             _context = context;
-            _userManager = userManager;
         }
 
         [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string solutionFilter, string authorFilter,
             string tab, string sortOrderNote) {
-            
             ViewData["SolutionFilter"] = solutionFilter;
             ViewData["AuthorFilter"] = authorFilter;
             ViewData["SortOrder"] = sortOrder;
             ViewData["SortOrderNote"] = sortOrderNote;
-            
-            var user = await _userManager.GetUserAsync(User);
 
             if (string.IsNullOrEmpty(tab) || (tab != "unprocessed" && tab != "newest" && tab != "overdue")) {
-                return RedirectToAction("Index", new { sortOrder, solutionFilter, authorFilter, sortOrderNote, tab = "unprocessed" });
+                return RedirectToAction("Index", new {
+                    sortOrder,
+                    solutionFilter,
+                    authorFilter,
+                    sortOrderNote,
+                    tab = "unprocessed"
+                });
             }
 
             List<AlarmViewModel> selectedAlarms;
@@ -46,28 +46,23 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
 
-            var notes = await GetFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
-            var authors = ViewBag.Authors = await _context.Users.ToListAsync();
-            var alarmCountsBySiteAndSeverity = await GetAlarmCountsBySiteAndSeverity();
 
             var viewModel = new HomePageViewModel {
-                Notes = notes,
+                Notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote),
                 TotalMachines = await GetTotalMachines(),
                 MachinesWithActiveAlarms = await GetMachinesWithActiveAlarms(),
                 NormGroupAlarmsCount = await GetNormGroupAlarmsCount(),
                 AssignedOrNotAlarmCount = await GetAssignedOrNotAlarmCount(),
-                AlarmCountsBySiteAndSeverity = await GetAlarmCountsBySiteAndSeverity(),
-                UnprocessedAlarms = tab == "unprocessed" ? selectedAlarms : new List<AlarmViewModel>(),
-                NewestAlarms = tab == "newest" ? selectedAlarms : new List<AlarmViewModel>(),
-                OverdueAlarms = tab == "overdue" ? selectedAlarms : new List<AlarmViewModel>(),
-                Authors = authors,
+                AlarmCountsBySiteAndSeverity = await FetchAlarmCountsBySiteAndSeverity(),
+                Alarms = selectedAlarms,
+                Authors = ViewBag.Authors = await _context.Users.ToListAsync(),
                 ActiveTab = tab
             };
 
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "date_desc";
             }
-            
+
             ViewData["SortOrder"] = sortOrder;
             ViewData["SortOrderNote"] = sortOrderNote;
             ViewData["MachineSortParm"] = sortOrder.Contains("machine_desc") ? "machine" : "machine_desc";
@@ -81,15 +76,15 @@ namespace UITManagerWebServer.Controllers {
             ViewData["AlarmTypeOccurrences"] = JsonConvert.SerializeObject(viewModel.NormGroupAlarmsCount);
 
             ViewData["AssignedOrNotAlarmCount"] = JsonConvert.SerializeObject(viewModel.AssignedOrNotAlarmCount);
-            
-            ViewData["AlarmCountsBySiteAndSeverity"] = JsonConvert.SerializeObject(viewModel.AlarmCountsBySiteAndSeverity);
 
-            var alarmCountsBySit1eAndSeverity = await GetAlarmCountsBySiteAndSeverity();
+            ViewData["AlarmCountsBySiteAndSeverity"] =
+                JsonConvert.SerializeObject(viewModel.AlarmCountsBySiteAndSeverity);
+
 
             return View(viewModel);
         }
 
-        private async Task<List<NoteViewModel>> GetFilteredNotes(string solutionFilter, string authorFilter,
+        private async Task<List<NoteViewModel>> FetchFilteredNotes(string solutionFilter, string authorFilter,
             string sortOrderNote) {
             var notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
 
@@ -176,7 +171,7 @@ namespace UITManagerWebServer.Controllers {
 
         private IQueryable<Alarm> ApplySorting(IQueryable<Alarm> query, string sortOrder) {
             if (string.IsNullOrEmpty(sortOrder)) {
-                return query.OrderByDescending(a => a.TriggeredAt); 
+                return query.OrderByDescending(a => a.TriggeredAt);
             }
 
             switch (sortOrder.ToLower()) {
@@ -204,6 +199,14 @@ namespace UITManagerWebServer.Controllers {
                     return query.OrderBy(a => a.NormGroup.SeverityHistories
                         .OrderByDescending(sh => sh.UpdateDate)
                         .FirstOrDefault().Severity.Name);
+                case "alarmgroup_desc":
+                    return query.OrderByDescending(a => a.NormGroup.SeverityHistories
+                        .OrderByDescending(sh => sh.NormGroup.Name)
+                        .FirstOrDefault().NormGroup.Name);
+                case "alarmgroup":
+                    return query.OrderBy(a => a.NormGroup.SeverityHistories
+                        .OrderByDescending(sh => sh.NormGroup.Name)
+                        .FirstOrDefault().NormGroup.Name);
                 case "date_desc":
                     return query.OrderByDescending(a => a.TriggeredAt);
                 case "date":
@@ -256,26 +259,26 @@ namespace UITManagerWebServer.Controllers {
             return result;
         }
 
-        private async Task<Dictionary<string, Dictionary<string, double>>> GetAlarmCountsBySiteAndSeverity() {
+        private async Task<Dictionary<string, Dictionary<string, double>>> FetchAlarmCountsBySiteAndSeverity() {
             var alarms = await _context.Alarms
-                .Include(a => a.Machine) 
-                .Include(a => a.NormGroup) 
-                .ThenInclude(ng => ng.SeverityHistories) 
-                .ThenInclude(sh => sh.Severity) 
+                .Include(a => a.Machine)
+                .Include(a => a.NormGroup)
+                .ThenInclude(ng => ng.SeverityHistories)
+                .ThenInclude(sh => sh.Severity)
                 .ToListAsync();
 
-            var result = new Dictionary<string, Dictionary<string, double>>(); 
+            var result = new Dictionary<string, Dictionary<string, double>>();
 
             var groupedBySite = alarms
                 .GroupBy(a => {
                     var machineName = a.Machine.Name;
-                    var siteName = machineName.Split('-')[1];  // Récupère la partie entre "Site-" et le premier tiret
-                    return siteName;  // Renvoie la partie du site
+                    var siteName = machineName.Split('-')[1];
+                    return siteName;
                 })
                 .ToList();
 
             foreach (var siteGroup in groupedBySite) {
-                var totalAlarms = siteGroup.Count(); // Total des alarmes pour le site
+                var totalAlarms = siteGroup.Count();
 
                 var severityCounts = siteGroup
                     .Select(a => {
@@ -294,48 +297,45 @@ namespace UITManagerWebServer.Controllers {
                     g => g.Severity,
                     g => (double)g.Count / totalAlarms * 100);
 
-                result[siteGroup.Key] = severityPercentages; 
+                result[siteGroup.Key] = severityPercentages;
             }
 
             return result;
         }
 
-
-
-
-        public class AlarmViewModel {
-            public string MachineName { get; set; }
-            public int MachineId { get; set; }
-            public string ModelName { get; set; }
-            public int AlarmId { get; set; }
-            public string Status { get; set; }
-            public string Severity { get; set; }
-            public string AlarmGroupName { get; set; }
-            public DateTime TriggeredAt { get; set; }
+        [HttpGet]
+        public async Task<IActionResult> GetFilteredNotes(string solutionFilter, string authorFilter,
+            string sortOrderNote) {
+            var notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
+            return PartialView("_NotesList", notes);
         }
 
-        // ViewModel pour les notes
-        public class NoteViewModel {
-            public string Author { get; set; }
-            public int Id { get; set; }
-            public DateTime Date { get; set; }
-            public bool IsSolution { get; set; }
-            public string Title { get; set; }
+        [HttpGet]
+        public async Task<IActionResult> GetFilteredAlarmsList(string tab, string sortOrder) {
+            List<AlarmViewModel> selectedAlarms = new List<AlarmViewModel>();
+
+            switch (tab) {
+                case "unprocessed":
+                    selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
+                    break;
+                case "newest":
+                    selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, takeTop: 100, orderByDate: true);
+                    break;
+                case "overdue":
+                    selectedAlarms =
+                        await GetAlarmsWithDetails("Resolved", sortOrder, overdue: true, orderByDate: true);
+                    break;
+                default:
+                    selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
+                    break;
+            }
+
+            return PartialView("_AlarmsList", selectedAlarms);
         }
 
-        // ViewModel de la page d'accueil
-        public class HomePageViewModel {
-            public List<NoteViewModel> Notes { get; set; }
-            public int TotalMachines { get; set; }
-            public int MachinesWithActiveAlarms { get; set; }
-            public Dictionary<string, int> NormGroupAlarmsCount { get; set; }
-            public Dictionary<string, int> AssignedOrNotAlarmCount { get; set; }
-            public Dictionary<string, Dictionary<string, double>> AlarmCountsBySiteAndSeverity { get; set; }
-            public List<AlarmViewModel> UnprocessedAlarms { get; set; }
-            public List<AlarmViewModel> NewestAlarms { get; set; }
-            public List<AlarmViewModel> OverdueAlarms { get; set; }
-            public List<ApplicationUser> Authors { get; set; }
-            public string ActiveTab { get; set; }
+        public async Task<IActionResult> GetAlarmCountsBySiteAndSeverity() {
+            var alarmCountsBySiteAndSeverity = await FetchAlarmCountsBySiteAndSeverity();
+            return PartialView("_AlarmDistributionBySiteAndSeverity", alarmCountsBySiteAndSeverity);
         }
     }
 }
