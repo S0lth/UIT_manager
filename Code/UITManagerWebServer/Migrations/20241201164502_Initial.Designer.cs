@@ -12,8 +12,8 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241130212847_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241201164502_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -396,7 +396,7 @@ namespace UITManagerWebServer.Migrations
                     b.Property<bool>("IsWorking")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastSeen")
+                    b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Model")

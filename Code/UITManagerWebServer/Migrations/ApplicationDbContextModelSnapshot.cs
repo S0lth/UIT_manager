@@ -393,7 +393,7 @@ namespace UITManagerWebServer.Migrations
                     b.Property<bool>("IsWorking")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastSeen")
+                    b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Model")

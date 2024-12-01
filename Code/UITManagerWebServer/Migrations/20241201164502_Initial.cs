@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UITManagerWebServer.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -78,7 +78,7 @@ namespace UITManagerWebServer.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     IsWorking = table.Column<bool>(type: "boolean", nullable: false),
                     Model = table.Column<string>(type: "text", nullable: true),
-                    LastSeen = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    LastSeen = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
