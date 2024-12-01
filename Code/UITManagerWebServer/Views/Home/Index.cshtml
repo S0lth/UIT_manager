@@ -16,23 +16,27 @@
             <ul class="nav nav-tabs" id="alarmTabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <a href="@Url.Action("Index", "Home", new { tab = "unprocessed", sortOrder = ViewData["SortOrder"] })"
-                       class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")">
+                       class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "unprocessed" ? "none" : "auto")">
                         Unprocessed Alarms
                     </a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a href="@Url.Action("Index", "Home", new { tab = "newest", sortOrder = ViewData["SortOrder"] })"
-                       class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")">
+                       class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "newest" ? "none" : "auto")">
                         Newest Alarms
                     </a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a href="@Url.Action("Index", "Home", new { tab = "overdue", sortOrder = ViewData["SortOrder"] })"
-                       class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")">
+                       class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "overdue" ? "none" : "auto")">
                         Alarms Exceeding Estimated Processing Time
                     </a>
                 </li>
             </ul>
+
             <div id="alarmTabsContent">
                 @await Html.PartialAsync("_AlarmsList", Model.Alarms, ViewData)
             </div>
