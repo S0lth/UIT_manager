@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
@@ -36,6 +37,7 @@ namespace UITManagerWebServer.Views
             var notes = await getFilteredNotes(sortOrder, solutionFilter, authorFilter, id);
             var alarms = await getFilteredAlrms(sortOrder, id);
             var information = await getMachineInformation(id);
+            var authors = ViewBag.Authors = await _context.Users.ToListAsync();
             var detailView = new DetailsViewModel {
                 Id = machine.Id,
                 Name = machine.Name, 
@@ -44,8 +46,21 @@ namespace UITManagerWebServer.Views
                 IsWorking = machine.IsWorking,
                 Notes = notes,
                 Alarms = alarms,
+                Authors = authors,
                 Informations = information,
             };
+            if (string.IsNullOrEmpty(sortOrder)) {
+                sortOrder = "date_desc";
+            }
+            
+            ViewData["SortOrder"] = sortOrder;
+            ViewData["MachineSortParm"] = sortOrder.Contains("machine_desc") ? "machine" : "machine_desc";
+            ViewData["ModelSortParm"] = sortOrder.Contains("model_desc") ? "model" : "model_desc";
+            ViewData["StatusSortParm"] = sortOrder.Contains("status_desc") ? "status" : "status_desc";
+            ViewData["SeveritySortParm"] = sortOrder.Contains("severity_desc") ? "severity" : "severity_desc";
+            ViewData["AlarmGroupSortParm"] = sortOrder.Contains("alarmgroup_desc") ? "alarmgroup" : "alarmgroup_desc";
+            ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
+            
             
 
             return View(detailView);
@@ -101,7 +116,7 @@ namespace UITManagerWebServer.Views
                     Children = new List<ComponentsViewModel>()
                 };
                 var childHierarchy = await BuildHierarchy(info, list);
-                parentViewModel.Children.Add(childHierarchy);// Exemple : valeur composée
+                parentViewModel.Children.Add(childHierarchy);
             }
 
             return parentViewModel;
@@ -200,7 +215,7 @@ namespace UITManagerWebServer.Views
                 Id = n.Id,
                 Date = n.CreatedAt,
                 IsSolution = n.IsSolution,
-                Content = n.Content,
+                Title = n.Title,
                 MachineId = n.MachineId,
             }).ToList();
         }
@@ -333,7 +348,7 @@ namespace UITManagerWebServer.Views
             public int Id { get; set; }
             public DateTime Date { get; set; }
             public bool IsSolution { get; set; }
-            public string Content { get; set; }
+            public string Title { get; set; }
         }
 
         // viewModel pour les information d'une machine
@@ -351,7 +366,7 @@ namespace UITManagerWebServer.Views
             public List<AlarmViewModel> Alarms { get; set; }
             public List<NoteViewModel> Notes { get; set; }
             public List<ComponentsViewModel> Informations { get; set; }
-            public List<string> Authors { get; set; }
+            public List<ApplicationUser> Authors { get; set; }
             public string Model { get; set; }
             public string Name { get; set; }
             public bool IsWorking { get; set; }
