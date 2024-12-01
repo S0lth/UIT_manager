@@ -1,40 +1,117 @@
-@model UITManagerWebServer.Models.Machine
-
 @{
     ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>@Model.Name</h1>
 
 <div>
     <h4>Machine</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            Name
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+            @Model.Name
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsWorking)
+            Model
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsWorking)
+            @Model.Model
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
+            IsWorking
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
+            @Model.IsWorking
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastSeen)
+            LastSeen
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastSeen)
+            @Model.LastSeen
         </dd>
     </dl>
+</div>
+<div class="list-group">
+    @foreach (var item in Model.Alarms)
+    {
+        <tr>
+            <td>@item.Status</td>
+            <td>@item.Severity</td>
+            <td>
+                <a asp-controller="Alarms" asp-action="Details"
+                   asp-route-id="@item.AlarmId"
+                   class="text-primary text-decoration-none">
+                    @item.AlarmGroupName
+                </a>
+            </td>
+            <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
+        </tr>
+    }
+</div>
+<div class="list-group">
+    @foreach (var note in Model.Notes)
+    {
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <p>
+                    <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id"
+                       class="text-primary text-decoration-none mb-1">
+                        @note.Content
+                    </a>
+                </p>
+                <small
+                    class="text-muted">Author: @note.Author on @note.Date.ToString("yyyy-MM-dd HH:mm")</small>
+            </div>
+        </div>
+    }
+</div>
+<div class="list-group">
+    @foreach (var info in Model.Informations)
+    {
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <p>
+                    <a class="text-primary text-decoration-none mb-1">
+                        @info.Name
+                    </a>
+                    <a class="text-primary text-decoration-none mb-1">
+                        @info.Value
+                    </a>
+                    @foreach (var subInfo in info.Children)
+                    {
+                        <a class="text-primary text-decoration-none mb-1">
+                            @subInfo.Name
+                        </a>
+                        <a class="text-primary text-decoration-none mb-1">
+                            @subInfo.Value
+                        </a>
+                        @foreach (var subInfo2 in subInfo.Children)
+                        {
+                            <a class="text-primary text-decoration-none mb-1">
+                                @subInfo2.Name
+                            </a>
+                            <a class="text-primary text-decoration-none mb-1">
+                                @subInfo2.Value
+                            </a>
+                            @foreach (var subInfo3 in subInfo2.Children)
+                            {
+                                <a class="text-primary text-decoration-none mb-1">
+                                    @subInfo3.Name
+                                </a>
+                                <a class="text-primary text-decoration-none mb-1">
+                                    @subInfo3.Value
+                                </a>
+                            }
+                        }
+                    }
+                </p>
+            </div>
+        </div>
+    }
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
