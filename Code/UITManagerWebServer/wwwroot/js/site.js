@@ -1,28 +1,30 @@
 ﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
-// Write your JavaScript code.
-function updateAlarmStatus(alarmId, status) {
-    const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-    if (!token) {
-        alert('CSRF token is missing.');
-        return;
-    }
+/**
+ * This function handles searching in the inventory table by filtering rows based on user input.
+ * It checks all columns in each row for a match with the search input and shows/hides rows accordingly.
+ */
+function searchInInventory() {
+    const input = document.getElementById("searchBoxInventory");
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById("inventoryTable");
+    const trs = table.getElementsByTagName("tr");
 
-    fetch(`/Alarms/UpdateStatus`, {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': token
-    },
-        body: JSON.stringify({id: alarmId, status: status})
-    }).then(response => {
-        if (!response.ok) {
-        alert('Error updating status.');
+    for (let i = 1; i < trs.length; i++) {
+        const cells = trs[i].getElementsByTagName("td");
+        let rowContainsSearch = false;
+
+        for (let cell of cells) {
+            const txtValue = cell.textContent || cell.innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                rowContainsSearch = true;
+                break; 
+            }
+        }
+
+        trs[i].style.display = rowContainsSearch ? "" : "none";
     }
-    }).catch(error => {
-        alert('Network error updating status.');
-    });
 }
 
 document.getElementById('Search').addEventListener('keyup', function () {

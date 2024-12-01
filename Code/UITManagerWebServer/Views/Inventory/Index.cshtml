@@ -1,0 +1,203 @@
+@model IEnumerable<UITManagerWebServer.Controllers.InventoryController.MachineViewModel>
+
+@{
+    ViewData["Title"] = "Inventory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@functions {
+
+    string GetHeaderClass(string currentSortOrder, string column)
+    {
+        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
+        {
+            return "bg-selected-header";
+        }
+
+        return string.Empty;
+    }
+
+    string GetSortIcon(string currentSortOrder, string column)
+    {
+        if (currentSortOrder == column)
+        {
+            return "bi bi-sort-down";
+        }
+
+        return currentSortOrder == $"{column}_desc" ? "bi bi-sort-up" : "bi bi-arrow-down-up";
+    }
+
+}
+
+<div class="container-fluid py-5 px-4" style="max-width: 1700px; overflow-y: auto;">
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <h1 class="h2 text-start fw-bold">Inventory</h1>
+            <p class="text-start text-muted">Display all the machines</p>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="input-group" style="max-width: 400px;">
+                    <div class="form-outline" data-mdb-input-init>
+                        <input type="search" id="searchBoxInventory" class="form-control"
+                               placeholder="Search..." onkeyup="searchInInventory()"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center ms-3">
+                <span>Filter</span>
+                <span class="ms-1">by</span>
+                <form method="get" action="@Url.Action("Index")" class="d-flex align-items-center">
+                    <select asp-for="@ViewData["StatusFilter"]" name="statusFilter"
+                            class="form-control form-control-sm">
+                        <option value="">All</option>
+                        <option value="true">Working</option>
+                        <option value="false">Not Working</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary btn-sm ms-2">Filter</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm ms-2">Reset</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center col-lg-12 card shadow-sm border-0 rounded">
+        <div class="card-body">
+            <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
+                <table class="table table-auto table-hover table-striped align-middle" id="inventoryTable">
+                    <thead class="table-light sticky-top ">
+                    <tr>
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
+                            <div class="d-flex align-items-center">
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParam"]"
+                                   class="text-decoration-none text-dark">
+                                    Host <i
+                                        class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")">&emsp;</i>
+                                </a>
+                            </div>
+                        </th>
+
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastSeen")">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastSeenSortParam"]"
+                               class="text-decoration-none text-dark">
+                                Last Seen <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastSeen")"></i>
+                            </a>
+                        </th>
+
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Os")">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["OsSortParam"]"
+                               class="text-decoration-none text-dark">
+                                OS <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Os")"></i>
+                            </a>
+                        </th>
+
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Build")">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["BuildSortParam"]"
+                               class="text-decoration-none text-dark">
+                                Build <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Build")"></i>
+                            </a>
+                        </th>
+
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "ServiceTag")">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["ServiceTagSortParam"]"
+                               class="text-decoration-none text-dark">
+                                Service Tag <i
+                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "ServiceTag")"></i>
+                            </a>
+                        </th>
+
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParam"]"
+                               class="text-decoration-none text-dark">
+                                Status <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
+                            </a>
+                        </th>
+
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "NoteCount")">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["NoteCountSortParam"]"
+                               class="text-decoration-none text-dark">
+                                Notes <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "NoteCount")"></i>
+                            </a>
+                        </th>
+
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastNote")">
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNoteSortParam"]"
+                               class="text-decoration-none text-dark">
+                                Last Note <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastNote")"></i>
+                            </a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.Id"
+                                   class="text-primary text-decoration-none">
+                                    @(string.IsNullOrEmpty(item.Name) ? "N/A" : item.Name)
+                                </a>
+                            </td>
+
+                            <td class="text-secondary">
+                                @(string.IsNullOrEmpty(item.GetLastSeen()) ? "N/A" : item.GetLastSeen())
+                            </td>
+
+                            <td class="text-secondary">
+                                @(string.IsNullOrEmpty(item.Os) ? "N/A" : item.Os)
+                            </td>
+
+                            <td class="text-secondary">
+                                @(string.IsNullOrEmpty(item.Build) ? "N/A" : item.Build)
+                            </td>
+
+                            <td class="text-secondary">
+                                @(string.IsNullOrEmpty(item.ServiceTag) ? "N/A" : item.ServiceTag)
+                            </td>
+
+                            <td class="@((item.IsWorking) ? "text-success" : "text-danger")">
+                                @(item.IsWorking ? "Working" : "Not working")
+                            </td>
+
+                            <td class="text-secondary">
+                                <div class="d-flex align-items-center">
+                                    <!-- ajouter ici un lien vers la page pour aller sur les notes de cette machine -->
+                                    <a asp-action="Details" asp-route-id="@item.Id"
+                                       class="text-primary text-decoration-none">
+                                        @item.NoteCount
+                                    </a>
+                                    <!-- ajouter ici un lien vers la page pour faire une nouvelle note sur cette machine -->
+                                    <a asp-action="Details" asp-route-id="@item.Id"
+                                       class="ms-auto me-4 text-primary text-decoration-none">
+                                        <i class="bi bi-file-plus"></i>
+                                    </a>
+                                </div>
+                            </td>
+
+                            <td class="text-secondary">
+                                @if (item.NoteCount != 0)
+                                {
+                                    var maxSize = 25;
+                                    var truncatedNote = @item.LastNote.Content.Length > maxSize ? @item.LastNote.Content.Substring(0, maxSize) + "..." : @item.LastNote.Content;
+                                    <a asp-action="Details" asp-route-id="@item.Id"
+                                       class="text-primary text-decoration-none">
+                                        <!-- ajouter ici un lien vers la page des notes de la machine avec cette note ouverte -->
+                                        @(string.IsNullOrEmpty(truncatedNote) ? "N/A" : truncatedNote)
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span>No notes written</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
