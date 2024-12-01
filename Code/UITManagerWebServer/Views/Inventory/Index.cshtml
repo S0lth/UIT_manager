@@ -5,7 +5,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
 @functions {
 
     string GetHeaderClass(string currentSortOrder, string column)
@@ -40,6 +39,33 @@
             <h1 class="h2 text-start fw-bold">Inventory</h1>
             <p class="text-start text-muted">Display all the machines</p>
         </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="input-group" style="max-width: 400px;">
+                    <div class="form-outline" data-mdb-input-init>
+                        <input type="search" id="searchBoxInventory" class="form-control"
+                               placeholder="Search..." onkeyup="searchInInventory()"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center ms-3">
+                <span>Filter</span>
+                <span class="ms-1">by</span>
+                <form method="get" action="@Url.Action("Index")" class="d-flex align-items-center">
+                    <select asp-for="@ViewData["StatusFilter"]" name="statusFilter"
+                            class="form-control form-control-sm">
+                        <option value="">All</option>
+                        <option value="true">Working</option>
+                        <option value="false">Not Working</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary btn-sm ms-2">Filter</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm ms-2">Reset</a>
+                </form>
+            </div>
+        </div>
     </div>
 
     <div class="row justify-content-center col-lg-12 card shadow-sm border-0 rounded">
@@ -50,23 +76,16 @@
                     <tr>
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
                             <div class="d-flex align-items-center">
-                                <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
+                                <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParam"]"
                                    class="text-decoration-none text-dark">
                                     Host <i
                                         class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")">&emsp;</i>
                                 </a>
-
-                                <div class="input-group" style="max-width: 150px;">
-                                    <div class="form-outline" data-mdb-input-init>
-                                        <input type="search" id="searchBoxHostInventory" class="form-control"
-                                               placeholder="Search..." onkeyup="searchHostInInventory()"/>
-                                    </div>
-                                </div>
                             </div>
                         </th>
 
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastSeen")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastSeenSortParm"]"
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastSeenSortParam"]"
                                class="text-decoration-none text-dark">
                                 Last Seen <i
                                     class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastSeen")"></i>
@@ -74,21 +93,21 @@
                         </th>
 
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Os")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["OsSortParm"]"
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["OsSortParam"]"
                                class="text-decoration-none text-dark">
                                 OS <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Os")"></i>
                             </a>
                         </th>
 
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Build")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["BuildSortParm"]"
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["BuildSortParam"]"
                                class="text-decoration-none text-dark">
                                 Build <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Build")"></i>
                             </a>
                         </th>
 
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "ServiceTag")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["ServiceTagSortParm"]"
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["ServiceTagSortParam"]"
                                class="text-decoration-none text-dark">
                                 Service Tag <i
                                     class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "ServiceTag")"></i>
@@ -96,21 +115,21 @@
                         </th>
 
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]"
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParam"]"
                                class="text-decoration-none text-dark">
                                 Status <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
                             </a>
                         </th>
 
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "NoteCount")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["NoteCountSortParm"]"
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["NoteCountSortParam"]"
                                class="text-decoration-none text-dark">
                                 Notes <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "NoteCount")"></i>
                             </a>
                         </th>
 
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastNote")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNoteSortParm"]"
+                            <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNoteSortParam"]"
                                class="text-decoration-none text-dark">
                                 Last Note <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastNote")"></i>
                             </a>
@@ -179,7 +198,6 @@
                                     <span>No notes written</span>
                                 }
                             </td>
-
                         </tr>
                     }
                     </tbody>

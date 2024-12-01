@@ -13,24 +13,32 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string sortOrder) {
+        public async Task<IActionResult> Index(string sortOrder, bool? statusFilter) {
+            if (string.IsNullOrEmpty(sortOrder)) {
+                sortOrder = "LastSeen_desc"; 
+            }
+
             ViewData["SortOrder"] = sortOrder;
-            ViewData["MachineSortParm"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
-            ViewData["LastSeenSortParm"] =
-                sortOrder == "LastSeenDate" ? "LastSeen_desc" : "LastSeenDate";
-            ViewData["OsSortParm"] = sortOrder == "Os" ? "Os_desc" : "Os";
-            ViewData["BuildSortParm"] = sortOrder == "Build" ? "Build_desc" : "Build";
+            ViewData["MachineSortParam"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
+            ViewData["LastSeenSortParam"] = sortOrder == "LastSeen" ? "LastSeen_desc" : "LastSeen";
+            ViewData["OsSortParam"] = sortOrder == "Os" ? "Os_desc" : "Os";
+            ViewData["BuildSortParam"] = sortOrder == "Build" ? "Build_desc" : "Build";
             ViewData["ServiceTagSortParam"] = sortOrder == "ServiceTag" ? "ServiceTag_desc" : "ServiceTag";
-            ViewData["StatusSortParm"] = sortOrder == "Status" ? "Status_desc" : "Status";
-            ViewData["NoteCountSortParm"] = sortOrder == "NoteCount" ? "NoteCount_desc" : "NoteCount";
+            ViewData["StatusSortParam"] = sortOrder == "Status" ? "Status_desc" : "Status";
+            ViewData["NoteCountSortParam"] = sortOrder == "NoteCount" ? "NoteCount_desc" : "NoteCount";
             ViewData["LastNoteSortParam"] = sortOrder == "LastNote" ? "LastNote_desc" : "LastNote";
 
-            var machines = await _context.Machines
-                .Include(m => m.Informations)
-                .Include(m => m.Notes)
-                .ToListAsync();
+            ViewData["StatusFilter"] = statusFilter.HasValue ? statusFilter : null;
 
-            var machineViewModels = machines.Select(m => new MachineViewModel {
+            IQueryable<Machine> machinesQuery = _context.Machines.Include(m => m.Informations).Include(m => m.Notes).AsQueryable();
+
+            if (statusFilter.HasValue) {
+                machinesQuery = machinesQuery.Where(m => m.IsWorking == statusFilter);
+            }
+            
+            List<Machine> machines = await machinesQuery.ToListAsync();
+
+            IEnumerable<MachineViewModel> machineViewModels = machines.Select(m => new MachineViewModel {
                 Id = m.Id,
                 Name = m.Name,
                 LastSeen = m.LastSeen,
@@ -44,27 +52,28 @@ namespace UITManagerWebServer.Controllers {
             });
 
             machineViewModels = sortOrder switch {
-                "Machine_desc" => machineViewModels.OrderByDescending(m => m.Name),
                 "Machine" => machineViewModels.OrderBy(m => m.Name),
-                "LastSeen_desc" => machineViewModels.OrderByDescending(m => m.LastSeen),
+                "Machine_desc" => machineViewModels.OrderByDescending(m => m.Name),
                 "LastSeen" => machineViewModels.OrderBy(m => m.LastSeen),
-                "Os_desc" => machineViewModels.OrderByDescending(m => m.Os),
+                "LastSeen_desc" => machineViewModels.OrderByDescending(m => m.LastSeen),
                 "Os" => machineViewModels.OrderBy(m => m.Os),
-                "Build_desc" => machineViewModels.OrderByDescending(m => m.Build),
+                "Os_desc" => machineViewModels.OrderByDescending(m => m.Os),
                 "Build" => machineViewModels.OrderBy(m => m.Build),
-                "ServiceTag_desc" => machineViewModels.OrderByDescending(m => m.ServiceTag),
+                "Build_desc" => machineViewModels.OrderByDescending(m => m.Build),
                 "ServiceTag" => machineViewModels.OrderBy(m => m.ServiceTag),
-                "Status_desc" => machineViewModels.OrderByDescending(m => m.IsWorking),
+                "ServiceTag_desc" => machineViewModels.OrderByDescending(m => m.ServiceTag),
                 "Status" => machineViewModels.OrderBy(m => m.IsWorking),
-                "NoteCount_desc" => machineViewModels.OrderByDescending(m => m.NoteCount),
+                "Status_desc" => machineViewModels.OrderByDescending(m => m.IsWorking),
                 "NoteCount" => machineViewModels.OrderBy(m => m.NoteCount),
-                "LastNote_desc" => machineViewModels.OrderByDescending(m => m.LastNote.Content),
+                "NoteCount_desc" => machineViewModels.OrderByDescending(m => m.NoteCount),
                 "LastNote" => machineViewModels.OrderBy(m => m.LastNote.Content),
+                "LastNote_desc" => machineViewModels.OrderByDescending(m => m.LastNote.Content),
                 _ => machineViewModels.OrderByDescending(m => m.LastSeen),
             };
 
             return View(machineViewModels.ToList());
         }
+
 
         // GET: Inventory/Details/5
         public async Task<IActionResult> Details(int? id) {
@@ -72,7 +81,7 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound();
             }
 
-            var machine = await _context.Machines
+            Machine? machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (machine == null) {
                 return NotFound();
@@ -107,7 +116,7 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound();
             }
 
-            var machine = await _context.Machines.FindAsync(id);
+            Machine? machine = await _context.Machines.FindAsync(id);
             if (machine == null) {
                 return NotFound();
             }
@@ -151,7 +160,7 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound();
             }
 
-            var machine = await _context.Machines
+            Machine? machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (machine == null) {
                 return NotFound();
@@ -164,7 +173,7 @@ namespace UITManagerWebServer.Controllers {
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            var machine = await _context.Machines.FindAsync(id);
+            Machine? machine = await _context.Machines.FindAsync(id);
             if (machine != null) {
                 _context.Machines.Remove(machine);
             }
