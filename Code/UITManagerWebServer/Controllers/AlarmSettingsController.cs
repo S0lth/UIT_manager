@@ -1,13 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
@@ -112,22 +106,28 @@ namespace UITManagerWebServer.Controllers {
         
         [Authorize(Roles = "MaintenanceManager,ITDirector")]
         public async Task<IActionResult> Details(int? id) {
-            if (id == null) return NotFound();
             
+            if (id == null) return NotFound();
             var normGroup = await _context.NormGroups
                 .Include(ng => ng.Norms)
                 .Include(ng => ng.SeverityHistories)
                 .FirstOrDefaultAsync(ng => ng.Id == id);
+            
             if(normGroup == null) return NotFound();
-            var severities = await _context.Severities
+            
+            ViewData["Severities"] = await _context
+                .Severities
+                .ToListAsync();;
+            
+            ViewData["Info"] = await _context
+                .InformationNames
                 .ToListAsync();
-            ViewData["Severities"] = severities;
-            ViewData["id"] = id;
-            ViewData["Info"] = await _context.InformationNames.ToListAsync();
-            List<SeverityHistory> severityHistories =  await _context.SeverityHistories
+            
+            ViewData["History"]  =  await _context
+                .SeverityHistories
                 .Where(s => s.IdNormGroup == id)
                 .ToListAsync();
-            ViewData["History"] = severityHistories;
+            
             return View(normGroup);
         }
         
@@ -135,11 +135,12 @@ namespace UITManagerWebServer.Controllers {
         public IActionResult DeleteNorm(int normId) {
             int id = 0;
             var norm = _context.Norms.FirstOrDefault(n => n.Id == normId);
-            if (norm != null)
-            {
+            if (norm != null) {
                 id = norm.NormGroupId;
-                _context.Norms.Remove(norm);
-                _context.SaveChanges();
+                if (id != 0) {
+                    _context.Norms.Remove(norm);
+                    _context.SaveChanges();
+                }
             }
 
             return RedirectToAction("Details", new { id = id });
@@ -147,78 +148,7 @@ namespace UITManagerWebServer.Controllers {
 
 
         
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, NormGroup normGroup, int SeverityId, int DefaultSeverityId, List<Norm> Norms) {
-            ApplicationUser? user = await _userManager.GetUserAsync(User);
-            
-            string userId = user.Id;
-            string userName = user.LastName + " " + user.FirstName;
-            if (user?.Id == null) {
-                NotFound(("You have to reconnect"));
-            }
-                
-            if (id != normGroup.Id)
-            {
-                return NotFound();
-            }
-            
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var existingNormGroup = await _context.NormGroups
-                        .Include(ng => ng.Norms)
-                        .Include((ng=>ng.SeverityHistories))
-                        .FirstOrDefaultAsync(ng => ng.Id == id);
-                    if (existingNormGroup == null) return NotFound();
-                    
-                    existingNormGroup.Name = normGroup.Name;
-                    existingNormGroup.MaxExpectedProcessingTime = normGroup.MaxExpectedProcessingTime;
-                    existingNormGroup.Priority = normGroup.Priority;
-                    existingNormGroup.IsEnable = normGroup.IsEnable;
-
-                    if(SeverityId != DefaultSeverityId)
-                    {
-                        existingNormGroup.SeverityHistories.Add(
-                            new SeverityHistory{
-                                NormGroup = await _context.NormGroups.FindAsync(existingNormGroup.Id),
-                                Severity = await _context.Severities.FirstOrDefaultAsync(s => s.Id == SeverityId),
-                                UpdateDate = DateTime.UtcNow,
-                                UserId = userId
-                            });
-                    }
-
-                    
-                    
-                    foreach (var norm in Norms)
-                    {
-                        var existingNorm = existingNormGroup.Norms.FirstOrDefault(n => n.Id == norm.Id);
-                        if (existingNorm != null)
-                        {
-                            existingNorm.Name = norm.Name;
-                            existingNorm.InformationNameId = norm.InformationNameId;
-                            existingNorm.Condition = norm.Condition;
-                            existingNorm.Value = norm.Value;
-                            existingNorm.Format = norm.Format;
-                        }
-                    }
-
-                    await _context.SaveChangesAsync();
-
-                    return RedirectToAction("Index");
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
-            else {
-                Console.WriteLine(("Rien ne marche"));
-            }
-
-            return RedirectToAction("Index");
-        }
+       
 
         
         [HttpPost]
@@ -258,6 +188,19 @@ namespace UITManagerWebServer.Controllers {
                 .FirstOrDefaultAsync();         
         }
 
+        
+        public class NormGroupModel {
+            public int Id {get;set;}
+            public string? NormGroupName { get; set; }
+            public int IdSeverity { get; set; }
+            public int Priority { get; set; }
+            public TimeSpan MaxExpectedProcessingTime { get; set; }
+            public bool IsEnable { get; set; }
+            public List<Severity> Severities { get; set; }
+            public List<Norm> Norms { get; set; }
+            public List<SeverityHistory> SeverityHistories { get; set; }
+            public List<InformationName> Informations { get; set; }
+        }
         public class NormGroupPageViewModel {
             
             public int Id {get;set;}

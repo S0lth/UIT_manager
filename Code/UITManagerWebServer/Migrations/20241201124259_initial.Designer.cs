@@ -12,8 +12,8 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241130212847_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241201124259_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -349,6 +349,23 @@ namespace UITManagerWebServer.Migrations
                     b.ToTable("File");
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.InformationName", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InformationNames");
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
                 {
                     b.Property<int>("Id")
@@ -418,13 +435,27 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Condition")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Format")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("InformationNameId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.Property<int>("NormGroupId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("InformationNameId");
 
                     b.HasIndex("NormGroupId");
 
@@ -695,11 +726,17 @@ namespace UITManagerWebServer.Migrations
 
             modelBuilder.Entity("UITManagerWebServer.Models.Norm", b =>
                 {
+                    b.HasOne("UITManagerWebServer.Models.InformationName", "InformationName")
+                        .WithMany()
+                        .HasForeignKey("InformationNameId");
+
                     b.HasOne("UITManagerWebServer.Models.NormGroup", "NormGroup")
                         .WithMany("Norms")
                         .HasForeignKey("NormGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("InformationName");
 
                     b.Navigation("NormGroup");
                 });
