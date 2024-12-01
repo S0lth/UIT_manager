@@ -23,12 +23,8 @@
         {
             return "bi bi-sort-down";
         }
-        else if (currentSortOrder == $"{column}_desc")
-        {
-            return "bi bi-sort-up";
-        }
 
-        return "bi bi-arrow-down-up";
+        return currentSortOrder == $"{column}_desc" ? "bi bi-sort-up" : "bi bi-arrow-down-up";
     }
 
 }
