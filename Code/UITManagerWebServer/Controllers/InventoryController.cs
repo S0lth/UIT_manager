@@ -15,7 +15,7 @@ namespace UITManagerWebServer.Controllers {
         [Authorize]
         public async Task<IActionResult> Index(string sortOrder, bool? statusFilter) {
             if (string.IsNullOrEmpty(sortOrder)) {
-                sortOrder = "LastSeen_desc"; 
+                sortOrder = "LastSeen_desc";
             }
 
             ViewData["SortOrder"] = sortOrder;
@@ -30,12 +30,13 @@ namespace UITManagerWebServer.Controllers {
 
             ViewData["StatusFilter"] = statusFilter.HasValue ? statusFilter : null;
 
-            IQueryable<Machine> machinesQuery = _context.Machines.Include(m => m.Informations).Include(m => m.Notes).AsQueryable();
+            IQueryable<Machine> machinesQuery =
+                _context.Machines.Include(m => m.Informations).Include(m => m.Notes).AsQueryable();
 
             if (statusFilter.HasValue) {
                 machinesQuery = machinesQuery.Where(m => m.IsWorking == statusFilter);
             }
-            
+
             List<Machine> machines = await machinesQuery.ToListAsync();
 
             IEnumerable<MachineViewModel> machineViewModels = machines.Select(m => new MachineViewModel {
@@ -66,8 +67,8 @@ namespace UITManagerWebServer.Controllers {
                 "Status_desc" => machineViewModels.OrderByDescending(m => m.IsWorking),
                 "NoteCount" => machineViewModels.OrderBy(m => m.NoteCount),
                 "NoteCount_desc" => machineViewModels.OrderByDescending(m => m.NoteCount),
-                "LastNote" => machineViewModels.OrderBy(m => m.LastNote.Content),
-                "LastNote_desc" => machineViewModels.OrderByDescending(m => m.LastNote.Content),
+                "LastNote" => machineViewModels.OrderBy(m => m.LastNote?.Content),
+                "LastNote_desc" => machineViewModels.OrderByDescending(m => m.LastNote?.Content),
                 _ => machineViewModels.OrderByDescending(m => m.LastSeen),
             };
 
@@ -185,8 +186,10 @@ namespace UITManagerWebServer.Controllers {
         private bool MachineExists(int id) {
             return _context.Machines.Any(e => e.Id == id);
         }
-
-
+        
+        /// <summary>
+        /// Represents the data for a machine, including its details, status, and associated notes.
+        /// </summary>
         public class MachineViewModel {
             public int Id { get; set; }
 
