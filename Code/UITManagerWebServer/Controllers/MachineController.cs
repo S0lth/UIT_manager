@@ -60,7 +60,7 @@ namespace UITManagerWebServer.Views
             ViewData["SeveritySortParm"] = sortOrder.Contains("severity_desc") ? "severity" : "severity_desc";
             ViewData["AlarmGroupSortParm"] = sortOrder.Contains("alarmgroup_desc") ? "alarmgroup" : "alarmgroup_desc";
             ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
-            
+            ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
             
 
             return View(detailView);
@@ -126,6 +126,7 @@ namespace UITManagerWebServer.Views
             var alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
+                .Include(a => a.User)
                 .Include(a => a.AlarmHistories)
                 .ThenInclude(aStatus => aStatus.StatusType)
                 .Include(a => a.NormGroup.SeverityHistories)
@@ -144,7 +145,7 @@ namespace UITManagerWebServer.Views
                 Severity = a.NormGroup.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()
                     ?.Severity.Name,
                 AlarmGroupName = a.NormGroup.Name,
-                TriggeredAt = a.TriggeredAt
+                TriggeredAt = a.TriggeredAt,
             }).ToList();
         }
 
@@ -182,6 +183,10 @@ namespace UITManagerWebServer.Views
                     return query.OrderByDescending(a => a.TriggeredAt);
                 case "date":
                     return query.OrderBy(a => a.TriggeredAt);
+                 case "attribution_desc":
+                    return query.OrderByDescending(a => a.User == null ? "" : a.User.FirstName);
+                 case "attribution":
+                     return query.OrderBy(a => a.User == null ? "" : a.User.FirstName);
                 default:
                     return query.OrderByDescending(a => a.TriggeredAt);
             }

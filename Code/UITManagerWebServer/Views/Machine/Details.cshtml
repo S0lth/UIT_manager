@@ -40,17 +40,20 @@
     {
         return sol ? "Solution" : "Follow-Up Note";
     }
+    
 
 }
+
+
 
 
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <h1 class="h2 fw-bold me-3">
         @Model.Name
-        <span class="badge bg-info h5">@Model.LastSeen</span>
+        <span class="badge bg-info h5">Last seen : @Model.LastSeen</span>
     </h1>
     <div class="row mt-4">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <div id="accordion">
                 <div class="card">
                     <div class="card-header">
@@ -135,13 +138,15 @@
         </div>
         <div class="col-md-6">
             <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-4 d-flex align-items-center">Alarm
+                    </h5>
+                </div>
                 <div class="card-body">
                     <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                         <table class="table table-hover table-striped table-bordered rounded">
                             <thead class="table-light sticky-top">
                             <tr>
-                                <!-- Machine Column -->
-
                                 <!-- Status Column -->
                                 <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
                                     <a asp-action="Details"
@@ -189,6 +194,7 @@
                                             class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
                                     </a>
                                 </th>
+                                
                             </tr>
                             </thead>
 
@@ -293,6 +299,31 @@
                         }
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notesModalLabel">Information on Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    This section contains important notes related to the machines, classified as either solutions
+                    or
+                    follow-up notes.
+                    You can filter them by solution status or by author.
+                </p>
+                <p>
+                    You can also sort the notes by date to see the most recent or oldest entries.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
