@@ -72,7 +72,7 @@
                                     </div>
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
-                                                class="form-control form-control-sm">
+                                                class="form-select-sm">
                                             <option value="" disabled selected>Note Type</option>
                                             <option value="all">All</option>
                                             <option value="true">Solution</option>
@@ -82,7 +82,7 @@
 
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter"
-                                                class="form-control form-control-sm">
+                                                class="form-select-sm">
                                             <option value="" disabled selected>Author</option>
                                             <option value="all">All Authors</option>
                                             @foreach (var author in ViewBag.Authors)
@@ -96,7 +96,7 @@
 
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["SortOrderNote"]" name="SortOrderNote"
-                                                class="form-control form-control-sm">
+                                                class="form-select-sm">
                                             <option value="" disabled selected>Date</option>
                                             <option value="ndate">Newest First</option>
                                             <option value="ndate_desc">Oldest First</option>
