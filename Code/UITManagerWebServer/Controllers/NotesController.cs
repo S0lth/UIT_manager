@@ -112,10 +112,17 @@ namespace UITManagerWebServer.Controllers
             var note = await _context.Notes
                 .Include(n => n.Author)
                 .Include(n => n.Machine)
+                .Include(n => n.Files)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (note == null)
             {
                 return NotFound();
+            }
+            
+            foreach (var file in note.Files)
+            {
+                var fileUrl = $"{Request.Scheme}://{Request.Host}/files/{file.Id}";
+                note.Content = note.Content.Replace($"({file.FileName})", $"({fileUrl})");
             }
 
             return View(note);

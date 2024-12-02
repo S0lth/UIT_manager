@@ -1,49 +1,83 @@
+@using Markdig
 @model UITManagerWebServer.Models.Note
 
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var markdown = new MarkdownPipelineBuilder().Build();
+    var htmlContent = Markdig.Markdown.ToHtml(Model.Content, markdown);
 }
 
-<h1>Details</h1>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-10">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header bg-light d-flex justify-content-between align-items-start border-bottom-0">
+                    <div class="d-flex flex-column" style="max-width: 600px;">
+                        <h4 class="card-title mb-0 text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            @Html.DisplayFor(model => model.Title)
+                        </h4>
+                        <p class="text-muted mb-0">Created by @Model.Author.LastName @Model.Author.FirstName on @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+                    </div>
+                    <div class="d-flex flex-column align-items-end">
+                        <span class="badge @((Model.IsSolution) ? "bg-success" : "bg-secondary") mb-2">
+                            @((Model.IsSolution) ? "Solution" : "Follow-Up")
+                        </span>
+                        <span class="badge bg-info">
+                            @Html.DisplayFor(model => model.Machine.Name)
+                        </span>
+                    </div>
+                </div>
 
-<div>
-    <h4>Note</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Author.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Machine)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Machine.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsSolution)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsSolution)
-        </dd>
-    </dl>
+                <div class="card-body" style="overflow-y: auto; max-height: calc(80vh - 150px);">
+                    <h5 class="text-muted">Content:</h5>
+                    <div class="note-content mb-4">
+                        @Html.Raw(htmlContent) <!-- Affiche le contenu markdown avec images -->
+                    </div>
+
+                    <!-- Image thumbnails with Bootstrap modal -->
+                    <div class="row">
+                        @foreach (var file in Model.Files)
+                        {
+                            <div class="col-4 col-sm-3 col-md-2 mb-3">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="document.getElementById('modalImage').src = '/files/@file.Id'">
+                                    <img src="/files/@file.Id" alt="@file.FileName" class="img-thumbnail" style="max-width: 100%; cursor: pointer;" />
+                                </a>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Modal for image preview -->
+                    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <img id="modalImage" src="" alt="Image" class="img-fluid rounded" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer text-center bg-light border-top-0">
+                    <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
+                    <a class="btn btn-outline-primary" asp-controller="Machine" asp-action="Details" asp-route-id="@Model.MachineId">Go to @Model.Machine.Name</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    .note-content img {
+        max-width: 100%; /* Limiter la largeur des images */
+        height: auto;
+        cursor: pointer;
+        border-radius: 8px; /* Bords arrondis pour les images */
+    }
+</style>

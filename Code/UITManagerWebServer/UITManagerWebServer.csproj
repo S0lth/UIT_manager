@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="Chart.js" Version="3.7.1" />
+        <PackageReference Include="Markdig" Version="0.38.0" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.8" />
@@ -29,6 +30,6 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Areas\" />
-      <Folder Include="Migrations\" />
+      <Folder Include="Images\" />
     </ItemGroup>
 </Project>

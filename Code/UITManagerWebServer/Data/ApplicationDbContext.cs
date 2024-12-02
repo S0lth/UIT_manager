@@ -32,6 +32,8 @@ namespace UITManagerWebServer.Data {
         public DbSet<Value> Leafs { get; set; }
         public DbSet<Component> Composites { get; set; }
         
+        public DbSet<UITManagerWebServer.Models.File> Files { get; set; } 
+        
         public DbSet<SeverityHistory> SeverityHistories { get; set; }
         protected override void OnModelCreating(ModelBuilder builder) {
             base.OnModelCreating(builder);
