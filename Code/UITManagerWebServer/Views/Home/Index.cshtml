@@ -100,7 +100,7 @@
                                                 class="form-select form-select-sm"
                                                 style="display: inline-block; min-width: 120px;">
                                             <option value="" disabled selected>Type</option>
-                                            <option value="all">All</option>
+                                            <option value="">All</option>
                                             <option value="true">Solution</option>
                                             <option value="false">Follow-up</option>
                                         </select>
@@ -112,7 +112,7 @@
                                                 class="form-select form-select-sm"
                                                 style="display: inline-block; min-width: 120px;">
                                             <option value="" disabled selected>Author</option>
-                                            <option value="all">All Authors</option>
+                                            <option value="">All Authors</option>
                                             @foreach (var author in ViewBag.Authors)
                                             {
                                                 <option value="@author.Id">
