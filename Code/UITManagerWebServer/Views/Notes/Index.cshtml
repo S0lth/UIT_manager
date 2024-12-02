@@ -35,74 +35,59 @@
 
 }
 
-<div class="container-fluid mt-4">
-    <!-- Title and Create New Button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Notes</h1>
-        <a class="btn btn-primary" asp-action="Create">Create New</a>
+<div class="container-fluid py-5 px-4" style="max-width: 1700px; overflow-y: auto;">
+    <div class="d-flex justify-content-between align-items-center mb-auto">
+        <h1 class="h2 fw-bold">Notes</h1>
+        @*<a class="btn btn-primary" asp-action="Create">New Note</a>*@
     </div>
 
-    <!-- Filter Section (Card for Search and Filters) -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Filter Notes</h5>
+    <form method="get"
+          class="d-flex flex-wrap gap-3 px-0 py-2 align-items-center justify-content-between border-bottom">
+        <div class="form-group m-0 w-auto">
+            <input type="text" name="search" class="form-control" placeholder="Search..." value="@ViewData["Search"]"/>
         </div>
-        <form method="get" class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start border-bottom">
-            <!-- Search input -->
-            <div class="form-group mb-0 w-100 w-md-25">
-                <input type="text" name="search" class="form-control" placeholder="Search..."
-                       value="@ViewData["Search"]"/>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center text-muted" style="margin-right: 10px;">
+                <span>Filter</span>
+                <span class="ms-1">by</span>
             </div>
 
-            <!-- Filter dropdowns -->
-            <div class="d-flex align-items-center gap-3">
-                <!-- "Filter by" text on a single line -->
-                <div class="d-flex align-items-center text-muted" style="margin-right: 10px;">
-                    <span>Filter</span>
-                    <span class="ms-1">by</span>
-                </div>
-
-                <div class="form-group mb-0 w-100 w-md-20">
-                    <select asp-for="@ViewData["IsSolution"]" name="IsSolution" class="form-control form-control-sm">
-                        <option value="" disabled selected>Note Type</option>
-                        <option value="">All</option>
-                        <option value="true">Solution</option>
-                        <option value="false">Follow-up</option>
-                    </select>
-                </div>
-
-                <div class="form-group mb-0 w-100 w-md-20">
-                    <select asp-for="@ViewData["AuthorId"]" name="AuthorId" class="form-control form-control-sm">
-                        <option value="" disabled selected>Author</option>
-                        <option value="">All</option>
-                        @foreach (var author in ViewBag.Authors)
-                        {
-                            <option value="@author.Id">
-                                @author.LastName @author.FirstName
-                            </option>
-                        }
-                    </select>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                    <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm">Reset</a>
-                </div>
+            <div class="form-group mb-0">
+                <select asp-for="@ViewData["IsSolution"]" name="IsSolution" class="form-select form-select-sm">
+                    <option value="" disabled selected>Note Type</option>
+                    <option value="">All</option>
+                    <option value="true">Solution</option>
+                    <option value="false">Follow-up</option>
+                </select>
             </div>
-        </form>
 
+            <div class="form-group mb-0">
+                <select asp-for="@ViewData["AuthorId"]" name="AuthorId" class="form-select form-select-sm">
+                    <option value="" disabled selected>Author</option>
+                    <option value="">All</option>
+                    @foreach (var author in ViewBag.Authors)
+                    {
+                        <option value="@author.Id">
+                            @author.LastName @author.FirstName
+                        </option>
+                    }
+                </select>
+            </div>
 
-    </div>
-
-    <!-- Notes List Section (Card for Table) -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Notes List</h5>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm">Reset</a>
+            </div>
         </div>
-        <div class="card-body p-0">
+    </form>
+
+
+    <div class="card shadow-sm border-0 rounded">
+        <div class="card-body">
             <div class="table-responsive" style="max-height: 750px; overflow-y: auto;">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead class="thead-dark sticky-top" style="background-color: #fff; z-index: 10;">
+                <table class="table table-hover table-striped align-middle">
+                    <thead class="table-lightfix sticky-top">
                     <tr>
                         <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "title")">
                             <a asp-action="Index"
@@ -162,34 +147,47 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach (var item in Model)
+                    @if (!Model.Any())
                     {
                         <tr>
-                            <td class="px-3 py-2">
-                                <a asp-controller="Notes" asp-action="Details" asp-route-id="@item.Id"
-                                   class="text-primary text-decoration-none">
-                                    @Html.DisplayFor(modelItem => item.Title)
-                                </a>
-                            </td>
-                            <td class="px-3 py-2">
-                                <a asp-controller="Machines" asp-action="Details" asp-route-id="@item.Machine.Id"
-                                   class="text-primary text-decoration-none">
-                                    @Html.DisplayFor(modelItem => item.Machine.Name)
-                                </a>
-                            </td>
-                            <td class="px-3 py-2">@Html.DisplayFor(modelItem => item.CreatedAt)</td>
-                            <td class="px-3 py-2">@Html.DisplayFor(modelItem => item.Author.LastName) @Html.DisplayFor(modelItem => item.Author.FirstName)</td>
-                            <td class="px-3 py-2">
-                                @if (item.IsSolution)
-                                {
-                                    <span class="badge bg-success">Solution</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">Follow-up Note</span>
-                                }
+                            <td colspan="5" class="text-center px-3 py-2">
+                                <div class="alert alert-secondary mb-0" role="alert">
+                                    No notes written.
+                                </div>
                             </td>
                         </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="px-3 py-2">
+                                    <a asp-controller="Notes" asp-action="Details" asp-route-id="@item.Id"
+                                       class="text-primary text-decoration-none">
+                                        @Html.DisplayFor(modelItem => item.Title)
+                                    </a>
+                                </td>
+                                <td class="px-3 py-2">
+                                    <a asp-controller="Machines" asp-action="Details" asp-route-id="@item.Machine.Id"
+                                       class="text-primary text-decoration-none">
+                                        @Html.DisplayFor(modelItem => item.Machine.Name)
+                                    </a>
+                                </td>
+                                <td class="px-3 py-2">@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                                <td class="px-3 py-2">@Html.DisplayFor(modelItem => item.Author.LastName) @Html.DisplayFor(modelItem => item.Author.FirstName)</td>
+                                <td class="px-3 py-2">
+                                    @if (item.IsSolution)
+                                    {
+                                        <span class="badge bg-success">Solution</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Follow-up Note</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
                     }
                     </tbody>
                 </table>
