@@ -369,6 +369,10 @@ namespace UITManagerWebServer.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Values")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MachinesId");
@@ -393,7 +397,7 @@ namespace UITManagerWebServer.Migrations
                     b.Property<bool>("IsWorking")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastSeen")
+                    b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Model")
@@ -551,10 +555,6 @@ namespace UITManagerWebServer.Migrations
             modelBuilder.Entity("UITManagerWebServer.Models.Value", b =>
                 {
                     b.HasBaseType("UITManagerWebServer.Models.Informations");
-
-                    b.Property<string>("Values")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("Leaf");
                 });

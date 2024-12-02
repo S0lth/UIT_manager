@@ -220,6 +220,11 @@
 
                                             @if (@User.IsInRole("Technician"))
                                             {
+                                                if (@item.GetLatestAlarmHistory()?.User.FirstName == null)
+                                                {
+                                                    <p clasx="text-secondary">Unattribued </p>
+
+                                                }
                                                 <p clasx="text-secondary">@item.GetLatestAlarmHistory()?.User.FirstName @item.GetLatestAlarmHistory()?.User.LastName </p>
                                             }
                                             else

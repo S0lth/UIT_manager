@@ -1,5 +1,4 @@
-﻿
-namespace UITManagerWebServer.Models {
+﻿namespace UITManagerWebServer.Models {
     /// <summary>
     /// Represents a note associated with a machine, typically used for documentation or problem resolution.
     /// </summary>
