@@ -87,46 +87,57 @@
                             @(@Model.IsEnable ? "Enabled" : "Disabled")
                         </td>
                         
-                        <td><button class="btn btn-primary">Edit</button></td>
+                        <td>
+                            <form method="get" asp-action="Edit" asp-route-id="@Model.Id">
+                                <input type="submit" class="btn btn-primary" value="Edit">
+                            </form>
+    
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <h3>Criteria Group</h3>
             
-            <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle">
-                    <thead>
-                    <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Concerned Information
-                        </th>
-                        <th>
-                            Description
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var norm in @Model.Norms)
-                    {
-
+            <div class="d-flex justify-content-center">
+                <div class="table-responsive table-sm ms-2 w-75 d-flex">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead>
                         <tr>
-                            <td>
-                                @norm.Name
-                            </td>
-                            <td>
-                                @norm.InformationName.Name
-                            </td>
-                            <td>
-                            <span>Should be @norm.Condition @norm.Value @norm.Format</span>
-                            </td>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Concerned Information
+                            </th>
+                            <th>
+                                Description
+                            </th>
                         </tr>
-                    }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        @if (Model.Norms != null)
+                        {
+                        
+                            @foreach (var norm in @Model.Norms)
+                            {
+                                <tr>
+                                    <td>
+                                        @norm.Name
+                                    </td>
+                                    <td>
+                                        @norm.InformationName.Name
+                                    </td>
+                                    <td>
+                                        <span>Should be @norm.Condition @norm.Value @norm.Format</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

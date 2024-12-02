@@ -147,7 +147,83 @@ namespace UITManagerWebServer.Controllers {
         }
 
 
-        
+        [HttpGet]
+        [Authorize(Roles = "MaintenanceManager,ITDirector")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var normGroup = await _context.NormGroups
+                .Include(ng => ng.Norms)
+                .Include(ng => ng.SeverityHistories)
+                .FirstOrDefaultAsync(ng => ng.Id == id);
+            if (normGroup == null) {
+                return NotFound();
+            }
+
+            var latestSeverityHistory = normGroup.GetLatestSeverityHistory();
+            var idSeverity = latestSeverityHistory.IdSeverity;
+
+            var norms = normGroup.Norms;
+            var severityHistories = normGroup.SeverityHistories;
+
+            var informationNames = await _context.InformationNames.ToListAsync();
+            var severities = await _context.Severities.ToListAsync();
+
+            var normgroupmodel = new NormGroupModel {
+                Id = id, 
+                IdSeverity = idSeverity,
+                IsEnable = normGroup.IsEnable,
+                MaxExpectedProcessingTime = normGroup.MaxExpectedProcessingTime,
+                Norms = norms,
+                Informations = informationNames,
+                NormGroupName = normGroup.Name,
+                Severities = severities,
+                SeverityHistories = severityHistories,
+                Priority = normGroup.Priority
+            };
+    
+            return View(normgroupmodel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(NormGroupModel model)
+        {
+            var normGroup = await _context.NormGroups
+                .Include(ng => ng.Norms)
+                .Include(ng => ng.SeverityHistories)
+                .FirstOrDefaultAsync(c => c.Id == model.Id);
+            if (normGroup == null)
+            {
+                return NotFound();
+            }
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            
+            normGroup.Name = model.NormGroupName;
+            normGroup.MaxExpectedProcessingTime = model.MaxExpectedProcessingTime;
+            normGroup.Priority = model.Priority;
+            normGroup.IsEnable = model.IsEnable;
+            normGroup.SeverityHistories.Add(
+                new SeverityHistory {
+                    IdNormGroup = normGroup.Id,
+                    IdSeverity = model.IdSeverity,
+                    UpdateDate = DateTime.UtcNow,
+                    UserId = user.Id,
+                });
+
+            for (int i = 0; i < model.Norms.Count; i++) {
+                normGroup.Norms[i].Name = model.Norms[i].Name;
+            }
+            foreach (var n in model.Norms) {
+                Console.WriteLine(n.Name);
+            }
+            var latestSeverityHistory = normGroup.GetLatestSeverityHistory();
+            latestSeverityHistory.IdSeverity = model.IdSeverity;
+            
+            _context.Update(normGroup);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", new { id = model.Id });
+        }
+
        
 
         
@@ -188,19 +264,20 @@ namespace UITManagerWebServer.Controllers {
                 .FirstOrDefaultAsync();         
         }
 
-        
+
         public class NormGroupModel {
-            public int Id {get;set;}
+            public int Id { get; set; }
             public string? NormGroupName { get; set; }
             public int IdSeverity { get; set; }
             public int Priority { get; set; }
             public TimeSpan MaxExpectedProcessingTime { get; set; }
             public bool IsEnable { get; set; }
-            public List<Severity> Severities { get; set; }
-            public List<Norm> Norms { get; set; }
-            public List<SeverityHistory> SeverityHistories { get; set; }
-            public List<InformationName> Informations { get; set; }
+            public List<Severity> Severities { get; set; } = new();
+            public List<Norm> Norms { get; set; } = new();
+            public List<SeverityHistory> SeverityHistories { get; set; } = new();
+            public List<InformationName> Informations { get; set; } = new();
         }
+
         public class NormGroupPageViewModel {
             
             public int Id {get;set;}

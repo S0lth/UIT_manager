@@ -1,0 +1,175 @@
+﻿@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <h1 class="text-center">Edit Norm Group</h1>
+
+    <div class="table-responsive">
+        <form method="post" asp-action="Edit">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>
+                        Name
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#nameModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Max Expected Processing Time
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#maxProcessingModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Priority
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#PriorityModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Severity
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#severityModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Status
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#enabledModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                <td>
+                    <input type="text" class="form-control" name="NormGroupName" value="@Model.NormGroupName"/>
+                </td>
+                <td>
+                    <input type="text" class="form-control" name="MaxExpectedProcessingTime" value="@Model.MaxExpectedProcessingTime"/>
+                </td>
+                <td>
+                    <input type="number" class="form-control" min="1" max="9" name="Priority" value="@Model.Priority"/>
+                </td>
+                <td>
+                    <select name="IdSeverity" class="form-select">
+                        @foreach (var choice in Model.Severities)
+                        {
+                            if (Equals(choice.Id, Model.IdSeverity))
+                            {
+                                <option value="@choice.Id" selected>@choice.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@choice.Id">@choice.Name</option>
+                            }
+                        }
+                    </select>
+                </td>
+                <td>
+                    <input type="checkbox" value="true" name="isEnable" @(Model.IsEnable? "checked":"")/>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-link" 
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteNormGroupModal">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+                </tbody>
+                <tfooter>
+
+
+                </tfooter>
+            </table>
+            
+            <div class="d-flex justify-content-center">
+                <div class="table-responsive table-sm ms-2 w-75 d-flex">
+                    <table class="table table-hover table-striped align-middle table-light">
+                        <thead>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Concerned Information
+                            </th>
+                            <th>
+                                Condition
+                            </th>
+                            <th>
+                                Value
+                            </th>
+                            <th>
+                                Format
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>a</td>
+                            <td>b</td>
+                            <td>c</td>
+                            <td>c</td>
+                            <td>c</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Save Changes</button>
+        </form>
+    </div>
+
+    @for (int i = 0; i < Model.Norms.Count; i++)
+    {
+        <div class="form-group">
+            <label for="Norm_@Model.Norms[i].Id">Norm Name (ID: @Model.Norms[i].Id)</label>
+            <input type="text" name="Norms[@i].Name" id="Norm_@Model.Norms[i].Id" value="@Model.Norms[i].Name" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="Norm_@Model.Norms[i].Value">Norm Value</label>
+            <input type="text" name="Norms[@i].Value" id="Norm_@Model.Norms[i].Value" value="@Model.Norms[i].Value" class="form-control" />
+        </div>
+            
+        <div class="form-group">
+            <label for="Norm_@Model.Norms[i].InformationName">InformationName</label>
+            <input type="text" name="Norms[@i].Value" id="Norm_@Model.Norms[i].Value" value="@Model.Norms[i].Value" class="form-control" />
+        </div>
+    }
+</div>
+<div class="modal fade" id="deleteNormGroupModal" tabindex="-1" aria-labelledby="deleteNormGroupModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" asp-action="Delete">
+                <input type="hidden" name="id" value="@Model.Id"/>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteNormGroupModalLabel">Delete normgroup</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this NormGroup?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
