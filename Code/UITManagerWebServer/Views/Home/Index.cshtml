@@ -12,24 +12,42 @@
                 triggered out of
                 <span class="fw-bold mx-2">@Model.TotalMachines</span>.
             </div>
-
+            
             <ul class="nav nav-tabs" id="alarmTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new { tab = "unprocessed", sortOrder = ViewData["SortOrder"] })"
+                    <a href="@Url.Action("Index", "Home", new { 
+                                 tab = "unprocessed", 
+                                 sortOrder = ViewData["SortOrder"], 
+                                 SolutionFilter = ViewData["SolutionFilter"], 
+                                 AuthorFilter = ViewData["AuthorFilter"], 
+                                 SortOrderNote = ViewData["SortOrderNote"] 
+                             })"
                        class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "unprocessed" ? "none" : "auto")">
                         Unprocessed Alarms
                     </a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new { tab = "newest", sortOrder = ViewData["SortOrder"] })"
+                    <a href="@Url.Action("Index", "Home", new { 
+                                 tab = "newest", 
+                                 sortOrder = ViewData["SortOrder"], 
+                                 SolutionFilter = ViewData["SolutionFilter"], 
+                                 AuthorFilter = ViewData["AuthorFilter"], 
+                                 SortOrderNote = ViewData["SortOrderNote"] 
+                             })"
                        class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "newest" ? "none" : "auto")">
                         Newest Alarms
                     </a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new { tab = "overdue", sortOrder = ViewData["SortOrder"] })"
+                    <a href="@Url.Action("Index", "Home", new { 
+                                 tab = "overdue", 
+                                 sortOrder = ViewData["SortOrder"], 
+                                 SolutionFilter = ViewData["SolutionFilter"], 
+                                 AuthorFilter = ViewData["AuthorFilter"], 
+                                 SortOrderNote = ViewData["SortOrderNote"] 
+                             })"
                        class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "overdue" ? "none" : "auto")">
                         Alarms Exceeding Estimated Processing Time
@@ -65,6 +83,8 @@
                             <form method="get"
                                   class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start"
                                   action="@Url.Action("Index", "Home")">
+                                <input type="hidden" name="tab" value="@Model.ActiveTab" />
+                                <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]?.ToString()" />
                                 <div class="d-flex ms-auto flex-wrap">
                                     <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
                                         <span>Filter</span>

@@ -74,6 +74,9 @@
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
                                 Host <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
                             </a>
@@ -83,6 +86,9 @@
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["ModelSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
                                 Model <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "model")"></i>
                             </a>
@@ -92,6 +98,9 @@
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
                                 Status <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
                             </a>
@@ -101,6 +110,9 @@
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
                                 Severity <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
                             </a>
@@ -110,6 +122,9 @@
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
                                 Alarm <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
                             </a>
@@ -119,6 +134,9 @@
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
                                 Date <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
                             </a>
