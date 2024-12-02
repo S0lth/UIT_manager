@@ -55,7 +55,7 @@
 
             <div class="form-group mb-0">
                 <select asp-for="@ViewData["IsSolution"]" name="IsSolution" class="form-select form-select-sm">
-                    <option value="" disabled selected>Note Type</option>
+                    <option value="" disabled selected>Type</option>
                     <option value="">All</option>
                     <option value="true">Solution</option>
                     <option value="false">Follow-up</option>
@@ -162,12 +162,13 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td class="px-3 py-2">
+                                <td class="px-3 py-2" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     <a asp-controller="Notes" asp-action="Details" asp-route-id="@item.Id"
-                                       class="text-primary text-decoration-none">
+                                       class="text-primary text-decoration-none text-truncate">
                                         @Html.DisplayFor(modelItem => item.Title)
                                     </a>
                                 </td>
+
                                 <td class="px-3 py-2">
                                     <a asp-controller="Machines" asp-action="Details" asp-route-id="@item.Machine.Id"
                                        class="text-primary text-decoration-none">
