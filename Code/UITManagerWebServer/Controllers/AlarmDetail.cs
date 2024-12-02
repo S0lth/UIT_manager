@@ -100,38 +100,7 @@ namespace UITManagerWebServer
             return View(alarm);
         }
 
-        
-        private async Task<List<NoteViewModel>> GetFilteredNotes(string solutionFilter, string authorFilter,
-            string sortOrderNote) {
-            var notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
-            
-            if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
-                bool isSolution = solutionFilter.ToLower() == "true";
-                notesQuery = notesQuery.Where(n => n.IsSolution == isSolution);
-            }
-
-            if (sortOrderNote == "ndate_desc") {
-                notesQuery = notesQuery.OrderByDescending(n => n.CreatedAt);
-            }
-            else {
-                notesQuery = notesQuery.OrderBy(n => n.CreatedAt);
-            }
-
-            var notes = await notesQuery.ToListAsync();
-
-            if (!string.IsNullOrEmpty(authorFilter)) {
-                notes = notes.Where(n => n.AuthorId == authorFilter).ToList();
-            }
-
-            return notes.Select(n => new NoteViewModel {
-                Author = n.Author != null ? n.Author.FirstName + " " + n.Author.LastName : "Unknown",
-                Id = n.Id,
-                Date = n.CreatedAt,
-                IsSolution = n.IsSolution,
-                Title = n.Title
-            }).ToList();
-        }
-
+   
         [HttpPost]
         [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
         [Route("AlarmDetail/UpdateStatus")]
@@ -157,11 +126,15 @@ namespace UITManagerWebServer
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
 
+            // Obtenir l'ID utilisateur
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Créer un nouvel historique d'alarme
             var newAlarmHistory = new AlarmStatusHistory
             {
                 StatusTypeId = statusType.Id,
                 ModificationDate = DateTime.UtcNow,
-                UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                UserId = userId // Peut être null
             };
 
             alarm.AlarmHistories.Add(newAlarmHistory);
@@ -172,7 +145,6 @@ namespace UITManagerWebServer
 
                 return Ok(new { success = true, message = "Status updated successfully." });
             }
-
             catch (Exception ex)
             {
                 // Log en cas d'exception

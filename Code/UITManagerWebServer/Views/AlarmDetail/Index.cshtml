@@ -85,6 +85,59 @@ _ => "bi bi-arrow-down-up",
                                 }
                                 else
                                 {
+                                    
+                                    if (@Model.GetLatestAlarmHistory()?.User.FirstName == null)
+                                    {
+                                        
+                                        <select id="AssignedUser" name="AssignedUser" style="max-width: 300px "class="form-select form-select-sm  @GetBGColorForAttribution(@Model.GetLatestAlarmHistory()?.UserId)">
+                                            @{
+                                                var isFirst = true; 
+
+                                            }
+                                            @foreach (var user in ViewData["user"] as List<UITManagerWebServer.Models.ApplicationUser>)
+                                            {
+
+                                                if (isFirst)
+                                                {
+                                                    <option onclick="updateAlarmAttribution('@Model.Id', '')" selected value="">Unattribued</option>
+                                                    isFirst = false;
+                                                }
+                                                else
+                                                {
+                                                    <option onclick="updateAlarmAttribution('@Model.Id', '@user.Id')" value="@user.Id">
+                                                        @user.FirstName @user.LastName
+                                                    </option>
+                                                }
+                                            }
+                                        </select>
+
+                                    }
+                                    else
+                                    {   
+                                        <select id="AssignedUser" name="AssignedUser" style="max-width: 300px "class="form-select form-select-sm  @GetBGColorForAttribution(@Model.GetLatestAlarmHistory()?.UserId)">
+                                    @foreach (var user in ViewData["user"] as List<UITManagerWebServer.Models.ApplicationUser>)
+                                    {
+                                    var isSelected = user.Id == Model.GetLatestAlarmHistory().User?.Id;
+
+                                    if (isSelected)
+                                    {
+                                    <option onclick="updateAlarmAttribution('@Model.Id', '@user.Id')" value="@user.Id" selected>
+                                        @user.FirstName @user.LastName
+                                    </option>
+                                    }
+                                    else
+                                    {
+                                    <option onclick="updateAlarmAttribution('@Model.Id', '@user.Id')" value="@user.Id">
+                                        @user.FirstName @user.LastName
+                                    </option>
+                                    }
+
+                                    }
+
+                                        </select>
+                                    }
+                                    
+
                                 }
                             </div>
 
