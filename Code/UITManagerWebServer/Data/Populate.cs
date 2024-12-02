@@ -300,7 +300,7 @@ public static class Populate {
         };
 
         var directX = new[] { "Direct X 12", "Direct X 11", "Direct X 10" };
-        var Os = new[] { "Microsoft Windows 10 Entreprise", "Microsoft Windows 11 Entreprise" };
+        var Os = new[] { "Microsoft Windows 10 Enterprise", "Microsoft Windows 11 Enterprise" };
         var OsV = new[] { "23h2", "24h2", "22h2", };
         var OsB = new[] { "22631", "26100", "19045" };
 
@@ -574,7 +574,6 @@ public static class Populate {
                             });
                     }
 
-
                     alarms.Add(alarm);
                 }
             }
@@ -624,24 +623,17 @@ public static class Populate {
             return fileNames;
         }
 
-        void AddFilesToNote(Note note, List<string> imageFileNames)
-        {
+        void AddFilesToNote(Note note, List<string> imageFileNames) {
             var files = new List<UITManagerWebServer.Models.File>();
 
-            foreach (var fileName in imageFileNames)
-            {
+            foreach (var fileName in imageFileNames) {
                 var filePath = Path.Combine("Images", fileName);
-                if (System.IO.File.Exists(filePath))
-                {
+                if (System.IO.File.Exists(filePath)) {
                     var fileContent = System.IO.File.ReadAllBytes(filePath);
-                    var mimeType = "image/jpg"; 
+                    var mimeType = "image/jpg";
 
-                    var file = new UITManagerWebServer.Models.File 
-                    {
-                        FileName = fileName,
-                        FileContent = fileContent,
-                        MimeType = mimeType,
-                        NoteId = note.Id
+                    var file = new UITManagerWebServer.Models.File {
+                        FileName = fileName, FileContent = fileContent, MimeType = mimeType, NoteId = note.Id
                     };
 
                     files.Add(file);
@@ -650,9 +642,6 @@ public static class Populate {
 
             note.Files = files;
         }
-
-
-
 
         for (int i = 0; i < 3; i++) {
             var note = new Note {
@@ -699,7 +688,6 @@ public static class Populate {
         catch (Exception ex) {
             Console.WriteLine($"Error saving notes: {ex.Message}");
         }
-
 
         Console.WriteLine(
             $"Database populated with {machines.Count} machines, {alarms.Count} alarms, and {notes.Count} notes.");
