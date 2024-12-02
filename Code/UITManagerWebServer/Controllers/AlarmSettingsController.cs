@@ -210,7 +210,23 @@ namespace UITManagerWebServer.Controllers {
                 });
 
             for (int i = 0; i < model.Norms.Count; i++) {
-                normGroup.Norms[i].Name = model.Norms[i].Name;
+                try {
+                    normGroup.Norms[i].Name = model.Norms[i].Name;
+                    normGroup.Norms[i].Value = model.Norms[i].Value;
+                    normGroup.Norms[i].InformationNameId = model.Norms[i].InformationNameId;
+                    normGroup.Norms[i].Condition = model.Norms[i].Condition;
+                    normGroup.Norms[i].Format = model.Norms[i].Format;
+                }
+                catch (Exception e) {
+                    normGroup.Norms.Add(new Norm {
+                        Name = model.Norms[i].Name,
+                        Value = model.Norms[i].Value,
+                        InformationNameId = model.Norms[i].InformationNameId,
+                        Condition = model.Norms[i].Condition,
+                        Format = model.Norms[i].Format,
+                    });
+                }
+                
             }
             foreach (var n in model.Norms) {
                 Console.WriteLine(n.Name);
@@ -223,8 +239,6 @@ namespace UITManagerWebServer.Controllers {
 
             return RedirectToAction("Details", new { id = model.Id });
         }
-
-       
 
         
         [HttpPost]
@@ -272,6 +286,7 @@ namespace UITManagerWebServer.Controllers {
             public int Priority { get; set; }
             public TimeSpan MaxExpectedProcessingTime { get; set; }
             public bool IsEnable { get; set; }
+            
             public List<Severity> Severities { get; set; } = new();
             public List<Norm> Norms { get; set; } = new();
             public List<SeverityHistory> SeverityHistories { get; set; } = new();

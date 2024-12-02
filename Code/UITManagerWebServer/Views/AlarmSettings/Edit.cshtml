@@ -3,11 +3,20 @@
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    List<string> possibleCondition = new List<string>
+    {
+        ">", "<", "=", "!=", "IN", "NOT IN"
+    };
+    List<string> formats = new List<string>
+    {
+        "GB", "%", "TEXT"
+    };
+    int i = 0;
 }
 
 <div class="container">
-    <h1 class="text-center">Edit Norm Group</h1>
-
+    <h1 class="">Edit Criteria</h1>
+<div class="card shadow-sm border-0 rounded p-3">
     <div class="table-responsive">
         <form method="post" asp-action="Edit">
             <table class="table table-hover table-striped align-middle">
@@ -42,7 +51,7 @@
                         </button>
                     </th>
                     <th>
-                        Status
+                        Enable
                         <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                 data-bs-target="#enabledModal">
                             <i class="bi bi-info-circle"></i>
@@ -90,14 +99,14 @@
                     </button>
                 </td>
                 </tbody>
-                <tfooter>
-
-
-                </tfooter>
             </table>
             
+            
+            <div class="p-2">
+                <h3>Criteria group</h3>
+            </div>
             <div class="d-flex justify-content-center">
-                <div class="table-responsive table-sm ms-2 w-75 d-flex">
+                <div class="table-responsive table-sm ms-2 w-100 d-flex">
                     <table class="table table-hover table-striped align-middle table-light">
                         <thead>
                         <tr>
@@ -116,42 +125,185 @@
                             <th>
                                 Format
                             </th>
+
+                            <th>
+
+                            </th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr>
-                            <td>a</td>
-                            <td>b</td>
-                            <td>c</td>
-                            <td>c</td>
-                            <td>c</td>
+                        <tbody id="table-norm">
+                        @for (i = 0; i < Model.Norms.Count; i++)
+                        {
+                            <tr id="table-row-norm">
+                                <td>
+                                    <input class="form-control" type="text" name="Norms[@i].Name" value="@Model.Norms[i].Name" required/>
+                                </td>
+                                <td>
+                                    <select class="form-select" name="Norms[@i].InformationNameId">
+                                        @foreach (var information in Model.Informations)
+                                        {
+                                            if (Equals(information.Name, Model.Norms[i].InformationName.Name))
+                                            {
+                                                <option selected value="@information.Id">@information.Name</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@information.Id">@information.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-select" name="Norms[@i].Condition">
+                                        @foreach (var condition in possibleCondition)
+                                        {
+                                            if (Equals(condition, Model.Norms[i].Condition))
+                                            {
+                                                <option value="@condition" selected>@condition</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@condition">@condition</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input class="form-control" type="text" name="Norms[@i].Value" value="@Model.Norms[i].Value" required/>
+                                </td>
+                                <td>
+                                    <select class="form-select" name="Norms[@i].Format">
+                                        @foreach (var format in formats)
+                                        {
+                                            if (Equals(format, Model.Norms[i].Format))
+                                            {
+                                                <option selected value="@format">@format</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@format">@format</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-link"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteNormModal"
+                                            data-norm-id="@Model.Norms[i].Id">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        <tr id="rowTemplate" style="display: none">
+                            <td><input class="form-control" type="text" name="Norms[{{index}}].Name"/></td>
+                            <td>
+                                <select class="form-select" name="Norms[{{index}}].InformationNameId">
+                                    @foreach (var information in Model.Informations)
+                                    {
+                                        <option value="@information.Id">@information.Name</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select" name="Norms[{{index}}].Condition">
+                                    @foreach (var condition in possibleCondition)
+                                    {
+                                        <option value="@condition">@condition</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" name="Norms[{{index}}].Value"/>
+                            </td>
+                            <td>
+                                <select class="form-select" name="Norms[{{index}}].Format">
+                                    @foreach (var format in formats)
+                                    {
+                                        <option value="@format">@format</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-link" onclick="deleteLine(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
                         </tr>
+
                         </tbody>
+                        <tfoot>
+                        <tr>
+
+                            <td colspan="6" class="align-content-end">
+                                <!--<div class="d-flex w-100 justify-content-end">
+                                    <a class="btn btn-primary" onclick="addRow()" style="cursor: pointer"> Add</a>
+                                </div>-->
+                                
+                                <div class="d-flex w-100 justify-content-start">
+                                    <a class="link-primary" onclick="addRow()" style="cursor: pointer"> Add</a>
+                                </div>
+                            </td>
+                        </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
-            <button type="submit" class="btn btn-success">Save Changes</button>
+            <div class="d-flex justify-content-end">
+                
+                <button type="button" class="btn btn-danger m-3"
+                        data-bs-toggle="modal"
+                        data-bs-target="#discardModal">Discard</button>
+                <button type="submit" class="btn btn-success m-3">Save Changes</button>
+            </div>
         </form>
     </div>
-
-    @for (int i = 0; i < Model.Norms.Count; i++)
-    {
-        <div class="form-group">
-            <label for="Norm_@Model.Norms[i].Id">Norm Name (ID: @Model.Norms[i].Id)</label>
-            <input type="text" name="Norms[@i].Name" id="Norm_@Model.Norms[i].Id" value="@Model.Norms[i].Name" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            <label for="Norm_@Model.Norms[i].Value">Norm Value</label>
-            <input type="text" name="Norms[@i].Value" id="Norm_@Model.Norms[i].Value" value="@Model.Norms[i].Value" class="form-control" />
-        </div>
-            
-        <div class="form-group">
-            <label for="Norm_@Model.Norms[i].InformationName">InformationName</label>
-            <input type="text" name="Norms[@i].Value" id="Norm_@Model.Norms[i].Value" value="@Model.Norms[i].Value" class="form-control" />
-        </div>
-    }
 </div>
+</div>
+<script>
+    
+    const deleteButtons = document.querySelectorAll('[data-bs-target="#deleteNormModal"]');
+    
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-norm-id');
+            document.getElementById('normIdToDelete').value = id;
+        });
+    });
+    let rowIndex = @Model.Norms.Count; 
+
+    function addRow() {
+        let templateRow = document.getElementById("rowTemplate").innerHTML;
+        let newRow = templateRow.replace(/{{index}}/g, rowIndex);
+        document.getElementById("table-norm").insertAdjacentHTML('beforeend', newRow);
+        rowIndex++;
+    }
+    
+    function deleteLine(button) {
+        var row = button.closest("tr");
+        row.remove();
+        updateRowIndices();
+        rowIndex--;
+    }
+    
+    function updateRowIndices() {
+    let rows = document.querySelectorAll('#table-norm tr:not(#rowTemplate)');
+    
+    rows.forEach((row, newIndex) => {
+        let inputs = row.querySelectorAll('input, select');
+        
+        inputs.forEach(input => {
+            let name = input.name;
+            if (name) {
+                input.name = input.name.replace(/\[\d+\]/, `[${newIndex}]`);
+            }
+        });
+    });
+}
+</script>
+
+
 <div class="modal fade" id="deleteNormGroupModal" tabindex="-1" aria-labelledby="deleteNormGroupModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -164,6 +316,48 @@
                 </div>
                 <div class="modal-body">
                     <p>Are you sure you want to delete this NormGroup?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteNormModal" tabindex="-1" aria-labelledby="deleteNormModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" asp-action="DeleteNorm">
+                <input type="hidden" name="normId" id="normIdToDelete" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteNormModalLabel">Delete Norm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this Norm? This action is irreversible.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="discardModal" tabindex="-1" aria-labelledby="discardModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="get" asp-action="Details">
+                <input type="hidden" name="id" value="@Model.Id"/>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="discardModalLabel">Exit without save?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
