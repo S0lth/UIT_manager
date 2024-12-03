@@ -77,7 +77,7 @@ namespace UITManagerWebServer
             
             var information = await getMachineInformation(id);
             var authors = ViewBag.Authors = await _context.Users.ToListAsync();
-            var detailView = new DetailsViewModel {
+            var detailView = new InnerDetailsViewModel {
                 Id = machine.Id,
                 Name = machine.Name, 
                 LastSeen = machine.LastSeen, 
@@ -379,20 +379,20 @@ namespace UITManagerWebServer
         
         
         
-                private async Task<List<ComponentsViewModel>> getMachineInformation(int? id) {
+                private async Task<List<InnerComponentsViewModel>> getMachineInformation(int? id) {
             var list = _context.Components.Where(a => a.MachinesId == id).AsQueryable();
-            var result = new List<ComponentsViewModel>();
+            var result = new List<InnerComponentsViewModel>();
 
             // Parcourir la liste pour trouver les éléments sans parent (racines)
             var rootElements = await list.Where(e => e.ParentId == null).ToListAsync();
             var model = rootElements.Select(
-                a => new ComponentsViewModel {
+                a => new InnerComponentsViewModel {
                 MachineId = a.Machine.Id,
                 ParentId = a.ParentId,
                 Name = a.Name,
                 id = a.Id,
                 Value = a.Values,
-                Children = new List<ComponentsViewModel>()
+                Children = new List<InnerComponentsViewModel>()
             }).ToList();
 
             foreach (var root in model)
@@ -404,29 +404,29 @@ namespace UITManagerWebServer
             return result;
         }
         
-        private async Task<ComponentsViewModel> BuildHierarchy(ComponentsViewModel parent, List<Informations> list)
+        private async Task<InnerComponentsViewModel> BuildHierarchy(InnerComponentsViewModel parent, List<Informations> list)
         {
             var children = list.Where(e => e.ParentId == parent.id).ToList();
 
-            var parentViewModel = new ComponentsViewModel
+            var parentViewModel = new InnerComponentsViewModel
             {
                 MachineId = parent.MachineId,
                 ParentId = parent.ParentId,
                 id = parent.id,
                 Name = parent.Name,
                 Value = parent.Value,
-                Children = new List<ComponentsViewModel>()
+                Children = new List<InnerComponentsViewModel>()
             };
 
             // Ajouter les enfants comme sous-éléments
             foreach (var child in children) {
-                var info = new ComponentsViewModel {
+                var info = new InnerComponentsViewModel {
                     MachineId = child.Machine.Id,
                     ParentId = child.ParentId,
                     Name = child.Name,
                     id = child.Id,
                     Value = child.Values,
-                    Children = new List<ComponentsViewModel>()
+                    Children = new List<InnerComponentsViewModel>()
                 };
                 var childHierarchy = await BuildHierarchy(info, list);
                 parentViewModel.Children.Add(childHierarchy);
@@ -444,7 +444,7 @@ namespace UITManagerWebServer
     
     
     
-    public class AlarmViewModel {
+    public class InnerAlarmViewModel {
         public int MachineId { get; set; }
         public int AlarmId { get; set; }
         public string Status { get; set; }
@@ -454,7 +454,7 @@ namespace UITManagerWebServer
     }
 
     // ViewModel pour les notes
-    public class NoteViewModel {
+    public class InnerNoteViewModel {
         public string Author { get; set; }
         public int MachineId { get; set; }
         public int Id { get; set; }
@@ -464,20 +464,20 @@ namespace UITManagerWebServer
     }
 
     // viewModel pour les information d'une machine
-    public class ComponentsViewModel {
+    public class InnerComponentsViewModel {
         public int MachineId { get; set; }
         public int? ParentId { get; set; }
         public int id { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
-        public List<ComponentsViewModel> Children { get; set; }
+        public List<InnerComponentsViewModel> Children { get; set; }
     }
 
-    public class DetailsViewModel {
+    public class InnerDetailsViewModel {
         public int? Id { get; set; }
-        public List<AlarmViewModel> Alarms { get; set; }
-        public List<NoteViewModel> Notes { get; set; }
-        public List<ComponentsViewModel> Informations { get; set; }
+        public List<InnerAlarmViewModel> Alarms { get; set; }
+        public List<InnerNoteViewModel> Notes { get; set; }
+        public List<InnerComponentsViewModel> Informations { get; set; }
         public List<ApplicationUser> Authors { get; set; }
         public string Model { get; set; }
         public string Name { get; set; }
