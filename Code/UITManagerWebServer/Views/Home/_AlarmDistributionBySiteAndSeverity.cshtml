@@ -31,14 +31,27 @@
             @if (Model != null && Model.Count > 0)
             {
                 var sortedSiteEntries = Model.OrderBy(site => site.Key).ToList();
+                var severityList = Model.Values
+                    .SelectMany(d => d.Keys)
+                    .Distinct()
+                    .ToList();
 
                 foreach (var siteEntry in sortedSiteEntries)
                 {
                     <tr>
                         <td>@siteEntry.Key</td>
-                        @foreach (var severity in siteEntry.Value)
+                        @foreach (var severity in severityList)
                         {
-                            <td>@string.Format("{0:0.00}", severity.Value)%</td>
+                            <td>
+                                @if (!siteEntry.Value.ContainsKey(severity))
+                                {
+                                    <span>/</span>
+                                }
+                                else
+                                {
+                                    @string.Format("{0:0.00} %", siteEntry.Value[severity])
+                                }
+                            </td>
                         }
                     </tr>
                 }
@@ -46,7 +59,7 @@
             else
             {
                 <tr>
-                    <td colspan="6">Aucune donnée disponible</td>
+                    <td colspan="6">No data available</td>
                 </tr>
             }
             </tbody>

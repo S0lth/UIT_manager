@@ -15,24 +15,49 @@
 
             <ul class="nav nav-tabs" id="alarmTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new { tab = "unprocessed", sortOrder = ViewData["SortOrder"] })"
-                       class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Home", new
+                             {
+                                 tab = "unprocessed",
+                                 sortOrder = ViewData["SortOrder"],
+                                 SolutionFilter = ViewData["SolutionFilter"],
+                                 AuthorFilter = ViewData["AuthorFilter"],
+                                 SortOrderNote = ViewData["SortOrderNote"]
+                             })"
+                       class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "unprocessed" ? "none" : "auto")">
                         Unprocessed Alarms
                     </a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new { tab = "newest", sortOrder = ViewData["SortOrder"] })"
-                       class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Home", new
+                             {
+                                 tab = "newest",
+                                 sortOrder = ViewData["SortOrder"],
+                                 SolutionFilter = ViewData["SolutionFilter"],
+                                 AuthorFilter = ViewData["AuthorFilter"],
+                                 SortOrderNote = ViewData["SortOrderNote"]
+                             })"
+                       class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "newest" ? "none" : "auto")">
                         Newest Alarms
                     </a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new { tab = "overdue", sortOrder = ViewData["SortOrder"] })"
-                       class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")">
+                    <a href="@Url.Action("Index", "Home", new
+                             {
+                                 tab = "overdue",
+                                 sortOrder = ViewData["SortOrder"],
+                                 SolutionFilter = ViewData["SolutionFilter"],
+                                 AuthorFilter = ViewData["AuthorFilter"],
+                                 SortOrderNote = ViewData["SortOrderNote"]
+                             })"
+                       class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "overdue" ? "none" : "auto")">
                         Alarms Exceeding Estimated Processing Time
                     </a>
                 </li>
             </ul>
+
             <div id="alarmTabsContent">
                 @await Html.PartialAsync("_AlarmsList", Model.Alarms, ViewData)
             </div>
@@ -52,34 +77,42 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title mb-4 d-flex justify-content-between align-items-center">
-                            <span>Notes</span>
+                            <span>Notes
                             <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                     data-bs-target="#notesModal">
                                 <i class="bi bi-info-circle"></i>
                             </button>
+                            </span>
                             <form method="get"
                                   class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start"
                                   action="@Url.Action("Index", "Home")">
+                                <input type="hidden" name="tab" value="@Model.ActiveTab"/>
+                                <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]?.ToString()"/>
                                 <div class="d-flex ms-auto flex-wrap">
                                     <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
                                         <span>Filter</span>
                                         <span class="ms-1">by</span>
                                     </div>
+
+                                    <!-- Solution Filter Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
-                                                class="form-control form-control-sm">
-                                            <option value="" disabled selected>Note Type</option>
-                                            <option value="all">All</option>
+                                                class="form-select form-select-sm"
+                                                style="display: inline-block; min-width: 120px;">
+                                            <option value="" disabled selected>Type</option>
+                                            <option value="">All</option>
                                             <option value="true">Solution</option>
                                             <option value="false">Follow-up</option>
                                         </select>
                                     </div>
 
+                                    <!-- Author Filter Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter"
-                                                class="form-control form-control-sm">
+                                                class="form-select form-select-sm"
+                                                style="display: inline-block; min-width: 120px;">
                                             <option value="" disabled selected>Author</option>
-                                            <option value="all">All Authors</option>
+                                            <option value="">All Authors</option>
                                             @foreach (var author in ViewBag.Authors)
                                             {
                                                 <option value="@author.Id">
@@ -89,9 +122,11 @@
                                         </select>
                                     </div>
 
+                                    <!-- Sort Order Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["SortOrderNote"]" name="SortOrderNote"
-                                                class="form-control form-control-sm">
+                                                class="form-select form-select-sm"
+                                                style="display: inline-block; min-width: 120px;">
                                             <option value="" disabled selected>Date</option>
                                             <option value="ndate">Newest First</option>
                                             <option value="ndate_desc">Oldest First</option>
@@ -100,10 +135,13 @@
 
                                     <div class="d-flex gap-2">
                                         <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                        <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm">Reset</a>
+                                        <button href="@Url.Action("Index")"
+                                                class="btn btn-secondary btn-sm text-center">Reset
+                                        </button>
                                     </div>
                                 </div>
                             </form>
+
                         </h5>
                         @await Html.PartialAsync("_NotesList", Model.Notes, ViewData)
                     </div>
