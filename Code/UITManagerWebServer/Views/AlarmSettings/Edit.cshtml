@@ -12,8 +12,12 @@
         "GB", "%", "TEXT"
     };
     int i = 0;
+    var error = TempData["Error"];
 }
-
+@if (error != null)
+{
+    <div class="alert alert-danger">@error</div>
+}
 <div class="container">
     <h1 class="">Edit Criteria</h1>
 <div class="card shadow-sm border-0 rounded p-3">
@@ -65,7 +69,7 @@
                 <tbody>
                 <tr>
                 <td>
-                    <input type="text" class="form-control" name="NormGroupName" value="@Model.NormGroupName"/>
+                    <input type="text" class="form-control" name="NormGroupName" value="@Model.NormGroupName" required/>
                 </td>
                 <td>
                     <input type="text" class="form-control" name="MaxExpectedProcessingTime" value="@Model.MaxExpectedProcessingTime"/>
@@ -89,7 +93,9 @@
                     </select>
                 </td>
                 <td>
-                    <input type="checkbox" value="true" name="isEnable" @(Model.IsEnable? "checked":"")/>
+                    <div class="d-flex w-100 justify-content-center">
+                        <input type="checkbox" value="true" name="isEnable" @(Model.IsEnable ? "checked" : "")/>
+                    </div>
                 </td>
                 <td>
                     <button type="button" class="btn btn-link" 
@@ -112,18 +118,38 @@
                         <tr>
                             <th>
                                 Name
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#nameNormModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
                             <th>
                                 Concerned Information
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#typeModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
                             <th>
                                 Condition
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#conditionModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
                             <th>
                                 Value
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#valueModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
                             <th>
                                 Format
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#formatModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
 
                             <th>
@@ -142,13 +168,23 @@
                                     <select class="form-select" name="Norms[@i].InformationNameId">
                                         @foreach (var information in Model.Informations)
                                         {
-                                            if (Equals(information.Name, Model.Norms[i].InformationName.Name))
+                                            if (information.SubInformationNames.Any())
                                             {
-                                                <option selected value="@information.Id">@information.Name</option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@information.Id">@information.Name</option>
+                                                <optgroup label="@information.Name">
+                                                    @foreach (var subinfo in information.SubInformationNames)
+                                                    {
+                                                        if (Model.Norms[i].InformationName.SubInformationNames != null &&
+                                                            Equals(Model.Norms[i].InformationName.Name, subinfo.Name))
+                                                        {
+                                                            <option selected value="@subinfo.Id">@subinfo.Name</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@subinfo.Id">@subinfo.Name</option>
+                                                        }
+                                                    }
+                                                </optgroup>
+                                                
                                             }
                                         }
                                     </select>
@@ -201,9 +237,17 @@
                             <td>
                                 <select class="form-select" name="Norms[{{index}}].InformationNameId">
                                     @foreach (var information in Model.Informations)
-                                    {
-                                        <option value="@information.Id">@information.Name</option>
-                                    }
+                                        {
+                                            if (information.SubInformationNames.Any())
+                                            {
+                                                <optgroup label="@information.Name">
+                                                    @foreach (var subinfo in information.SubInformationNames)
+                                                    {
+                                                        <option value="@subinfo.Id">@subinfo.Name</option>
+                                                    }
+                                                </optgroup>
+                                            }
+                                        }
                                 </select>
                             </td>
                             <td>
@@ -237,12 +281,10 @@
                         <tr>
 
                             <td colspan="6" class="align-content-end">
-                                <!--<div class="d-flex w-100 justify-content-end">
-                                    <a class="btn btn-primary" onclick="addRow()" style="cursor: pointer"> Add</a>
-                                </div>-->
-                                
                                 <div class="d-flex w-100 justify-content-start">
-                                    <a class="link-primary" onclick="addRow()" style="cursor: pointer"> Add</a>
+                                    <a class="link-primary" onclick="addRow()" style="cursor: pointer">
+                                         <i class="bi bi-plus-circle"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -252,9 +294,9 @@
             </div>
             <div class="d-flex justify-content-end">
                 
-                <button type="button" class="btn btn-danger m-3"
+                <button type="button" class="btn btn-secondary m-3"
                         data-bs-toggle="modal"
-                        data-bs-target="#discardModal">Discard</button>
+                        data-bs-target="#discardModal">Cancel</button>
                 <button type="submit" class="btn btn-success m-3">Save Changes</button>
             </div>
         </form>
@@ -319,7 +361,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                    <input type="submit" class="btn btn-success" value="Yes"/>
                 </div>
             </form>
         </div>
@@ -341,7 +383,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                    <input type="submit" class="btn btn-success" value="Yes"/>
                 </div>
             </form>
         </div>
@@ -361,9 +403,14 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                    <input type="submit" class="btn btn-success" value="Yes"/>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+
+
+
+@(await Html.PartialAsync("_Modals"))

@@ -85,14 +85,12 @@
                     </select>
                 </td>
                 <td>
-                    <input type="checkbox" value="true" checked name="isEnable"/>
+                    <div class="d-flex w-100 justify-content-center">
+                        <input type="checkbox" value="true" checked name="isEnable"/>
+                    </div>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-link" 
-                            data-bs-toggle="modal"
-                            data-bs-target="#deleteNormGroupModal">
-                        <i class="bi bi-trash"></i>
-                    </button>
+                    
                 </td>
                 </tbody>
             </table>
@@ -129,12 +127,23 @@
                         </thead>
                         <tbody id="table-norm">
                         <tr id="rowTemplate" style="display: none">
-                            <td><input class="form-control" type="text" name="Norms[{{index}}].Name"/></td>
+                            <td>
+                                <input class="form-control" type="text" name="Norms[{{index}}].Name"/>
+                            </td>
                             <td>
                                 <select class="form-select" name="Norms[{{index}}].InformationNameId">
                                     @foreach (var information in informations)
                                     {
-                                        <option value="@information.Id">@information.Name</option>
+                                        if (information.SubInformationNames.Any())
+                                        {
+                                            <optgroup label="@information.Name">
+                                                @foreach (var subinfo in information.SubInformationNames)
+                                                {
+                                                    <option value="@subinfo.Id">@subinfo.Name</option>
+                                                }
+                                            </optgroup>
+                                                
+                                        }
                                     }
                                 </select>
                             </td>
@@ -169,12 +178,11 @@
                         <tr>
 
                             <td colspan="6" class="align-content-end">
-                                <!--<div class="d-flex w-100 justify-content-end">
-                                    <a class="btn btn-primary" onclick="addRow()" style="cursor: pointer"> Add</a>
-                                </div>-->
                                 
                                 <div class="d-flex w-100 justify-content-start">
-                                    <a class="link-primary" onclick="addRow()" style="cursor: pointer"> Add</a>
+                                    <a class="link-primary" onclick="addRow()" style="cursor: pointer">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -214,6 +222,9 @@
     
     function deleteLine(button) {
         var row = button.closest("tr");
+        for (var elem in row) {
+            elem.remove();
+        }
         row.remove();
         updateRowIndices();
         rowIndex--;

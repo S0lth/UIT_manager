@@ -90,9 +90,12 @@ namespace UITManagerWebServer.Data {
                 .WithOne(c => c.Machine)
                 .HasForeignKey(c => c.MachinesId)
                 .OnDelete(DeleteBehavior.Restrict);
-            
+
             builder.Entity<InformationName>()
-                .HasKey(inf => inf.Id);
+                .HasMany(m => m.SubInformationNames)
+                .WithOne()
+                .HasForeignKey("ParentId")
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Norm>()
                 .HasOne(n => n.InformationName)

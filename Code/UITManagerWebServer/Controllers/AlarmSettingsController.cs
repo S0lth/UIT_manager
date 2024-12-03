@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
@@ -112,13 +113,9 @@ namespace UITManagerWebServer.Controllers {
                 .Include(ng => ng.Norms)
                 .Include(ng => ng.SeverityHistories)
                 .FirstOrDefaultAsync(ng => ng.Id == id);
-            
-            if(normGroup == null) return NotFound();
-            
             ViewData["Severities"] = await _context
-                .Severities
-                .ToListAsync();;
-            
+                            .Severities
+                            .ToListAsync();;
             ViewData["Info"] = await _context
                 .InformationNames
                 .ToListAsync();
@@ -127,7 +124,23 @@ namespace UITManagerWebServer.Controllers {
                 .SeverityHistories
                 .Where(s => s.IdNormGroup == id)
                 .ToListAsync();
-            
+
+            var histories = new List<object>();
+
+            foreach (var history in normGroup.SeverityHistories) {
+                var user = await _userManager.FindByIdAsync(history.UserId);
+                if (user != null) {
+                    histories.Add(new {
+                        UserFirstName = user.FirstName,
+                        UserLastName = user.LastName,
+                        SeverityName = history.Severity.Name,
+                        DateUpdate = history.UpdateDate
+                    });
+                }
+            }
+
+            if (normGroup == null) return NotFound();
+            ViewData["History"] = histories;
             return View(normGroup);
         }
         
@@ -143,7 +156,7 @@ namespace UITManagerWebServer.Controllers {
                 }
             }
 
-            return RedirectToAction("Details", new { id = id });
+            return RedirectToAction("Edit", new { id = id });
         }
 
 
@@ -161,11 +174,11 @@ namespace UITManagerWebServer.Controllers {
 
             var latestSeverityHistory = normGroup.GetLatestSeverityHistory();
             var idSeverity = latestSeverityHistory.IdSeverity;
-
             var norms = normGroup.Norms;
             var severityHistories = normGroup.SeverityHistories;
-
-            var informationNames = await _context.InformationNames.ToListAsync();
+            var informationNames = await _context.InformationNames
+                .Include(ng => ng.SubInformationNames)
+                .ToListAsync();
             var severities = await _context.Severities.ToListAsync();
 
             var normgroupmodel = new NormGroupModel {
@@ -187,7 +200,7 @@ namespace UITManagerWebServer.Controllers {
         [HttpPost]
         public async Task<IActionResult> Edit(NormGroupModel model)
         {
-            var normGroup = await _context.NormGroups
+            NormGroup normGroup = await _context.NormGroups
                 .Include(ng => ng.Norms)
                 .Include(ng => ng.SeverityHistories)
                 .FirstOrDefaultAsync(c => c.Id == model.Id);
@@ -196,48 +209,64 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound();
             }
             ApplicationUser user = await _userManager.GetUserAsync(User);
-            
+            bool hasErrors = false;   
             normGroup.Name = model.NormGroupName;
             normGroup.MaxExpectedProcessingTime = model.MaxExpectedProcessingTime;
             normGroup.Priority = model.Priority;
             normGroup.IsEnable = model.IsEnable;
-            normGroup.SeverityHistories.Add(
-                new SeverityHistory {
-                    IdNormGroup = normGroup.Id,
-                    IdSeverity = model.IdSeverity,
-                    UpdateDate = DateTime.UtcNow,
-                    UserId = user.Id,
-                });
+            
+            if(model.IdSeverity != normGroup.GetLatestSeverityHistory().IdSeverity)
+            {
+                normGroup.SeverityHistories.Add(
+                    new SeverityHistory {
+                        IdNormGroup = normGroup.Id,
+                        IdSeverity = model.IdSeverity,
+                        UpdateDate = DateTime.UtcNow,
+                        UserId = user.Id,
+                    });
+            }
+
+            if (model.Norms.Count == 0) {
+                TempData["Error"] = "You cannot have a criteria group without any norms";
+                return RedirectToAction("Edit", new { model = model });
+            }
 
             for (int i = 0; i < model.Norms.Count; i++) {
-                try {
-                    normGroup.Norms[i].Name = model.Norms[i].Name;
-                    normGroup.Norms[i].Value = model.Norms[i].Value;
-                    normGroup.Norms[i].InformationNameId = model.Norms[i].InformationNameId;
-                    normGroup.Norms[i].Condition = model.Norms[i].Condition;
-                    normGroup.Norms[i].Format = model.Norms[i].Format;
+                if (!string.IsNullOrEmpty(model.Norms[i].Name) && !string.IsNullOrEmpty(model.Norms[i].Value)) {
+                    try {
+                        normGroup.Norms[i].Name = model.Norms[i].Name;
+                        normGroup.Norms[i].Value = model.Norms[i].Value;
+                        normGroup.Norms[i].InformationNameId = model.Norms[i].InformationNameId;
+                        normGroup.Norms[i].Condition = model.Norms[i].Condition;
+                        normGroup.Norms[i].Format = model.Norms[i].Format;
+                    }
+                    catch (Exception e) {
+                        normGroup.Norms.Add(new Norm {
+                            Name = model.Norms[i].Name,
+                            Value = model.Norms[i].Value,
+                            InformationNameId = model.Norms[i].InformationNameId,
+                            Condition = model.Norms[i].Condition,
+                            Format = model.Norms[i].Format,
+                        });
+                    }
                 }
-                catch (Exception e) {
-                    normGroup.Norms.Add(new Norm {
-                        Name = model.Norms[i].Name,
-                        Value = model.Norms[i].Value,
-                        InformationNameId = model.Norms[i].InformationNameId,
-                        Condition = model.Norms[i].Condition,
-                        Format = model.Norms[i].Format,
-                    });
+                else
+                {
+                    TempData["Error"] = "Norm should have a name and a value";
+                    hasErrors = true;
                 }
-                
             }
-            foreach (var n in model.Norms) {
-                Console.WriteLine(n.Name);
-            }
+            
             var latestSeverityHistory = normGroup.GetLatestSeverityHistory();
             latestSeverityHistory.IdSeverity = model.IdSeverity;
             
             _context.Update(normGroup);
             await _context.SaveChangesAsync();
-
+            if (hasErrors) {
+                return RedirectToAction("Edit", new { model = model });
+            }
             return RedirectToAction("Details", new { id = model.Id });
+            
         }
 
         
@@ -258,7 +287,52 @@ namespace UITManagerWebServer.Controllers {
             return RedirectToAction(nameof(Index)); 
         }
 
+        public async Task<IActionResult> Create() {
+            ViewData["InformationsName"] = await _context
+                .InformationNames
+                .Include(n=>n.SubInformationNames)
+                .ToListAsync();
+            ViewData["SeveritiesName"] = await _context.Severities.ToListAsync();
+            return View();
+        }
+        
+        
+        [HttpPost]
+        public async Task<IActionResult> Create(NormGroupModel normGroupModel) {
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            
+            List<SeverityHistory> sh = new List<SeverityHistory> {
+                new SeverityHistory {
+                    IdSeverity = normGroupModel.IdSeverity,
+                    UserId = user.Id,
+                    UpdateDate = DateTime.UtcNow
+                }
+            };
 
+            List<Norm> norms = normGroupModel.Norms.FindAll(n => !string.IsNullOrEmpty(n.Name) && !string.IsNullOrEmpty(n.Value));
+            if (norms.Count == 0) {
+                return RedirectToAction("Index");
+            }
+            NormGroup toAddNormGroup = new NormGroup{
+                IsEnable = normGroupModel.IsEnable,
+                Name = normGroupModel.NormGroupName,
+                SeverityHistories = sh,
+                MaxExpectedProcessingTime = normGroupModel.MaxExpectedProcessingTime,
+                Priority = normGroupModel.Priority,
+                Norms = norms,
+            };
+            toAddNormGroup.SeverityHistories[0].IdNormGroup = toAddNormGroup.Id;
+            if(!string.IsNullOrEmpty(toAddNormGroup.Name))
+            {
+                _context.NormGroups.Add(toAddNormGroup);
+                await _context.SaveChangesAsync();
+            }
+            else {
+                TempData["Error"] = "You cannot have a criteria group without a name";
+                return View(normGroupModel);
+            }
+            return RedirectToAction("Index");
+        }
         private bool NormGroupExists(int id)
         {
             return _context.NormGroups.Any(e => e.Id == id);
@@ -278,6 +352,14 @@ namespace UITManagerWebServer.Controllers {
                 .FirstOrDefaultAsync();         
         }
 
+        public class SeverityHistoryModel {
+            public int Id { get; set; }
+            public Severity? Severity { get; set; }
+            public int SeverityId { get; set; }
+            public string UserId { get; set; }
+            public string UserName { get; set; }
+            public string UserFirstName { get; set; }
+        }
 
         public class NormGroupModel {
             public int Id { get; set; }
@@ -289,7 +371,7 @@ namespace UITManagerWebServer.Controllers {
             
             public List<Severity> Severities { get; set; } = new();
             public List<Norm> Norms { get; set; } = new();
-            public List<SeverityHistory> SeverityHistories { get; set; } = new();
+            public List<SeverityHistory>? SeverityHistories { get; set; } = new();
             public List<InformationName> Informations { get; set; } = new();
         }
 

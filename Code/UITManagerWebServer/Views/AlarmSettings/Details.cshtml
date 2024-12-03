@@ -2,14 +2,7 @@
 @{
     ViewData["Title"] = "Alarms Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    
-    /*
-     * retrouver et afficher les infos -> sous forme de texte
-     * add btn edit
-     * redirect to page Edit.cshtml
-     * Edit mm que la avant mais use model du controller
-     * quand refresh -> retour details alarme 
-     */
+    var histories = ViewData["History"] as List<object>;
 }
 
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
@@ -18,129 +11,184 @@
             <h1 class="h2 text-start fw-bold">@Model.Name?.ToUpper() - DETAILS</h1>
         </div>
     </div>
-    <div class="card shadow-sm border-0 rounded">
-        <div class="card-body">
-            <div class="table-responsive">
+<div class="card shadow-sm border-0 rounded">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>
+                        Name
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#nameModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Max Expected Processing Time
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#maxProcessingModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Priority
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#PriorityModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Severity
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#severityModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Status
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#enabledModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                            
+                    </th>
+                </tr>
+                </thead>
+                    
+                <tbody>
+                <tr>
+                    <td>
+                        @Model.Name
+                    </td>
+                        
+                    <td>
+                        @Model.MaxExpectedProcessingTime
+                    </td>
+                        
+                    <td>
+                        @Model.Priority
+                    </td>
+                        
+                    <td>
+                        @Model.GetLatestSeverityHistory().Severity.Name
+                    </td>
+                        
+                    <td class="@((Model.IsEnable) ? "text-success" : "text-danger")">
+                        @(@Model.IsEnable ? "Enabled" : "Disabled")
+                    </td>
+                        
+                    <td>
+                        <form method="get" asp-action="Edit" asp-route-id="@Model.Id">
+                            <input type="submit" class="btn btn-primary" value="Edit">
+                        </form>
+    
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <h3>Criteria Group</h3>
+            
+        <div class="d-flex justify-content-center">
+            <div class="table-responsive w-100">
                 <table class="table table-hover table-striped align-middle">
                     <thead class="table-light">
                     <tr>
                         <th>
                             Name
                             <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#nameModal">
+                                    data-bs-target="#nameNormModal">
                                 <i class="bi bi-info-circle"></i>
                             </button>
                         </th>
                         <th>
-                            Max Expected Processing Time
+                            Concerned Information
                             <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#maxProcessingModal">
+                                    data-bs-target="#typeModal">
                                 <i class="bi bi-info-circle"></i>
                             </button>
                         </th>
                         <th>
-                            Priority
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#PriorityModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </th>
-                        <th>
-                            Severity
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#severityModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </th>
-                        <th>
-                            Status
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#enabledModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </th>
-                        <th>
-                            
+                            Description
                         </th>
                     </tr>
                     </thead>
-                    
                     <tbody>
-                    <tr>
-                        <td>
-                            @Model.Name
-                        </td>
+                    @if (Model.Norms != null)
+                    {
                         
-                        <td>
-                            @Model.MaxExpectedProcessingTime
-                        </td>
-                        
-                        <td>
-                            @Model.Priority
-                        </td>
-                        
-                        <td>
-                            @Model.GetLatestSeverityHistory().Severity.Name
-                        </td>
-                        
-                        <td class="@((Model.IsEnable) ? "text-success" : "text-danger")">
-                            @(@Model.IsEnable ? "Enabled" : "Disabled")
-                        </td>
-                        
-                        <td>
-                            <form method="get" asp-action="Edit" asp-route-id="@Model.Id">
-                                <input type="submit" class="btn btn-primary" value="Edit">
-                            </form>
-    
-                        </td>
-                    </tr>
+                        @foreach (var norm in @Model.Norms)
+                        {
+                            <tr>
+                                <td>
+                                    @norm.Name
+                                </td>
+                                <td>
+                                    @norm.InformationName.Name
+                                </td>
+                                <td>
+                                    <span>Should be @norm.Condition @norm.Value @norm.Format</span>
+                                </td>
+                            </tr>
+                        }
+                    }
                     </tbody>
                 </table>
             </div>
-            <h3>Criteria Group</h3>
-            
-            <div class="d-flex justify-content-center">
-                <div class="table-responsive table-sm ms-2 w-75 d-flex">
-                    <table class="table table-hover table-striped align-middle">
-                        <thead>
+        </div>
+        <div class="d-flex justify-content-center flex-column">
+            <h3>Severities change</h3>
+            <div class="table-responsive w-100">
+                <table class="table table-hover table-striped align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>
+                            Severities
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                    data-bs-target="#severitiesModal">
+                                <i class="bi bi-info-circle"></i>
+                            </button>
+                        </th>
+                        <th>
+                            Date
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                    data-bs-target="#dateModal">
+                                <i class="bi bi-info-circle"></i>
+                            </button>
+                        </th>
+                        <th>
+                            User
+                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                    data-bs-target="#userModal">
+                                <i class="bi bi-info-circle"></i>
+                            </button>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var history in ((dynamic)histories))
+                    {
                         <tr>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Concerned Information
-                            </th>
-                            <th>
-                                Description
-                            </th>
+                            <td>
+                                @history.SeverityName
+                            </td>
+                            <td>
+                                @history.DateUpdate
+                            </td>
+                            <td>
+                                <p>@(history.UserFirstName) @(history.UserLastName)</p>
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        @if (Model.Norms != null)
-                        {
-                        
-                            @foreach (var norm in @Model.Norms)
-                            {
-                                <tr>
-                                    <td>
-                                        @norm.Name
-                                    </td>
-                                    <td>
-                                        @norm.InformationName.Name
-                                    </td>
-                                    <td>
-                                        <span>Should be @norm.Condition @norm.Value @norm.Format</span>
-                                    </td>
-                                </tr>
-                            }
-                        }
-
-                        </tbody>
-                    </table>
-                </div>
+                    }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 @(await Html.PartialAsync("_Modals"))

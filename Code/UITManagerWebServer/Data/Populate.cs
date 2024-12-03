@@ -196,52 +196,97 @@ public static class Populate {
         var domainNameName = new InformationName { Name = "Domain Name" };
         var tagServiceName = new InformationName { Name = "Tag Service" };
         var uptimeName = new InformationName { Name = "Uptime" };
-        var cpuName = new InformationName { Name = "CPU" };
-        var logicalCoreName = new InformationName { Name = "Logical Core" };
-        var coreCountName = new InformationName { Name = "Core Count" };
-        var clockSpeedName = new InformationName { Name = "Clock Speed" };
-        var modelName = new InformationName { Name = "Model" };
-        var ramName = new InformationName { Name = "Ram" };
-        var totalRamName = new InformationName { Name = "Total Ram" };
-        var usedRamName = new InformationName { Name = "Used Ram" };
-        var freeRamName = new InformationName { Name = "Free Ram" };
-        var osName = new InformationName { Name = "OS" };
-        var osNameName = new InformationName { Name = "OS Name" };
-        var osVersionName = new InformationName { Name = "OS Version" };
-        var osBuildName = new InformationName { Name = "OS Build" };
+        var cpuName = new InformationName {
+            Name = "CPU",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "Logical Core"},
+                new InformationName{Name = "Core Count"},
+                new InformationName{Name = "Clock Speed"},
+                new InformationName{Name = "Model"},
+                new InformationName{Name = "Used"},
+            }
+        };
+        
+        //var logicalCoreName = new InformationName { Name = "Logical Core" };
+        //var coreCountName = new InformationName { Name = "Core Count" };
+        //var clockSpeedName = new InformationName { Name = "Clock Speed" };
+        //var modelName = new InformationName { Name = "Model" };
+        var ramName = new InformationName {
+            Name = "Ram",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "Total RAM"},
+                new InformationName{Name = "Used RAM"},
+                new InformationName{Name = "Free RAM"},
+            }
+        };
+        //var totalRamName = new InformationName { Name = "Total Ram" };
+        //var usedRamName = new InformationName { Name = "Used Ram" };
+        //var freeRamName = new InformationName { Name = "Free Ram" };
+        
+        
+        var osName = new InformationName {
+            Name = "OS",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "OS Name"},
+                new InformationName{Name = "OS Version"},
+                new InformationName{Name = "OS Build"},
+            }
+        };
+        //var osNameName = new InformationName { Name = "OS Name" };
+        //var osVersionName = new InformationName { Name = "OS Version" };
+        //var osBuildName = new InformationName { Name = "OS Build" };
+        
         var ipName = new InformationName { Name = "IP Address" };
-        var IPsName = new InformationName { Name = "IPs" };
-        var freeSizeName = new InformationName { Name = "Disk Free Size" };
-        var totalSizeName = new InformationName { Name = "Disk Total Size" };
-        var disksName = new InformationName { Name = "Disks" };
-        var userScopeName = new InformationName { Name = "User Scope" };
-        var userNameName = new InformationName { Name = "User Name" };
-        var usersListName = new InformationName { Name = "Users List" };
-        var listDisksName = new InformationName { Name = "List Disks" };
-        var numberDisksName = new InformationName { Name = "Number Disks" };
-        var diskUsed = new InformationName { Name = "Disks Used Memory" };
+        //var IPsName = new InformationName { Name = "IPs" };
+        //var freeSizeName = new InformationName { Name = "Disk Free Size" };
+        //var totalSizeName = new InformationName { Name = "Disk Total Size" };
+        var disksName = new InformationName {
+            Name = "Disks",
+            SubInformationNames = new List<InformationName> {
+                new InformationName { Name = "Disk Free Size" },
+                new InformationName { Name = "Disk Total Size" },
+                new InformationName { Name = "Disk Used" },
+                new InformationName { Name = "List Name" },
+                new InformationName { Name="Number" }
+            }
+        };
+        var userName = new InformationName {
+            Name = "Users",
+            SubInformationNames = new List<InformationName> {
+                new InformationName { Name = "Name" },
+                new InformationName { Name = "Scope" },
+                new InformationName { Name = "List" },
+                new InformationName { Name = "Used Memory" },
+            }
+        };
+        //var userScopeName = new InformationName { Name = "User Scope" };
+        //var userNameName = new InformationName { Name = "User Name" };
+        //var usersListName = new InformationName { Name = "Users List" };
+        //var listDisksName = new InformationName { Name = "List Disks" };
+        //var numberDisksName = new InformationName { Name = "Number Disks" };
+        //var diskUsed = new InformationName { Name = "Disks Used Memory" };
 
         context.InformationNames.AddRange(
             directXName, domainNameName, tagServiceName, uptimeName,
-            cpuName, logicalCoreName, coreCountName, clockSpeedName,
-            modelName, ramName, totalRamName, usedRamName, freeRamName,
-            osName, osNameName, osVersionName, osBuildName, ipName, IPsName,
-            freeSizeName, totalSizeName, disksName, userScopeName, userNameName,
-            usersListName, listDisksName, numberDisksName, diskUsed
+            cpuName,/* logicalCoreName, coreCountName, clockSpeedName,
+            modelName,*/ ramName, /*totalRamName, usedRamName, freeRamName,*/
+            osName, /*osNameName, osVersionName, osBuildName,*/ ipName, /*IPsName,
+            freeSizeName, totalSizeName,*/ disksName/*, userScopeName, userNameName,
+            usersListName, listDisksName, numberDisksName, diskUsed*/
         );
         context.SaveChanges();
         var normGroups = new List<NormGroup> {
             new NormGroup {
                 Name = "Obsolete operating system",
                 Priority = 8,
-                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" , InformationName = osName, Condition = "IN", Format = "TEXT", Value = "WINDOWS 10"} },
+                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" , InformationName = osName.SubInformationNames[0], Condition = "IN", Format = "TEXT", Value = "WINDOWS 10"} },
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true
             },
             new NormGroup {
                 Name = "Storage exceeded",
                 Priority = 4,
-                Norms = new List<Norm> { new Norm { Name = "Storage over 80%", InformationName = diskUsed, Condition = ">", Format = "%", Value = "80" } },
+                Norms = new List<Norm> { new Norm { Name = "Storage over 80%", InformationName = disksName.SubInformationNames[2], Condition = ">", Format = "%", Value = "80" } },
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true
 
@@ -249,7 +294,7 @@ public static class Populate {
             new NormGroup {
                 Name = "CPU Usage High",
                 Priority = 2,
-                Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%", InformationName = cpuName, Condition = ">", Format = "%", Value = "90"} },
+                Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%", InformationName = cpuName.SubInformationNames[4], Condition = ">", Format = "%", Value = "90"} },
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true
 
@@ -257,7 +302,7 @@ public static class Populate {
             new NormGroup {
                 Name = "Memory Usage Warning",
                 Priority = 1,
-                Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%", InformationName = diskUsed, Condition = ">", Format = "%", Value = "70"} },
+                Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%", InformationName = disksName.SubInformationNames[2], Condition = ">", Format = "%", Value = "70"} },
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = false
             }
