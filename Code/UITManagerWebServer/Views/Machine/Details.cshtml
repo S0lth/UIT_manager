@@ -48,12 +48,12 @@
 
 
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
-    <h1 class="h2 fw-bold me-3">
+    <h1 class="fs-2 fw-bold me-3">
         @Model.Name
-        <span class="badge bg-info h5">Last seen : @Model.LastSeen</span>
     </h1>
+    <span class="badge bg-info fs-6">Last seen : @Model.LastSeen</span>
     <div class="row mt-4">
-        <div class="col-md-5">
+        <div class="col-md-6">
             <div id="accordion">
                 <div class="card">
                     <div class="card-header">
@@ -119,7 +119,7 @@
                                                         @subInfo3.Name
 
                                                     </dt>
-                                                    <dd class="col-sm-8 ms-5">
+                                                    <dd class="col-sm-2 ms-5">
                                                         @if (@subInfo3.Value != "Null")
                                                         {
                                                             @subInfo3.Value
@@ -139,90 +139,132 @@
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="card-title mb-4 d-flex align-items-center">Alarm
+                    <h5 class="card-title mb-4 d-flex justify-content-between align-items-center">
+                        <span>Alarms</span>
+                        <form method="get"
+                              class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start">
+                            <!-- Filtres à droite -->
+                            <div class="d-flex ms-auto flex-wrap">
+                                <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
+                                    <span>Filter</span>
+                                    <span class="ms-1">by</span>
+                                </div>
+                                <div class="dropdown me-2 mb-2 mb-md-0">
+                                    <select asp-for="@ViewData["TypeFilter"]" name="TypeFilter"
+                                            asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                                            asp-for-sol="@ViewData["SolutionFilter"]"
+                                            class="form-select form-select-sm"
+                                            style="display: inline-block; min-width: 120px;" asp->
+                                        <option value="" disabled selected>Type</option>
+                                        <option value="All">All</option>
+                                        <option value="InProgress">In progress</option>
+                                        <option value="Resolved">Resolved</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                    <a href="@Url.Action("Details")" class="btn btn-secondary btn-sm">Reset</a>
+                                </div>
+                            </div>
+                        </form>
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
                         <table class="table table-hover table-striped table-bordered rounded">
                             <thead class="table-light sticky-top">
-                            <tr>
-                                <!-- Status Column -->
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
-                                    <a asp-action="Details"
-                                       asp-route-tab="@Context.Request.Query["tab"]"
-                                       asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
-                                       class="text-decoration-none text-dark">
-                                        Status
-                                        <i
-                                            class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
-                                    </a>
-                                </th>
+                            @if (Model.AnyAlarms)
+                            {
+                                <tr>
+                                    <!-- Status Column -->
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
+                                        <a asp-action="Details"
+                                           asp-route-tab="@Context.Request.Query["tab"]"
+                                           asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
+                                           class="text-decoration-none text-dark">
+                                            Alarm
+                                            <i
+                                                class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
+                                        </a>
+                                    </th>
 
-                                <!-- Severity Column -->
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
-                                    <a asp-action="Details"
-                                       asp-route-tab="@Context.Request.Query["tab"]"
-                                       asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
-                                       class="text-decoration-none text-dark">
-                                        Severity
-                                        <i
-                                            class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
-                                    </a>
-                                </th>
+                                    <!-- Severity Column -->
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
+                                        <a asp-action="Details"
+                                           asp-route-tab="@Context.Request.Query["tab"]"
+                                           asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
+                                           class="text-decoration-none text-dark">
+                                            Severity
+                                            <i
+                                                class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
+                                        </a>
+                                    </th>
 
-                                <!-- AlarmGroup Column -->
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
-                                    <a asp-action="Details"
-                                       asp-route-tab="@Context.Request.Query["tab"]"
-                                       asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
-                                       class="text-decoration-none text-dark">
-                                        Alarm
-                                        <i
-                                            class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
-                                    </a>
-                                </th>
+                                    <!-- AlarmGroup Column -->
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
+                                        <a asp-action="Details"
+                                           asp-route-tab="@Context.Request.Query["tab"]"
+                                           asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
+                                           class="text-decoration-none text-dark">
+                                            Status
+                                            <i
+                                                class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
+                                        </a>
+                                    </th>
 
-                                <!-- Date Column -->
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
-                                    <a asp-action="Details"
-                                       asp-route-tab="@Context.Request.Query["tab"]"
-                                       asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
-                                       class="text-decoration-none text-dark">
-                                        Date
-                                        <i
-                                            class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
-                                    </a>
-                                </th>
-                                
-                            </tr>
+                                    <!-- Date Column -->
+                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
+                                        <a asp-action="Details"
+                                           asp-route-tab="@Context.Request.Query["tab"]"
+                                           asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                                           class="text-decoration-none text-dark">
+                                            Date
+                                            <i
+                                                class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
+                                        </a>
+                                    </th>
+
+                                </tr>
+                            }
                             </thead>
 
 
                             <tbody>
-                            @foreach (var item in Model.Alarms)
+                            @if (Model.AnyAlarms)
                             {
-                                <tr>
-                                    <td>
-                                        <a asp-controller="Alarms" asp-action="Details"
-                                           asp-route-id="@item.AlarmId"
-                                           class="text-primary text-decoration-none">
-                                            @item.AlarmGroupName
-                                        </a>
-                                    </td>
-                                    <td>@item.Status</td>
-                                    <td>@item.Severity</td>
-
-                                    <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                </tr>
+                                @foreach (var item in Model.Alarms)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Alarms" asp-action="Details"
+                                               asp-route-id="@item.AlarmId"
+                                               class="text-primary text-decoration-none">
+                                                @item.AlarmGroupName
+                                            </a>
+                                        </td>
+                                        <td>@item.Severity</td>
+                                        <td>@item.Status</td>
+                                        
+                                        <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    </tr>
+                                }
                             }
+                            else
+                            {
+                                <div class="list-group-item text-center">
+                                    <div class="alert alert-secondary" role="alert">
+                                        this machine hasn't triggered any alarm yet
+                                    </div>
+                                </div>
+                            }
+
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
             <div class="card mb-4">
-                <div class="card-body">
+                <div class="card-header">
                     <h5 class="card-title mb-4 d-flex justify-content-between align-items-center">
                         <span>Notes</span>
                         <button type="button" class="btn btn-link" data-bs-toggle="modal"
@@ -278,22 +320,34 @@
                             </div>
                         </form>
                     </h5>
-
+                </div>
+                <div class="card-body">
                     <div class="list-group list-group-flush">
-                        @foreach (var note in Model.Notes)
+                        @if (Model.AnyNote)
                         {
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <p>
-                                        <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id"
-                                           class="text-primary text-decoration-none mb-1">
-                                            @note.Title
-                                        </a>
-                                    </p>
-                                    <small
-                                        class="text-muted">Author: @note.Author on @note.Date.ToString("yyyy-MM-dd HH:mm")</small>
-                                    <span
-                                        class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
+                            @foreach (var note in Model.Notes)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p>
+                                            <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id"
+                                               class="text-primary text-decoration-none mb-1">
+                                                @note.Title
+                                            </a>
+                                        </p>
+                                        <small
+                                            class="text-muted">Author: @note.Author on @note.Date.ToString("yyyy-MM-dd HH:mm")</small>
+                                        <span
+                                            class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="list-group-item text-center">
+                                <div class="alert alert-secondary" role="alert">
+                                    No notes written.
                                 </div>
                             </div>
                         }
