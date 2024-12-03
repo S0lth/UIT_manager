@@ -1,4 +1,4 @@
-﻿namespace UITManagerWebServer.Models {
+﻿﻿namespace UITManagerWebServer.Models {
     /// <summary>
     /// Represents a machine, which can be associated with alarms and notes.
     /// </summary>

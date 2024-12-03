@@ -6,26 +6,40 @@
  * It checks all columns in each row for a match with the search input and shows/hides rows accordingly.
  */
 function searchInInventory() {
-    const input = document.getElementById("searchBoxInventory");
-    const filter = input.value.toLowerCase();
+    const input = document.getElementById("searchBoxInventory").value.toLowerCase();
     const table = document.getElementById("inventoryTable");
     const trs = table.getElementsByTagName("tr");
+    let hasResults = false;
 
     for (let i = 1; i < trs.length; i++) {
-        const cells = trs[i].getElementsByTagName("td");
-        let rowContainsSearch = false;
+        const rowText = trs[i].innerText.toLowerCase();
+        const isMatch = rowText.includes(input);
+        trs[i].style.display = isMatch ? "" : "none";
+        if (isMatch) hasResults = true;
+    }
 
-        for (let cell of cells) {
-            const txtValue = cell.textContent || cell.innerText;
-            if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                rowContainsSearch = true;
-                break; 
-            }
+    const noResultDivId = "noResultMessage";
+    let noResultDiv = document.getElementById(noResultDivId);
+
+    if (!hasResults) {
+        if (!noResultDiv) {
+            noResultDiv = document.createElement("div");
+            noResultDiv.id = noResultDivId;
+            noResultDiv.className = "list-group-item text-center";
+            noResultDiv.innerHTML = `
+                <div class="alert alert-secondary" role="alert">
+                    No machine found
+                </div>
+            `;
+            table.parentNode.appendChild(noResultDiv);
         }
-
-        trs[i].style.display = rowContainsSearch ? "" : "none";
+    } else {
+        if (noResultDiv) {
+            noResultDiv.remove();
+        }
     }
 }
+
 
 document.getElementById('Search').addEventListener('keyup', function () {
     const searchValue = this.value.toLowerCase();

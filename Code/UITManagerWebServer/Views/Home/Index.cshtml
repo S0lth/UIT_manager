@@ -1,4 +1,6 @@
-﻿@using Newtonsoft.Json
+﻿@model HomePageViewModel
+@using Newtonsoft.Json
+@using UITManagerWebServer.Models.ModelsView
 @{
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -15,47 +17,44 @@
 
             <ul class="nav nav-tabs" id="alarmTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new
-                             {
-                                 tab = "unprocessed",
-                                 sortOrder = ViewData["SortOrder"],
-                                 SolutionFilter = ViewData["SolutionFilter"],
-                                 AuthorFilter = ViewData["AuthorFilter"],
-                                 SortOrderNote = ViewData["SortOrderNote"]
-                             })"
+                    <a asp-controller="Home" asp-action="Index"
+                       asp-route-tab="unprocessed"
+                       asp-route-sortOrder="@ViewData["SortOrder"]"
+                       asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
+                       asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
+                       asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
                        class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "unprocessed" ? "none" : "auto")">
                         Unprocessed Alarms
                     </a>
                 </li>
+
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new
-                             {
-                                 tab = "newest",
-                                 sortOrder = ViewData["SortOrder"],
-                                 SolutionFilter = ViewData["SolutionFilter"],
-                                 AuthorFilter = ViewData["AuthorFilter"],
-                                 SortOrderNote = ViewData["SortOrderNote"]
-                             })"
+                    <a asp-controller="Home" asp-action="Index"
+                       asp-route-tab="newest"
+                       asp-route-sortOrder="@ViewData["SortOrder"]"
+                       asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
+                       asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
+                       asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
                        class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "newest" ? "none" : "auto")">
                         Newest Alarms
                     </a>
                 </li>
+
                 <li class="nav-item" role="presentation">
-                    <a href="@Url.Action("Index", "Home", new
-                             {
-                                 tab = "overdue",
-                                 sortOrder = ViewData["SortOrder"],
-                                 SolutionFilter = ViewData["SolutionFilter"],
-                                 AuthorFilter = ViewData["AuthorFilter"],
-                                 SortOrderNote = ViewData["SortOrderNote"]
-                             })"
+                    <a asp-controller="Home" asp-action="Index"
+                       asp-route-tab="overdue"
+                       asp-route-sortOrder="@ViewData["SortOrder"]"
+                       asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
+                       asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
+                       asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
                        class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "overdue" ? "none" : "auto")">
                         Alarms Exceeding Estimated Processing Time
                     </a>
                 </li>
+
             </ul>
 
             <div id="alarmTabsContent">
@@ -85,7 +84,8 @@
                             </span>
                             <form method="get"
                                   class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start"
-                                  action="@Url.Action("Index", "Home")">
+                                  asp-action="Index">
+
                                 <input type="hidden" name="tab" value="@Model.ActiveTab"/>
                                 <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]?.ToString()"/>
                                 <div class="d-flex ms-auto flex-wrap">
@@ -143,7 +143,7 @@
                             </form>
 
                         </h5>
-                        @await Html.PartialAsync("_NotesList", Model.Notes, ViewData)
+                        @await Html.PartialAsync("_NotesList", Model.Notes)
                     </div>
                 </div>
             </div>

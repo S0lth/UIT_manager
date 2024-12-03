@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View;
 using Newtonsoft.Json;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
@@ -304,12 +305,12 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFilteredNotes(string solutionFilter, string authorFilter,
+        public async Task<ActionResult> GetFilteredNotes(string solutionFilter, string authorFilter,
             string sortOrderNote) {
             var notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
             return PartialView("_NotesList", notes);
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> GetFilteredAlarmsList(string tab, string sortOrder) {
             List<AlarmViewModel> selectedAlarms = new List<AlarmViewModel>();
