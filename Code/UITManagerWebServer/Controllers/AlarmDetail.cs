@@ -49,12 +49,13 @@ namespace UITManagerWebServer
                 .ThenInclude(sh => sh.Severity)// Si l'alarme a un utilisateur directement lié
                 .FirstOrDefaultAsync(a => a.Id == id);
 
-      
+            
             var notes = _context.Notes
-                .Where(note => _context.Norms
-                    .Any(norm => norm.NormGroupId == alarm.NormGroupId))
+                .Include(note => note.Machine) // Inclut les machines associées
+                .Include(note => note.Author)  // Inclut les informations de l'auteur, si applicable
                 .ToList();
 
+            
             notes = SortOrder switch
             {
                 "date" => notes.OrderBy(n => n.CreatedAt).ToList(),

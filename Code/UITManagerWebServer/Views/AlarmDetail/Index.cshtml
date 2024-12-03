@@ -158,6 +158,8 @@ _ => "bi bi-arrow-down-up",
                                                 @status.Name
                                             </option>
                                         }
+                                        <option disabled class="text-secondary fst-italic fw-light" label="">@status.Description</option>
+
                                     }
                                 </select>
                             </div>
@@ -306,6 +308,7 @@ _ => "bi bi-arrow-down-up",
                 <div class="card-body">
                    
                     <div class="table-responsive" style="overflow-x: auto; max-height: 535px;">
+                  
                         <table class="table table-hover table-striped align-middle">
                             <thead class="table-lightfix sticky-top bg-white">
                             <tr>
@@ -324,24 +327,25 @@ _ => "bi bi-arrow-down-up",
                             <tbody>
                             @if (ViewData["Notes"] is List<UITManagerWebServer.Models.Note> notes && notes.Any())
                             {
-                            foreach (var note in notes)
-                            {
-                            <tr>
-                                <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@note.Title</td>
-                                <td>@note.CreatedAt.ToString("dd-MM-yyyy HH:mm")</td>
-                            </tr>
-                            }
-                   
+                                foreach (var note in notes)
+                                {
+                                    <tr>
+                                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@note.Title</td>
+                                        <td>@note.CreatedAt.ToString("dd-MM-yyyy HH:mm")</td>
+                                    </tr>
+                                }
+
                             }
                             else
                             {
-                            <tr>
-                                <td><div class="list-group-item text-center">
-                                        <div class="alert alert-secondary" role="alert">
-                                            No notes written.
-                                        </div>
-                                    </div></td>
-                            </tr>
+                                <tr>
+                                    <td>
+                                        <div class="list-group-item text-center">
+                                            <div class="alert alert-secondary" role="alert">
+                                                No notes written.
+                                            </div>
+                                        </div></td>
+                                </tr>
                             }
                             </tbody>
                         </table>
