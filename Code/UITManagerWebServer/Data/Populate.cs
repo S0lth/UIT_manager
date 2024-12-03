@@ -6,16 +6,15 @@ using System.Text.RegularExpressions;
 using UITManagerWebServer.Data;
 
 public static class Populate {
+    
     public static async Task Initialize(IServiceProvider serviceProvider) {
+    
         using var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        await SeedUsersAsync(userManager, roleManager, context);
-
         DeleteDb(context);
-
+        await SeedUsersAsync(userManager, roleManager, context);
         await SeedDatabase(userManager, context);
     }
 
@@ -23,6 +22,7 @@ public static class Populate {
         if (context.Machines.Any() || context.NormGroups.Any()) {
             context.Alarms.RemoveRange(context.Alarms);
             context.Notes.RemoveRange(context.Notes);
+            context.InformationNames.RemoveRange(context.InformationNames);
             context.Norms.RemoveRange(context.Norms);
             context.NormGroups.RemoveRange(context.NormGroups);
             context.Machines.RemoveRange(context.Machines);
@@ -158,7 +158,6 @@ public static class Populate {
                                 await userManager.AddToRoleAsync(user, "Technician");
                             }
                         }
-
                         Console.WriteLine($"User {user.UserName} created successfully.");
                     }
                     else {
@@ -189,33 +188,91 @@ public static class Populate {
             new Severity { Name = "High", Description = "High Severity" },
             new Severity { Name = "Critical", Description = "Critical Severity" }
         };
-
+        var directXName = new InformationName { Name = "Direct X" };
+        var domainNameName = new InformationName { Name = "Domain Name" };
+        var tagServiceName = new InformationName { Name = "Tag Service" };
+        var uptimeName = new InformationName { Name = "Uptime" };
+        var cpuName = new InformationName {
+            Name = "CPU",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "Logical Core"},
+                new InformationName{Name = "Core Count"},
+                new InformationName{Name = "Clock Speed"},
+                new InformationName{Name = "Model"},
+                new InformationName{Name = "Used"},
+            }
+        };
+        
+        var ramName = new InformationName {
+            Name = "Ram",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "Total RAM"},
+                new InformationName{Name = "Used RAM"},
+                new InformationName{Name = "Free RAM"},
+            }
+        };
+        
+        var osName = new InformationName {
+            Name = "OS",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "OS Name"},
+                new InformationName{Name = "OS Version"},
+                new InformationName{Name = "OS Build"},
+            }
+        };
+        
+        var ipName = new InformationName { Name = "IP Address" };
+        var disksName = new InformationName {
+            Name = "Disks",
+            SubInformationNames = new List<InformationName> {
+                new InformationName { Name = "Disk Free Size" },
+                new InformationName { Name = "Disk Total Size" },
+                new InformationName { Name = "Disk Used" },
+                new InformationName { Name = "List Name" },
+                new InformationName { Name="Number" }
+            }
+        };
+        var userName = new InformationName {
+            Name = "Users",
+            SubInformationNames = new List<InformationName> {
+                new InformationName { Name = "Name" },
+                new InformationName { Name = "Scope" },
+                new InformationName { Name = "List" },
+                new InformationName { Name = "Used Memory" },
+            }
+        };
+        
+        context.InformationNames.AddRange(
+            directXName, domainNameName, tagServiceName, uptimeName,
+            cpuName, ramName, osName, disksName
+        );
+        context.SaveChanges();
         var normGroups = new List<NormGroup> {
             new NormGroup {
                 Name = "Obsolete operating system",
                 Priority = 8,
-                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" } },
+                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" , InformationName = osName.SubInformationNames[0], Condition = "IN", Format = "TEXT", Value = "WINDOWS 10"} },
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true
             },
             new NormGroup {
                 Name = "Storage exceeded",
                 Priority = 4,
-                Norms = new List<Norm> { new Norm { Name = "Storage over 80%" } },
+                Norms = new List<Norm> { new Norm { Name = "Storage over 80%", InformationName = disksName.SubInformationNames[2], Condition = ">", Format = "%", Value = "80" } },
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true
             },
             new NormGroup {
                 Name = "CPU Usage High",
                 Priority = 2,
-                Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%" } },
+                Norms = new List<Norm> { new Norm { Name = "CPU usage > 90%", InformationName = cpuName.SubInformationNames[4], Condition = ">", Format = "%", Value = "90"} },
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true
             },
             new NormGroup {
                 Name = "Memory Usage Warning",
                 Priority = 1,
-                Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%" } },
+                Norms = new List<Norm> { new Norm { Name = "Memory usage > 70%", InformationName = disksName.SubInformationNames[2], Condition = ">", Format = "%", Value = "70"} },
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = false
             }
@@ -486,6 +543,7 @@ public static class Populate {
                                 new Value { Name = "User Scope", Machine = Machine, Values = "Local", },
                             }
                         },
+                        
                         new Component {
                             Name = "User",
                             Machine = Machine,
@@ -574,6 +632,7 @@ public static class Populate {
                             });
                     }
 
+                    
                     alarms.Add(alarm);
                 }
             }
