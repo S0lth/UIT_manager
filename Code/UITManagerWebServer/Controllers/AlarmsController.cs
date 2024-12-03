@@ -265,8 +265,15 @@ namespace UITManagerWebServer.Controllers
             ViewBag.NormGroupId = new SelectList(_context.NormGroups, "Id", "Name", alarm.NormGroupId);
             return View(alarm);
         }
+        
+        public IActionResult Details(string id)
+        {
+            return Redirect($"/AlarmDetail/Index/{id}");
+        }
     }
 
+    
+    
     public class UpdateStatusRequest
     {
         public int Id { get; set; }
