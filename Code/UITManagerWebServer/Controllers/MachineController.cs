@@ -29,13 +29,13 @@ namespace UITManagerWebServer.Views
 
         [Authorize]
         // GET: Machine/Details/5
-        public async Task<IActionResult> Details(int? id, string sortOrder, string solutionFilter, string authorFilter)
+        public async Task<IActionResult> Details(int? id, string sortOrder, string solutionFilter, string authorFilter, string typeFilter)
         {
             var machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             var notes = await getFilteredNotes(sortOrder, solutionFilter, authorFilter, id);
-            var alarms = await getFilteredAlrms(sortOrder, id, solutionFilter);
+            var alarms = await getFilteredAlrms(sortOrder, id, typeFilter);
             var information = await getMachineInformation(id);
             var authors = ViewBag.Authors = await _context.Users.ToListAsync();
             var detailView = new DetailsViewModel {
@@ -63,7 +63,10 @@ namespace UITManagerWebServer.Views
             ViewData["AlarmGroupSortParm"] = sortOrder.Contains("alarmgroup_desc") ? "alarmgroup" : "alarmgroup_desc";
             ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
             ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
-            ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
+            ViewData["SolutionFilter"] = solutionFilter;
+            ViewData["AuthorFilter"] = authorFilter;
+            ViewData["SortOrderNote"] = sortOrder.Contains("ndate") ? "ndate_desc" : "ndate"; 
+            ViewData["TypeFilter"] = typeFilter;
             
 
             return View(detailView);
@@ -125,7 +128,7 @@ namespace UITManagerWebServer.Views
             return parentViewModel;
         }
 
-        private async Task<List<AlarmViewModel>>getFilteredAlrms(string sortOrder, int? id, string solutionFilter) {
+        private async Task<List<AlarmViewModel>>getFilteredAlrms(string sortOrder, int? id, string typeFilter) {
             var alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
@@ -137,8 +140,8 @@ namespace UITManagerWebServer.Views
                 .Where(a => a.MachineId == id)
                 .AsQueryable();
 
-            if (solutionFilter == "Resolved") {
-                alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name == solutionFilter);
+            if (typeFilter == "Resolved") {
+                alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name == typeFilter);
             }
             
             alarmsQuery = ApplySorting(alarmsQuery, sortOrder);

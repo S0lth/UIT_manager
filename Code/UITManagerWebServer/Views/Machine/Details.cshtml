@@ -150,9 +150,11 @@
                                     <span class="ms-1">by</span>
                                 </div>
                                 <div class="dropdown me-2 mb-2 mb-md-0">
-                                    <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
+                                    <select asp-for="@ViewData["TypeFilter"]" name="TypeFilter"
+                                            asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                                            asp-for-sol="@ViewData["SolutionFilter"]"
                                             class="form-select form-select-sm"
-                                            style="display: inline-block; min-width: 120px;">
+                                            style="display: inline-block; min-width: 120px;" asp->
                                         <option value="" disabled selected>Type</option>
                                         <option value="All">All</option>
                                         <option value="Resolved">Resolved</option>
