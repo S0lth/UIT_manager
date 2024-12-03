@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
@@ -198,12 +199,27 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(NormGroupModel model)
+        public async Task<IActionResult> Edit(NormGroupModel model, string expected)
         {
-            NormGroup normGroup = await _context.NormGroups
+            NormGroup? normGroup = await _context.NormGroups
                 .Include(ng => ng.Norms)
                 .Include(ng => ng.SeverityHistories)
                 .FirstOrDefaultAsync(c => c.Id == model.Id);
+            
+            var regex = new Regex(@"^(\d{1,3})\s(\d{2}):(\d{2}):(\d{2})$");
+            var match = regex.Match(expected);
+
+            if (!match.Success)
+            {
+                return View("Index");
+            }
+            int days = int.Parse(match.Groups[1].Value);
+            int hours = int.Parse(match.Groups[2].Value);
+            int minutes = int.Parse(match.Groups[3].Value);
+            int seconds = int.Parse(match.Groups[4].Value);
+
+            TimeSpan timeSpan = new TimeSpan(days, hours, minutes, seconds);
+            
             if (normGroup == null)
             {
                 return NotFound();
@@ -211,7 +227,7 @@ namespace UITManagerWebServer.Controllers {
             ApplicationUser user = await _userManager.GetUserAsync(User);
             bool hasErrors = false;   
             normGroup.Name = model.NormGroupName;
-            normGroup.MaxExpectedProcessingTime = model.MaxExpectedProcessingTime;
+            normGroup.MaxExpectedProcessingTime = timeSpan;
             normGroup.Priority = model.Priority;
             normGroup.IsEnable = model.IsEnable;
             
@@ -298,7 +314,20 @@ namespace UITManagerWebServer.Controllers {
         
         
         [HttpPost]
-        public async Task<IActionResult> Create(NormGroupModel normGroupModel) {
+        public async Task<IActionResult> Create(NormGroupModel normGroupModel, string expected) {
+            var regex = new Regex(@"^(\d{1,3})\s(\d{2}):(\d{2}):(\d{2})$");
+            var match = regex.Match(expected);
+
+            if (!match.Success)
+            {
+                return View("Index");
+            }
+            int days = int.Parse(match.Groups[1].Value);
+            int hours = int.Parse(match.Groups[2].Value);
+            int minutes = int.Parse(match.Groups[3].Value);
+            int seconds = int.Parse(match.Groups[4].Value);
+
+            TimeSpan timeSpan = new TimeSpan(days, hours, minutes, seconds);
             ApplicationUser user = await _userManager.GetUserAsync(User);
             
             List<SeverityHistory> sh = new List<SeverityHistory> {
@@ -311,13 +340,14 @@ namespace UITManagerWebServer.Controllers {
 
             List<Norm> norms = normGroupModel.Norms.FindAll(n => !string.IsNullOrEmpty(n.Name) && !string.IsNullOrEmpty(n.Value));
             if (norms.Count == 0) {
-                return RedirectToAction("Index");
+                TempData["Error"] = "You cannot create a group without any valid norms";
+                return RedirectToAction("Create");
             }
             NormGroup toAddNormGroup = new NormGroup{
                 IsEnable = normGroupModel.IsEnable,
                 Name = normGroupModel.NormGroupName,
                 SeverityHistories = sh,
-                MaxExpectedProcessingTime = normGroupModel.MaxExpectedProcessingTime,
+                MaxExpectedProcessingTime = timeSpan,
                 Priority = normGroupModel.Priority,
                 Norms = norms,
             };
@@ -373,6 +403,7 @@ namespace UITManagerWebServer.Controllers {
             public List<Norm> Norms { get; set; } = new();
             public List<SeverityHistory>? SeverityHistories { get; set; } = new();
             public List<InformationName> Informations { get; set; } = new();
+            public List<int> IdNormToDelete { get; set; } = new();
         }
 
         public class NormGroupPageViewModel {

@@ -13,11 +13,8 @@ public static class Populate {
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        await SeedUsersAsync(userManager, roleManager, context);
-
         DeleteDb(context);
-
+        await SeedUsersAsync(userManager, roleManager, context);
         await SeedDatabase(userManager, context);
     }
 
@@ -206,10 +203,6 @@ public static class Populate {
             }
         };
         
-        //var logicalCoreName = new InformationName { Name = "Logical Core" };
-        //var coreCountName = new InformationName { Name = "Core Count" };
-        //var clockSpeedName = new InformationName { Name = "Clock Speed" };
-        //var modelName = new InformationName { Name = "Model" };
         var ramName = new InformationName {
             Name = "Ram",
             SubInformationNames = new List<InformationName> {
@@ -218,10 +211,6 @@ public static class Populate {
                 new InformationName{Name = "Free RAM"},
             }
         };
-        //var totalRamName = new InformationName { Name = "Total Ram" };
-        //var usedRamName = new InformationName { Name = "Used Ram" };
-        //var freeRamName = new InformationName { Name = "Free Ram" };
-        
         
         var osName = new InformationName {
             Name = "OS",
@@ -231,14 +220,8 @@ public static class Populate {
                 new InformationName{Name = "OS Build"},
             }
         };
-        //var osNameName = new InformationName { Name = "OS Name" };
-        //var osVersionName = new InformationName { Name = "OS Version" };
-        //var osBuildName = new InformationName { Name = "OS Build" };
         
         var ipName = new InformationName { Name = "IP Address" };
-        //var IPsName = new InformationName { Name = "IPs" };
-        //var freeSizeName = new InformationName { Name = "Disk Free Size" };
-        //var totalSizeName = new InformationName { Name = "Disk Total Size" };
         var disksName = new InformationName {
             Name = "Disks",
             SubInformationNames = new List<InformationName> {
@@ -258,20 +241,10 @@ public static class Populate {
                 new InformationName { Name = "Used Memory" },
             }
         };
-        //var userScopeName = new InformationName { Name = "User Scope" };
-        //var userNameName = new InformationName { Name = "User Name" };
-        //var usersListName = new InformationName { Name = "Users List" };
-        //var listDisksName = new InformationName { Name = "List Disks" };
-        //var numberDisksName = new InformationName { Name = "Number Disks" };
-        //var diskUsed = new InformationName { Name = "Disks Used Memory" };
-
+        
         context.InformationNames.AddRange(
             directXName, domainNameName, tagServiceName, uptimeName,
-            cpuName,/* logicalCoreName, coreCountName, clockSpeedName,
-            modelName,*/ ramName, /*totalRamName, usedRamName, freeRamName,*/
-            osName, /*osNameName, osVersionName, osBuildName,*/ ipName, /*IPsName,
-            freeSizeName, totalSizeName,*/ disksName/*, userScopeName, userNameName,
-            usersListName, listDisksName, numberDisksName, diskUsed*/
+            cpuName, ramName, osName, disksName
         );
         context.SaveChanges();
         var normGroups = new List<NormGroup> {

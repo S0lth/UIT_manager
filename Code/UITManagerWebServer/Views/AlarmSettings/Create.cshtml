@@ -1,4 +1,5 @@
-﻿@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
+﻿@using Microsoft.IdentityModel.Tokens
+@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
 
 
 @{
@@ -17,6 +18,12 @@
     int i = 0;
 }
 
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger text-center">
+        @TempData["Error"]
+    </div>
+}
 <div class="container">
     <h1 class="">New Criteria</h1>
 <div class="card shadow-sm border-0 rounded p-3">
@@ -68,10 +75,11 @@
                 <tbody>
                 <tr>
                 <td>
-                    <input type="text" class="form-control" name="NormGroupName"/>
+                    <input type="text" class="form-control" name="NormGroupName" value="@(Model?.NormGroupName ?? "")" required/>
                 </td>
                 <td>
-                    <input type="text" class="form-control" name="MaxExpectedProcessingTime"/>
+                    <input class="form-control" type="text" id="timeInput" name="expected" placeholder="DD hh:mm:ss"
+                           pattern="^\d{1,3}\s\d{2}:\d{2}:\d{2}$" required title="DD hh:mm:ss" />
                 </td>
                 <td>
                     <input type="number" class="form-control" min="1" max="9" name="Priority" value="9"/>
@@ -106,18 +114,38 @@
                         <tr>
                             <th>
                                 Name
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#nameNormModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
                             <th>
                                 Concerned Information
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#typeModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
                             <th>
                                 Condition
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#conditionModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
                             <th>
                                 Value
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#valueModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
                             <th>
                                 Format
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#formatModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </th>
 
                             <th>
@@ -222,9 +250,7 @@
     
     function deleteLine(button) {
         var row = button.closest("tr");
-        for (var elem in row) {
-            elem.remove();
-        }
+    
         row.remove();
         updateRowIndices();
         rowIndex--;
@@ -268,7 +294,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                    <input type="submit" class="btn btn-danger" value="Exit"/>
                 </div>
             </form>
         </div>
@@ -287,9 +313,210 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <input type="submit" class="btn btn-danger" value="Yes"/>
+                    <input type="submit" class="btn btn-danger" value="Exit"/>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Name -->
+<div class="modal fade" id="nameModal" tabindex="-1" aria-labelledby="nameModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nameModalLabel">Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The name of the normgroup which will be displayed when an alarm is triggered.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal MaxProcessingExpectedTime-->
+<div class="modal fade" id="maxProcessingModal" tabindex="-1" aria-labelledby="maxProcessingModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="maxProcessingModalLabel">Max expected Processing Time</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Enter a timestamp to determine when a machine will be displayed in "Overdue Alarm" <br/>
+                    Format: <strong>dd hh:mm:ss</strong>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Priority-->
+<div class="modal fade" id="PriorityModal" tabindex="-1" aria-labelledby="PriorityModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="PriorityModalLabel">Priority</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Set a priority in [1-9].</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Severity-->
+<div class="modal fade" id="severityModal" tabindex="-1" aria-labelledby="severityModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="severityModalLabel">Severity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Set the severity of this normgroup.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Enable Modal-->
+<div class="modal fade" id="enabledModal" tabindex="-1" aria-labelledby="enabledModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="enabledModalLabel">Enabled</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>You can disable this normgroup.<br/>
+                    Alarm which is triggered with this normgroup will not beeing triggered again.<br/>
+                    You can enable this normgroup later
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Value modal-->
+<div class="modal fade" id="valueModal" tabindex="-1" aria-labelledby="valueModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="valueModalLabel">Value</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Enter a value, this can be text or number.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Condition -->
+<div class="modal fade" id="conditionModal" tabindex="-1" aria-labelledby="conditionModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="conditionModalLabel">Condition</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The condition which will trigger alarms. </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Type -->
+<div class="modal fade" id="typeModal" tabindex="-1" aria-labelledby="typeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="typeModalLabel">Concerned Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The type of information which will trigger the alarm. </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Format Modal -->
+<div class="modal fade" id="formatModal" tabindex="-1" aria-labelledby="formatModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="formatModalLabel">Format</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The format of the information</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Name -->
+<div class="modal fade" id="nameNormModal" tabindex="-1" aria-labelledby="nameNormLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nameNormLabel">Criteria Name</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Set a name to the criteria.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>

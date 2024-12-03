@@ -60,19 +60,19 @@
                     
                 <tbody>
                 <tr>
-                    <td>
+                    <td class="text-secondary">
                         @Model.Name
                     </td>
                         
-                    <td>
-                        @Model.MaxExpectedProcessingTime
+                    <td class="text-secondary">
+                        @Model.MaxExpectedProcessingTime.Days Days,  @Model.MaxExpectedProcessingTime.Hours Hours, @Model.MaxExpectedProcessingTime.Minutes Minutes, @Model.MaxExpectedProcessingTime.Seconds Seconds
                     </td>
                         
-                    <td>
+                    <td class="text-secondary">
                         @Model.Priority
                     </td>
                         
-                    <td>
+                    <td class="text-secondary">
                         @Model.GetLatestSeverityHistory().Severity.Name
                     </td>
                         
@@ -123,14 +123,14 @@
                         @foreach (var norm in @Model.Norms)
                         {
                             <tr>
-                                <td>
+                                <td class="text-secondary">
                                     @norm.Name
                                 </td>
-                                <td>
+                                <td class="text-secondary">
                                     @norm.InformationName.Name
                                 </td>
-                                <td>
-                                    <span>Should be @norm.Condition @norm.Value @norm.Format</span>
+                                <td class="text-secondary">
+                                    <span>@(norm.Condition.Equals("IN") || norm.Condition.Equals("=")?"Should be":norm.Condition.Equals("NOT IN") || norm.Condition.Equals("!=")?"Shouldn't be":"Should be " + norm.Condition) @norm.Value @(norm.Format.Equals("TEXT")?"":norm.Format)</span>
                                 </td>
                             </tr>
                         }
@@ -172,13 +172,13 @@
                     @foreach (var history in ((dynamic)histories))
                     {
                         <tr>
-                            <td>
+                            <td class="text-secondary">
                                 @history.SeverityName
                             </td>
-                            <td>
+                            <td class="text-secondary">
                                 @history.DateUpdate
                             </td>
-                            <td>
+                            <td class="text-secondary">
                                 <p>@(history.UserFirstName) @(history.UserLastName)</p>
                             </td>
                         </tr>
