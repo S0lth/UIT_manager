@@ -144,6 +144,10 @@ namespace UITManagerWebServer.Views
                 alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name == typeFilter);
             }
             
+            if (typeFilter != "Resolved" && typeFilter != "All") {
+                alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name != "Resolved");
+            }
+            
             alarmsQuery = ApplySorting(alarmsQuery, sortOrder);
             
             var alarms = await alarmsQuery.ToListAsync();
