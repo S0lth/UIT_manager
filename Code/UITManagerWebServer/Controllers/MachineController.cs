@@ -91,7 +91,7 @@ namespace UITManagerWebServer.Views
             return result;
         }
         
-        private async Task<ComponentsViewModel> BuildHierarchy(ComponentsViewModel parent, List<Informations> list)
+        private async Task<ComponentsViewModel> BuildHierarchy(ComponentsViewModel parent, List<Information> list)
         {
             var children = list.Where(e => e.ParentId == parent.id).ToList();
 

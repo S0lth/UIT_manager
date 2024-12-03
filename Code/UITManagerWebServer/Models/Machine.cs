@@ -11,7 +11,7 @@
 
         public List<Note> Notes { get; set; }
 
-        public List<Informations> Informations { get; set; }
+        public List<Information> Informations { get; set; }
 
         public Boolean IsWorking { get; set; }
 
@@ -22,7 +22,7 @@
         public Machine() {
             Alarms = new List<Alarm>();
             Notes = new List<Note>();
-            Informations = new List<Informations>();
+            Informations = new List<Information>();
         }
 
         /// <summary>

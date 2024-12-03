@@ -28,7 +28,7 @@ namespace UITManagerWebServer.Data {
         
         public DbSet<Severity> Severities { get; set; }
         
-        public DbSet<Informations> Components { get; set; }
+        public DbSet<Models.Information> Components { get; set; }
         public DbSet<Value> Leafs { get; set; }
         public DbSet<Component> Composites { get; set; }
         
@@ -74,12 +74,12 @@ namespace UITManagerWebServer.Data {
                 .HasForeignKey(sh => sh.IdSeverity)
                 .OnDelete(DeleteBehavior.SetNull);
             
-            builder.Entity<Informations>()
+            builder.Entity<Models.Information>()
                 .HasDiscriminator<string>("ComponentType")
                 .HasValue<Value>("Leaf")
                 .HasValue<Component>("Composite");
             
-            builder.Entity<Informations>()
+            builder.Entity<Models.Information>()
                 .HasMany(c => c.Children)
                 .WithOne(c => c.Parent)
                 .HasForeignKey(c => c.ParentId)
