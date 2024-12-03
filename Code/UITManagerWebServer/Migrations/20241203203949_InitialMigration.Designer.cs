@@ -12,8 +12,8 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241201125143_initial2")]
-    partial class initial2
+    [Migration("20241203203949_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -346,27 +346,10 @@ namespace UITManagerWebServer.Migrations
 
                     b.HasIndex("NoteId");
 
-                    b.ToTable("File");
+                    b.ToTable("Files");
                 });
 
-            modelBuilder.Entity("UITManagerWebServer.Models.InformationName", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("InformationNames");
-                });
-
-            modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
+            modelBuilder.Entity("UITManagerWebServer.Models.Information", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -389,6 +372,10 @@ namespace UITManagerWebServer.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Values")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MachinesId");
@@ -397,9 +384,31 @@ namespace UITManagerWebServer.Migrations
 
                     b.ToTable("Components");
 
-                    b.HasDiscriminator<string>("ComponentType").HasValue("Informations");
+                    b.HasDiscriminator<string>("ComponentType").HasValue("Information");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.InformationName", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("InformationNames");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>
@@ -413,7 +422,7 @@ namespace UITManagerWebServer.Migrations
                     b.Property<bool>("IsWorking")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("LastSeen")
+                    b.Property<DateTime>("LastSeen")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Model")
@@ -577,18 +586,14 @@ namespace UITManagerWebServer.Migrations
 
             modelBuilder.Entity("UITManagerWebServer.Models.Component", b =>
                 {
-                    b.HasBaseType("UITManagerWebServer.Models.Informations");
+                    b.HasBaseType("UITManagerWebServer.Models.Information");
 
                     b.HasDiscriminator().HasValue("Composite");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Value", b =>
                 {
-                    b.HasBaseType("UITManagerWebServer.Models.Informations");
-
-                    b.Property<string>("Values")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.HasBaseType("UITManagerWebServer.Models.Information");
 
                     b.HasDiscriminator().HasValue("Leaf");
                 });
@@ -707,14 +712,14 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("Note");
                 });
 
-            modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
+            modelBuilder.Entity("UITManagerWebServer.Models.Information", b =>
                 {
                     b.HasOne("UITManagerWebServer.Models.Machine", "Machine")
                         .WithMany("Informations")
                         .HasForeignKey("MachinesId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("UITManagerWebServer.Models.Informations", "Parent")
+                    b.HasOne("UITManagerWebServer.Models.Information", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -722,6 +727,14 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("Machine");
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.InformationName", b =>
+                {
+                    b.HasOne("UITManagerWebServer.Models.InformationName", null)
+                        .WithMany("SubInformationNames")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Norm", b =>
@@ -775,7 +788,7 @@ namespace UITManagerWebServer.Migrations
                     b.HasOne("UITManagerWebServer.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("NormGroup");
@@ -795,9 +808,14 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("AlarmStatusHistories");
                 });
 
-            modelBuilder.Entity("UITManagerWebServer.Models.Informations", b =>
+            modelBuilder.Entity("UITManagerWebServer.Models.Information", b =>
                 {
                     b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.InformationName", b =>
+                {
+                    b.Navigation("SubInformationNames");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>

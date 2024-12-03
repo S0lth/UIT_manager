@@ -404,7 +404,7 @@ namespace UITManagerWebServer
             return result;
         }
         
-        private async Task<InnerComponentsViewModel> BuildHierarchy(InnerComponentsViewModel parent, List<Informations> list)
+        private async Task<InnerComponentsViewModel> BuildHierarchy(InnerComponentsViewModel parent, List<Information> list)
         {
             var children = list.Where(e => e.ParentId == parent.id).ToList();
 

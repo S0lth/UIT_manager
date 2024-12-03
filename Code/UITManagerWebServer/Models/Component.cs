@@ -1,5 +1,5 @@
 ﻿namespace UITManagerWebServer.Models {
-    public class Component : Informations{
+    public class Component : Information{
        
     }
 }
