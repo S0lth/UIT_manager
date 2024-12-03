@@ -1,0 +1,128 @@
+@* Views/Shared/_Modals.cshtml *@
+<!-- Modal Unprocessed -->
+<div class="modal fade" id="alarmModal" tabindex="-1" aria-labelledby="alarmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (Context.Request.Query["tab"] == "unprocessed")
+                {
+                    <h5 class="modal-title" id="alarmModalLabel">Information on Unprocessed Alarms</h5>
+                }
+                else if (Context.Request.Query["tab"] == "newest")
+                {
+                    <h5 class="modal-title" id="alarmModalLabel">Information on Newest Alarms</h5>
+                }
+                else if (Context.Request.Query["tab"] == "overdue")
+                {
+                    <h5 class="modal-title" id="overdueModalLabel">Information on Alarms Exceeding Estimated Processing
+                        Time</h5>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (Context.Request.Query["tab"] == "unprocessed")
+                {
+                    <p>This is the list of unprocessed alarms, meaning alarms that are marked as "New". They are
+                        displayed in order, starting with the most recent ones by default. You can view more details on
+                        how to handle each alarm.</p>
+                }
+                else if (Context.Request.Query["tab"] == "newest")
+                {
+                    <p>This is the list of new alarms, specifically those that have been triggered most recently. The
+                        alarms
+                        are ordered by the trigger date, with the most recent ones appearing first. You can view more
+                        details on how to address them.</p>
+                }
+                else if (Context.Request.Query["tab"] == "overdue")
+                {
+                    <p>This is the list ofexceeding the estimated processing time, meaning alarms that have not
+                    been resolved within the expected timeframe. They are displayed in order, starting with the most
+                    overdue ones by default. You can view more
+
+                    details on how to handle each alarm.</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chart -->
+<div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chartModalLabel">Alarm Type Distribution Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This chart shows the distribution of alarms by type. It helps in understanding the severity and
+                    frequency of different alarm types.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chart 1 -->
+<div class="modal fade" id="chart1Modal" tabindex="-1" aria-labelledby="chart1ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chart1ModalLabel">Alarm Assignment Distribution Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This chart shows the distribution of alarms by Assignment. It helps in understanding the proportions
+                    of alarms that have not been assigned to a technician.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Notes Information -->
+<div class="modal fade" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notesModalLabel">Information on Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This section contains important notes related to the machines, classified as either solutions or
+                    follow-up notes. You can filter them by solution status or by author.</p>
+                <p>You can also sort the notes by date to see the most recent or oldest entries.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for AlarmCountsBySiteAndSeverityModal -->
+<div class="modal fade" id="AlarmCountsBySiteAndSeverityModal" tabindex="-1"
+     aria-labelledby="AlarmCountsBySiteAndSeverityModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AlarmCountsBySiteAndSeverityModalLabel">Alarm Distribution Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>This section provides details about the distribution of alarms across different sites, broken down by
+                    severity level. You can view the percentage of alarms for each severity and by site.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

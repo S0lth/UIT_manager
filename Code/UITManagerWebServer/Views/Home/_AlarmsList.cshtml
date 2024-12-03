@@ -1,0 +1,176 @@
+@model List<UITManagerWebServer.Models.ModelsView.AlarmViewModel>
+
+@{
+    string pageTitle = "Alarms"; 
+
+    if (Context.Request.Query["tab"] == "unprocessed")
+    {
+        pageTitle = "Unprocessed Alarms";
+    }
+    else if (Context.Request.Query["tab"] == "newest")
+    {
+        pageTitle = "Newest Alarms";
+    }
+    else if (Context.Request.Query["tab"] == "overdue")
+    {
+        pageTitle = "Alarms Exceeding Estimated Processing Time";
+    }
+}
+
+@functions {
+
+    string GetHeaderClass(string currentSortOrder, string column)
+    {
+        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
+        {
+            return "bg-selected-header";
+        }
+
+        return string.Empty;
+    }
+
+    string GetSortIcon(string currentSortOrder, string column)
+    {
+        if (currentSortOrder == column)
+        {
+            return "bi bi-sort-down";
+        }
+        else if (currentSortOrder == $"{column}_desc")
+        {
+            return "bi bi-sort-up";
+        }
+
+        return "bi bi-arrow-down-up";
+    }
+
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            @pageTitle
+            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#alarmModal">
+                <i class="bi bi-info-circle"></i>
+            </button>
+            @if (Model.Count > 0)
+            {
+                <span class="badge bg-info">@Model.Count</span>
+            }
+        </h5>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-secondary text-center" role="alert">
+                No @pageTitle.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-hover table-striped table-bordered rounded">
+                    <thead class="table-light sticky-top">
+                    <tr>
+                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
+                            <a asp-action="Index"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
+                               class="text-decoration-none text-dark">
+                                Host <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
+                            </a>
+                        </th>
+
+                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "model")">
+                            <a asp-action="Index"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["ModelSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
+                               class="text-decoration-none text-dark">
+                                Model <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "model")"></i>
+                            </a>
+                        </th>
+
+                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
+                            <a asp-action="Index"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
+                               class="text-decoration-none text-dark">
+                                Status <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
+                            </a>
+                        </th>
+
+                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
+                            <a asp-action="Index"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
+                               class="text-decoration-none text-dark">
+                                Severity <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
+                            </a>
+                        </th>
+
+                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
+                            <a asp-action="Index"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
+                               class="text-decoration-none text-dark">
+                                Alarm <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
+                            </a>
+                        </th>
+
+                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
+                            <a asp-action="Index"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                               asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
+                               asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
+                               asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
+                               class="text-decoration-none text-dark">
+                                Date <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
+                            </a>
+                        </th>
+                    </tr>
+
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Machines" asp-action="Details"
+                                   asp-route-id="@item.MachineId"
+                                   class="text-primary text-decoration-none">
+                                    @item.MachineName
+                                </a>
+                            </td>
+                            <td>@item.ModelName</td>
+                            <td>@item.Status</td>
+                            <td>@item.Severity</td>
+                            <td>
+                                <a asp-controller="Alarms" asp-action="Details"
+                                   asp-route-id="@item.AlarmId"
+                                   class="text-primary text-decoration-none">
+                                    @item.AlarmGroupName
+                                </a>
+                            </td>
+                            <td>@item.TriggeredAt.ToString("dd-MM-yyyy HH:mm")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

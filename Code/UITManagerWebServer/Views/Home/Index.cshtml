@@ -1,640 +1,118 @@
-﻿@using Newtonsoft.Json
+﻿@model HomePageViewModel
+@using Newtonsoft.Json
+@using UITManagerWebServer.Models.ModelsView
 @{
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
-
-@functions {
-
-    string GetHeaderClass(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
-        {
-            return "bg-selected-header";
-        }
-
-        return string.Empty;
-    }
-
-
-    string GetSortIcon(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column)
-        {
-            return "bi bi-sort-down";
-        }
-        else if (currentSortOrder == $"{column}_desc")
-        {
-            return "bi bi-sort-up";
-        }
-
-        return "bi bi-arrow-down-up";
-    }
-
-
-    string GetIsSolutionIcon(bool sol)
-    {
-        return sol ? "badge bg-success" : "badge bg-secondary";
-    }
-
-    string GetIsSolutionText(bool sol)
-    {
-        return sol ? "Solution" : "Follow-Up Note";
-    }
-
-}
-
 <div class="container-fluid py-1">
     <div class="row mt-4">
-        <!-- Left Column -->
         <div class="col-md-6">
-            <!-- Machines with Alarms -->
             <div class="fs-5 card shadow-sm border-0 rounded flex-row mb-4 py-3">
                 <span class="text-danger fw-bold mx-2">@Model.MachinesWithActiveAlarms</span> machines with alarms
                 triggered out of
                 <span class="fw-bold mx-2">@Model.TotalMachines</span>.
             </div>
 
-            <!-- Alarm Tabs -->
             <ul class="nav nav-tabs" id="alarmTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link @((Context.Request.Query["tab"] == "unprocessed") ? "active" : "")"
-                       id="unprocessed-tab" href="?tab=unprocessed&sortOrder=@ViewData["SortOrder"]">
+                    <a asp-controller="Home" asp-action="Index"
+                       asp-route-tab="unprocessed"
+                       asp-route-sortOrder="@ViewData["SortOrder"]"
+                       asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
+                       asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
+                       asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
+                       class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "unprocessed" ? "none" : "auto")">
                         Unprocessed Alarms
                     </a>
                 </li>
+
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link @((Context.Request.Query["tab"] == "newest") ? "active" : "")"
-                       id="newest-tab" href="?tab=newest&sortOrder=@ViewData["SortOrder"]">
+                    <a asp-controller="Home" asp-action="Index"
+                       asp-route-tab="newest"
+                       asp-route-sortOrder="@ViewData["SortOrder"]"
+                       asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
+                       asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
+                       asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
+                       class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "newest" ? "none" : "auto")">
                         Newest Alarms
                     </a>
                 </li>
+
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link @((Context.Request.Query["tab"] == "overdue") ? "active" : "")"
-                       id="overdue-tab" href="?tab=overdue&sortOrder=@ViewData["SortOrder"]">
+                    <a asp-controller="Home" asp-action="Index"
+                       asp-route-tab="overdue"
+                       asp-route-sortOrder="@ViewData["SortOrder"]"
+                       asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
+                       asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
+                       asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
+                       class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")"
+                       style="pointer-events: @(Model.ActiveTab == "overdue" ? "none" : "auto")">
                         Alarms Exceeding Estimated Processing Time
                     </a>
                 </li>
+
             </ul>
 
-            <div class="tab-content mt-3" id="alarmTabsContent">
-                <!-- Unprocessed Alarms -->
-                <div class="tab-pane fade show @((Context.Request.Query["tab"] == "unprocessed") ? "active" : "")"
-                     id="unprocessed" role="tabpanel" aria-labelledby="unprocessed-tab">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Oldest Unprocessed Alarms
-                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                        data-bs-target="#unprocessedModal">
-                                    <i class="bi bi-info-circle"></i>
-                                </button>
-                                <span class="badge bg-info">@Model.UnprocessedAlarms.Count</span>
-                            </h5>
-                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                <table class="table table-hover table-striped table-bordered rounded">
-                                    <thead class="table-light sticky-top">
-                                    <tr>
-                                        <!-- Machine Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Host <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
-                                            </a>
-                                        </th>
-
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "model")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["ModelSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Model <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "model")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Status Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Status <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Severity Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Severity <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- AlarmGroup Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Alarm <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Date Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Date <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
-                                            </a>
-                                        </th>
-                                    </tr>
-                                    </thead>
-
-
-                                    <tbody>
-                                    @foreach (var item in Model.UnprocessedAlarms)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <a asp-controller="Machines" asp-action="Details"
-                                                   asp-route-id="@item.MachineId"
-                                                   class="text-primary text-decoration-none">
-                                                    @item.MachineName
-                                                </a>
-                                            </td>
-                                            <td>@item.ModelName</td>
-                                            <td>@item.Status</td>
-                                            <td>@item.Severity</td>
-                                            <td>
-                                                <a asp-controller="Alarms" asp-action="Details"
-                                                   asp-route-id="@item.AlarmId"
-                                                   class="text-primary text-decoration-none">
-                                                    @item.AlarmGroupName
-                                                </a>
-                                            </td>
-                                            <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Newest Alarms -->
-                <div class="tab-pane fade show @((Context.Request.Query["tab"] == "newest") ? "active" : "")"
-                     id="newest" role="tabpanel" aria-labelledby="newest-tab">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Recently Triggered Alarms
-                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                        data-bs-target="#newestModal">
-                                    <i class="bi bi-info-circle"></i>
-                                </button>
-                                <span class="badge bg-info">@Model.NewestAlarms.Count</span>
-                            </h5>
-                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                <table class="table table-hover table-striped table-bordered rounded">
-                                    <thead class="table-light sticky-top">
-                                    <tr>
-                                        <!-- Machine Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Host <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
-                                            </a>
-                                        </th>
-
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "model")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["ModelSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Model <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "model")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Status Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Status <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Severity Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Severity <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- AlarmGroup Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Alarm <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Date Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Date <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
-                                            </a>
-                                        </th>
-                                    </tr>
-                                    </thead>
-
-                                    <tbody>
-                                    @foreach (var item in Model.NewestAlarms)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <a asp-controller="Machines" asp-action="Details"
-                                                   asp-route-id="@item.MachineId"
-                                                   class="text-primary text-decoration-none">
-                                                    @item.MachineName
-                                                </a>
-                                            </td>
-                                            <td>@item.ModelName</td>
-                                            <td>@item.Status</td>
-                                            <td>@item.Severity</td>
-                                            <td>
-                                                <a asp-controller="Alarms" asp-action="Details"
-                                                   asp-route-id="@item.AlarmId"
-                                                   class="text-primary text-decoration-none">
-                                                    @item.AlarmGroupName
-                                                </a>
-                                            </td>
-                                            <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Overdue Alarms -->
-                <div class="tab-pane fade show @((Context.Request.Query["tab"] == "overdue") ? "active" : "")"
-                     id="overdue" role="tabpanel" aria-labelledby="overdue-tab">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Alarms Exceeding Estimated Processing Time
-                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                        data-bs-target="#overdueModal">
-                                    <i class="bi bi-info-circle"></i>
-                                </button>
-                                <span class="badge bg-info">@Model.OverdueAlarms.Count</span>
-                            </h5>
-                            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                <table class="table table-hover table-striped table-bordered rounded">
-                                    <thead class="table-light sticky-top">
-                                    <tr>
-                                        <!-- Machine Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Host <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
-                                            </a>
-                                        </th>
-
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "model")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["ModelSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Model <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "model")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Status Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Status <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Severity Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Severity <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- AlarmGroup Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Alarm <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
-                                            </a>
-                                        </th>
-
-                                        <!-- Date Column -->
-                                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
-                                            <a asp-action="Index"
-                                               asp-route-tab="@Context.Request.Query["tab"]"
-                                               asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
-                                               class="text-decoration-none text-dark">
-                                                Date <i
-                                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
-                                            </a>
-                                        </th>
-                                    </tr>
-                                    </thead>
-
-                                    <tbody>
-                                    @foreach (var item in Model.OverdueAlarms)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <a asp-controller="Machines" asp-action="Details"
-                                                   asp-route-id="@item.MachineId"
-                                                   class="text-primary text-decoration-none">
-                                                    @item.MachineName
-                                                </a>
-                                            </td>
-                                            <td>@item.ModelName</td>
-                                            <td>@item.Status</td>
-                                            <td>@item.Severity</td>
-                                            <td>
-                                                <a asp-controller="Alarms" asp-action="Details"
-                                                   asp-route-id="@item.AlarmId"
-                                                   class="text-primary text-decoration-none">
-                                                    @item.AlarmGroupName
-                                                </a>
-                                            </td>
-                                            <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="alarmTabsContent">
+                @await Html.PartialAsync("_AlarmsList", Model.Alarms, ViewData)
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        Alarm Distribution by Site and Severity
-                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                data-bs-target="#AlarmCountsBySiteAndSeverityModal">
-                            <i class="bi bi-info-circle"></i>
-                        </button>
-                    </h5>
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                        <tr>
-                            <th scope="col">Site</th>
-                            @if (ViewData["AlarmCountsBySiteAndSeverity"] != null)
-                            {
-                                var alarmCountsBySiteAndSeverity = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, double>>>(ViewData["AlarmCountsBySiteAndSeverity"].ToString());
-
-                                var severityList = alarmCountsBySiteAndSeverity.Values
-                                    .SelectMany(d => d.Keys)
-                                    .Distinct()
-                                    .ToList();
-
-                                foreach (var severity in severityList)
-                                {
-                                    <th scope="col">@severity</th>
-                                }
-                            }
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @if (ViewData["AlarmCountsBySiteAndSeverity"] != null)
-                        {
-                            var alarmCountsBySiteAndSeverity = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, double>>>(ViewData["AlarmCountsBySiteAndSeverity"].ToString());
-
-                            var sortedSiteEntries = alarmCountsBySiteAndSeverity
-                                .OrderBy(site => site.Key)
-                                .ToList();
-
-                            foreach (var siteEntry in sortedSiteEntries)
-                            {
-                                <tr>
-                                    <td>@siteEntry.Key</td>
-                                    @foreach (var severity in alarmCountsBySiteAndSeverity[siteEntry.Key])
-                                    {
-                                        <td>@string.Format("{0:0.00}", severity.Value)%</td>
-                                    }
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="6">Aucune donnée disponible</td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            @await Html.PartialAsync("_AlarmDistributionBySiteAndSeverity",
+                ViewData["AlarmCountsBySiteAndSeverity"] != null
+                    ? JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, double>>>(ViewData["AlarmCountsBySiteAndSeverity"].ToString())
+                    : new Dictionary<string, Dictionary<string, double>>())
         </div>
-        <!-- Right Column -->
         <div class="col-md-6">
             <div class="row">
-                <!-- Alarm Distribution Chart -->
                 <div class="col-md-6 p-0">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Alarm Distribution by Type
-                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                        data-bs-target="#chartModal">
-                                    <i class="bi bi-info-circle"></i>
-                                </button>
-                            </h5>
-                            <canvas id="myChart"></canvas>
-                            <script>
-                                const alarmData = @Html.Raw(ViewData["AlarmTypeOccurrences"]);
-                                const labels = Object.keys(alarmData);
-                                const data = Object.values(alarmData);
-                                const ctx = document.getElementById('myChart').getContext('2d');
-                                new Chart(ctx, {
-                                    type: 'pie',
-                                    data: {
-                                        labels: labels,
-                                        datasets: [{
-                                            label: 'Number of Occurrences',
-                                            data: data,
-                                            borderWidth: 1
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        maintainAspectRatio: true,
-                                        aspectRatio: 1.8,
-                                        plugins: {
-                                            legend: {
-                                                display: true,
-                                                position: 'top',
-                                                labels: {
-                                                    font: {
-                                                        size: 14,
-                                                    }
-                                                }
-                                            },
-                                            title: {
-                                                display: true,
-                                                text: 'Alarm Type Distribution'
-                                            }
-                                        },
-                                        scales: {
-                                            x: {display: false},
-                                            y: {display: false}
-                                        }
-                                    }
-                                });
-                            </script>
-                        </div>
-                    </div>
+                    @Html.Partial("_ChartAlarmDistributionByNormGroup")
                 </div>
                 <div class="col-md-6 p-0">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                Alarms Distribution by Assignment
-                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                        data-bs-target="#chart1Modal">
-                                    <i class="bi bi-info-circle"></i>
-                                </button>
-                            </h5>
-                            <canvas id="myChart1"></canvas>
-                            <script>
-                                const alarm_assign_Data = @Html.Raw(ViewData["AssignedOrNotAlarmCount"])
-
-                                const labels_assign = Object.keys(alarm_assign_Data);
-                                const data_assign = Object.values(alarm_assign_Data);
-
-                                const ctx_assign = document.getElementById('myChart1').getContext('2d');
-                                new Chart(ctx_assign, {
-                                    type: 'pie',
-                                    data: {
-                                        labels: labels_assign,
-                                        datasets: [{
-                                            label: 'Number of Occurrences',
-                                            data: data_assign,
-                                            borderWidth: 1,
-                                            backgroundColor: ['#4caf50', '#f44336'],
-                                        }]
-                                    },
-                                    options: {
-                                        responsive: true,
-                                        maintainAspectRatio: true,
-                                        aspectRatio: 1.8,
-                                        plugins: {
-                                            legend: {
-                                                display: true,
-                                                position: 'top',
-                                                labels: {
-                                                    font: {
-                                                        size: 14,
-                                                    }
-                                                }
-                                            },
-                                            title: {
-                                                display: true,
-                                                text: '\n' +
-                                                    'Alarms Distribution by Assignment'
-                                            }
-                                        },
-                                        scales: {
-                                            x: {display: false},
-                                            y: {display: false}
-                                        }
-                                    }
-                                });
-                            </script>
-                        </div>
-                    </div>
+                    @Html.Partial("_ChartAlarmDistributionByAssignment")
                 </div>
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title mb-4 d-flex justify-content-between align-items-center">
-                            <span>Notes</span>
+                            <span>Notes
                             <button type="button" class="btn btn-link" data-bs-toggle="modal"
                                     data-bs-target="#notesModal">
                                 <i class="bi bi-info-circle"></i>
                             </button>
+                            </span>
                             <form method="get"
-                                  class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start">
-                                <!-- Filtres à droite -->
+                                  class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start"
+                                  asp-action="Index">
+
+                                <input type="hidden" name="tab" value="@Model.ActiveTab"/>
+                                <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]?.ToString()"/>
                                 <div class="d-flex ms-auto flex-wrap">
                                     <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
                                         <span>Filter</span>
                                         <span class="ms-1">by</span>
                                     </div>
+
+                                    <!-- Solution Filter Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
-                                                class="form-control form-control-sm">
-                                            <option value="" disabled selected>Note Type</option>
-                                            <option value="all">All</option>
+                                                class="form-select form-select-sm"
+                                                style="display: inline-block; min-width: 120px;">
+                                            <option value="" disabled selected>Type</option>
+                                            <option value="">All</option>
                                             <option value="true">Solution</option>
                                             <option value="false">Follow-up</option>
                                         </select>
                                     </div>
 
+                                    <!-- Author Filter Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter"
-                                                class="form-control form-control-sm">
+                                                class="form-select form-select-sm"
+                                                style="display: inline-block; min-width: 120px;">
                                             <option value="" disabled selected>Author</option>
-                                            <option value="all">All Authors</option>
+                                            <option value="">All Authors</option>
                                             @foreach (var author in ViewBag.Authors)
                                             {
                                                 <option value="@author.Id">
@@ -644,10 +122,11 @@
                                         </select>
                                     </div>
 
-
+                                    <!-- Sort Order Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["SortOrderNote"]" name="SortOrderNote"
-                                                class="form-control form-control-sm">
+                                                class="form-select form-select-sm"
+                                                style="display: inline-block; min-width: 120px;">
                                             <option value="" disabled selected>Date</option>
                                             <option value="ndate">Newest First</option>
                                             <option value="ndate_desc">Oldest First</option>
@@ -656,178 +135,19 @@
 
                                     <div class="d-flex gap-2">
                                         <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                        <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm">Reset</a>
+                                        <button href="@Url.Action("Index")"
+                                                class="btn btn-secondary btn-sm text-center">Reset
+                                        </button>
                                     </div>
                                 </div>
                             </form>
+
                         </h5>
-
-                        <div class="list-group list-group-flush">
-                            @foreach (var note in Model.Notes)
-                            {
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <p>
-                                            <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id"
-                                               class="text-primary text-decoration-none mb-1">
-                                                @note.Title
-                                            </a>
-                                        </p>
-                                        <small
-                                            class="text-muted">Author: @note.Author on @note.Date.ToString("yyyy-MM-dd HH:mm")</small>
-                                    </div>
-                                    <span
-                                        class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
-        <!-- Modal Unprocessed -->
-        <div class="modal fade" id="unprocessedModal" tabindex="-1" aria-labelledby="unprocessedModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="unprocessedModalLabel">Information on Unprocessed Alarms</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Here is some additional information about the oldest unprocessed alarms. You can view more
-                            details about how to address them.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        @await Html.PartialAsync("_NotesList", Model.Notes)
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Modal Newest -->
-        <div class="modal fade" id="newestModal" tabindex="-1" aria-labelledby="newestModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="newestModalLabel">Information on Newest Alarms</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Here you can find more details about recently triggered alarms and their current
-                            statuses.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal Overdue -->
-        <div class="modal fade" id="overdueModal" tabindex="-1" aria-labelledby="overdueModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="overdueModalLabel">Information on Alarms Exceeding Estimated
-                            Processing Time</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>This section provides more context on overdue alarms and actions to take for resolution.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal Chart -->
-        <div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="chartModalLabel">Alarm Type Distribution Information</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>This chart shows the distribution of alarms by type. It helps in understanding the severity
-                            and
-                            frequency of different alarm types.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal Chart -->
-        <div class="modal fade" id="chart1Modal" tabindex="-1" aria-labelledby="chart1ModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="chart1ModalLabel">Alarm Assignment Distribution Information</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>This chart shows the distribution of alarms by Assignment. It helps in understanding the
-                            proportions of alarms that have not been assigned to a technician.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal for Notes Information -->
-        <div class="modal fade" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="notesModalLabel">Information on Notes</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            This section contains important notes related to the machines, classified as either solutions
-                            or
-                            follow-up notes.
-                            You can filter them by solution status or by author.
-                        </p>
-                        <p>
-                            You can also sort the notes by date to see the most recent or oldest entries.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal for AlarmCountsBySiteAndSeverityModal -->
-        <div class="modal fade" id="AlarmCountsBySiteAndSeverityModal" tabindex="-1"
-             aria-labelledby="AlarmCountsBySiteAndSeverityModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="AlarmCountsBySiteAndSeverityModalLabel">Alarm Distribution
-                            Information</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            This section provides details about the distribution of alarms across different sites,
-                            broken down by severity level.
-                            You can view the percentage of alarms for each severity and by site.
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        @Html.Partial("_Modals")
     </div>
 </div>
