@@ -69,7 +69,7 @@
                 <div class="card-body">
                     <div>
                         <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
-                            <table class="table table-hover table-striped align-middle">
+                            <table class="table table-hover table-striped align-middle" id ="inventoryTable">
                                 <thead class="table-lightfix sticky-top ">
                                 <tr>
                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
@@ -139,66 +139,80 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach (var item in Model)
+                                @if (!Model.Any())
                                 {
-                                    <tr>
-                                        <td>
-                                            <a asp-controller="Machines" asp-action="Details" asp-route-id="@item.Id"
-                                               class="text-primary text-decoration-none">
-                                                @(string.IsNullOrEmpty(item.Name) ? "N/A" : item.Name)
-                                            </a>
-                                        </td>
-
-                                        <td class="text-secondary">
-                                            @(string.IsNullOrEmpty(item.GetLastSeen()) ? "N/A" : item.GetLastSeen())
-                                        </td>
-
-                                        <td class="text-secondary">
-                                            @(string.IsNullOrEmpty(item.Os) ? "N/A" : item.Os)
-                                        </td>
-
-                                        <td class="text-secondary">
-                                            @(string.IsNullOrEmpty(item.Build) ? "N/A" : item.Build)
-                                        </td>
-
-                                        <td class="text-secondary">
-                                            @(string.IsNullOrEmpty(item.ServiceTag) ? "N/A" : item.ServiceTag)
-                                        </td>
-
-                                        <td class="@((item.IsWorking) ? "text-success" : "text-danger")">
-                                            @(item.IsWorking ? "Working" : "Not working")
-                                        </td>
-
-                                        <td class="text-secondary">
-                                            <div class="d-flex align-items-center">
-                                                <!--lien à revoir -->
-                                                <a asp-controller="Notes" asp-action="Details"
+                                    <div class="list-group-item text-center">
+                                        <div class="alert alert-secondary" role="alert">
+                                            No machines found
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-controller="Machines" asp-action="Details"
                                                    asp-route-id="@item.Id"
                                                    class="text-primary text-decoration-none">
-                                                    @item.NoteCount
+                                                    @(string.IsNullOrEmpty(item.Name) ? "N/A" : item.Name)
                                                 </a>
-                                                <a asp-controller="Notes" asp-action="Create" asp-route-id="@item.Id"
-                                                   class="ms-auto me-4 text-primary text-decoration-none">
-                                                    <i class="bi bi-file-plus"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                            </td>
 
-                                        <td class="text-secondary">
-                                            @if (item.NoteCount != 0)
-                                            {
-                                                <a asp-controller="Notes" asp-action="Details" asp-route-id="@item.Id"
-                                                   class="text-primary text-decoration-none"
-                                                   style="max-width: 200px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                    @(string.IsNullOrEmpty(item.LastNote.Content) ? "N/A" : item.LastNote.Content)
-                                                </a>
-                                            }
-                                            else
-                                            {
-                                                <span>No notes written</span>
-                                            }
-                                        </td>
-                                    </tr>
+                                            <td class="text-secondary">
+                                                @(string.IsNullOrEmpty(item.GetLastSeen()) ? "N/A" : item.GetLastSeen())
+                                            </td>
+
+                                            <td class="text-secondary">
+                                                @(string.IsNullOrEmpty(item.Os) ? "N/A" : item.Os)
+                                            </td>
+
+                                            <td class="text-secondary">
+                                                @(string.IsNullOrEmpty(item.Build) ? "N/A" : item.Build)
+                                            </td>
+
+                                            <td class="text-secondary">
+                                                @(string.IsNullOrEmpty(item.ServiceTag) ? "N/A" : item.ServiceTag)
+                                            </td>
+
+                                            <td class="@((item.IsWorking) ? "text-success" : "text-danger")">
+                                                @(item.IsWorking ? "Working" : "Not working")
+                                            </td>
+
+                                            <td class="text-secondary">
+                                                <div class="d-flex align-items-center">
+                                                    <!--lien à revoir -->
+                                                    <a asp-controller="Notes" asp-action="Details"
+                                                       asp-route-id="@item.Id"
+                                                       class="text-primary text-decoration-none">
+                                                        @item.NoteCount
+                                                    </a>
+                                                    <a asp-controller="Notes" asp-action="Create"
+                                                       asp-route-id="@item.Id"
+                                                       class="ms-auto me-4 text-primary text-decoration-none">
+                                                        <i class="bi bi-file-plus"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+
+                                            <td class="text-secondary">
+                                                @if (item.NoteCount != 0)
+                                                {
+                                                    <a asp-controller="Notes" asp-action="Details"
+                                                       asp-route-id="@item.Id"
+                                                       class="text-primary text-decoration-none"
+                                                       style="max-width: 200px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                        @(string.IsNullOrEmpty(item.LastNote.Content) ? "N/A" : item.LastNote.Content)
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <span>No notes written</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
                                 }
                                 </tbody>
                             </table>
