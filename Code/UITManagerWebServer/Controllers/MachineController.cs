@@ -35,7 +35,7 @@ namespace UITManagerWebServer.Views
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             var notes = await getFilteredNotes(sortOrder, solutionFilter, authorFilter, id);
-            var alarms = await getFilteredAlrms(sortOrder, id);
+            var alarms = await getFilteredAlrms(sortOrder, id, solutionFilter);
             var information = await getMachineInformation(id);
             var authors = ViewBag.Authors = await _context.Users.ToListAsync();
             var detailView = new DetailsViewModel {
@@ -48,6 +48,8 @@ namespace UITManagerWebServer.Views
                 Alarms = alarms,
                 Authors = authors,
                 Informations = information,
+                AnyAlarms = alarms.Any(),
+                AnyNote = notes.Any(),
             };
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "date_desc";
@@ -60,6 +62,7 @@ namespace UITManagerWebServer.Views
             ViewData["SeveritySortParm"] = sortOrder.Contains("severity_desc") ? "severity" : "severity_desc";
             ViewData["AlarmGroupSortParm"] = sortOrder.Contains("alarmgroup_desc") ? "alarmgroup" : "alarmgroup_desc";
             ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
+            ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
             ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
             
 
@@ -122,7 +125,7 @@ namespace UITManagerWebServer.Views
             return parentViewModel;
         }
 
-        private async Task<List<AlarmViewModel>>getFilteredAlrms(string sortOrder, int? id) {
+        private async Task<List<AlarmViewModel>>getFilteredAlrms(string sortOrder, int? id, string solutionFilter) {
             var alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
@@ -134,6 +137,10 @@ namespace UITManagerWebServer.Views
                 .Where(a => a.MachineId == id)
                 .AsQueryable();
 
+            if (solutionFilter == "Resolved") {
+                alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name == solutionFilter);
+            }
+            
             alarmsQuery = ApplySorting(alarmsQuery, sortOrder);
             
             var alarms = await alarmsQuery.ToListAsync();
@@ -376,7 +383,8 @@ namespace UITManagerWebServer.Views
             public string Name { get; set; }
             public bool IsWorking { get; set; }
             public DateTime? LastSeen { get; set; }
-            
+            public bool AnyNote { get; set; }
+            public bool AnyAlarms { get; set; }         
         }
     }
 }
