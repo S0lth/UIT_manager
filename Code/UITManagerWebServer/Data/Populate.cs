@@ -197,26 +197,86 @@ public static class Populate {
             new Severity { Name = "Low", Description = "Low Severity" },
             new Severity { Name = "Warning", Description = "Warning Severity" }
         };
+        
+        var directXName = new InformationName { Name = "Direct X" };
+        var domainNameName = new InformationName { Name = "Domain Name" };
+        var tagServiceName = new InformationName { Name = "Tag Service" };
+        var uptimeName = new InformationName { Name = "Uptime" };
+        var cpuName = new InformationName {
+            Name = "CPU",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "Logical Core"},
+                new InformationName{Name = "Core Count"},
+                new InformationName{Name = "Clock Speed"},
+                new InformationName{Name = "Model"},
+                new InformationName{Name = "Used"},
+            }
+        };
+        
+        var ramName = new InformationName {
+            Name = "Ram",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "Total RAM"},
+                new InformationName{Name = "Used RAM"},
+                new InformationName{Name = "Free RAM"},
+            }
+        };
+        
+        var osName = new InformationName {
+            Name = "OS",
+            SubInformationNames = new List<InformationName> {
+                new InformationName{Name = "OS Name"},
+                new InformationName{Name = "OS Version"},
+                new InformationName{Name = "OS Build"},
+            }
+        };
+        
+        var ipName = new InformationName { Name = "IP Address" };
+        var disksName = new InformationName {
+            Name = "Disks",
+            SubInformationNames = new List<InformationName> {
+                new InformationName { Name = "Disk Free Size" },
+                new InformationName { Name = "Disk Total Size" },
+                new InformationName { Name = "Disk Used" },
+                new InformationName { Name = "List Name" },
+                new InformationName { Name="Number" }
+            }
+        };
+        var userName = new InformationName {
+            Name = "Users",
+            SubInformationNames = new List<InformationName> {
+                new InformationName { Name = "Name" },
+                new InformationName { Name = "Scope" },
+                new InformationName { Name = "List" },
+                new InformationName { Name = "Used Memory" },
+            }
+        };
+        
+        context.InformationNames.AddRange(
+            directXName, domainNameName, tagServiceName, uptimeName,
+            cpuName, ramName, osName, disksName
+        );
+        context.SaveChanges();
+        
 
         var normGroups = new List<NormGroup> {
             new NormGroup { Name = "Storage exceeded", Priority = 9, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Storage over 100%" } }
+                Norms = new List<Norm> { new Norm { Name = "Storage full", InformationName = disksName.SubInformationNames[2], Condition = ">", Format = "%", Value = "99" } }
             },
             new NormGroup { Name = "Obsolete operating system", Priority = 8, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" } }
+                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" , InformationName = osName.SubInformationNames[0], Condition = "IN", Format = "TEXT", Value = "WINDOWS 10"} }
             },
-            new NormGroup {
-                Name = "Ram 80% Used", Priority = 6, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Ram usage > 80%" } }
+            new NormGroup { Name = "Ram 80% Used", Priority = 6, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
+                Norms = new List<Norm> { new Norm { Name = "Ram usage > 80%", InformationName = ramName.SubInformationNames[1], Condition = ">", Format = "%", Value = "80"} }
             },
             new NormGroup { Name = "Storage 80% Used", Priority = 5, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Storage usage > 80%" } }
+                Norms = new List<Norm> { new Norm { Name = "Storage over 80%", InformationName = disksName.SubInformationNames[2], Condition = ">", Format = "%", Value = "80" } }
             },
             new NormGroup { Name = "DirectX Version", Priority = 3, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "DirectX Wrong Version" } }
+                Norms = new List<Norm> { new Norm { Name = "Old DirectX" , InformationName = directXName, Condition = "NOT IN", Format = "TEXT", Value = "DirectX 12"} } 
             },
             new NormGroup { Name = "Ram < 8GB", Priority = 1, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Ram < 8GB" } }
+                Norms = new List<Norm> { new Norm { Name = "Ram < 8GB", InformationName = ramName.SubInformationNames[0], Condition = "<", Format = "GB", Value = "8"} }
             }
         };
 

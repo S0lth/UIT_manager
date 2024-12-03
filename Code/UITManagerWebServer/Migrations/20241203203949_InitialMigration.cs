@@ -70,6 +70,26 @@ namespace UITManagerWebServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InformationNames",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    ParentId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InformationNames", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InformationNames_InformationNames_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "InformationNames",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Machines",
                 columns: table => new
                 {
@@ -318,12 +338,21 @@ namespace UITManagerWebServer.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    InformationNameId = table.Column<int>(type: "integer", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: true),
+                    Condition = table.Column<string>(type: "text", nullable: true),
+                    Format = table.Column<string>(type: "text", nullable: true),
+                    Value = table.Column<string>(type: "text", nullable: true),
                     NormGroupId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Norms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Norms_InformationNames_InformationNameId",
+                        column: x => x.InformationNameId,
+                        principalTable: "InformationNames",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Norms_NormGroups_NormGroupId",
                         column: x => x.NormGroupId,
@@ -505,6 +534,16 @@ namespace UITManagerWebServer.Migrations
                 column: "NoteId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InformationNames_ParentId",
+                table: "InformationNames",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Norms_InformationNameId",
+                table: "Norms",
+                column: "InformationNameId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Norms_NormGroupId",
                 table: "Norms",
                 column: "NormGroupId");
@@ -579,6 +618,9 @@ namespace UITManagerWebServer.Migrations
 
             migrationBuilder.DropTable(
                 name: "Notes");
+
+            migrationBuilder.DropTable(
+                name: "InformationNames");
 
             migrationBuilder.DropTable(
                 name: "Severities");

@@ -386,6 +386,28 @@ namespace UITManagerWebServer.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.InformationName", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("InformationNames");
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>
                 {
                     b.Property<int>("Id")
@@ -419,13 +441,27 @@ namespace UITManagerWebServer.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Condition")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Format")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("InformationNameId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.Property<int>("NormGroupId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("InformationNameId");
 
                     b.HasIndex("NormGroupId");
 
@@ -690,13 +726,27 @@ namespace UITManagerWebServer.Migrations
                     b.Navigation("Parent");
                 });
 
+            modelBuilder.Entity("UITManagerWebServer.Models.InformationName", b =>
+                {
+                    b.HasOne("UITManagerWebServer.Models.InformationName", null)
+                        .WithMany("SubInformationNames")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("UITManagerWebServer.Models.Norm", b =>
                 {
+                    b.HasOne("UITManagerWebServer.Models.InformationName", "InformationName")
+                        .WithMany()
+                        .HasForeignKey("InformationNameId");
+
                     b.HasOne("UITManagerWebServer.Models.NormGroup", "NormGroup")
                         .WithMany("Norms")
                         .HasForeignKey("NormGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("InformationName");
 
                     b.Navigation("NormGroup");
                 });
@@ -758,6 +808,11 @@ namespace UITManagerWebServer.Migrations
             modelBuilder.Entity("UITManagerWebServer.Models.Information", b =>
                 {
                     b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("UITManagerWebServer.Models.InformationName", b =>
+                {
+                    b.Navigation("SubInformationNames");
                 });
 
             modelBuilder.Entity("UITManagerWebServer.Models.Machine", b =>
