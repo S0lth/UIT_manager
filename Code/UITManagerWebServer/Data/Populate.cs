@@ -14,17 +14,17 @@ public static class Populate {
         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
         DeleteDb(context);
-        
+
         await SeedUsersAsync(userManager, roleManager, context);
 
         var normGroups = await SeedNormGroup(userManager, context);
-        
+
         var machines = SeedMachines(context);
 
-        await SeedAlarms(context, machines,normGroups,userManager);
-        
-        SeedNotes(context,machines);
-        
+        await SeedAlarms(context, machines, normGroups, userManager);
+
+        SeedNotes(context, machines);
+
         Console.WriteLine($"Database populated");
     }
 
@@ -46,7 +46,8 @@ public static class Populate {
         }
     }
 
-    private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context) {
+    private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager, ApplicationDbContext context) {
         var roles = new List<string> { "MaintenanceManager", "Technician", "ITDirector" };
         foreach (var role in roles) {
             if (!await roleManager.RoleExistsAsync(role)) {
@@ -187,7 +188,8 @@ public static class Populate {
             $"Database populated");
     }
 
-    private static async Task<List<NormGroup>> SeedNormGroup(UserManager<ApplicationUser> userManager,ApplicationDbContext context) {
+    private static async Task<List<NormGroup>> SeedNormGroup(UserManager<ApplicationUser> userManager,
+        ApplicationDbContext context) {
         var random = new Random();
 
         var severities = new List<Severity>() {
@@ -197,7 +199,7 @@ public static class Populate {
             new Severity { Name = "Low", Description = "Low Severity" },
             new Severity { Name = "Warning", Description = "Warning Severity" }
         };
-        
+
         var directXName = new InformationName { Name = "Direct X" };
         var domainNameName = new InformationName { Name = "Domain Name" };
         var tagServiceName = new InformationName { Name = "Tag Service" };
@@ -205,32 +207,32 @@ public static class Populate {
         var cpuName = new InformationName {
             Name = "CPU",
             SubInformationNames = new List<InformationName> {
-                new InformationName{Name = "Logical Core"},
-                new InformationName{Name = "Core Count"},
-                new InformationName{Name = "Clock Speed"},
-                new InformationName{Name = "Model"},
-                new InformationName{Name = "Used"},
+                new InformationName { Name = "Logical Core" },
+                new InformationName { Name = "Core Count" },
+                new InformationName { Name = "Clock Speed" },
+                new InformationName { Name = "Model" },
+                new InformationName { Name = "Used" },
             }
         };
-        
+
         var ramName = new InformationName {
             Name = "Ram",
             SubInformationNames = new List<InformationName> {
-                new InformationName{Name = "Total RAM"},
-                new InformationName{Name = "Used RAM"},
-                new InformationName{Name = "Free RAM"},
+                new InformationName { Name = "Total RAM" },
+                new InformationName { Name = "Used RAM" },
+                new InformationName { Name = "Free RAM" },
             }
         };
-        
+
         var osName = new InformationName {
             Name = "OS",
             SubInformationNames = new List<InformationName> {
-                new InformationName{Name = "OS Name"},
-                new InformationName{Name = "OS Version"},
-                new InformationName{Name = "OS Build"},
+                new InformationName { Name = "OS Name" },
+                new InformationName { Name = "OS Version" },
+                new InformationName { Name = "OS Build" },
             }
         };
-        
+
         var ipName = new InformationName { Name = "IP Address" };
         var disksName = new InformationName {
             Name = "Disks",
@@ -239,7 +241,7 @@ public static class Populate {
                 new InformationName { Name = "Disk Total Size" },
                 new InformationName { Name = "Disk Used" },
                 new InformationName { Name = "List Name" },
-                new InformationName { Name="Number" }
+                new InformationName { Name = "Number" }
             }
         };
         var userName = new InformationName {
@@ -251,32 +253,109 @@ public static class Populate {
                 new InformationName { Name = "Used Memory" },
             }
         };
-        
+
         context.InformationNames.AddRange(
             directXName, domainNameName, tagServiceName, uptimeName,
             cpuName, ramName, osName, disksName
         );
         context.SaveChanges();
-        
+
 
         var normGroups = new List<NormGroup> {
-            new NormGroup { Name = "Storage exceeded", Priority = 9, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Storage full", InformationName = disksName.SubInformationNames[2], Condition = ">", Format = "%", Value = "99" } }
+            new NormGroup {
+                Name = "Storage exceeded",
+                Priority = 9,
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true,
+                Norms =
+                    new List<Norm> {
+                        new Norm {
+                            Name = "Storage full",
+                            InformationName = disksName.SubInformationNames[2],
+                            Condition = ">",
+                            Format = "%",
+                            Value = "99"
+                        }
+                    }
             },
-            new NormGroup { Name = "Obsolete operating system", Priority = 8, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Windows 10 detected" , InformationName = osName.SubInformationNames[0], Condition = "IN", Format = "TEXT", Value = "WINDOWS 10"} }
+            new NormGroup {
+                Name = "Obsolete operating system",
+                Priority = 8,
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true,
+                Norms =
+                    new List<Norm> {
+                        new Norm {
+                            Name = "Windows 10 detected",
+                            InformationName = osName.SubInformationNames[0],
+                            Condition = "IN",
+                            Format = "TEXT",
+                            Value = "WINDOWS 10"
+                        }
+                    }
             },
-            new NormGroup { Name = "Ram 80% Used", Priority = 6, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Ram usage > 80%", InformationName = ramName.SubInformationNames[1], Condition = ">", Format = "%", Value = "80"} }
+            new NormGroup {
+                Name = "Ram 80% Used",
+                Priority = 6,
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true,
+                Norms =
+                    new List<Norm> {
+                        new Norm {
+                            Name = "Ram usage > 80%",
+                            InformationName = ramName.SubInformationNames[1],
+                            Condition = ">",
+                            Format = "%",
+                            Value = "80"
+                        }
+                    }
             },
-            new NormGroup { Name = "Storage 80% Used", Priority = 5, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Storage over 80%", InformationName = disksName.SubInformationNames[2], Condition = ">", Format = "%", Value = "80" } }
+            new NormGroup {
+                Name = "Storage 80% Used",
+                Priority = 5,
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true,
+                Norms =
+                    new List<Norm> {
+                        new Norm {
+                            Name = "Storage over 80%",
+                            InformationName = disksName.SubInformationNames[2],
+                            Condition = ">",
+                            Format = "%",
+                            Value = "80"
+                        }
+                    }
             },
-            new NormGroup { Name = "DirectX Version", Priority = 3, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Old DirectX" , InformationName = directXName, Condition = "NOT IN", Format = "TEXT", Value = "DirectX 12"} } 
+            new NormGroup {
+                Name = "DirectX Version",
+                Priority = 3,
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true,
+                Norms =
+                    new List<Norm> {
+                        new Norm {
+                            Name = "Old DirectX",
+                            InformationName = directXName,
+                            Condition = "NOT IN",
+                            Format = "TEXT",
+                            Value = "DirectX 12"
+                        }
+                    }
             },
-            new NormGroup { Name = "Ram < 8GB", Priority = 1, MaxExpectedProcessingTime = TimeSpan.FromDays(5), IsEnable = true,
-                Norms = new List<Norm> { new Norm { Name = "Ram < 8GB", InformationName = ramName.SubInformationNames[0], Condition = "<", Format = "GB", Value = "8"} }
+            new NormGroup {
+                Name = "Ram < 8GB",
+                Priority = 1,
+                MaxExpectedProcessingTime = TimeSpan.FromDays(5),
+                IsEnable = true,
+                Norms = new List<Norm> {
+                    new Norm {
+                        Name = "Ram < 8GB",
+                        InformationName = ramName.SubInformationNames[0],
+                        Condition = "<",
+                        Format = "GB",
+                        Value = "8"
+                    }
+                }
             }
         };
 
@@ -395,9 +474,8 @@ public static class Populate {
     }
 
     private static List<Machine> SeedMachines(ApplicationDbContext context) {
-        
         var random = new Random();
-        
+
         // Model
         var brandsAndModels = new[] {
             new { Brand = "Dell", Models = new[] { "Latitude", "OptiPlex", "Precision", "Inspiron" } },
@@ -410,31 +488,32 @@ public static class Populate {
 
         // DirectX
         var directX = new[] { "Direct X 12", "Direct X 11", "Direct X 10" };
-        
+
         // OS
         var Os = new[] { "Microsoft Windows 10 Enterprise", "Microsoft Windows 11 Enterprise" };
         var OsV = new[] { "23h2", "24h2", "22h2", };
         var OsB = new[] { "22631", "26100", "19045" };
-        
+
         // CPU
-        var modeltype = new[] { "AMD Ryzen 7 7700X", "Intel Core i9-13900K", "Intel Core i7-13700K", "Intel Xeon W-3175X" };
+        var modeltype = new[] {
+            "AMD Ryzen 7 7700X", "Intel Core i9-13900K", "Intel Core i7-13700K", "Intel Xeon W-3175X"
+        };
         var locgical = new[] { "16", "32", "64", "126" };
         var coreCount = new[] { "8", "16", "32", "64" };
         var clock = new[] { "3601", "5204", "2500", "3100", "4600" };
-        
+
         // Ram
         var ramTotals = new[] { 4, 8, 16, 32, 64 };
 
         // Ip
         var ipAddresses = new[] {
-            "192.168.1.15", "10.0.0.87", "172.16.24.65", "203.0.113.42", "8.8.8.8", "172.18.99.22",
-            "192.168.10.200", "10.1.1.1", "192.0.2.33", "198.51.100.5", "100.64.0.1", "172.19.45.88",
-            "192.168.0.254", "10.255.255.254", "203.0.113.120", "8.8.4.4", "192.168.56.1", "10.100.200.5",
-            "172.20.14.1", "192.168.2.25", "172.21.13.50", "10.10.10.10", "192.168.100.100", "198.51.100.1",
-            "203.0.113.55", "10.0.5.5", "172.22.99.88", "192.168.3.3", "10.123.45.67", "172.23.7.77", "192.168.4.1",
-            "203.0.113.150", "10.10.20.30", "172.24.56.78", "192.168.5.5", "198.51.100.99", "172.25.1.1",
-            "192.168.50.2", "10.20.30.40", "172.26.33.44", "192.168.6.6", "10.30.40.50", "172.27.99.100",
-            "192.168.7.7", "198.51.100.2", "203.0.113.3", "10.40.50.60", "172.28.88.77", "192.168.8.8",
+            "192.168.1.15", "10.0.0.87", "172.16.24.65", "203.0.113.42", "8.8.8.8", "172.18.99.22", "192.168.10.200",
+            "10.1.1.1", "192.0.2.33", "198.51.100.5", "100.64.0.1", "172.19.45.88", "192.168.0.254", "10.255.255.254",
+            "203.0.113.120", "8.8.4.4", "192.168.56.1", "10.100.200.5", "172.20.14.1", "192.168.2.25", "172.21.13.50",
+            "10.10.10.10", "192.168.100.100", "198.51.100.1", "203.0.113.55", "10.0.5.5", "172.22.99.88", "192.168.3.3",
+            "10.123.45.67", "172.23.7.77", "192.168.4.1", "203.0.113.150", "10.10.20.30", "172.24.56.78", "192.168.5.5",
+            "198.51.100.99", "172.25.1.1", "192.168.50.2", "10.20.30.40", "172.26.33.44", "192.168.6.6", "10.30.40.50",
+            "172.27.99.100", "192.168.7.7", "198.51.100.2", "203.0.113.3", "10.40.50.60", "172.28.88.77", "192.168.8.8",
             "10.50.60.70", "172.29.11.22", "192.168.9.9", "198.51.100.10", "203.0.113.99", "10.60.70.80",
             "172.30.99.123", "192.168.10.10", "10.70.80.90", "172.31.99.45", "192.168.11.11", "198.51.100.20",
             "203.0.113.56", "10.80.90.100", "172.32.14.88", "192.168.12.12", "10.90.100.110", "172.33.33.33",
@@ -442,22 +521,21 @@ public static class Populate {
             "10.110.120.130", "172.35.88.99", "192.168.15.15", "198.51.100.40", "203.0.113.22", "10.120.130.140",
             "172.36.10.11",
         };
-        
+
         // Disk
         var diskNames = new string[] {
             "C:System_Disk", "D:Data_Drive", "E:Backup_Disk", "F:Media_Storage", "G:Games_Drive", "H:VM_Storage",
             "I:Archive_1", "J:Personal_Files", "K:Shared_Drive", "L:Encrypted_Vault"
         };
         var diskTotals = new[] { 128, 256, 512, 1024, 2048 };
-        
+
         // User
         var scoop = new[] { "local", "domain" };
         var name = new[] { "Secretary", "Commercial", "Employee" };
-        
+
         var machines = new List<Machine>();
 
         for (int i = 1; i <= 50; i++) {
-            
             // Model
             var brandAndModel = brandsAndModels[random.Next(brandsAndModels.Length)];
             var brand = brandAndModel.Brand;
@@ -472,7 +550,7 @@ public static class Populate {
             var Machine = new Machine {
                 Name = machineName, Model = Model, IsWorking = random.Next(1, 101) <= 90, LastSeen = seen,
             };
-            
+
             // DirectX
             Machine.Informations.Add(
                 new Value { Machine = Machine, Name = "Direct X", Values = directX[random.Next(directX.Length)] });
@@ -489,7 +567,7 @@ public static class Populate {
             var date = new TimeSpan(random.Next(0, 151), random.Next(0, 24), random.Next(0, 60), random.Next(0, 60));
             Machine.Informations.Add(
                 new Value { Machine = Machine, Name = "UpTimes", Values = date.ToString() });
-            
+
             // Cpu
             int nbCore = random.Next(locgical.Length);
             Machine.Informations.Add(
@@ -500,11 +578,15 @@ public static class Populate {
                     Children = new List<Information> {
                         new Value { Name = "Logical core", Machine = Machine, Values = locgical[nbCore], },
                         new Value { Name = "Core count", Machine = Machine, Values = coreCount[nbCore], },
-                        new Value { Name = "Clockspeed", Machine = Machine, Values = clock[random.Next(clock.Length)], },
-                        new Value { Name = "Model", Machine = Machine, Values = modeltype[random.Next(modeltype.Length)], }
+                        new Value {
+                            Name = "Clockspeed", Machine = Machine, Values = clock[random.Next(clock.Length)],
+                        },
+                        new Value {
+                            Name = "Model", Machine = Machine, Values = modeltype[random.Next(modeltype.Length)],
+                        }
                     }
                 });
-            
+
             // Ram
             int ramTotal = ramTotals[random.Next(ramTotals.Length)];
             double ramUsed = GetRandomNumber(0, ramTotal);
@@ -554,14 +636,14 @@ public static class Populate {
             for (int j = 0; j < random.Next(1, 3); j++) {
                 int diskTotal = diskTotals[random.Next(diskTotals.Length)];
                 double diskUsed = GetRandomNumber(0, diskTotal);
-                
+
                 var val = new Component {
                     Name = diskNames[random.Next(diskNames.Length)],
                     Machine = Machine,
                     Values = "Null",
                     Children = new List<Information> {
                         new Value { Name = "Disk Total Size", Values = diskTotal + "Go", Machine = Machine },
-                        new Value { Name = "Disk Free Size", Values =  diskUsed + "Go", Machine = Machine }
+                        new Value { Name = "Disk Free Size", Values = diskUsed + "Go", Machine = Machine }
                     }
                 };
                 Disks.Add(val);
@@ -579,7 +661,7 @@ public static class Populate {
                         new Value { Name = "Number disks", Machine = Machine, Values = Disks.Count.ToString(), },
                     }
                 });
-            
+
             // User
             Machine.Informations.Add(
                 new Component {
@@ -611,8 +693,12 @@ public static class Populate {
                             Machine = Machine,
                             Values = "Null",
                             Children = new List<Information> {
-                                new Value { Name = "User Name", Machine = Machine, Values = name[random.Next(name.Length)], },
-                                new Value { Name = "User Scope", Machine = Machine, Values = scoop[random.Next(scoop.Length)], }
+                                new Value {
+                                    Name = "User Name", Machine = Machine, Values = name[random.Next(name.Length)],
+                                },
+                                new Value {
+                                    Name = "User Scope", Machine = Machine, Values = scoop[random.Next(scoop.Length)],
+                                }
                             }
                         },
                     }
@@ -626,11 +712,11 @@ public static class Populate {
 
         return machines;
     }
-    
-    private static async Task SeedAlarms(ApplicationDbContext context,List<Machine> machines,List<NormGroup> normGroups,UserManager<ApplicationUser> userManager) {
 
+    private static async Task SeedAlarms(ApplicationDbContext context, List<Machine> machines,
+        List<NormGroup> normGroups, UserManager<ApplicationUser> userManager) {
         var random = new Random();
-        
+
         var rolesToFind = new List<string> { "MaintenanceManager", "ITDirector" };
 
         var usersInRoles = new List<ApplicationUser>();
@@ -643,11 +729,29 @@ public static class Populate {
         usersInRoles = usersInRoles.Distinct().ToList();
 
         var alarmStatusTypes = new List<AlarmStatusType> {
-            new AlarmStatusType { Name = "New", Description = "An alarm that has been recently created and has not yet been acknowledged or acted upon." },
-            new AlarmStatusType { Name = "In Progress", Description = "The issue that triggered the alarm is actively being investigated or resolved." },
-            new AlarmStatusType { Name = "Resolved", Description = "The issue that caused the alarm has been fully addressed, and no further action is required." },
-            new AlarmStatusType { Name = "Reopened", Description = "An issue that previously triggered an alarm has recurred, causing the alarm to be raised again after being marked as resolved." },
-            new AlarmStatusType { Name = "Awaiting Third-Party Assistance", Description = "The resolution of the issue causing the alarm depends on action or support from an external party or vendor, and progress is pending their input." }
+            new AlarmStatusType {
+                Name = "New",
+                Description = "An alarm that has been recently created and has not yet been acknowledged or acted upon."
+            },
+            new AlarmStatusType {
+                Name = "In Progress",
+                Description = "The issue that triggered the alarm is actively being investigated or resolved."
+            },
+            new AlarmStatusType {
+                Name = "Resolved",
+                Description =
+                    "The issue that caused the alarm has been fully addressed, and no further action is required."
+            },
+            new AlarmStatusType {
+                Name = "Reopened",
+                Description =
+                    "An issue that previously triggered an alarm has recurred, causing the alarm to be raised again after being marked as resolved."
+            },
+            new AlarmStatusType {
+                Name = "Awaiting Third-Party Assistance",
+                Description =
+                    "The resolution of the issue causing the alarm depends on action or support from an external party or vendor, and progress is pending their input."
+            }
         };
 
         context.AlarmStatusTypes.AddRange(alarmStatusTypes);
@@ -659,234 +763,232 @@ public static class Populate {
             int test = 0;
             test++;
             // Get Ram
-           Information infoRam = machine.Informations.Find(i => i.Name == "Ram");
+            Information infoRam = machine.Informations.Find(i => i.Name == "Ram");
 
-           string ramTotString = infoRam.Children.Find(i => i.Name == "Total RAM").Values;
-           int ramTot = int.Parse(ramTotString.Substring(0,ramTotString.Length - 3));
-           
-           string ramUsedString = infoRam.Children.Find(i => i.Name == "Used RAM").Values;
-           double ramUsed = Double.Parse(ramUsedString.Substring(0,ramUsedString.Length - 3));
+            string ramTotString = infoRam.Children.Find(i => i.Name == "Total RAM").Values;
+            int ramTot = int.Parse(ramTotString.Substring(0, ramTotString.Length - 3));
 
-           if (ramUsed / ramTot > 0.8) {
-               int nbStatus = random.Next(1, alarmStatusTypes.Count);
-               
-               var alarm = new Alarm {
-                   TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                   Machine = machine,
-                   NormGroup = normGroups[2],
-                   UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-               };
-               
-               for (int i = 0; i < nbStatus; i++) {
-                   alarmStatusHistories.Add(
-                       new AlarmStatusHistory {
-                           Alarm = alarm,
-                           StatusType = alarmStatusTypes[i],
-                           ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                           UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                       });
-               }
-           }
-           
-           if (ramTot < 8) {
-               int nbStatus = random.Next(1, alarmStatusTypes.Count);
-               
-               var alarm = new Alarm {
-                   TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                   Machine = machine,
-                   NormGroup = normGroups[5],
-                   UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-               };
-               
-               for (int i = 0; i < nbStatus; i++) {
-                   alarmStatusHistories.Add(
-                       new AlarmStatusHistory {
-                           Alarm = alarm,
-                           StatusType = alarmStatusTypes[i],
-                           ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                           UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                       });
-               }
-               
-               alarms.Add(alarm);
-           }
-           
-           // Get Storage
-           Information infoDisk = machine.Informations.Find(i => i.Name == "List Disk");
+            string ramUsedString = infoRam.Children.Find(i => i.Name == "Used RAM").Values;
+            double ramUsed = Double.Parse(ramUsedString.Substring(0, ramUsedString.Length - 3));
 
-           
-           foreach (Information info in infoDisk.Children.Find(i => i.Name == "Disks").Children) {
-               
-               string diskTotString = info.Children.Find(i => i.Name == "Disk Total Size").Values;
-               int diskTot = int.Parse(diskTotString.Substring(0, diskTotString.Length - 3));
-               
-               string diskFreeString = info.Children.Find(i => i.Name == "Disk Free Size").Values;
-               double diskFree = Double.Parse(diskFreeString.Substring(0, diskFreeString.Length - 3));
-               
-               if (diskFree == diskTot) {
-                   
-                   int nbStatus = random.Next(1, alarmStatusTypes.Count);
-               
-                   var alarm = new Alarm {
-                       TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                       Machine = machine,
-                       NormGroup = normGroups[0],
-                       UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                   };
-               
-                   for (int i = 0; i < nbStatus; i++) {
-                       alarmStatusHistories.Add(
-                           new AlarmStatusHistory {
-                               Alarm = alarm,
-                               StatusType = alarmStatusTypes[i],
-                               ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                               UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                           });
-                   }
-               
-                   alarms.Add(alarm);
-                   
-               }else if (diskFree/diskTot < 0.2) {
-                   int nbStatus = random.Next(1, alarmStatusTypes.Count);
-               
-                   var alarm = new Alarm {
-                       TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                       Machine = machine,
-                       NormGroup = normGroups[3],
-                       UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                   };
-                   
-                   for (int i = 0; i < nbStatus; i++) {
-                       alarmStatusHistories.Add(
-                           new AlarmStatusHistory {
-                               Alarm = alarm,
-                               StatusType = alarmStatusTypes[i],
-                               ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
+            if (ramUsed / ramTot > 0.8) {
+                int nbStatus = random.Next(1, alarmStatusTypes.Count);
+
+                var alarm = new Alarm {
+                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    Machine = machine,
+                    NormGroup = normGroups[2],
+                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                };
+
+                for (int i = 0; i < nbStatus; i++) {
+                    alarmStatusHistories.Add(
+                        new AlarmStatusHistory {
+                            Alarm = alarm,
+                            StatusType = alarmStatusTypes[i],
+                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                           });
-                   }
-                   alarms.Add(alarm);
-               }
-               
-           }
-           
-           // Get DirectX
-           Information infoDirectX = machine.Informations.Find(i => i.Name == "Direct X");
+                        });
+                }
+            }
 
-           if (infoDirectX.Values != "Direct X 12") {
+            if (ramTot < 8) {
+                int nbStatus = random.Next(1, alarmStatusTypes.Count);
 
-               int nbStatus = random.Next(1, alarmStatusTypes.Count);
-               
-               var alarm = new Alarm {
-                   TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                   Machine = machine,
-                   NormGroup = normGroups[4],
-                           UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-               };
-               
-               for (int i = 0; i < nbStatus; i++) {
-                   alarmStatusHistories.Add(
-                       new AlarmStatusHistory {
-                           Alarm = alarm,
-                           StatusType = alarmStatusTypes[i],
-                           ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                           UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                       });
-               }
-               
-               alarms.Add(alarm);
-           }
-           
-           // Get Windows
-           Information infoOs = machine.Informations.Find(i => i.Name == "OS");
+                var alarm = new Alarm {
+                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    Machine = machine,
+                    NormGroup = normGroups[5],
+                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                };
 
-           if (infoOs.Children.Find(i => i.Name == "OS Name").Values.Contains("10")) {
-               
-               int nbStatus = random.Next(1, alarmStatusTypes.Count);
-               
-               var alarm = new Alarm {
-                   TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                   Machine = machine,
-                   NormGroup = normGroups[1],
-                   UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-               };
-               
-               for (int i = 0; i < nbStatus; i++) {
-                   alarmStatusHistories.Add(
-                       new AlarmStatusHistory {
-                           Alarm = alarm,
-                           StatusType = alarmStatusTypes[i],
-                           ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                           UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                       });
-               }
-               
-               alarms.Add(alarm);
-           }
+                for (int i = 0; i < nbStatus; i++) {
+                    alarmStatusHistories.Add(
+                        new AlarmStatusHistory {
+                            Alarm = alarm,
+                            StatusType = alarmStatusTypes[i],
+                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
+                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                        });
+                }
 
-           // Alarm Closed
-           int alarmCount = random.Next(1, 3);
-           for (int i = 0; i < alarmCount; i++) {
-               int nbDays = random.Next(20, 144);
-               var alarm = new Alarm {
-                   TriggeredAt = DateTime.UtcNow.AddDays(-nbDays),
-                   Machine = machine,
-                   NormGroup = normGroups[random.Next(normGroups.Count)],
-                   UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-               };
+                alarms.Add(alarm);
+            }
 
-               int historyCount = random.Next(1,3);
+            // Get Storage
+            Information infoDisk = machine.Informations.Find(i => i.Name == "List Disk");
 
-               for (i = 0; i < historyCount; i++) {
-                   alarmStatusHistories.Add(
-                       new AlarmStatusHistory {
-                           Alarm = alarm,
-                           StatusType = alarmStatusTypes[i],
-                           ModificationDate = DateTime.UtcNow.AddDays(nbDays).AddHours(-10 + i),
-                           UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                       });
-               }
-               alarms.Add(alarm);
-           }
+
+            foreach (Information info in infoDisk.Children.Find(i => i.Name == "Disks").Children) {
+                string diskTotString = info.Children.Find(i => i.Name == "Disk Total Size").Values;
+                int diskTot = int.Parse(diskTotString.Substring(0, diskTotString.Length - 3));
+
+                string diskFreeString = info.Children.Find(i => i.Name == "Disk Free Size").Values;
+                double diskFree = Double.Parse(diskFreeString.Substring(0, diskFreeString.Length - 3));
+
+                if (diskFree == diskTot) {
+                    int nbStatus = random.Next(1, alarmStatusTypes.Count);
+
+                    var alarm = new Alarm {
+                        TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                        Machine = machine,
+                        NormGroup = normGroups[0],
+                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                    };
+
+                    for (int i = 0; i < nbStatus; i++) {
+                        alarmStatusHistories.Add(
+                            new AlarmStatusHistory {
+                                Alarm = alarm,
+                                StatusType = alarmStatusTypes[i],
+                                ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
+                                UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                            });
+                    }
+
+                    alarms.Add(alarm);
+                }
+                else if (diskFree / diskTot < 0.2) {
+                    int nbStatus = random.Next(1, alarmStatusTypes.Count);
+
+                    var alarm = new Alarm {
+                        TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                        Machine = machine,
+                        NormGroup = normGroups[3],
+                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                    };
+
+                    for (int i = 0; i < nbStatus; i++) {
+                        alarmStatusHistories.Add(
+                            new AlarmStatusHistory {
+                                Alarm = alarm,
+                                StatusType = alarmStatusTypes[i],
+                                ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
+                                UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                            });
+                    }
+
+                    alarms.Add(alarm);
+                }
+            }
+
+            // Get DirectX
+            Information infoDirectX = machine.Informations.Find(i => i.Name == "Direct X");
+
+            if (infoDirectX.Values != "Direct X 12") {
+                int nbStatus = random.Next(1, alarmStatusTypes.Count);
+
+                var alarm = new Alarm {
+                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    Machine = machine,
+                    NormGroup = normGroups[4],
+                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                };
+
+                for (int i = 0; i < nbStatus; i++) {
+                    alarmStatusHistories.Add(
+                        new AlarmStatusHistory {
+                            Alarm = alarm,
+                            StatusType = alarmStatusTypes[i],
+                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
+                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                        });
+                }
+
+                alarms.Add(alarm);
+            }
+
+            // Get Windows
+            Information infoOs = machine.Informations.Find(i => i.Name == "OS");
+
+            if (infoOs.Children.Find(i => i.Name == "OS Name").Values.Contains("10")) {
+                int nbStatus = random.Next(1, alarmStatusTypes.Count);
+
+                var alarm = new Alarm {
+                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    Machine = machine,
+                    NormGroup = normGroups[1],
+                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                };
+
+                for (int i = 0; i < nbStatus; i++) {
+                    alarmStatusHistories.Add(
+                        new AlarmStatusHistory {
+                            Alarm = alarm,
+                            StatusType = alarmStatusTypes[i],
+                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
+                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                        });
+                }
+
+                alarms.Add(alarm);
+            }
+
+            // Alarm Closed
+            int alarmCount = random.Next(1, 3);
+            for (int i = 0; i < alarmCount; i++) {
+                int nbDays = random.Next(20, 144);
+                var alarm = new Alarm {
+                    TriggeredAt = DateTime.UtcNow.AddDays(-nbDays),
+                    Machine = machine,
+                    NormGroup = normGroups[random.Next(normGroups.Count)],
+                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                };
+
+                int historyCount = random.Next(1, 3);
+
+                for (i = 0; i < historyCount; i++) {
+                    alarmStatusHistories.Add(
+                        new AlarmStatusHistory {
+                            Alarm = alarm,
+                            StatusType = alarmStatusTypes[i],
+                            ModificationDate = DateTime.UtcNow.AddDays(nbDays).AddHours(-10 + i),
+                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                        });
+                }
+
+                alarms.Add(alarm);
+            }
+
             var alarme = new Alarm {
                 TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
                 Machine = machines[0],
                 NormGroup = normGroups[random.Next(normGroups.Count)],
             };
             alarms.Add(alarme);
-
         }
+
         context.AlarmHistories.AddRange(alarmStatusHistories);
         context.Alarms.AddRange(alarms);
         context.SaveChanges();
     }
-    
-    private static void SeedNotes(ApplicationDbContext context,List<Machine> machines) {
-        var random = new Random();
 
+    private static void SeedNotes(ApplicationDbContext context, List<Machine> machines) {
+        var random = new Random();
         var notes = new List<Note>();
 
         var solutionTitles = new[] { "Driver Update", "System Vulnerability Patch", "OS Upgrade" };
 
         var solutionContents = new[] {
-            "Resolved issue with outdated drivers. ![Driver Image](image1.jpg)",
-            "Patched system vulnerabilities successfully. ![Vulnerability Image](image2.jpg)",
-            "Updated operating system to the latest version. ![OS Upgrade Image](image3.jpg)"
+            "### Resolved issue with outdated drivers\n- **Issue**: The outdated drivers were causing frequent system crashes and slow performance, especially with peripheral devices.\n- **Actions Taken**:\n   1. Identified that several drivers were not up to date.\n   2. Updated drivers for network adapter, sound card, and graphics card.\n   3. Restarted the system after the updates were completed to ensure stability.\n- **Outcome**: After the update, the system was much more stable, and there were no crashes during the stress tests.\n![Driver Image](image1.png)\n\n",
+    
+            "### Patched system vulnerabilities\n- **Issue**: A security vulnerability was discovered in the system related to outdated security patches and missing updates.\n- **Actions Taken**:\n   1. Applied critical patches to address known vulnerabilities in the system.\n   2. Updated the operating system and security-related software to the latest versions.\n   3. Ran a vulnerability scan to ensure all security patches were correctly installed and no residual threats remained.\n- **Outcome**: The vulnerability has been successfully patched, and a follow-up scan confirmed no remaining issues. The system is now fully up-to-date with current security standards.\n",
+    
+            "### Updated operating system\n- **Issue**: The operating system was outdated, with multiple patches missing, exposing the system to potential malware and instability.\n- **Actions Taken**:\n   1. Backed up all critical data and created restore points for the system.\n   2. Installed the latest operating system version along with all pending security updates.\n   3. Checked for application compatibility with the new version.\n- **Outcome**: The upgrade was successful, and performance has improved significantly. All applications are running smoothly, and the system is now more secure.\n"
         };
 
         var nonSolutionTitles = new[] { "Investigating CPU Usage", "Storage Monitoring" };
         var nonSolutionContents = new[] {
-            "Investigating high CPU usage. ![CPU](image4.jpg)",
-            "Monitoring storage capacity after warning. ![Storage](image5.jpg)"
+            "### Investigating high CPU usage\n- **Issue**: Users reported performance lag due to excessive CPU usage when running high-demand applications.\n- **Actions Taken**:\n   1. Analyzed running processes and identified a few applications that were consuming excessive CPU resources.\n   2. Disabled unnecessary background tasks and services that were consuming CPU.\n   3. Monitored CPU performance over a 24-hour period after making adjustments.\n   4. Further investigation revealed a potential memory leak in one of the installed applications.\n- **Current Status**: The issue is still being investigated. The next step is to contact the application vendor for a patch related to the memory leak.\n- ![CPU](image4.png)\n\n",
+    
+            "### Monitoring storage capacity\n- **Issue**: The system's storage reached 95% capacity, triggering warnings of potential performance degradation.\n- **Actions Taken**:\n   1. Checked current disk usage and identified large files and temporary data causing the storage overflow.\n   2. Moved several non-essential files to an external drive to free up space.\n   3. Implemented disk clean-up tasks to remove redundant files and logs that were not required.\n   4. Reconfigured disk quotas to ensure that future storage usage remains manageable.\n- **Current Status**: The system is stable, and storage usage is now below 70%. However, I’m continuing to monitor disk usage to prevent further issues. A long-term solution will involve upgrading the storage device.\n- ![Storage](image5.png)\n\n"
         };
 
-        // Assure-toi que la liste des machines et des utilisateurs est bien peuplée
-        var machinesWithNotes = machines.OrderBy(_ => random.Next()).Take(5).ToList();
-        var usersInRolesNote = context.Users.ToList(); // Utiliser des utilisateurs valides depuis la base de données
+        var usersInRolesNote = context.Users.ToList(); 
 
+        List<string> ExtractImageFileNames(string content) {
             var fileNames = new List<string>();
             var regex = new Regex(@"!\[.*?\]\((.*?)\)", RegexOptions.Compiled);
-        List<string> ExtractImageFileNames(string content) {
             var matches = regex.Matches(content);
 
             foreach (Match match in matches) {
@@ -897,17 +999,24 @@ public static class Populate {
             return fileNames;
         }
 
-        void AddFilesToNote(Note note, List<string> imageFileNames) {
+        void AddFilesToNote(Note note, List<string> imageFileNames)
+        {
             var files = new List<UITManagerWebServer.Models.File>();
 
-            foreach (var fileName in imageFileNames) {
+            foreach (var fileName in imageFileNames)
+            {
                 var filePath = Path.Combine("Images", fileName);
-                if (System.IO.File.Exists(filePath)) {
+                if (System.IO.File.Exists(filePath))
+                {
                     var fileContent = System.IO.File.ReadAllBytes(filePath);
-                    var mimeType = "image/jpg";
+                    var mimeType = "image/jpg"; 
 
-                    var file = new UITManagerWebServer.Models.File {
-                        FileName = fileName, FileContent = fileContent, MimeType = mimeType, NoteId = note.Id
+                    var file = new UITManagerWebServer.Models.File 
+                    {
+                        FileName = fileName,
+                        FileContent = fileContent,
+                        MimeType = mimeType,
+                        NoteId = note.Id
                     };
 
                     files.Add(file);
@@ -917,18 +1026,21 @@ public static class Populate {
             note.Files = files;
         }
 
+
+
+
         for (int i = 0; i < 3; i++) {
             var note = new Note {
                 Title = solutionTitles[i],
                 Content = solutionContents[i],
                 CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
-                Machine = machinesWithNotes[i],
+                Machine = machines[i],
                 IsSolution = true,
                 AuthorId = usersInRolesNote[random.Next(0, usersInRolesNote.Count)].Id
             };
 
             var imageFileNames = ExtractImageFileNames(note.Content);
-            notes.Add(note); // Ajouter la note à la liste avant d'ajouter les fichiers
+            notes.Add(note);
         }
 
         for (int i = 0; i < 2; i++) {
@@ -936,32 +1048,29 @@ public static class Populate {
                 Title = nonSolutionTitles[i],
                 Content = nonSolutionContents[i],
                 CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
-                Machine = machinesWithNotes[i + 3],
+                Machine = machines[i + 3],
                 IsSolution = false,
                 AuthorId = usersInRolesNote[random.Next(0, usersInRolesNote.Count)].Id
             };
 
             var imageFileNames = ExtractImageFileNames(note.Content);
-            notes.Add(note); // Ajouter la note à la liste avant d'ajouter les fichiers
+            notes.Add(note);
         }
 
         try {
             context.Notes.AddRange(notes);
-            context.SaveChanges(); // Sauvegarde les notes d'abord
-            Console.WriteLine("Notes saved successfully");
+            context.SaveChanges();
 
-            // Ajouter les fichiers après que les notes aient été sauvegardées
             foreach (var note in notes) {
                 var imageFileNames = ExtractImageFileNames(note.Content);
-                AddFilesToNote(note, imageFileNames); // Ajouter les fichiers à la note
+                AddFilesToNote(note, imageFileNames);
             }
-
-            context.SaveChanges(); // Sauvegarde les fichiers associés après l'enregistrement des notes
-            Console.WriteLine("Files saved successfully");
+            context.SaveChanges();
         }
         catch (Exception ex) {
             Console.WriteLine($"Error saving notes: {ex.Message}");
         }
+
     }
 
     private static string GenerateRandomWindowsMachineName() {
@@ -975,9 +1084,9 @@ public static class Populate {
 
         return $"{site}-DESKTOP-{randomId}";
     }
-    private static double GetRandomNumber(double minimum, double maximum) { 
+
+    private static double GetRandomNumber(double minimum, double maximum) {
         Random random = new Random();
         return random.NextDouble() * (maximum - minimum) + minimum;
     }
-
 }
