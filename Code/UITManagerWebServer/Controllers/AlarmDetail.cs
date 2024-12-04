@@ -37,19 +37,21 @@ namespace UITManagerWebServer {
             ViewData["SolutionFilter"] = solutionFilter;
             var users = _context.Users.ToList();
 
-            var alarm = await _context.Alarms
-                .Include(a => a.Machine)
-                .Include(a => a.NormGroup)
-                .Include(a => a.AlarmHistories)
-                .ThenInclude(ah => ah.User) // Inclure les utilisateurs associés aux AlarmHistories
-                .Include(a => a.User) // Si l'alarme a un utilisateur directement lié
-                .Include(a => a.NormGroup.SeverityHistories) // Include SeverityHistories
-                .ThenInclude(sh => sh.Severity)
-                .FirstOrDefaultAsync(a => a.Id == id);
+            var alarm =  _context.Alarms
+                .Include(a => a.Machine) // Inclure les informations sur la machine
+                .Include(a => a.NormGroup) // Inclure le NormGroup
+                .Include(a => a.AlarmHistories) // Inclure les historiques d'alarme
+                .ThenInclude(aStatus => aStatus.StatusType) // Inclure les types de statut associés
+                .Include(a => a.NormGroup.SeverityHistories) // Inclure les historiques de sévérité
+                .ThenInclude(sh => sh.Severity) // Inclure les sévérités associées
+                .Include(a => a.User) // Inclure l'utilisateur lié à l'alarme
+                .FirstOrDefault(a => a.Id == id);
 
-// Récupérer l'ID de la machine liée à cette alarme
             var machineId = alarm?.Machine?.Id;
-
+            var alarmUsers = _context.Alarms
+                .Where(a => a.Id == id) // Filtre pour une alarme spfique
+                .Select(a => a.User) // Sélectionne uniquement l'utilisateur lié à l'alarme
+                .FirstOrDefault();
             var notes = _context.Notes
                 .Include(note => note.Machine) // Inclut les machines associées
                 .Include(note => note.Author) // Inclut les informations de l'auteur, si applicable
@@ -99,6 +101,7 @@ namespace UITManagerWebServer {
             ViewData["user"] = users;
             ViewData["Machine"] = detailView;
             ViewData["Notes"] = notes;
+            ViewData["techos"] = alarmUsers;
 
 
             return View(alarm);

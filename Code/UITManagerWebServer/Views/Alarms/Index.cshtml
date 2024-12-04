@@ -199,9 +199,8 @@
                                                         onchange="updateAlarmStatus(@item.Id, this.value)">
                                                     @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
                                                     {
-                                                        @if (statusType.Name == @item.AlarmHistories
-                                                                 ?.OrderByDescending(ah => ah.ModificationDate)
-                                                                 .FirstOrDefault()?.StatusType?.Name.ToString())
+                                                        @if (statusType.Name == @item.GetLatestAlarmHistory()
+                                                               ?.StatusType?.Name.ToString())
                                                         {
                                                             <option selected value="@statusType.Name">@statusType.Name </option>
                                                         }
@@ -241,17 +240,17 @@
                                                 }
                                                 else
                                                 {
-                                                    <select class="form-select form-select-sm @GetBGColorForAttribution(@item.GetLatestAlarmHistory()?.UserId)">
+                                                    <select onchange="updateAlarmAttribution('@item.Id', value)" class="form-select form-select-sm @GetBGColorForAttribution(@item.GetLatestAlarmHistory()?.UserId)">
                                                         @{ bool isFirst = true; }
 
 
                                                         @foreach (var user in ViewData["user"] as IEnumerable<UITManagerWebServer.Models.ApplicationUser>)
                                                         {
-                                                            if (@user.Id == @item.GetLatestAlarmHistory()?.UserId && isFirst == true)
+                                                            if (@user.Id == @item.UserId && isFirst == true)
                                                             {
                                                                 isFirst = false;
 
-                                                                <option selected value="@user.Id" onclick="updateAlarmAttribution('@item.Id', '@user.Id')"> @user.FirstName @user.LastName</option>
+                                                                <option selected value="@user.Id" > @user.FirstName @user.LastName</option>
                                                             }
                                                             else if (@item.GetLatestAlarmHistory()?.UserId == null && isFirst == true)
                                                             {

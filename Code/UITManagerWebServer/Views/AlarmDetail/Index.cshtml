@@ -2,6 +2,7 @@
 @{
 ViewData["Title"] = "Index";
 var machine = (UITManagerWebServer.Models.ModelsView.DetailViewModel) ViewData["Machine"];
+var atribued = (UITManagerWebServer.Models.ApplicationUser)ViewData["techos"];
 }
 
 @functions {
@@ -117,7 +118,7 @@ _ => "bi bi-arrow-down-up",
                                         <select id="AssignedUser" name="AssignedUser" style="max-width: 300px "class="form-select form-select-sm  @GetBGColorForAttribution(@Model.GetLatestAlarmHistory()?.UserId)">
                                     @foreach (var user in ViewData["user"] as List<UITManagerWebServer.Models.ApplicationUser>)
                                     {
-                                    var isSelected = user.Id == Model.GetLatestAlarmHistory().User?.Id;
+                                    var isSelected = user.Id == atribued.Id;
 
                                     if (isSelected)
                                     {

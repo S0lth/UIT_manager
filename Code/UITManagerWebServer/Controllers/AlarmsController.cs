@@ -56,8 +56,7 @@ namespace UITManagerWebServer.Controllers {
                     .OrderByDescending(h => h.ModificationDate)
                     .Select(h => h.StatusType.Name)
                     .FirstOrDefault() != "Resolved");
-
-
+       
             alarms = sortOrder switch {
                 "Attribution_desc" => alarms.OrderByDescending(a => a.User == null ? "" : a.User.FirstName),
                 "Attribution" => alarms.OrderBy(a => a.User == null ? "" : a.User.FirstName),
