@@ -11,34 +11,87 @@ using Newtonsoft.Json;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
-namespace UITManagerWebServer.Views
-{
-    public class MachineController : Controller
-    {
+namespace UITManagerWebServer.Controllers {
+    public class MachineController : Controller {
         private readonly ApplicationDbContext _context;
 
-        public MachineController(ApplicationDbContext context)
-        {
+        public MachineController(ApplicationDbContext context) {
             _context = context;
         }
-        
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
+
+        public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
-        
+
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
-        // GET: Machine
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Machines.ToListAsync());
+        [Authorize]
+        public async Task<IActionResult> Index(string sortOrder, bool? statusFilter) {
+            if (string.IsNullOrEmpty(sortOrder)) {
+                sortOrder = "LastSeen_desc";
+            }
+
+            ViewData["SortOrder"] = sortOrder;
+            ViewData["MachineSortParam"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
+            ViewData["LastSeenSortParam"] = sortOrder == "LastSeen" ? "LastSeen_desc" : "LastSeen";
+            ViewData["OsSortParam"] = sortOrder == "Os" ? "Os_desc" : "Os";
+            ViewData["BuildSortParam"] = sortOrder == "Build" ? "Build_desc" : "Build";
+            ViewData["ServiceTagSortParam"] = sortOrder == "ServiceTag" ? "ServiceTag_desc" : "ServiceTag";
+            ViewData["StatusSortParam"] = sortOrder == "Status" ? "Status_desc" : "Status";
+            ViewData["NoteCountSortParam"] = sortOrder == "NoteCount" ? "NoteCount_desc" : "NoteCount";
+            ViewData["LastNoteSortParam"] = sortOrder == "LastNote" ? "LastNote_desc" : "LastNote";
+
+            ViewData["StatusFilter"] = statusFilter.HasValue ? statusFilter : null;
+
+            IQueryable<Machine> machinesQuery =
+                _context.Machines.Include(m => m.Informations).Include(m => m.Notes).AsQueryable();
+
+            if (statusFilter.HasValue) {
+                machinesQuery = machinesQuery.Where(m => m.IsWorking == statusFilter);
+            }
+
+            List<Machine> machines = await machinesQuery.ToListAsync();
+
+            IEnumerable<MachineViewModel> machineViewModels = machines.Select(m => new MachineViewModel {
+                Id = m.Id,
+                Name = m.Name,
+                LastSeen = m.LastSeen,
+                Model = m.Model,
+                Os = m.GetOsName() + " " + m.GetOsVersion(),
+                Build = m.GetOsBuild(),
+                ServiceTag = m.GetServiceTag(),
+                IsWorking = m.IsWorking,
+                NoteCount = m.Notes.Count,
+                LastNote = m.GetLatestNote()
+            });
+
+            machineViewModels = sortOrder switch {
+                "Machine" => machineViewModels.OrderBy(m => m.Name),
+                "Machine_desc" => machineViewModels.OrderByDescending(m => m.Name),
+                "LastSeen" => machineViewModels.OrderBy(m => m.LastSeen),
+                "LastSeen_desc" => machineViewModels.OrderByDescending(m => m.LastSeen),
+                "Os" => machineViewModels.OrderBy(m => m.Os),
+                "Os_desc" => machineViewModels.OrderByDescending(m => m.Os),
+                "Build" => machineViewModels.OrderBy(m => m.Build),
+                "Build_desc" => machineViewModels.OrderByDescending(m => m.Build),
+                "ServiceTag" => machineViewModels.OrderBy(m => m.ServiceTag),
+                "ServiceTag_desc" => machineViewModels.OrderByDescending(m => m.ServiceTag),
+                "Status" => machineViewModels.OrderBy(m => m.IsWorking),
+                "Status_desc" => machineViewModels.OrderByDescending(m => m.IsWorking),
+                "NoteCount" => machineViewModels.OrderBy(m => m.NoteCount),
+                "NoteCount_desc" => machineViewModels.OrderByDescending(m => m.NoteCount),
+                "LastNote" => machineViewModels.OrderBy(m => m.LastNote?.Content),
+                "LastNote_desc" => machineViewModels.OrderByDescending(m => m.LastNote?.Content),
+                _ => machineViewModels.OrderByDescending(m => m.LastSeen),
+            };
+
+            return View(machineViewModels.ToList());
         }
 
         [Authorize]
         // GET: Machine/Details/5
-        public async Task<IActionResult> Details(int? id, string sortOrder, string solutionFilter, string authorFilter, string typeFilter)
-        {
+        public async Task<IActionResult> Details(int? id, string sortOrder, string solutionFilter, string authorFilter,
+            string typeFilter) {
             var machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -48,8 +101,8 @@ namespace UITManagerWebServer.Views
             var authors = ViewBag.Authors = await _context.Users.ToListAsync();
             var detailView = new DetailsViewModel {
                 Id = machine.Id,
-                Name = machine.Name, 
-                LastSeen = machine.LastSeen, 
+                Name = machine.Name,
+                LastSeen = machine.LastSeen,
                 Model = machine.Model,
                 IsWorking = machine.IsWorking,
                 Notes = notes,
@@ -62,7 +115,7 @@ namespace UITManagerWebServer.Views
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "date_desc";
             }
-            
+
             ViewData["SortOrder"] = sortOrder;
             ViewData["MachineSortParm"] = sortOrder.Contains("machine_desc") ? "machine" : "machine_desc";
             ViewData["ModelSortParm"] = sortOrder.Contains("model_desc") ? "model" : "model_desc";
@@ -73,9 +126,9 @@ namespace UITManagerWebServer.Views
             ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
             ViewData["SolutionFilter"] = solutionFilter;
             ViewData["AuthorFilter"] = authorFilter;
-            ViewData["SortOrderNote"] = sortOrder.Contains("ndate") ? "ndate_desc" : "ndate"; 
+            ViewData["SortOrderNote"] = sortOrder.Contains("ndate") ? "ndate_desc" : "ndate";
             ViewData["TypeFilter"] = typeFilter;
-            
+
 
             return View(detailView);
         }
@@ -88,29 +141,26 @@ namespace UITManagerWebServer.Views
             var rootElements = await list.Where(e => e.ParentId == null).ToListAsync();
             var model = rootElements.Select(
                 a => new ComponentsViewModel {
-                MachineId = a.Machine.Id,
-                ParentId = a.ParentId,
-                Name = a.Name,
-                id = a.Id,
-                Value = a.Values,
-                Children = new List<ComponentsViewModel>()
-            }).ToList();
+                    MachineId = a.Machine.Id,
+                    ParentId = a.ParentId,
+                    Name = a.Name,
+                    id = a.Id,
+                    Value = a.Values,
+                    Children = new List<ComponentsViewModel>()
+                }).ToList();
 
-            foreach (var root in model)
-            {
+            foreach (var root in model) {
                 var hierarchy = await BuildHierarchy(root, list.ToList());
                 result.Add(hierarchy);
             }
 
             return result;
         }
-        
-        private async Task<ComponentsViewModel> BuildHierarchy(ComponentsViewModel parent, List<Information> list)
-        {
+
+        private async Task<ComponentsViewModel> BuildHierarchy(ComponentsViewModel parent, List<Information> list) {
             var children = list.Where(e => e.ParentId == parent.id).ToList();
 
-            var parentViewModel = new ComponentsViewModel
-            {
+            var parentViewModel = new ComponentsViewModel {
                 MachineId = parent.MachineId,
                 ParentId = parent.ParentId,
                 id = parent.id,
@@ -136,7 +186,7 @@ namespace UITManagerWebServer.Views
             return parentViewModel;
         }
 
-        private async Task<List<AlarmViewModel>>getFilteredAlrms(string sortOrder, int? id, string typeFilter) {
+        private async Task<List<AlarmViewModel>> getFilteredAlrms(string sortOrder, int? id, string typeFilter) {
             var alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
@@ -149,15 +199,19 @@ namespace UITManagerWebServer.Views
                 .AsQueryable();
 
             if (typeFilter == "Resolved") {
-                alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name == typeFilter);
+                alarmsQuery = alarmsQuery.Where(a =>
+                    a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name ==
+                    typeFilter);
             }
-            
+
             if (typeFilter != "Resolved" && typeFilter != "All") {
-                alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name != "Resolved");
+                alarmsQuery = alarmsQuery.Where(a =>
+                    a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name !=
+                    "Resolved");
             }
-            
+
             alarmsQuery = ApplySorting(alarmsQuery, sortOrder);
-            
+
             var alarms = await alarmsQuery.ToListAsync();
 
             return alarms.Select(a => new AlarmViewModel {
@@ -173,7 +227,7 @@ namespace UITManagerWebServer.Views
 
         private IQueryable<Alarm> ApplySorting(IQueryable<Alarm> query, string sortOrder) {
             if (string.IsNullOrEmpty(sortOrder)) {
-                return query.OrderByDescending(a => a.TriggeredAt); 
+                return query.OrderByDescending(a => a.TriggeredAt);
             }
 
             switch (sortOrder.ToLower()) {
@@ -205,17 +259,18 @@ namespace UITManagerWebServer.Views
                     return query.OrderByDescending(a => a.TriggeredAt);
                 case "date":
                     return query.OrderBy(a => a.TriggeredAt);
-                 case "attribution_desc":
+                case "attribution_desc":
                     return query.OrderByDescending(a => a.User == null ? "" : a.User.FirstName);
-                 case "attribution":
-                     return query.OrderBy(a => a.User == null ? "" : a.User.FirstName);
+                case "attribution":
+                    return query.OrderBy(a => a.User == null ? "" : a.User.FirstName);
                 default:
                     return query.OrderByDescending(a => a.TriggeredAt);
             }
         }
 
-        private async Task<List<NoteViewModel>> getFilteredNotes(string sortOrder, string solutionFilter, string authorFilter, int? id) {
-            var notesQuery = _context.Notes.Include(n => n.Author).Where( n => n.MachineId == id).AsQueryable();
+        private async Task<List<NoteViewModel>> getFilteredNotes(string sortOrder, string solutionFilter,
+            string authorFilter, int? id) {
+            var notesQuery = _context.Notes.Include(n => n.Author).Where(n => n.MachineId == id).AsQueryable();
 
             if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
                 bool isSolution = solutionFilter.ToLower() == "true";
@@ -248,8 +303,7 @@ namespace UITManagerWebServer.Views
         }
 
         // GET: Machine/Create
-        public IActionResult Create()
-        {
+        public IActionResult Create() {
             return View();
         }
 
@@ -258,30 +312,27 @@ namespace UITManagerWebServer.Views
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,IsWorking,Model,LastSeen")] Machine machine)
-        {
-            if (ModelState.IsValid)
-            {
+        public async Task<IActionResult> Create([Bind("Id,Name,IsWorking,Model,LastSeen")] Machine machine) {
+            if (ModelState.IsValid) {
                 _context.Add(machine);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(machine);
         }
 
         // GET: Machine/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Edit(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var machine = await _context.Machines.FindAsync(id);
-            if (machine == null)
-            {
+            if (machine == null) {
                 return NotFound();
             }
+
             return View(machine);
         }
 
@@ -290,48 +341,40 @@ namespace UITManagerWebServer.Views
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IsWorking,Model,LastSeen")] Machine machine)
-        {
-            if (id != machine.Id)
-            {
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IsWorking,Model,LastSeen")] Machine machine) {
+            if (id != machine.Id) {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
+            if (ModelState.IsValid) {
+                try {
                     _context.Update(machine);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MachineExists(machine.Id))
-                    {
+                catch (DbUpdateConcurrencyException) {
+                    if (!MachineExists(machine.Id)) {
                         return NotFound();
                     }
-                    else
-                    {
+                    else {
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(machine);
         }
 
         // GET: Machine/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Delete(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             var machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (machine == null)
-            {
+            if (machine == null) {
                 return NotFound();
             }
 
@@ -341,11 +384,9 @@ namespace UITManagerWebServer.Views
         // POST: Machine/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
             var machine = await _context.Machines.FindAsync(id);
-            if (machine != null)
-            {
+            if (machine != null) {
                 _context.Machines.Remove(machine);
             }
 
@@ -353,12 +394,11 @@ namespace UITManagerWebServer.Views
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MachineExists(int id)
-        {
+        private bool MachineExists(int id) {
             return _context.Machines.Any(e => e.Id == id);
         }
-        
-        
+
+
         public class AlarmViewModel {
             public int MachineId { get; set; }
             public int AlarmId { get; set; }
@@ -399,7 +439,51 @@ namespace UITManagerWebServer.Views
             public bool IsWorking { get; set; }
             public DateTime? LastSeen { get; set; }
             public bool AnyNote { get; set; }
-            public bool AnyAlarms { get; set; }         
+            public bool AnyAlarms { get; set; }
+        }
+
+        /// <summary>
+        /// Represents the data for a machine, including its details, status, and associated notes.
+        /// </summary>
+        public class MachineViewModel {
+            public int Id { get; set; }
+
+            public string Name { get; set; }
+
+            public string Model { get; set; }
+
+            public DateTime LastSeen { get; set; }
+
+            public string Os { get; set; }
+
+            public string Build { get; set; }
+
+            public string ServiceTag { get; set; }
+
+            public bool IsWorking { get; set; }
+
+            public int NoteCount { get; set; }
+
+            public Note LastNote { get; set; }
+
+            /// <summary>
+            /// Gets the difference between the system date and the last seen date
+            /// The latest note is determined by the most recent creation date.
+            /// </summary>
+            /// <returns>A string containing the difference</returns>
+            public string GetLastSeen() {
+                TimeSpan timeSpan = DateTime.Now - LastSeen;
+
+                return timeSpan.TotalMinutes switch {
+                    < 1 => "Just now",
+                    < 60 => $"{(int)timeSpan.TotalMinutes} minute{(timeSpan.TotalMinutes >= 2 ? "s" : "")} ago",
+                    < 1440 => $"{(int)timeSpan.TotalHours} hour{(timeSpan.TotalHours >= 2 ? "s" : "")} ago",
+                    < 43200 => $"{(int)timeSpan.TotalDays} day{(timeSpan.TotalDays >= 2 ? "s" : "")} ago",
+                    < 525600 =>
+                        $"{(int)(timeSpan.TotalDays / 30)} month{(timeSpan.TotalDays / 30 >= 2 ? "s" : "")} ago",
+                    _ => $"{(int)(timeSpan.TotalDays / 365)} year{(timeSpan.TotalDays / 365 >= 2 ? "s" : "")} ago",
+                };
+            }
         }
     }
 }

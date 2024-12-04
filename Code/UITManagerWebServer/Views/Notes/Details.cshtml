@@ -109,15 +109,18 @@
                                     // Séparation du chemin en segments
                                     var segments = path.Split('/');
 
-                                    // Si l'URL a au moins deux segments (après la racine), on crée un nom de page à partir des deux premiers segments
-                                    if (segments.Length >= 2)
+                                    // Si l'URL contient plus de deux segments (la racine + deux autres), on utilise les segments 1 et 2 pour former le nom
+                                    if (segments.Length >= 3)
                                     {
-                                        // On prend les deux premiers segments et on les joint en un nom de page
                                         previousPageName = string.Join(" ", segments[1], segments[2]).Replace("-", " ");
+                                    }
+                                    // Si l'URL ne contient pas suffisamment de segments, on prend seulement le dernier segment
+                                    else if (segments.Length == 2)
+                                    {
+                                        previousPageName = segments[1].Replace("-", " ");
                                     }
                                     else
                                     {
-                                        // Si l'URL ne contient pas suffisamment de segments, on garde le dernier segment
                                         previousPageName = segments.LastOrDefault()?.Replace("-", " ") ?? "Previous Page";
                                     }
                                 }
@@ -130,9 +133,6 @@
                                 Back to @previousPageName
                             </a>
                         }
-
-
-
 
                         <a class="btn btn-outline-primary" asp-action="Index">
                             View All Notes
