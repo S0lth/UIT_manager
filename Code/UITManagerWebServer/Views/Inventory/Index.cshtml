@@ -181,9 +181,8 @@
 
                                             <td class="text-secondary">
                                                 <div class="d-flex align-items-center">
-                                                    <!--lien à revoir -->
-                                                    <a asp-controller="Notes" asp-action="Details"
-                                                       asp-route-id="@item.Id"
+                                                    <a asp-controller="Notes" asp-action="Index" 
+                                                       asp-route-search="@item.Name"
                                                        class="text-primary text-decoration-none">
                                                         @item.NoteCount
                                                     </a>
