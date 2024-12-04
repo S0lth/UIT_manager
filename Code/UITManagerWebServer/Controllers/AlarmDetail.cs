@@ -11,6 +11,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
+
 using UITManagerWebServer.Models.ModelsView;
 
 namespace UITManagerWebServer
@@ -494,7 +495,7 @@ namespace UITManagerWebServer
         }
 
        
-        private async Task<InnerComponentsViewModel> BuildHierarchy(InnerComponentsViewModel parent, List<Informations> list)
+        private async Task<InnerComponentsViewModel> BuildHierarchy(InnerComponentsViewModel parent, List<Information> list)
         {
             var children = list.Where(e => e.ParentId == parent.id).ToList();
 
