@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
+using UITManagerWebServer.Models.ModelsView;
+
 namespace UITManagerWebServer
 {
     public class AlarmDetail : Controller
@@ -26,36 +28,33 @@ namespace UITManagerWebServer
 
         }
 
-        public async Task<IActionResult> Index(string SortOrder, int id,  string solutionFilter)
+        public async Task<IActionResult> Index(string SortOrder, int id, string solutionFilter)
         {
             ViewData["SortOrder"] = SortOrder;
             ViewData["date"] = SortOrder == "date" ? "date_desc" : "date";
             ViewData["Note"] = SortOrder == "note" ? "note_desc" : "note";
             ViewData["SolutionFilter"] = solutionFilter;
-
             var users = _context.Users.ToList();
-            
-            
-            
             
             var alarm = await _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmHistories)
-                .ThenInclude(ah => ah.User) 
-                // Inclure les utilisateurs associés aux AlarmHistories
-                .Include(a => a.User)
+                .ThenInclude(ah => ah.User) // Inclure les utilisateurs associés aux AlarmHistories
+                .Include(a => a.User) // Si l'alarme a un utilisateur directement lié
                 .Include(a => a.NormGroup.SeverityHistories) // Include SeverityHistories
-                .ThenInclude(sh => sh.Severity)// Si l'alarme a un utilisateur directement lié
+                .ThenInclude(sh => sh.Severity)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
+// Récupérer l'ID de la machine liée à cette alarme
+            var machineId = alarm?.Machine?.Id;
             
             var notes = _context.Notes
                 .Include(note => note.Machine) // Inclut les machines associées
                 .Include(note => note.Author)  // Inclut les informations de l'auteur, si applicable
                 .ToList();
 
-            
+
             notes = SortOrder switch
             {
                 "date" => notes.OrderBy(n => n.CreatedAt).ToList(),
@@ -66,28 +65,39 @@ namespace UITManagerWebServer
             };
             
             notes = solutionFilter switch
-            {
+            { 
                 "true" => notes.Where(n => n.IsSolution).ToList(),
                 "false" => notes.Where(n => !n.IsSolution).ToList(),
                 _ => notes
             };
             
-            var machine = await _context.Machines
-                .FirstOrDefaultAsync(m => m.Id == id);
+
             
-            var information = await getMachineInformation(id);
+            
+            var machine = await _context.Machines
+                .FirstOrDefaultAsync(m => m.Id == machineId);
+            var alarms = await getFilteredAlrms(SortOrder, machineId, "");
+            var information = await getMachineInformation(machineId);
             var authors = ViewBag.Authors = await _context.Users.ToListAsync();
-            var detailView = new InnerDetailsViewModel {
+            var detailView = new DetailViewModel() {
                 Id = machine.Id,
                 Name = machine.Name, 
                 LastSeen = machine.LastSeen, 
                 Model = machine.Model,
                 IsWorking = machine.IsWorking,
-                //Notes = notes,
-                //Alarms = alarm,
-                Authors = authors ?? new ApplicationUser(),
+                Notes = null,
+                Alarms = alarms,
+                Authors = authors,
                 Informations = information,
+                AnyAlarms = alarms.Any(),
+                AnyNote = notes.Any(),
             };
+            
+            
+            
+            
+            
+            
             
             if (alarm == null)
             {
@@ -95,13 +105,78 @@ namespace UITManagerWebServer
             }
             ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
             ViewData["user"] = users;
-            ViewData["Machine"] = machine;
+            ViewData["Machine"] = detailView;
             ViewData["Notes"] = notes;
+            
 
             return View(alarm);
         }
 
-   
+        
+        private async Task<List<InnerAlarmViewModel>>getFilteredAlrms(string sortOrder, int? id, string typeFilter) {
+            var alarmsQuery = _context.Alarms
+                .Include(a => a.Machine)
+                .Include(a => a.NormGroup)
+                .Include(a => a.User)
+                .Include(a => a.AlarmHistories)
+                .ThenInclude(aStatus => aStatus.StatusType)
+                .Include(a => a.NormGroup.SeverityHistories)
+                .ThenInclude(sh => sh.Severity)
+                .Where(a => a.MachineId == id)
+                .AsQueryable();
+
+            if (typeFilter == "Resolved") {
+                alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name == typeFilter);
+            }
+            
+            if (typeFilter != "Resolved" && typeFilter != "All") {
+                alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name != "Resolved");
+            }
+            
+            alarmsQuery = ApplySorting(alarmsQuery, sortOrder);
+            
+            var alarms = await alarmsQuery.ToListAsync();
+
+            return alarms.Select(a => new InnerAlarmViewModel {
+                MachineId = a.Machine.Id,
+                AlarmId = a.Id,
+                Status = a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault()?.StatusType.Name,
+                Severity = a.NormGroup.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()
+                    ?.Severity.Name,
+                AlarmGroupName = a.NormGroup.Name,
+                TriggeredAt = a.TriggeredAt,
+            }).ToList();
+        }
+
+        
+        
+        private async Task<List<InnerComponentsViewModel>> getMachineInformation(int? id)
+        {
+            var list = _context.Components.Where(a => a.MachinesId == id).AsQueryable();
+            var result = new List<InnerComponentsViewModel>();
+
+            // Parcourir la liste pour trouver les éléments sans parent (racines)
+            var rootElements = await list.Where(e => e.ParentId == null).ToListAsync();
+            var model = rootElements.Select(
+                a => new InnerComponentsViewModel
+                {
+                    MachineId = a.Machine.Id,
+                    ParentId = a.ParentId,
+                    Name = a.Name,
+                    id = a.Id,
+                    Value = a.Values,
+                    Children = new List<InnerComponentsViewModel>()
+                }).ToList();
+            
+            foreach (var root in model)
+            {
+                var hierarchy = await BuildHierarchy(root, list.ToList());
+                result.Add(hierarchy);
+            }
+
+            return result;
+        }
+
         [HttpPost]
         [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
         [Route("AlarmDetail/UpdateStatus")]
@@ -373,37 +448,53 @@ namespace UITManagerWebServer
         {
             return _context.Alarms.Any(e => e.Id == id);
         }
-        
-        
-        
-        
-        
-        
-                private async Task<List<InnerComponentsViewModel>> getMachineInformation(int? id) {
-            var list = _context.Components.Where(a => a.MachinesId == id).AsQueryable();
-            var result = new List<InnerComponentsViewModel>();
 
-            // Parcourir la liste pour trouver les éléments sans parent (racines)
-            var rootElements = await list.Where(e => e.ParentId == null).ToListAsync();
-            var model = rootElements.Select(
-                a => new InnerComponentsViewModel {
-                MachineId = a.Machine.Id,
-                ParentId = a.ParentId,
-                Name = a.Name,
-                id = a.Id,
-                Value = a.Values,
-                Children = new List<InnerComponentsViewModel>()
-            }).ToList();
 
-            foreach (var root in model)
-            {
-                var hierarchy = await BuildHierarchy(root, list.ToList());
-                result.Add(hierarchy);
+
+  private IQueryable<Alarm> ApplySorting(IQueryable<Alarm> query, string sortOrder) {
+            if (string.IsNullOrEmpty(sortOrder)) {
+                return query.OrderByDescending(a => a.TriggeredAt); 
             }
 
-            return result;
+            switch (sortOrder.ToLower()) {
+                case "machine_desc":
+                    return query.OrderByDescending(a => a.Machine.Name);
+                case "machine":
+                    return query.OrderBy(a => a.Machine.Name);
+                case "model_desc":
+                    return query.OrderByDescending(a => a.Machine.Model);
+                case "model":
+                    return query.OrderBy(a => a.Machine.Model);
+                case "status_desc":
+                    return query.OrderByDescending(a => a.AlarmHistories
+                        .OrderByDescending(h => h.ModificationDate)
+                        .FirstOrDefault().StatusType.Name);
+                case "status":
+                    return query.OrderBy(a => a.AlarmHistories
+                        .OrderByDescending(h => h.ModificationDate)
+                        .FirstOrDefault().StatusType.Name);
+                case "severity_desc":
+                    return query.OrderByDescending(a => a.NormGroup.SeverityHistories
+                        .OrderByDescending(sh => sh.UpdateDate)
+                        .FirstOrDefault().Severity.Name);
+                case "severity":
+                    return query.OrderBy(a => a.NormGroup.SeverityHistories
+                        .OrderByDescending(sh => sh.UpdateDate)
+                        .FirstOrDefault().Severity.Name);
+                case "date_desc":
+                    return query.OrderByDescending(a => a.TriggeredAt);
+                case "date":
+                    return query.OrderBy(a => a.TriggeredAt);
+                 case "attribution_desc":
+                    return query.OrderByDescending(a => a.User == null ? "" : a.User.FirstName);
+                 case "attribution":
+                     return query.OrderBy(a => a.User == null ? "" : a.User.FirstName);
+                default:
+                    return query.OrderByDescending(a => a.TriggeredAt);
+            }
         }
-        
+
+       
         private async Task<InnerComponentsViewModel> BuildHierarchy(InnerComponentsViewModel parent, List<Information> list)
         {
             var children = list.Where(e => e.ParentId == parent.id).ToList();
@@ -473,7 +564,7 @@ namespace UITManagerWebServer
         public List<InnerComponentsViewModel> Children { get; set; }
     }
 
-    public class InnerDetailsViewModel {
+    /*public class InnerDetailsViewModel {
         public int? Id { get; set; }
         public List<InnerAlarmViewModel> Alarms { get; set; }
         public List<InnerNoteViewModel> Notes { get; set; }
@@ -483,9 +574,11 @@ namespace UITManagerWebServer
         public string Name { get; set; }
         public bool IsWorking { get; set; }
         public DateTime? LastSeen { get; set; }
+        public bool AnyNote { get; set; }
+        public bool AnyAlarms { get; set; } 
             
     }
-    
+    */
     public class UpdateStatusRequest
     {
         public int Id { get; set; }
