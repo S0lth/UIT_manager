@@ -33,10 +33,12 @@
             <div class="card shadow-sm border-0 rounded-lg">
                 <div class="card-header bg-light d-flex justify-content-between align-items-start border-bottom-0">
                     <div class="d-flex flex-column" style="max-width: 600px;">
-                        <h4 class="card-title mb-0 text-truncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <h4 class="card-title mb-0 text-truncate"
+                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             @Html.DisplayFor(model => model.Title)
                         </h4>
-                        <p class="text-muted mb-0">Created by @Model.Author.LastName @Model.Author.FirstName on @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+                        <p class="text-muted mb-0">Created
+                            by @Model.Author.LastName @Model.Author.FirstName on @Model.CreatedAt.ToString("yyyy-MM-dd")</p>
                     </div>
                     <div class="d-flex flex-column align-items-end">
                         <span class="badge @((Model.IsSolution) ? "bg-success" : "bg-secondary") mb-2">
@@ -58,21 +60,25 @@
                     <div class="row">
                         @foreach (var file in Model.Files)
                         {
-                        <div class="col-6 col-sm-4 col-md-3 mb-3">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="document.getElementById('modalImage').src = '/files/@file.Id'">
-                                <img src="/files/@file.Id" alt="@file.FileName" class="img-thumbnail w-40 h-40" style="height: 100px; object-fit: cover; cursor: pointer;"/>
-                            </a>
-                        </div>
+                            <div class="col-6 col-sm-4 col-md-3 mb-3">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal"
+                                   onclick="document.getElementById('modalImage').src = '/files/@file.Id'">
+                                    <img src="/files/@file.Id" alt="@file.FileName" class="img-thumbnail w-40 h-40"
+                                         style="height: 100px; object-fit: cover; cursor: pointer;"/>
+                                </a>
+                            </div>
                         }
                     </div>
 
                     <!-- Modal image preview -->
-                    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel"
+                         aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
                                     <img id="modalImage" src="" alt="Image" class="img-fluid rounded"/>
@@ -84,10 +90,55 @@
 
                 <div class="card-footer text-center bg-light border-top-0">
                     <div class="d-flex justify-content-end gap-3">
-                        <a class="btn btn-outline-secondary" asp-action="Index">
+                        @{
+                            var previousUrl = TempData["PreviousUrl"]?.ToString();
+                            string previousPageName = "Previous Page";
+
+                            if (!string.IsNullOrEmpty(previousUrl))
+                            {
+                                var uri = new Uri(previousUrl);
+                                var path = uri.AbsolutePath;
+
+                                // Si l'URL est la racine, on considère que c'est la page d'accueil
+                                if (string.IsNullOrEmpty(path) || path == "/")
+                                {
+                                    previousPageName = "Home";
+                                }
+                                else
+                                {
+                                    // Séparation du chemin en segments
+                                    var segments = path.Split('/');
+
+                                    // Si l'URL a au moins deux segments (après la racine), on crée un nom de page à partir des deux premiers segments
+                                    if (segments.Length >= 2)
+                                    {
+                                        // On prend les deux premiers segments et on les joint en un nom de page
+                                        previousPageName = string.Join(" ", segments[1], segments[2]).Replace("-", " ");
+                                    }
+                                    else
+                                    {
+                                        // Si l'URL ne contient pas suffisamment de segments, on garde le dernier segment
+                                        previousPageName = segments.LastOrDefault()?.Replace("-", " ") ?? "Previous Page";
+                                    }
+                                }
+                            }
+                        }
+
+                        @if (previousUrl != null)
+                        {
+                            <a class="btn btn-outline-secondary" href="@previousUrl">
+                                Back to @previousPageName
+                            </a>
+                        }
+
+
+
+
+                        <a class="btn btn-outline-primary" asp-action="Index">
                             View All Notes
                         </a>
-                        <a class="btn btn-outline-primary" asp-controller="Machine" asp-action="Details" asp-route-id="@Model.MachineId">
+                        <a class="btn btn-outline-primary" asp-controller="Machine" asp-action="Details"
+                           asp-route-id="@Model.">
                             See Machine Details
                         </a>
                     </div>

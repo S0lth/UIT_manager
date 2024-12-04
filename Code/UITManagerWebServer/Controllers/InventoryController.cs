@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
@@ -10,6 +11,12 @@ namespace UITManagerWebServer.Controllers {
 
         public InventoryController(ApplicationDbContext context) {
             _context = context;
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context) {
+            base.OnActionExecuting(context);
+
+            TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
         [Authorize]
@@ -186,7 +193,7 @@ namespace UITManagerWebServer.Controllers {
         private bool MachineExists(int id) {
             return _context.Machines.Any(e => e.Id == id);
         }
-        
+
         /// <summary>
         /// Represents the data for a machine, including its details, status, and associated notes.
         /// </summary>

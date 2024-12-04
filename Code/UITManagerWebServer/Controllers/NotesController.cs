@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
@@ -13,6 +14,12 @@ namespace UITManagerWebServer.Controllers
         public NotesController(ApplicationDbContext context)
         {
             _context = context;
+        }
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+        
+            TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
         // GET: Notes
@@ -37,8 +44,7 @@ namespace UITManagerWebServer.Controllers
             ViewData["IsSolutionSortParm"] = sortOrder == "issolution" ? "issolution_desc" : "issolution";
 
             var notesQuery = _context.Notes.Include(n => n.Author).Include(n => n.Machine).AsQueryable();
-
-            // Apply search filter
+            
             if (!string.IsNullOrEmpty(search))
             {
                 notesQuery = notesQuery.Where(n =>
@@ -108,7 +114,7 @@ namespace UITManagerWebServer.Controllers
             {
                 return NotFound();
             }
-
+            
             var note = await _context.Notes
                 .Include(n => n.Author)
                 .Include(n => n.Machine)

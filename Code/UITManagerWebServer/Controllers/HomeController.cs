@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View;
 using Newtonsoft.Json;
@@ -15,9 +16,17 @@ namespace UITManagerWebServer.Controllers {
             _context = context;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context) {
+            base.OnActionExecuting(context);
+
+            TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
+        }
+
         [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string solutionFilter, string authorFilter,
             string tab, string sortOrderNote) {
+            TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
+            Console.WriteLine(Request.Headers["Referer"].ToString());
             ViewData["SolutionFilter"] = solutionFilter;
             ViewData["AuthorFilter"] = authorFilter;
             ViewData["SortOrder"] = sortOrder;
@@ -310,7 +319,7 @@ namespace UITManagerWebServer.Controllers {
             var notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
             return PartialView("_NotesList", notes);
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> GetFilteredAlarmsList(string tab, string sortOrder) {
             List<AlarmViewModel> selectedAlarms = new List<AlarmViewModel>();

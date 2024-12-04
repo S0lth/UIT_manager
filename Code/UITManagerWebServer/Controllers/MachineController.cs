@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -19,6 +20,13 @@ namespace UITManagerWebServer.Views
         public MachineController(ApplicationDbContext context)
         {
             _context = context;
+        }
+        
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+        
+            TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
         // GET: Machine
