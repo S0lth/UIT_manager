@@ -14,7 +14,7 @@ namespace UITManagerWebServer.Models {
         public NormGroup? NormGroup { get; set; }
         
         public string UserId { get; set; }  
-        public ApplicationUser User { get; set; } 
+        public ApplicationUser? User { get; set; } 
            
         public DateTime UpdateDate { get; set; }
     }

@@ -149,7 +149,7 @@
                     {
                         <tr>
                             <td>
-                                <a asp-controller="Machines" asp-action="Details"
+                                <a asp-controller="Machine" asp-action="Details"
                                    asp-route-id="@item.MachineId"
                                    class="text-primary text-decoration-none">
                                     @item.MachineName
@@ -159,7 +159,7 @@
                             <td>@item.Status</td>
                             <td>@item.Severity</td>
                             <td>
-                                <a asp-controller="Alarms" asp-action="Details"
+                                <a asp-controller="AlarmDetail" asp-action="Index"
                                    asp-route-id="@item.AlarmId"
                                    class="text-primary text-decoration-none">
                                     @item.AlarmGroupName
