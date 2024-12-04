@@ -1,7 +1,7 @@
 @model UITManagerWebServer.Models.Alarm
 @{
 ViewData["Title"] = "Index";
-var machine = (UITManagerWebServer.Models.Machine)ViewData["Machine"];
+var machine = (UITManagerWebServer.Models.ModelsView.DetailViewModel) ViewData["Machine"];
 }
 
 @functions {
@@ -181,22 +181,22 @@ _ => "bi bi-arrow-down-up",
                     <div class="row border-bottom py-2">
                         <div class="col-4 font-weight-bold">CPU Model:</div>
                         <div class="col-8">
-                            @machine.Informations.FirstOrDefault(obj => obj.Name.Contains("CPU", StringComparison.OrdinalIgnoreCase))?.Children.FirstOrDefault(o => o.Name.Contains("Model", StringComparison.OrdinalIgnoreCase))?.Values
+                            @machine.Informations.FirstOrDefault(obj => obj.Name.Contains("CPU", StringComparison.OrdinalIgnoreCase))?.Children.FirstOrDefault(o => o.Name.Contains("Model", StringComparison.OrdinalIgnoreCase)).Value
                         </div>
                     </div>
                     @{
                     bool first = true;
                     }
-                    @foreach (var diskComponent in machine.Informations.OfType<Component>().Where(c => c.Name == "List Disk"))
+                    @foreach (var diskComponent in machine.Informations.Where(c => c.Name == "List Disk"))
                     {
-                    var disks = diskComponent.Children.OfType<Component>().FirstOrDefault(c => c.Name == "Disks")?.Children.OfType<Component>();
+                    var disks = diskComponent.Children.FirstOrDefault(c => c.Name == "Disks")?.Children;
                     if (disks != null)
                     {
                     foreach (var disk in disks)
                     {
                     var diskName = disk.Name;
-                    var totalSize = disk.Children.OfType<Value>().FirstOrDefault(v => v.Name == "Disk Total Size")?.Values;
-                    var freeSize = disk.Children.OfType<Value>().FirstOrDefault(v => v.Name == "Disk Free Size")?.Values;
+                    var totalSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Total Size")?.Value;
+                    var freeSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Free Size")?.Value;
 
                     if (decimal.TryParse(totalSize?.Replace("Go", "").Trim(), out var res) &&
                     decimal.TryParse(freeSize?.Replace("Go", "").Trim(), out var free))
@@ -226,10 +226,10 @@ _ => "bi bi-arrow-down-up",
                     }
 
                     @{
-                    var osComponent = machine.Informations.OfType<Component>().FirstOrDefault(c => c.Name == "OS");
-                    var osName = osComponent?.Children.OfType<Value>().FirstOrDefault(v => v.Name == "OS Name")?.Values;
-                    var osVersion = osComponent?.Children.OfType<Value>().FirstOrDefault(v => v.Name == "Os Version")?.Values;
-                    var osBuild = osComponent?.Children.OfType<Value>().FirstOrDefault(v => v.Name == "Os Build")?.Values;
+                    var osComponent = machine.Informations.FirstOrDefault(c => c.Name == "OS");
+                    var osName = osComponent?.Children.FirstOrDefault(v => v.Name == "OS Name")?.Value;
+                    var osVersion = osComponent?.Children.FirstOrDefault(v => v.Name == "Os Version")?.Value;
+                    var osBuild = osComponent?.Children.FirstOrDefault(v => v.Name == "Os Build")?.Value;
                     }
                     <div class="row border-bottom py-2">
                         <div class="col-4 font-weight-bold">OS:</div>
@@ -239,9 +239,9 @@ _ => "bi bi-arrow-down-up",
                         <div class="col-4 font-weight-bold">RAM:</div>
                         <div class="col-8">
                             @{
-                            var ramComponent = machine.Informations.OfType<Component>().FirstOrDefault(c => c.Name == "Ram");
-                            var totalRam = ramComponent?.Children.OfType<Value>().FirstOrDefault(v => v.Name == "Total RAM")?.Values;
-                            var usedRam = ramComponent?.Children.OfType<Value>().FirstOrDefault(v => v.Name == "Used RAM")?.Values;
+                            var ramComponent = machine.Informations.FirstOrDefault(c => c.Name == "Ram");
+                            var totalRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Total RAM").Value;
+                            var usedRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Used RAM").Value;
 
                             if (decimal.TryParse(totalRam?.Replace(" Go", "").Trim(), out var total) &&
                             decimal.TryParse(usedRam?.Replace(" Go", "").Trim(), out var used))
@@ -259,7 +259,7 @@ _ => "bi bi-arrow-down-up",
                         <div class="col-4 font-weight-bold">Direct X:</div>
                         <div class="col-8">
                             @{
-                            var directXVersion = machine.Informations.OfType<Value>().FirstOrDefault(v => v.Name == "Direct X")?.Values;
+                            var directXVersion = machine.Informations.FirstOrDefault(v => v.Name == "Direct X").Value;
                             @directXVersion
                             }
                         </div>

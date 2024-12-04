@@ -217,7 +217,7 @@
                                             <td class="@GetSeveryticolor(@item.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name)">@item.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name</td>
 
                                             <td class="text-secondary">
-                                                <a asp-action="Details" asp-route-id="@item.Id"
+                                                <a asp-action="Details"  asp-route-id="@item.Id" asp-route-idMachine ="@item.Machine.Id"
                                                    class="text-primary text-decoration-none">
                                                     @Html.DisplayFor(modelItem => item.NormGroup.Name)
                                                 </a>
