@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
+// ^ filtres assigned to me unasigned 
 namespace UITManagerWebServer.Controllers {
     public class MachineController : Controller {
         private readonly ApplicationDbContext _context;
@@ -131,6 +132,18 @@ namespace UITManagerWebServer.Controllers {
 
 
             return View(detailView);
+        }
+        
+        public async Task<IActionResult> ChangeWorking(int id, string sortOrder, string solutionFilter, 
+            string authorFilter, string typeFilter) {
+            Machine? machine = await _context.Machines.FindAsync(id);
+            if (machine != null) {
+                machine.IsWorking = !machine.IsWorking;
+                await _context.SaveChangesAsync();
+            }
+            
+            return RedirectToAction("Details", new{id, sortOrder, 
+                solutionFilter, authorFilter, typeFilter});
         }
 
         private async Task<List<ComponentsViewModel>> getMachineInformation(int? id) {
@@ -267,6 +280,9 @@ namespace UITManagerWebServer.Controllers {
                     return query.OrderByDescending(a => a.TriggeredAt);
             }
         }
+
+        
+        
 
         private async Task<List<NoteViewModel>> getFilteredNotes(string sortOrder, string solutionFilter,
             string authorFilter, int? id) {

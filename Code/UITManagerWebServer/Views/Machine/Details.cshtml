@@ -1,8 +1,9 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using UITManagerWebServer.Controllers
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 @functions {
 
     string GetHeaderClass(string currentSortOrder, string column)
@@ -40,98 +41,83 @@
     {
         return sol ? "Solution" : "Follow-Up Note";
     }
-    
 
+
+    private void RenderInformation(MachineController.ComponentsViewModel info, string parentAccordionId)
+    {
+        string accordionId = $"accordion-{info.id}";
+        string collapseId = $"collapse-{info.id}";
+        string headingId = $"heading-{info.id}";
+        
+        <div class="accordion-item">
+            @if (!info.Children.Any())
+            {
+            <div class="p-3 ps-4" id="@headingId">
+                <div class="w-100">
+                    @info.Name: @info.Value
+                </div>
+            </div>
+            }
+            else
+            {
+            <h2 class="accordion-header ps-1" id="@headingId">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+                    @info.Name
+                </button>
+            </h2>
+        
+            <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#@parentAccordionId">
+                <div class="accordion-body">
+                    <div class="accordion" id="@accordionId">
+        
+                        @foreach (var subInfo in info.Children)
+                        {
+                            RenderInformation(subInfo, accordionId);
+                        }
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    }
 }
 
 
 
 
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
-    <h1 class="fs-2 fw-bold me-3">
+<div class="d-flex w-100 justify-content-between">
+    
+    <h1 class="fs-2 fw-bold me-3 text-nowrap">
         @Model.Name
     </h1>
-    <span class="badge bg-info fs-6">Last seen : @Model.LastSeen</span>
+    
+    <form asp-action="ChangeWorking" method="post">
+        <input type="checkbox" class="btn-check" id="isWorking" autocomplete="off" onchange="this.form.submit()" @(Model.IsWorking?"checked":"")>
+        <input name="id" type="hidden" value="@Model.Id">
+        <label class="btn  @(Model.IsWorking? "btn-success":"btn-danger")" for="isWorking">Current machine state: @(Model.IsWorking? "Working": "Not working")</label>
+    </form>
+</div>
+
+<span class="badge bg-opacity-50 bg-primary p-2 rounded-3 fs-6 text-white">Last seen  @Model.LastSeen.ToString("dd/MM/yyyy HH:mm")</span>
     <div class="row mt-4">
         <div class="col-md-6">
             <div id="accordion">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="mb-0">
-                            <button class="btn btn-light font-weight-bold" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <h3 class="mb-0 d-flex justify-content-between h-100">
+                            <span class="btn btn-light font-weight-bold" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                 Machine Information
-                            </button>
+                            </span>
+                            
                         </h3>
                     </div>
-                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
-                        <div class="card-body">
-                            <div class="list-group">
-
-                                <dl class="row">
-                                    <dt class="col-sm-2">
-                                        Name
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Model.Name
-                                    </dd>
-                                    <dt class="col-sm-2">
-                                        Model
-                                    </dt>
-                                    <dd class="col-sm-10">
-                                        @Model.Model
-                                    </dd>
-                                    @foreach (var info in Model.Informations)
-                                    {
-                                        <dt class="col-sm-2 ">
-                                            @info.Name
-                                        </dt>
-                                        <dd class="col-sm-10 ">
-                                            @if (@info.Value != "Null")
-                                            {
-                                                @info.Value
-                                            }
-                                        </dd>
-                                        @foreach (var subInfo in info.Children)
-                                        {
-                                            <dt class="col-sm-2 ms-3">
-                                                @subInfo.Name
-                                            </dt>
-                                            <dd class="col-sm-8 ms-3">
-                                                @if (@subInfo.Value != "Null")
-                                                {
-                                                    @subInfo.Value
-                                                }
-                                            </dd>
-                                            @foreach (var subInfo2 in subInfo.Children)
-                                            {
-                                                <dt class="col-sm-2 ms-4">
-                                                    @subInfo2.Name
-                                                </dt>
-                                                <dd class="col-sm-8 ms-4">
-                                                    @if (@subInfo2.Value != "Null")
-                                                    {
-                                                        @subInfo2.Value
-                                                    }
-                                                </dd>
-                                                @foreach (var subInfo3 in subInfo2.Children)
-                                                {
-                                                    <dt class="col-sm-2 ms-5">
-                                                        @subInfo3.Name
-
-                                                    </dt>
-                                                    <dd class="col-sm-2 ms-5">
-                                                        @if (@subInfo3.Value != "Null")
-                                                        {
-                                                            @subInfo3.Value
-                                                        }
-                                                    </dd>
-                                                }
-                                            }
-                                        }
-                                    }
-                                </dl>
-                            </div>
-                        </div>
+                    
+                    <div class="accordion" id="informationAccordion">
+                        @foreach (MachineController.ComponentsViewModel info in Model.Informations)
+                        {
+                            RenderInformation(info, "informationAccordion");
+                        }
                     </div>
                 </div>
             </div>
@@ -143,7 +129,6 @@
                         <span>Alarms</span>
                         <form method="get"
                               class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start">
-                            <!-- Filtres à droite -->
                             <div class="d-flex ms-auto flex-wrap">
                                 <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
                                     <span>Filter</span>
@@ -281,7 +266,7 @@
                                 </div>
                                 <div class="dropdown me-2 mb-2 mb-md-0">
                                     <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
-                                            class="form-control form-control-sm">
+                                            class="form-select form-select-sm">
                                         <option value="" disabled selected>Note Type</option>
                                         <option value="all">All</option>
                                         <option value="true">Solution</option>
@@ -291,7 +276,7 @@
 
                                 <div class="dropdown me-2 mb-2 mb-md-0">
                                     <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter"
-                                            class="form-control form-control-sm">
+                                            class="form-select form-select-sm">
                                         <option value="" disabled selected>Author</option>
                                         <option value="all">All Authors</option>
                                         @foreach (var author in ViewBag.Authors)
@@ -306,7 +291,7 @@
 
                                 <div class="dropdown me-2 mb-2 mb-md-0">
                                     <select asp-for="@ViewData["SortOrderNote"]" name="SortOrderNote"
-                                            class="form-control form-control-sm">
+                                            class="form-select form-select-sm">
                                         <option value="" disabled selected>Date</option>
                                         <option value="ndate">Newest First</option>
                                         <option value="ndate_desc">Oldest First</option>
@@ -382,12 +367,3 @@
         </div>
     </div>
 </div>
-
-<!--
-<dd class="col-sm-10">
-                        <form asp-action="ToggleIsEnable" asp-route-id="@Model.Id" method="post">
-                            <input type="checkbox" name="isEnable" value="true"
-                                   @(Model.IsWorking ? "checked" : "")
-                                   onchange="this.form.submit()" />
-                        </form>  
-                    </dd>-->
