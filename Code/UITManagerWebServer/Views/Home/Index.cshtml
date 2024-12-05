@@ -17,7 +17,7 @@
                                 <h6 class="card-title mb-2">Machines with Alarms Triggered</h6>
                                 <p class="fs-5">
                                     <span
-                                        class="badge bg-@((Model.MachinesWithActiveAlarms == 0) ? "success" : "info")">
+                                        class="badge bg-@((Model.MachinesWithActiveAlarms == 0) ? "success" : "primary")">
                                         @Model.MachinesWithActiveAlarms / @Model.TotalMachines
                                     </span>
                                 </p>
@@ -29,7 +29,7 @@
                             <div class="card-body p-2">
                                 <h6 class="card-title mb-2">Unresolved Alarms</h6>
                                 <p class="fs-5">
-                                    <span class="badge bg-@((Model.AlarmsNotResolvedCount == 0) ? "success" : "info")">
+                                    <span class="badge bg-@((Model.AlarmsNotResolvedCount == 0) ? "success" : "primary")">
                                         @Model.AlarmsNotResolvedCount
                                     </span>
                                 </p>
@@ -42,7 +42,7 @@
                                 <h6 class="card-title mb-2">Alarms Triggered Today</h6>
                                 <p class="fs-5">
                                     <span
-                                        class="badge bg-@((Model.AlarmsTriggeredTodayCount == 0) ? "success" : "info")">
+                                        class="badge bg-@((Model.AlarmsTriggeredTodayCount == 0) ? "success" : "primary")">
                                         @Model.AlarmsTriggeredTodayCount
                                     </span>
                                 </p>
