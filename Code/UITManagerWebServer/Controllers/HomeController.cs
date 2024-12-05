@@ -47,7 +47,7 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
             else if (tab == "newest") {
-                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, takeTop: 100, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
             }
             else if (tab == "overdue") {
                 selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, overdue: true, orderByDate: true);
@@ -55,12 +55,14 @@ namespace UITManagerWebServer.Controllers {
             else {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
-
+            
 
             var viewModel = new HomePageViewModel {
                 Notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote),
                 TotalMachines = await GetTotalMachines(),
                 MachinesWithActiveAlarms = await GetMachinesWithActiveAlarms(),
+                AlarmsNotResolvedCount = await GetAlarmsNotResolvedCount(),
+                AlarmsTriggeredTodayCount = await GetAlarmsTriggeredTodayCount(),
                 NormGroupAlarmsCount = await GetNormGroupAlarmsCount(),
                 AssignedOrNotAlarmCount = await GetAssignedOrNotAlarmCount(),
                 AlarmCountsBySiteAndSeverity = await FetchAlarmCountsBySiteAndSeverity(),
@@ -329,7 +331,7 @@ namespace UITManagerWebServer.Controllers {
                     selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
                     break;
                 case "newest":
-                    selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, takeTop: 100, orderByDate: true);
+                    selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
                     break;
                 case "overdue":
                     selectedAlarms =
@@ -341,6 +343,26 @@ namespace UITManagerWebServer.Controllers {
             }
 
             return PartialView("_AlarmsList", selectedAlarms);
+        }
+        
+        private async Task<int> GetAlarmsNotResolvedCount() {
+            var alarmsNotResolvedCount = await _context.Alarms
+                .Where(a => a.AlarmHistories
+                    .OrderByDescending(ah => ah.ModificationDate)
+                    .FirstOrDefault().StatusType.Name != "Resolved")
+                .CountAsync();
+
+            return alarmsNotResolvedCount;
+        }
+        
+        private async Task<int> GetAlarmsTriggeredTodayCount() {
+            var today = DateTime.UtcNow.Date;
+    
+            var alarmsTriggeredTodayCount = await _context.Alarms
+                .Where(a => a.TriggeredAt.Date == today)
+                .CountAsync();
+
+            return alarmsTriggeredTodayCount;
         }
 
         public async Task<IActionResult> GetAlarmCountsBySiteAndSeverity() {
