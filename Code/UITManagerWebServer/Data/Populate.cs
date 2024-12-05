@@ -553,20 +553,20 @@ public static class Populate {
 
             // DirectX
             Machine.Informations.Add(
-                new Value { Machine = Machine, Name = "Direct X", Values = directX[random.Next(directX.Length)] });
+                new Value { Machine = Machine, Name = "Direct X", Value = directX[random.Next(directX.Length)],Format = "TEXT"});
 
             // Domaine
             Machine.Informations.Add(
-                new Value { Machine = Machine, Name = "Domain name", Values = "WORKGROUP" });
+                new Value { Machine = Machine, Name = "Domain name", Value = "WORKGROUP",Format = "TEXT" });
 
             // Tag service
             Machine.Informations.Add(
-                new Value { Machine = Machine, Name = "Tag Service", Values = "AB45CD78" });
+                new Value { Machine = Machine, Name = "Tag Service", Value = "AB45CD78",Format = "TEXT" });
 
             // Uptime
             var date = new TimeSpan(random.Next(0, 151), random.Next(0, 24), random.Next(0, 60), random.Next(0, 60));
             Machine.Informations.Add(
-                new Value { Machine = Machine, Name = "UpTimes", Values = date.ToString() });
+                new Value { Machine = Machine, Name = "UpTimes", Value = date.ToString(),Format = "TEXT" });
 
             // Cpu
             int nbCore = random.Next(locgical.Length);
@@ -574,15 +574,16 @@ public static class Populate {
                 new Component {
                     Name = "CPU",
                     Machine = Machine,
-                    Values = "Null",
+                    Value = "Null",
+                    Format = "Null",
                     Children = new List<Information> {
-                        new Value { Name = "Logical core", Machine = Machine, Values = locgical[nbCore], },
-                        new Value { Name = "Core count", Machine = Machine, Values = coreCount[nbCore], },
+                        new Value { Name = "Logical core", Machine = Machine, Value = locgical[nbCore],Format = "TEXT" },
+                        new Value { Name = "Core count", Machine = Machine, Value = coreCount[nbCore],Format = "TEXT" },
                         new Value {
-                            Name = "Clockspeed", Machine = Machine, Values = clock[random.Next(clock.Length)],
+                            Name = "Clockspeed", Machine = Machine, Value = clock[random.Next(clock.Length)],Format = "TEXT",
                         },
                         new Value {
-                            Name = "Model", Machine = Machine, Values = modeltype[random.Next(modeltype.Length)],
+                            Name = "Model", Machine = Machine, Value = modeltype[random.Next(modeltype.Length)],Format = "TEXT",
                         }
                     }
                 });
@@ -596,11 +597,12 @@ public static class Populate {
                 new Component {
                     Name = "Ram",
                     Machine = Machine,
-                    Values = "Null",
+                    Value = "Null",
+                    Format = "Null",
                     Children = new List<Information> {
-                        new Value { Name = "Total RAM", Machine = Machine, Values = ramTotal + " Go", },
-                        new Value { Name = "Used RAM", Machine = Machine, Values = ramUsed + " Go", },
-                        new Value { Name = "Free RAM", Machine = Machine, Values = ramFree + " Go", }
+                        new Value { Name = "Total RAM", Machine = Machine, Value = ramTotal.ToString(),Format = "Go" },
+                        new Value { Name = "Used RAM", Machine = Machine, Value = ramUsed.ToString(),Format = "Go" },
+                        new Value { Name = "Free RAM", Machine = Machine, Value = ramFree.ToString(),Format = "Go" }
                     }
                 });
 
@@ -609,11 +611,12 @@ public static class Populate {
                 new Component {
                     Name = "OS",
                     Machine = Machine,
-                    Values = "Null",
+                    Value = "Null",
+                    Format = "Null",
                     Children = new List<Information> {
-                        new Value { Name = "OS Name", Machine = Machine, Values = Os[random.Next(Os.Length)], },
-                        new Value { Name = "Os Version", Machine = Machine, Values = OsV[random.Next(OsV.Length)], },
-                        new Value { Name = "Os Build", Machine = Machine, Values = OsB[random.Next(OsB.Length)], },
+                        new Value { Name = "OS Name", Machine = Machine, Value = Os[random.Next(Os.Length)],Format = "TEXT" },
+                        new Value { Name = "Os Version", Machine = Machine, Value = OsV[random.Next(OsV.Length)],Format = "TEXT" },
+                        new Value { Name = "Os Build", Machine = Machine, Value = OsB[random.Next(OsB.Length)],Format = "TEXT" },
                     }
                 });
 
@@ -621,14 +624,14 @@ public static class Populate {
             List<Information> ip = new List<Information>();
             for (int j = 0; j < random.Next(1, 3); j++) {
                 var val = new Value {
-                    Name = "Ip Address", Machine = Machine, Values = ipAddresses[random.Next(ipAddresses.Length)],
+                    Name = "Ip Address", Machine = Machine, Value = ipAddresses[random.Next(ipAddresses.Length)],Format = "TEXT"
                 };
                 ip.Add(val);
             }
 
             Machine.Informations.Add(
                 new Component {
-                    Name = "IPs", Machine = Machine, Values = "Null", Children = ip,
+                    Name = "IPs", Machine = Machine, Value = "Null",Format = "Null", Children = ip,
                 });
 
             // Disk
@@ -640,10 +643,11 @@ public static class Populate {
                 var val = new Component {
                     Name = diskNames[random.Next(diskNames.Length)],
                     Machine = Machine,
-                    Values = "Null",
+                    Value = "Null",
+                    Format = "Null",
                     Children = new List<Information> {
-                        new Value { Name = "Disk Total Size", Values = diskTotal + "Go", Machine = Machine },
-                        new Value { Name = "Disk Free Size", Values = diskUsed + "Go", Machine = Machine }
+                        new Value { Name = "Disk Total Size", Value = diskTotal.ToString(),Format = "Go", Machine = Machine },
+                        new Value { Name = "Disk Free Size", Value = diskUsed.ToString(),Format = "Go", Machine = Machine }
                     }
                 };
                 Disks.Add(val);
@@ -653,12 +657,13 @@ public static class Populate {
                 new Component {
                     Name = "List Disk",
                     Machine = Machine,
-                    Values = "Null",
+                    Value = "Null",
+                    Format = "Null",
                     Children = new List<Information> {
                         new Component {
-                            Name = "Disks", Machine = Machine, Values = "Null", Children = Disks,
+                            Name = "Disks", Machine = Machine, Value = "Null",Format = "Null", Children = Disks,
                         },
-                        new Value { Name = "Number disks", Machine = Machine, Values = Disks.Count.ToString(), },
+                        new Value { Name = "Number disks", Machine = Machine, Value = Disks.Count.ToString(),Format = "TEXT" },
                     }
                 });
 
@@ -667,37 +672,41 @@ public static class Populate {
                 new Component {
                     Name = "Users List",
                     Machine = Machine,
-                    Values = "Null",
+                    Value = "Null",
+                    Format = "Null",
                     Children = new List<Information> {
                         new Component {
                             Name = "User",
-                            Values = "Null",
+                            Value = "Null",
+                            Format = "Null",
                             Machine = Machine,
                             Children =
                                 new List<Information> {
-                                    new Value { Name = "User Name", Machine = Machine, Values = "Admin", },
-                                    new Value { Name = "User Scope", Machine = Machine, Values = "Local", }
+                                    new Value { Name = "User Name", Machine = Machine, Value = "Admin",Format = "TEXT" },
+                                    new Value { Name = "User Scope", Machine = Machine, Value = "Local",Format = "TEXT" }
                                 }
                         },
                         new Component {
                             Name = "User",
-                            Values = "Null",
+                            Value = "Null",
+                            Format = "Null",
                             Machine = Machine,
                             Children = new List<Information> {
-                                new Value { Name = "User Name", Machine = Machine, Values = "DefaultAccount", },
-                                new Value { Name = "User Scope", Machine = Machine, Values = "Local", }
+                                new Value { Name = "User Name", Machine = Machine, Value = "DefaultAccount",Format = "TEXT" },
+                                new Value { Name = "User Scope", Machine = Machine, Value = "Local",Format = "TEXT" }
                             }
                         },
                         new Component {
                             Name = "User",
                             Machine = Machine,
-                            Values = "Null",
+                            Value = "Null",
+                            Format = "Null",
                             Children = new List<Information> {
                                 new Value {
-                                    Name = "User Name", Machine = Machine, Values = name[random.Next(name.Length)],
+                                    Name = "User Name", Machine = Machine, Value = name[random.Next(name.Length)],Format = "TEXT"
                                 },
                                 new Value {
-                                    Name = "User Scope", Machine = Machine, Values = scoop[random.Next(scoop.Length)],
+                                    Name = "User Scope", Machine = Machine, Value = scoop[random.Next(scoop.Length)],Format = "TEXT"
                                 }
                             }
                         },
@@ -765,11 +774,9 @@ public static class Populate {
             // Get Ram
             Information infoRam = machine.Informations.Find(i => i.Name == "Ram");
 
-            string ramTotString = infoRam.Children.Find(i => i.Name == "Total RAM").Values;
-            int ramTot = int.Parse(ramTotString.Substring(0, ramTotString.Length - 3));
+            int ramTot = int.Parse(infoRam.Children.Find(i => i.Name == "Total RAM").Value);
 
-            string ramUsedString = infoRam.Children.Find(i => i.Name == "Used RAM").Values;
-            double ramUsed = Double.Parse(ramUsedString.Substring(0, ramUsedString.Length - 3));
+            double ramUsed = Double.Parse(infoRam.Children.Find(i => i.Name == "Used RAM").Value);
 
             if (ramUsed / ramTot > 0.8) {
                 int nbStatus = random.Next(1, alarmStatusTypes.Count);
@@ -820,13 +827,11 @@ public static class Populate {
 
 
             foreach (Information info in infoDisk.Children.Find(i => i.Name == "Disks").Children) {
-                string diskTotString = info.Children.Find(i => i.Name == "Disk Total Size").Values;
-                int diskTot = int.Parse(diskTotString.Substring(0, diskTotString.Length - 3));
+                int diskTot = int.Parse(info.Children.Find(i => i.Name == "Disk Total Size").Value);
 
-                string diskFreeString = info.Children.Find(i => i.Name == "Disk Free Size").Values;
-                double diskFree = Double.Parse(diskFreeString.Substring(0, diskFreeString.Length - 3));
+                double diskFree = Double.Parse(info.Children.Find(i => i.Name == "Disk Free Size").Value);
 
-                if (diskFree == diskTot) {
+                if (diskFree / diskTot < 0.1) {
                     int nbStatus = random.Next(1, alarmStatusTypes.Count);
 
                     var alarm = new Alarm {
@@ -875,7 +880,7 @@ public static class Populate {
             // Get DirectX
             Information infoDirectX = machine.Informations.Find(i => i.Name == "Direct X");
 
-            if (infoDirectX.Values != "Direct X 12") {
+            if (!infoDirectX.Value.Contains("12")) {
                 int nbStatus = random.Next(1, alarmStatusTypes.Count);
 
                 var alarm = new Alarm {
@@ -901,7 +906,7 @@ public static class Populate {
             // Get Windows
             Information infoOs = machine.Informations.Find(i => i.Name == "OS");
 
-            if (infoOs.Children.Find(i => i.Name == "OS Name").Values.Contains("10")) {
+            if (infoOs.Children.Find(i => i.Name == "OS Name").Value.Contains("10")) {
                 int nbStatus = random.Next(1, alarmStatusTypes.Count);
 
                 var alarm = new Alarm {
