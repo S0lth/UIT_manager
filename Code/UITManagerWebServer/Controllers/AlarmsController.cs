@@ -30,7 +30,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string sortOrder) {
+        public async Task<IActionResult> Index(string sortOrder, string search) {
             ViewData["SortOrder"] = sortOrder;
             ViewData["MachineSortParm"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
             ViewData["StatusSortParm"] = sortOrder == "Status" ? "Status_desc" : "Status";
@@ -55,6 +55,39 @@ namespace UITManagerWebServer.Controllers {
                     .OrderByDescending(h => h.ModificationDate)
                     .Select(h => h.StatusType.Name)
                     .FirstOrDefault() != "Resolved");
+
+            if (!String.IsNullOrEmpty(search)) {
+                string searchLower = search.ToLower();
+
+                alarms = _context.Alarms
+                    .Include(a => a.Machine)
+                    .Include(a => a.NormGroup)
+                    .Include(a => a.AlarmHistories)
+                    .ThenInclude(aStatus => aStatus.StatusType)
+                    .Include(a => a.NormGroup.SeverityHistories)
+                    .ThenInclude(sh => sh.Severity)
+                    .Include(a => a.User)
+                    .AsQueryable()
+                    .Where(a => a.AlarmHistories
+                        .OrderByDescending(h => h.ModificationDate)
+                        .Select(h => h.StatusType.Name)
+                        .FirstOrDefault() != "Resolved")
+                    .Where(a => a.Machine.Name.ToLower().Contains(searchLower) ||
+                                a.Machine.Model.ToLower().Contains(searchLower) ||
+                                a.NormGroup.Name.ToLower().Contains(searchLower) ||
+                                a.User.FirstName.ToLower().Contains(searchLower) ||
+                                a.User.LastName.ToLower().Contains(searchLower) ||
+                                a.AlarmHistories
+                                    .OrderByDescending(h => h.ModificationDate)
+                                    .FirstOrDefault().StatusType.Name.ToLower().Contains(searchLower) ||
+                                a.NormGroup.SeverityHistories
+                                    .OrderByDescending(sh => sh.UpdateDate)
+                                    .FirstOrDefault().Severity.Name.ToLower().Contains(searchLower) ||
+                                a.TriggeredAt.ToString().Contains(searchLower)
+                    );
+            }
+
+
 
             alarms = sortOrder switch {
                 "Attribution_desc" => alarms.OrderByDescending(a => a.User == null ? "" : a.User.FirstName),
