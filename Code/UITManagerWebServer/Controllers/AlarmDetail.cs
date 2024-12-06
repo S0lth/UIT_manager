@@ -160,7 +160,8 @@ namespace UITManagerWebServer {
                     ParentId = a.ParentId,
                     Name = a.Name,
                     id = a.Id,
-                    Value = a.Values,
+                    Value = a.Value,
+                    Format = a.Format,
                     Children = new List<InnerComponentsViewModel>()
                 }).ToList();
 
@@ -466,7 +467,8 @@ namespace UITManagerWebServer {
                     ParentId = child.ParentId,
                     Name = child.Name,
                     id = child.Id,
-                    Value = child.Values,
+                    Value = child.Value,
+                    Format = child.Format,
                     Children = new List<InnerComponentsViewModel>()
                 };
                 var childHierarchy = await BuildHierarchy(info, list);
@@ -504,6 +506,8 @@ namespace UITManagerWebServer {
         public int id { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
+        public string Format { get; set; }
+
         public List<InnerComponentsViewModel> Children { get; set; }
     }
 

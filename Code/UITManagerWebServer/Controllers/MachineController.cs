@@ -145,7 +145,8 @@ namespace UITManagerWebServer.Controllers {
                     ParentId = a.ParentId,
                     Name = a.Name,
                     id = a.Id,
-                    Value = a.Values,
+                    Value = a.Value,
+                    Format = a.Format,
                     Children = new List<ComponentsViewModel>()
                 }).ToList();
 
@@ -166,6 +167,7 @@ namespace UITManagerWebServer.Controllers {
                 id = parent.id,
                 Name = parent.Name,
                 Value = parent.Value,
+                Format = parent.Format,
                 Children = new List<ComponentsViewModel>()
             };
 
@@ -176,7 +178,8 @@ namespace UITManagerWebServer.Controllers {
                     ParentId = child.ParentId,
                     Name = child.Name,
                     id = child.Id,
-                    Value = child.Values,
+                    Value = child.Value,
+                    Format = child.Format,
                     Children = new List<ComponentsViewModel>()
                 };
                 var childHierarchy = await BuildHierarchy(info, list);
@@ -425,6 +428,7 @@ namespace UITManagerWebServer.Controllers {
             public int id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
+            public string Format { get; set; }
             public List<ComponentsViewModel> Children { get; set; }
         }
 
