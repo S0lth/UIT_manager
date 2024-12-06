@@ -30,6 +30,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [Authorize]
+        [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string search) {
             ViewData["SortOrder"] = sortOrder;
             ViewData["MachineSortParm"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
@@ -42,6 +43,7 @@ namespace UITManagerWebServer.Controllers {
 
             var users = _context.Users.ToList();
             var user = await _userManager.GetUserAsync(User);
+
             var alarms = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
@@ -57,53 +59,41 @@ namespace UITManagerWebServer.Controllers {
                     .FirstOrDefault() != "Resolved");
 
             if (!String.IsNullOrEmpty(search)) {
-                string searchLower = search.ToLower();
+                string[] searchTerms = search.ToLower().Split(',');
 
-                alarms = _context.Alarms
-                    .Include(a => a.Machine)
-                    .Include(a => a.NormGroup)
-                    .Include(a => a.AlarmHistories)
-                    .ThenInclude(aStatus => aStatus.StatusType)
-                    .Include(a => a.NormGroup.SeverityHistories)
-                    .ThenInclude(sh => sh.Severity)
-                    .Include(a => a.User)
-                    .AsQueryable()
-                    .Where(a => a.AlarmHistories
-                        .OrderByDescending(h => h.ModificationDate)
-                        .Select(h => h.StatusType.Name)
-                        .FirstOrDefault() != "Resolved")
-                    .Where(a => a.Machine.Name.ToLower().Contains(searchLower) ||
-                                a.Machine.Model.ToLower().Contains(searchLower) ||
-                                a.NormGroup.Name.ToLower().Contains(searchLower) ||
-                                a.User.FirstName.ToLower().Contains(searchLower) ||
-                                a.User.LastName.ToLower().Contains(searchLower) ||
-                                a.AlarmHistories
-                                    .OrderByDescending(h => h.ModificationDate)
-                                    .FirstOrDefault().StatusType.Name.ToLower().Contains(searchLower) ||
-                                a.TriggeredAt.ToString().Contains(searchLower) ||
-                                a.NormGroup.SeverityHistories
-                                    .OrderByDescending(sh => sh.UpdateDate)
-                                    .Select(sh => sh.Severity.Name.ToLower())
-                                    .FirstOrDefault() == searchLower
-                    );
+                alarms = alarms.Where(a =>
+                    searchTerms.All(term => 
+                        a.Machine.Name.ToLower().Contains(term) ||
+                        a.Machine.Model.ToLower().Contains(term) ||
+                        a.NormGroup.Name.ToLower().Contains(term) ||
+                        a.User.FirstName.ToLower().Contains(term) ||
+                        a.User.LastName.ToLower().Contains(term) ||
+                        a.AlarmHistories
+                            .OrderByDescending(h => h.ModificationDate)
+                            .FirstOrDefault()
+                            .StatusType.Name.ToLower().Contains(term) ||
+                        a.TriggeredAt.ToString().Contains(term) ||
+                        a.NormGroup.SeverityHistories
+                            .OrderByDescending(sh => sh.UpdateDate)
+                            .Select(sh => sh.Severity.Name.ToLower())
+                            .FirstOrDefault().Contains(term)
+                    )
+                ).AsQueryable();
             }
 
 
             alarms = sortOrder switch {
                 "Attribution_desc" => alarms.OrderByDescending(a => a.User == null ? "" : a.User.FirstName),
                 "Attribution" => alarms.OrderBy(a => a.User == null ? "" : a.User.FirstName),
-
                 "Machine_desc" => alarms.OrderByDescending(a => a.Machine.Name),
                 "Machine" => alarms.OrderBy(a => a.Machine.Name),
                 "Status_desc" => alarms.OrderByDescending(a => a.AlarmHistories
                     .OrderByDescending(h => h.ModificationDate)
                     .Select(h => h.StatusType.Name)
                     .FirstOrDefault()),
-
                 "Status" => alarms.OrderBy(a =>
                     a.AlarmHistories.OrderByDescending(h => h.ModificationDate).Select(h => h.StatusType.Name)
                         .FirstOrDefault()),
-
                 "Severity_desc" => alarms.OrderByDescending(a => a.NormGroup.SeverityHistories
                     .OrderByDescending(sh => sh.UpdateDate)
                     .Select(sh => sh.Severity.Name == "Critical" ? 0 :
@@ -124,8 +114,6 @@ namespace UITManagerWebServer.Controllers {
                 "AlarmGroup" => alarms.OrderBy(a => a.NormGroup.Name),
                 "Date_desc" => alarms.OrderByDescending(a => a.TriggeredAt),
                 "Date" => alarms.OrderBy(a => a.TriggeredAt),
-
-
                 "Model" => alarms.OrderBy(a => a.Machine.Model),
                 "Model_desc" => alarms.OrderByDescending(a => a.Machine.Model),
                 "assigned_to_me" => alarms.Where(a => a.AlarmHistories
