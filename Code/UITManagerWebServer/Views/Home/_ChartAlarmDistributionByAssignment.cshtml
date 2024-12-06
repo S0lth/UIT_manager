@@ -1,4 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+
 <div class="card mb-4">
     <div class="card-body">
         <h5 class="card-title">
@@ -10,13 +11,14 @@
         </h5>
         <canvas id="ChartAlarmDistributionByAssignment"></canvas>
         <script>
-            const alarm_assign_Data = @Html.Raw(ViewData["AssignedOrNotAlarmCount"])
+            const alarm_assign_Data = @Html.Raw(ViewData["AssignedOrNotAlarmCount"]);
 
             const labels_assign = Object.keys(alarm_assign_Data);
             const data_assign = Object.values(alarm_assign_Data);
 
             const ctx_assign = document.getElementById('ChartAlarmDistributionByAssignment').getContext('2d');
-            new Chart(ctx_assign, {
+
+            const chart = new Chart(ctx_assign, {
                 type: 'pie',
                 data: {
                     labels: labels_assign,
@@ -41,21 +43,44 @@
                             labels: {
                                 font: {
                                     size: 14,
+                                },
+                                generateLabels: function(chart) {
+                                    const originalLabels = chart.data.labels;
+                                    return originalLabels.map((label, index) => {
+                                        const labelKey = label.toLowerCase();
+                                        const labelValue = alarm_assign_Data[labelKey] || 0;  
+
+                                        return {
+                                            text: `${label} (${labelValue})`, // Ajouter le nombre à la légende
+                                            fillStyle: chart.data.datasets[0].backgroundColor[index],
+                                            hidden: chart.getDatasetMeta(0).data[index].hidden,
+                                            lineWidth: 1,
+                                            strokeStyle: '#fff'
+                                        };
+                                    });
                                 }
                             }
                         },
                         title: {
                             display: false,
-                            text: '\n' +
-                                'Alarms Distribution by Assignment'
+                            text: 'Alarms Distribution by Assignment'
                         }
                     },
                     scales: {
-                        x: {display: false},
-                        y: {display: false}
+                        x: { display: false },
+                        y: { display: false }
                     }
                 }
             });
+
+            chart.options.onClick = (event, elements) => {
+                if (elements.length > 0) {
+                    const label = chart.data.labels[elements[0].index];
+                    const sortOrder = label.toLowerCase();
+
+                    window.location.href = `/Alarms?sortOrder=${sortOrder}`;
+                }
+            };
         </script>
     </div>
 </div>

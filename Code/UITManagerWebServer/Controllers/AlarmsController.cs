@@ -123,6 +123,7 @@ namespace UITManagerWebServer.Controllers {
                                                           .OrderByDescending(h => h.ModificationDate)
                                                           .FirstOrDefault().User.Id == user.Id),
                 "unassigned" => alarms.Where(a => a.UserId == null),
+                "assigned" => alarms.Where(a => a.UserId != null),
                 "triggered_today" => alarms.Where(a => a.TriggeredAt.Date == DateTime.UtcNow.Date),
                 _ => alarms.OrderBy(a => a.Machine.Name)
             };
