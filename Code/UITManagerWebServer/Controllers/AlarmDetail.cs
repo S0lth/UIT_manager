@@ -96,14 +96,24 @@ namespace UITManagerWebServer {
             if (alarm == null) {
                 return NotFound();
             }
+            
+            var normGroupId = alarm?.NormGroup?.Id;
+            
+            var alarmCount = await _context.Alarms
+                .Where(a => a.MachineId == machineId && a.NormGroupId == normGroupId)
+                .CountAsync();
+            
+            var alarmCountAll = await _context.Alarms
+                .Where(a => a.NormGroupId == normGroupId)
+                .CountAsync();
 
             ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
             ViewData["user"] = users;
             ViewData["Machine"] = detailView;
             ViewData["Notes"] = notes;
             ViewData["techos"] = alarmUsers;
-
-
+            ViewData["AlarmCount"] = alarmCount;
+            ViewData["AlarmCountAll"] = alarmCountAll;
             return View(alarm);
         }
 
