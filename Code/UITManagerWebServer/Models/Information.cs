@@ -11,8 +11,9 @@
         public int? MachinesId { get; set; }
         
         public Machine Machine { get; set; }
-        public string Values { get; set; }
-        
+        public string Value { get; set; }
+        public string Format { get; set; }
+
         public Information() {
            Children = new List<Information>();
         }
