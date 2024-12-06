@@ -63,7 +63,7 @@ namespace UITManagerWebServer.Controllers {
                 MachinesWithActiveAlarms = await GetMachinesWithActiveAlarms(),
                 AlarmsNotResolvedCount = await GetAlarmsNotResolvedCount(),
                 AlarmsTriggeredTodayCount = await GetAlarmsTriggeredTodayCount(),
-                NormGroupAlarmsCount = await GetNormGroupAlarmsCount(),
+                NormGroupAlarmsCount = await GetAlarmsBySeverity(),
                 AssignedOrNotAlarmCount = await GetAssignedOrNotAlarmCount(),
                 AlarmCountsBySiteAndSeverity = await FetchAlarmCountsBySiteAndSeverity(),
                 Alarms = selectedAlarms,
@@ -242,17 +242,23 @@ namespace UITManagerWebServer.Controllers {
             return activeAlarms;
         }
 
-        private async Task<Dictionary<string, int>> GetNormGroupAlarmsCount() {
-            var normGroupCounts = await _context.Alarms
+        private async Task<Dictionary<string, int>> GetAlarmsBySeverity() {
+            var severityCounts = await _context.Alarms
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
-                    .FirstOrDefault().StatusType.Name != "Resolved")
-                .GroupBy(a => a.NormGroup.Name)
-                .Select(g => new { NormGroupName = g.Key, AlarmCount = g.Count() })
+                    .FirstOrDefault().StatusType.Name != "Resolved") 
+                .Select(a => new {
+                    Severity = a.NormGroup.SeverityHistories
+                        .OrderByDescending(sh => sh.UpdateDate)
+                        .FirstOrDefault().Severity.Name
+                })
+                .GroupBy(a => a.Severity)
+                .Select(g => new { Severity = g.Key, AlarmCount = g.Count() })
                 .ToListAsync();
-
-            return normGroupCounts.ToDictionary(g => g.NormGroupName, g => g.AlarmCount);
+        
+            return severityCounts.ToDictionary(g => g.Severity, g => g.AlarmCount);
         }
+
 
 
         private async Task<Dictionary<string, int>> GetAssignedOrNotAlarmCount() {

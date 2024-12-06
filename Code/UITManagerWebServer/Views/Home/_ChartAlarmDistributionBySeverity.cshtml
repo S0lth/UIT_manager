@@ -1,4 +1,5 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+
 <div class="card mb-4">
     <div class="card-body">
         <h5 class="card-title">
@@ -10,18 +11,25 @@
         </h5>
         <canvas id="ChartAlarmDistributionByNormGroup"></canvas>
         <script>
+            // Données provenant de la vue
             const alarmData = @Html.Raw(ViewData["AlarmTypeOccurrences"]);
             const labels = Object.keys(alarmData);
             const data = Object.values(alarmData);
+
+            // Modifie les labels pour afficher le nombre dans la légende
+            const modifiedLabels = labels.map((label, index) => `${label} (${data[index]})`);
+
             const ctx = document.getElementById('ChartAlarmDistributionByNormGroup').getContext('2d');
-            new Chart(ctx, {
+
+            const chart = new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: labels,
+                    labels: modifiedLabels,
                     datasets: [{
                         label: 'Number of Occurrences',
                         data: data,
-                        borderWidth: 1
+                        borderWidth: 1,
+                        backgroundColor: ['#4caf50', '#f44336', '#ffeb3b', '#2196f3', '#9c27b0'], // Exemple de couleurs
                     }]
                 },
                 options: {
@@ -47,11 +55,21 @@
                         }
                     },
                     scales: {
-                        x: {display: false},
-                        y: {display: false}
+                        x: { display: false },
+                        y: { display: false }
                     }
                 }
             });
+
+            chart.options.onClick = (event, elements) => {
+                if (elements.length > 0) {
+                    const label = chart.data.labels[elements[0].index];
+                    const severity = label.split(' ')[0].toLowerCase(); 
+
+                    // Redirige avec le filtre dans l'URL
+                    window.location.href = `/Alarms?search=${severity}`;
+                }
+            };
         </script>
     </div>
 </div>

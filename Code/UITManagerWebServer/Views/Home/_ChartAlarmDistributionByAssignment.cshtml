@@ -16,12 +16,16 @@
             const labels_assign = Object.keys(alarm_assign_Data);
             const data_assign = Object.values(alarm_assign_Data);
 
+            const display_labels = labels_assign.map((label, index) => {
+                return `${label} (${data_assign[index]})`;
+            });
+
             const ctx_assign = document.getElementById('ChartAlarmDistributionByAssignment').getContext('2d');
 
-            const chart = new Chart(ctx_assign, {
+            const chartAssign = new Chart(ctx_assign, {
                 type: 'pie',
                 data: {
-                    labels: labels_assign,
+                    labels: display_labels,
                     datasets: [{
                         label: 'Number of Occurrences',
                         data: data_assign,
@@ -44,21 +48,6 @@
                                 font: {
                                     size: 14,
                                 },
-                                generateLabels: function(chart) {
-                                    const originalLabels = chart.data.labels;
-                                    return originalLabels.map((label, index) => {
-                                        const labelKey = label.toLowerCase();
-                                        const labelValue = alarm_assign_Data[labelKey] || 0;  
-
-                                        return {
-                                            text: `${label} (${labelValue})`, // Ajouter le nombre à la légende
-                                            fillStyle: chart.data.datasets[0].backgroundColor[index],
-                                            hidden: chart.getDatasetMeta(0).data[index].hidden,
-                                            lineWidth: 1,
-                                            strokeStyle: '#fff'
-                                        };
-                                    });
-                                }
                             }
                         },
                         title: {
@@ -67,17 +56,17 @@
                         }
                     },
                     scales: {
-                        x: { display: false },
-                        y: { display: false }
+                        x: {display: false},
+                        y: {display: false}
                     }
                 }
             });
 
-            chart.options.onClick = (event, elements) => {
+            chartAssign.options.onClick = (event, elements) => {
                 if (elements.length > 0) {
-                    const label = chart.data.labels[elements[0].index];
+                    const index = elements[0].index;
+                    const label = labels_assign[index];
                     const sortOrder = label.toLowerCase();
-
                     window.location.href = `/Alarms?sortOrder=${sortOrder}`;
                 }
             };
