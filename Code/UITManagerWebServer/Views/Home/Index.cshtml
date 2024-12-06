@@ -178,9 +178,13 @@
 
                                     <div class="d-flex gap-2">
                                         <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                        <button href="@Url.Action("Index")"
-                                                class="btn btn-secondary btn-sm text-center">Reset
-                                        </button>
+                                        <a asp-action="Index"
+                                                asp-route-sortOrder="@ViewData["SortOrder"]"
+                                                asp-route-tab="@ViewData["ActiveTab"]"
+                                                asp-route-solutionFilter=""
+                                                asp-route-authorFilter=""
+                                                asp-route-sortOrderNote=""
+                                                class="btn btn-secondary btn-sm text-center">Reset</a>
                                     </div>
                                 </div>
                             </form>
