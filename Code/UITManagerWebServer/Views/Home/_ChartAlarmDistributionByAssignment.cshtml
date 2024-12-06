@@ -9,67 +9,79 @@
                 <i class="bi bi-info-circle"></i>
             </button>
         </h5>
-        <canvas id="ChartAlarmDistributionByAssignment"></canvas>
+        <div id="chartContainer" style="height: 300px; display: none;">
+            <canvas id="ChartAlarmDistributionByAssignment"></canvas>
+        </div>
+        <div id="noAlarmAlert" class="alert alert-success" style="display: none; height: 300px; display: flex; justify-content: center; align-items: center;">
+            Everything is fine, no alarm triggered.
+        </div>
+
         <script>
             const alarm_assign_Data = @Html.Raw(ViewData["AssignedOrNotAlarmCount"]);
-
+            //const alarm_assign_Data = {};
             const labels_assign = Object.keys(alarm_assign_Data);
             const data_assign = Object.values(alarm_assign_Data);
+            if (data_assign.length === 0) {
+                document.getElementById('chartContainer').style.display = 'none';
+                document.getElementById('noAlarmAlert').style.display = 'flex';
+            } else {
+                document.getElementById('chartContainer').style.display = 'block';
+                document.getElementById('noAlarmAlert').style.display = 'none';
+                const display_labels = labels_assign.map((label, index) => {
+                    return `${label} (${data_assign[index]})`;
+                });
 
-            const display_labels = labels_assign.map((label, index) => {
-                return `${label} (${data_assign[index]})`;
-            });
+                const ctx_assign = document.getElementById('ChartAlarmDistributionByAssignment').getContext('2d');
 
-            const ctx_assign = document.getElementById('ChartAlarmDistributionByAssignment').getContext('2d');
-
-            const chartAssign = new Chart(ctx_assign, {
-                type: 'pie',
-                data: {
-                    labels: display_labels,
-                    datasets: [{
-                        label: 'Number of Occurrences',
-                        data: data_assign,
-                        borderWidth: 1,
-                        backgroundColor: ['#4caf50', '#f44336'],
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 1.8,
-                    animation: {
-                        duration: 0
+                const chartAssign = new Chart(ctx_assign, {
+                    type: 'pie',
+                    data: {
+                        labels: display_labels,
+                        datasets: [{
+                            label: 'Number of Occurrences',
+                            data: data_assign,
+                            borderWidth: 1,
+                            backgroundColor: ['#4caf50', '#f44336'],
+                        }]
                     },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    size: 14,
-                                },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 1.8,
+                        animation: {
+                            duration: 0
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 14,
+                                    },
+                                }
+                            },
+                            title: {
+                                display: false,
+                                text: 'Alarms Distribution by Assignment'
                             }
                         },
-                        title: {
-                            display: false,
-                            text: 'Alarms Distribution by Assignment'
+                        scales: {
+                            x: {display: false},
+                            y: {display: false}
                         }
-                    },
-                    scales: {
-                        x: {display: false},
-                        y: {display: false}
                     }
-                }
-            });
+                });
 
-            chartAssign.options.onClick = (event, elements) => {
-                if (elements.length > 0) {
-                    const index = elements[0].index;
-                    const label = labels_assign[index];
-                    const sortOrder = label.toLowerCase();
-                    window.location.href = `/Alarms?sortOrder=${sortOrder}`;
-                }
-            };
+                chartAssign.options.onClick = (event, elements) => {
+                    if (elements.length > 0) {
+                        const index = elements[0].index;
+                        const label = labels_assign[index];
+                        const sortOrder = label.toLowerCase();
+                        window.location.href = `/Alarms?sortOrder=${sortOrder}`;
+                    }
+                };
+            }
         </script>
     </div>
 </div>

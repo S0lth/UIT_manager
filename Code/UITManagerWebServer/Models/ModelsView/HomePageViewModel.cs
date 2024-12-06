@@ -5,7 +5,7 @@ namespace UITManagerWebServer.Models.ModelsView {
         public int MachinesWithActiveAlarms { get; set; }
         public int AlarmsNotResolvedCount { get; set; }
         public int AlarmsTriggeredTodayCount { get; set; }
-        public Dictionary<string, int> NormGroupAlarmsCount { get; set; }
+        public Dictionary<string, int> SeverityAlarmsCount { get; set; }
         public Dictionary<string, int> AssignedOrNotAlarmCount { get; set; }
         public Dictionary<string, Dictionary<string, double>> AlarmCountsBySiteAndSeverity { get; set; }
         public List<AlarmViewModel> Alarms { get; set; }

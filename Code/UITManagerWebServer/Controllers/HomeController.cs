@@ -63,7 +63,7 @@ namespace UITManagerWebServer.Controllers {
                 MachinesWithActiveAlarms = await GetMachinesWithActiveAlarms(),
                 AlarmsNotResolvedCount = await GetAlarmsNotResolvedCount(),
                 AlarmsTriggeredTodayCount = await GetAlarmsTriggeredTodayCount(),
-                NormGroupAlarmsCount = await GetAlarmsBySeverity(),
+                SeverityAlarmsCount = await GetAlarmsBySeverity(),
                 AssignedOrNotAlarmCount = await GetAssignedOrNotAlarmCount(),
                 AlarmCountsBySiteAndSeverity = await FetchAlarmCountsBySiteAndSeverity(),
                 Alarms = selectedAlarms,
@@ -85,7 +85,7 @@ namespace UITManagerWebServer.Controllers {
             ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
 
 
-            ViewData["AlarmTypeOccurrences"] = JsonConvert.SerializeObject(viewModel.NormGroupAlarmsCount);
+            ViewData["SeverityAlarmsCount"] = JsonConvert.SerializeObject(viewModel.SeverityAlarmsCount);
 
             ViewData["AssignedOrNotAlarmCount"] = JsonConvert.SerializeObject(viewModel.AssignedOrNotAlarmCount);
 

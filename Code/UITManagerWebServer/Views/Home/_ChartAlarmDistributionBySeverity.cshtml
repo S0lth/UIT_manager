@@ -9,67 +9,81 @@
                 <i class="bi bi-info-circle"></i>
             </button>
         </h5>
-        <canvas id="ChartAlarmDistributionByNormGroup"></canvas>
+
+        <div id="chartContainer1" style="height: 300px; display: none;">
+            <canvas id="ChartAlarmDistributionByNormGroup"></canvas>
+        </div>
+
+        <div id="noAlarmAlert1" class="alert alert-success" style="display: none; height: 300px; display: flex; justify-content: center; align-items: center;">
+            Everything is fine, no alarm triggered.
+        </div>
+
         <script>
-            // Données provenant de la vue
-            const alarmData = @Html.Raw(ViewData["AlarmTypeOccurrences"]);
+            const alarmData = @Html.Raw(ViewData["SeverityAlarmsCount"]);
+            //const alarmData = {};
             const labels = Object.keys(alarmData);
             const data = Object.values(alarmData);
 
-            // Modifie les labels pour afficher le nombre dans la légende
-            const modifiedLabels = labels.map((label, index) => `${label} (${data[index]})`);
+            if (data.length === 0) {
+                document.getElementById('chartContainer1').style.display = 'none';
+                document.getElementById('noAlarmAlert1').style.display = 'flex';
+            } else {
+                document.getElementById('chartContainer1').style.display = 'block';
+                document.getElementById('noAlarmAlert1').style.display = 'none';
 
-            const ctx = document.getElementById('ChartAlarmDistributionByNormGroup').getContext('2d');
+                const modifiedLabels = labels.map((label, index) => `${label} (${data[index]})`);
 
-            const chart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: modifiedLabels,
-                    datasets: [{
-                        label: 'Number of Occurrences',
-                        data: data,
-                        borderWidth: 1,
-                        backgroundColor: ['#4caf50', '#f44336', '#ffeb3b', '#2196f3', '#9c27b0'], // Exemple de couleurs
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 1.8,
-                    animation: {
-                        duration: 0
+                const ctx = document.getElementById('ChartAlarmDistributionByNormGroup').getContext('2d');
+
+                const chart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: modifiedLabels,
+                        datasets: [{
+                            label: 'Number of Occurrences',
+                            data: data,
+                            borderWidth: 1,
+                            backgroundColor: ['#4caf50', '#f44336', '#ffeb3b', '#2196f3', '#9c27b0'], // Exemple de couleurs
+                        }]
                     },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                font: {
-                                    size: 14,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 1.8,
+                        animation: {
+                            duration: 0
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    font: {
+                                        size: 14,
+                                    }
                                 }
+                            },
+                            title: {
+                                display: false,
+                                text: 'Alarm Type Distribution'
                             }
                         },
-                        title: {
-                            display: false,
-                            text: 'Alarm Type Distribution'
+                        scales: {
+                            x: { display: false },
+                            y: { display: false }
                         }
-                    },
-                    scales: {
-                        x: { display: false },
-                        y: { display: false }
                     }
-                }
-            });
+                });
 
-            chart.options.onClick = (event, elements) => {
-                if (elements.length > 0) {
-                    const label = chart.data.labels[elements[0].index];
-                    const severity = label.split(' ')[0].toLowerCase(); 
+                chart.options.onClick = (event, elements) => {
+                    if (elements.length > 0) {
+                        const label = chart.data.labels[elements[0].index];
+                        const severity = label.split(' ')[0].toLowerCase();
 
-                    // Redirige avec le filtre dans l'URL
-                    window.location.href = `/Alarms?search=${severity}`;
-                }
-            };
+                        window.location.href = `/Alarms?search=${severity}`;
+                    }
+                };
+            }
         </script>
     </div>
 </div>
