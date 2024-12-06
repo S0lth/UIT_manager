@@ -26,7 +26,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string sortOrder, string filter) {
+        public async Task<IActionResult> Index(string sortOrder, string filter, string search) {
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "LastSeen_desc";
             }
@@ -63,6 +63,21 @@ namespace UITManagerWebServer.Controllers {
                     )
                 );
             }
+            
+            if (!string.IsNullOrEmpty(search)) {
+                string searchLower = search.ToLower();
+                var machinesList = await machinesQuery.ToListAsync();
+                machinesList = machinesList.Where(m =>
+                    m.Name.ToLower().Contains(searchLower) ||
+                    m.Model.ToLower().Contains(searchLower) ||
+                    m.GetServiceTag().ToLower().Contains(searchLower) ||
+                    m.GetOsBuild().ToLower().Contains(searchLower) ||
+                    m.GetOsName().ToLower().Contains(searchLower) ||
+                    m.GetOsVersion().ToLower().Contains(searchLower)
+                ).ToList();
+            }
+
+            
             List<Machine> machines = await machinesQuery.ToListAsync();
 
             IEnumerable<MachineViewModel> machineViewModels = machines.Select(m => new MachineViewModel {
