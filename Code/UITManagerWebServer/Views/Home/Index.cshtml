@@ -17,9 +17,9 @@
                                 <h6 class="card-title mb-2">Machines with Alarms Triggered</h6>
                                 <p class="fs-5">
                                     <a asp-action="Index"
-                                       asp-controller="Alarms"
+                                       asp-controller="Machine"
                                        class="badge bg-@((Model.MachinesWithActiveAlarms == 0) ? "success" : "primary")"
-                                       asp-route-sortOrder="triggered_today">
+                                       asp-route-Filter="alarm_triggered">
                                         @Model.MachinesWithActiveAlarms / @Model.TotalMachines
                                     </a>
                                 </p>
