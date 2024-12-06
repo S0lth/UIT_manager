@@ -26,7 +26,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string sortOrder, bool? statusFilter) {
+        public async Task<IActionResult> Index(string sortOrder, string filter) {
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "LastSeen_desc";
             }
@@ -41,15 +41,28 @@ namespace UITManagerWebServer.Controllers {
             ViewData["NoteCountSortParam"] = sortOrder == "NoteCount" ? "NoteCount_desc" : "NoteCount";
             ViewData["LastNoteSortParam"] = sortOrder == "LastNote" ? "LastNote_desc" : "LastNote";
 
-            ViewData["StatusFilter"] = statusFilter.HasValue ? statusFilter : null;
+            ViewData["Filter"] = filter;
 
             IQueryable<Machine> machinesQuery =
                 _context.Machines.Include(m => m.Informations).Include(m => m.Notes).AsQueryable();
 
-            if (statusFilter.HasValue) {
-                machinesQuery = machinesQuery.Where(m => m.IsWorking == statusFilter);
+            if (filter == "working") {
+                machinesQuery = machinesQuery.Where(m => m.IsWorking == true);
             }
-
+            if (filter == "not_working") {
+                machinesQuery = machinesQuery.Where(m => m.IsWorking == false);
+            }
+            if (filter == "alarm_triggered") {
+                machinesQuery = machinesQuery.Where(m => m.Alarms
+                    .Any(a => a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault() != null && 
+                        a.AlarmHistories
+                            .OrderByDescending(ah => ah.ModificationDate)
+                            .FirstOrDefault().StatusType.Name != "resolved"
+                    )
+                );
+            }
             List<Machine> machines = await machinesQuery.ToListAsync();
 
             IEnumerable<MachineViewModel> machineViewModels = machines.Select(m => new MachineViewModel {

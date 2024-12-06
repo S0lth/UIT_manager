@@ -49,11 +49,12 @@
             <div class="d-flex align-items-center">
                 <span class="me-2 text-muted">Filtered by</span>
                 <form method="get" action="@Url.Action("Index")" class="d-flex align-items-center">
-                    <select asp-for="@ViewData["StatusFilter"]" name="statusFilter"
+                    <select asp-for="@ViewData["Filter"]" name="Filter"
                             class="form-select form-control-sm">
                         <option value="">All</option>
-                        <option value="true">Working</option>
-                        <option value="false">Not Working</option>
+                        <option value="working">Working</option>
+                        <option value="not_working">Not Working</option>
+                        <option value="alarm_triggered">Machine affected by an alarm</option>
                     </select>
 
                     <button type="submit" class="btn btn-primary btn-sm ms-2">Filter</button>
