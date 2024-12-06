@@ -29,9 +29,9 @@
                             <div class="card-body p-2">
                                 <h6 class="card-title mb-2">Unresolved Alarms</h6>
                                 <p class="fs-5">
-                                    <span class="badge bg-@((Model.AlarmsNotResolvedCount == 0) ? "success" : "primary")">
+                                    <a asp-action="Index" asp-controller="Alarms" class="badge bg-@((Model.AlarmsNotResolvedCount == 0) ? "success" : "primary")">
                                         @Model.AlarmsNotResolvedCount
-                                    </span>
+                                    </a>
                                 </p>
                             </div>
                         </div>
