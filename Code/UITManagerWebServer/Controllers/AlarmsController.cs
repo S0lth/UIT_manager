@@ -80,13 +80,13 @@ namespace UITManagerWebServer.Controllers {
                                 a.AlarmHistories
                                     .OrderByDescending(h => h.ModificationDate)
                                     .FirstOrDefault().StatusType.Name.ToLower().Contains(searchLower) ||
+                                a.TriggeredAt.ToString().Contains(searchLower) ||
                                 a.NormGroup.SeverityHistories
                                     .OrderByDescending(sh => sh.UpdateDate)
-                                    .FirstOrDefault().Severity.Name.ToLower().Contains(searchLower) ||
-                                a.TriggeredAt.ToString().Contains(searchLower)
+                                    .Select(sh => sh.Severity.Name.ToLower())
+                                    .FirstOrDefault() == searchLower
                     );
             }
-
 
 
             alarms = sortOrder switch {
@@ -129,11 +129,11 @@ namespace UITManagerWebServer.Controllers {
                 "Model" => alarms.OrderBy(a => a.Machine.Model),
                 "Model_desc" => alarms.OrderByDescending(a => a.Machine.Model),
                 "assigned_to_me" => alarms.Where(a => a.AlarmHistories
-                                                         .OrderByDescending(h => h.ModificationDate)
-                                                         .FirstOrDefault() != null &&
-                                                         a.AlarmHistories
-                                                             .OrderByDescending(h => h.ModificationDate)
-                                                             .FirstOrDefault().User.Id == user.Id),
+                                                          .OrderByDescending(h => h.ModificationDate)
+                                                          .FirstOrDefault() != null &&
+                                                      a.AlarmHistories
+                                                          .OrderByDescending(h => h.ModificationDate)
+                                                          .FirstOrDefault().User.Id == user.Id),
                 "unassigned" => alarms.Where(a => a.UserId == null),
                 "triggered_today" => alarms.Where(a => a.TriggeredAt.Date == DateTime.UtcNow.Date),
                 _ => alarms.OrderBy(a => a.Machine.Name)

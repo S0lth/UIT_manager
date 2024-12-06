@@ -25,7 +25,7 @@
                     foreach (var severity in severityList)
                     {
                         <th scope="col">
-                            <a href="@Url.Action("Index", "Alarms", new { severity = severity })">@severity</a>
+                            <a href="@Url.Action("Index", "Alarms", new { search = severity })">@severity</a>
                         </th>
                     }
                 }
