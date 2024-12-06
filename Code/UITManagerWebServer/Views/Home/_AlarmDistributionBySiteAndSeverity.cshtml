@@ -12,7 +12,9 @@
         <table class="table table-striped table-bordered">
             <thead>
             <tr>
-                <th scope="col">Site</th>
+                <th scope="col">
+                    <a href="@Url.Action("Index", "Alarms", new { search = "All" })">Site</a>
+                </th>
                 @if (Model != null && Model.Count > 0)
                 {
                     var severityList = Model.Values
@@ -22,7 +24,9 @@
 
                     foreach (var severity in severityList)
                     {
-                        <th scope="col">@severity</th>
+                        <th scope="col">
+                            <a href="@Url.Action("Index", "Alarms", new { severity = severity })">@severity</a>
+                        </th>
                     }
                 }
             </tr>
@@ -39,7 +43,9 @@
                 foreach (var siteEntry in sortedSiteEntries)
                 {
                     <tr>
-                        <td>@siteEntry.Key</td>
+                        <td>
+                            <a href="@Url.Action("Index", "Alarms", new { search = siteEntry.Key + "-" })">@siteEntry.Key</a>
+                        </td>
                         @foreach (var severity in severityList)
                         {
                             <td>
