@@ -32,7 +32,6 @@ namespace UITManagerWebServer.Controllers {
         [Authorize]
         public async Task<IActionResult> Index(string sortOrder) {
             ViewData["SortOrder"] = sortOrder;
-            ViewData["WhoIsAssigned"] = sortOrder;
             ViewData["MachineSortParm"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
             ViewData["StatusSortParm"] = sortOrder == "Status" ? "Status_desc" : "Status";
             ViewData["SeveritySortParm"] = sortOrder == "Severity" ? "Severity_desc" : "Severity";
@@ -48,15 +47,15 @@ namespace UITManagerWebServer.Controllers {
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmHistories)
                 .ThenInclude(aStatus => aStatus.StatusType)
-                .Include(a => a.NormGroup.SeverityHistories) // Include SeverityHistories
-                .ThenInclude(sh => sh.Severity) // Include related Severity
-                .Include(a => a.User) // Include the User related to the Alarm
+                .Include(a => a.NormGroup.SeverityHistories)
+                .ThenInclude(sh => sh.Severity)
+                .Include(a => a.User)
                 .AsQueryable()
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(h => h.ModificationDate)
                     .Select(h => h.StatusType.Name)
                     .FirstOrDefault() != "Resolved");
-       
+
             alarms = sortOrder switch {
                 "Attribution_desc" => alarms.OrderByDescending(a => a.User == null ? "" : a.User.FirstName),
                 "Attribution" => alarms.OrderBy(a => a.User == null ? "" : a.User.FirstName),
@@ -96,19 +95,17 @@ namespace UITManagerWebServer.Controllers {
 
                 "Model" => alarms.OrderBy(a => a.Machine.Model),
                 "Model_desc" => alarms.OrderByDescending(a => a.Machine.Model),
-
-                "default" => alarms.OrderBy(a => true),
-                "b" => alarms.Where(a => a.AlarmHistories.Any() &&
-                                         a.AlarmHistories
-                                             .OrderByDescending(h => h.ModificationDate)
-                                             .First().User.Id == user.Id),
-                "c" => alarms.Where(a => a.UserId == null),
+                "assigned_to_me" => alarms.Where(a => a.AlarmHistories.Any() &&
+                                                      a.AlarmHistories
+                                                          .OrderByDescending(h => h.ModificationDate)
+                                                          .First().User.Id == user.Id),
+                "unassigned" => alarms.Where(a => a.UserId == null),
+                "triggered_today" => alarms.Where(a => a.TriggeredAt.Date == DateTime.UtcNow.Date),
                 _ => alarms.OrderBy(a => a.Machine.Name)
             };
 
             ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
             ViewData["user"] = users;
-            ViewData["WhoIsAssigned"] = sortOrder ?? "a";
 
             if (User.IsInRole("Admin")) {
                 ViewData["Role"] = "Admin";
@@ -145,10 +142,10 @@ namespace UITManagerWebServer.Controllers {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
 
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
             var newAlarmHistory = new AlarmStatusHistory {
-                StatusTypeId = statusType.Id,
-                ModificationDate = DateTime.UtcNow,
-                UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, UserId = userId
             };
 
             alarm.AlarmHistories.Add(newAlarmHistory);
@@ -160,8 +157,6 @@ namespace UITManagerWebServer.Controllers {
             }
 
             catch (Exception ex) {
-                // Log en cas d'exception
-                // Exemple : _logger.LogError(ex, "Error updating alarm status.");
                 return StatusCode(500, new { success = false, message = "An error occurred while updating status." });
             }
         }
@@ -176,7 +171,6 @@ namespace UITManagerWebServer.Controllers {
             }
 
             try {
-                // Récupérer l'alarme correspondant à l'ID
                 var alarm = await _context.Alarms
                     .Include(a => a.Machine)
                     .Include(a => a.NormGroup)
@@ -186,34 +180,29 @@ namespace UITManagerWebServer.Controllers {
                     return NotFound(new { success = false, message = "Alarm not found." });
                 }
 
-                // Vérifier si l'utilisateur existe
                 var user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null) {
                     return NotFound(new { success = false, message = "User not found." });
                 }
 
-                // Mettre à jour l'utilisateur associé à l'alarme
                 alarm.UserId = request.UserId;
 
-                // Ajouter un historique de statut pour refléter le changement d'attribution
                 var alarmStatusHistory = new AlarmStatusHistory {
                     AlarmId = alarm.Id,
                     StatusType =
                         await _context.AlarmStatusTypes.FirstOrDefaultAsync(s =>
-                            s.Name == "In Progress"), // Exemple de statut
+                            s.Name == "In Progress"),
                     ModificationDate = DateTime.UtcNow,
                     UserId = request.UserId
                 };
 
                 _context.AlarmHistories.Add(alarmStatusHistory);
 
-                // Enregistrer les modifications
                 await _context.SaveChangesAsync();
 
                 return Ok(new { success = true, message = "Alarm attribution updated successfully." });
             }
             catch (Exception ex) {
-                // Gestion des erreurs
                 return StatusCode(500,
                     new {
                         success = false, message = "An error occurred while updating attribution.", error = ex.Message
@@ -263,7 +252,7 @@ namespace UITManagerWebServer.Controllers {
     }
 
     public class UpdateAssignedUserRequest {
-        public string Id { get; set; } // ID de l'alarme
-        public string UserId { get; set; } // ID de l'utilisateurD du nouvel utilisateur attribué
+        public string Id { get; set; }
+        public string UserId { get; set; }
     }
 }
