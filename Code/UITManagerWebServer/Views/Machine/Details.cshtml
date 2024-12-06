@@ -6,6 +6,34 @@
 }
 @functions {
 
+    public void getSavedSortingAndFilterInfoExcept(string? name)
+    {
+        if (name != "sortOrder")
+        {
+            <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]"/>
+        }
+        if (name != "authorFilter")
+        {
+            <input type="hidden" name="authorFilter" value="@ViewData["AuthorFilter"]"/>
+        }
+
+        if (name != "solutionFilter")
+        {
+            <input type="hidden" name="solutionFilter" value="@ViewData["SolutionFilter"]"/>
+        }
+
+        if (name != "typeFilter")
+        {
+            <input type="hidden" name="typeFilter" value="@ViewData["TypeFilter"]"/>
+        }
+
+        if (name != "SortOrderNote")
+        {
+            <input type="hidden" name="SortOrderNote" value="@ViewData["SortOrderNote"]"/>
+        }
+        <input name="id" type="hidden" value="@Model.Id">
+    }
+    
     string GetHeaderClass(string currentSortOrder, string column)
     {
         if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
@@ -48,7 +76,6 @@
         string accordionId = $"accordion-{info.id}";
         string collapseId = $"collapse-{info.id}";
         string headingId = $"heading-{info.id}";
-        
         <div class="accordion-item">
             @if (!info.Children.Any())
             {
@@ -93,8 +120,10 @@
     </h1>
     
     <form asp-action="ChangeWorking" method="post">
-        <input type="checkbox" class="btn-check" id="isWorking" autocomplete="off" onchange="this.form.submit()" @(Model.IsWorking?"checked":"")>
-        <input name="id" type="hidden" value="@Model.Id">
+        <input type="submit" class="btn-check" id="isWorking" autocomplete="off"  @(Model.IsWorking?"checked":"")>
+        @{
+            getSavedSortingAndFilterInfoExcept(null);
+        }
         <label class="btn  @(Model.IsWorking? "btn-success":"btn-danger")" for="isWorking">Current machine state: @(Model.IsWorking? "Working": "Not working")</label>
     </form>
 </div>
@@ -136,7 +165,7 @@
                                 </div>
                                 <div class="dropdown me-2 mb-2 mb-md-0">
                                     <select asp-for="@ViewData["TypeFilter"]" name="TypeFilter"
-                                            asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                                            asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
                                             asp-for-sol="@ViewData["SolutionFilter"]"
                                             class="form-select form-select-sm"
                                             style="display: inline-block; min-width: 120px;" asp->
@@ -145,6 +174,9 @@
                                         <option value="InProgress">In progress</option>
                                         <option value="Resolved">Resolved</option>
                                     </select>
+                                    <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]"/>
+                                    <input type="hidden" name="solutionFilter" value="@ViewData["SolutionFilter"]"/>
+                                    <input type="hidden" name="authorFilter" value="@ViewData["AuthorFilter"]"/>
                                 </div>
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary btn-sm">Filter</button>
@@ -165,7 +197,10 @@
                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
                                         <a asp-action="Details"
                                            asp-route-tab="@Context.Request.Query["tab"]"
-                                           asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
+                                           asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]?.ToString()"
+                                           asp-route-typeFilter="@ViewData["TypeFilter"]"
+                                           asp-route-solutionFilter="@ViewData["SolutionFilter"]"
+                                           asp-route-authorFilter="@ViewData["AuthorFilter"]"
                                            class="text-decoration-none text-dark">
                                             Alarm
                                             <i
@@ -177,7 +212,10 @@
                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
                                         <a asp-action="Details"
                                            asp-route-tab="@Context.Request.Query["tab"]"
-                                           asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
+                                           asp-route-sortOrder="@ViewData["SeveritySortParam"]?.ToString()"
+                                           asp-route-typeFilter="@ViewData["TypeFilter"]"
+                                           asp-route-solutionFilter="@ViewData["SolutionFilter"]"
+                                           asp-route-authorFilter="@ViewData["AuthorFilter"]"
                                            class="text-decoration-none text-dark">
                                             Severity
                                             <i
@@ -189,7 +227,10 @@
                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
                                         <a asp-action="Details"
                                            asp-route-tab="@Context.Request.Query["tab"]"
-                                           asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
+                                           asp-route-sortOrder="@ViewData["StatusSortParam"]?.ToString()"
+                                           asp-route-typeFilter="@ViewData["TypeFilter"]"
+                                           asp-route-solutionFilter="@ViewData["SolutionFilter"]"
+                                           asp-route-authorFilter="@ViewData["AuthorFilter"]"
                                            class="text-decoration-none text-dark">
                                             Status
                                             <i
@@ -201,7 +242,10 @@
                                     <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
                                         <a asp-action="Details"
                                            asp-route-tab="@Context.Request.Query["tab"]"
-                                           asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                                           asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
+                                           asp-route-typeFilter="@ViewData["TypeFilter"]"
+                                           asp-route-solutionFilter="@ViewData["SolutionFilter"]"
+                                           asp-route-authorFilter="@ViewData["AuthorFilter"]"
                                            class="text-decoration-none text-dark">
                                             Date
                                             <i
@@ -230,7 +274,7 @@
                                         <td>@item.Severity</td>
                                         <td>@item.Status</td>
                                         
-                                        <td>@item.TriggeredAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>@item.TriggeredAt.ToString("dd/MM/yyyy HH:mm")</td>
                                     </tr>
                                 }
                             }
@@ -265,8 +309,10 @@
                                     <span class="ms-1">by</span>
                                 </div>
                                 <div class="dropdown me-2 mb-2 mb-md-0">
-                                    <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
-                                            class="form-select form-select-sm">
+                                    <select asp-for="@ViewData["SolutionFilter"]" 
+                                            name="SolutionFilter"
+                                            class="form-select form-select-sm" 
+                                            >
                                         <option value="" disabled selected>Note Type</option>
                                         <option value="all">All</option>
                                         <option value="true">Solution</option>
@@ -276,7 +322,8 @@
 
                                 <div class="dropdown me-2 mb-2 mb-md-0">
                                     <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter"
-                                            class="form-select form-select-sm">
+                                            class="form-select form-select-sm"
+                                            >
                                         <option value="" disabled selected>Author</option>
                                         <option value="all">All Authors</option>
                                         @foreach (var author in ViewBag.Authors)
@@ -297,6 +344,9 @@
                                         <option value="ndate_desc">Oldest First</option>
                                     </select>
                                 </div>
+                                @{
+                                    getSavedSortingAndFilterInfoExcept("SortOrderNote");
+                                }
 
                                 <div class="d-flex gap-2">
                                     <button type="submit" class="btn btn-primary btn-sm">Filter</button>
@@ -321,7 +371,7 @@
                                             </a>
                                         </p>
                                         <small
-                                            class="text-muted">Author: @note.Author on @note.Date.ToString("yyyy-MM-dd HH:mm")</small>
+                                            class="text-muted">Author: @note.Author on @note.Date.ToString("dd/MM/yyyy HH:mm")</small>
                                         <span
                                             class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
                                     </div>
