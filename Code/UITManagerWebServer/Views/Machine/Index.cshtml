@@ -203,7 +203,7 @@
                                                        asp-route-id="@item.LastNote.Id"
                                                        class="text-primary text-decoration-none"
                                                        style="max-width: 200px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                        @(string.IsNullOrEmpty(item.LastNote.Content) ? "N/A" : item.LastNote.Content)
+                                                        @(string.IsNullOrEmpty(item.LastNote.Title) ? "N/A" : item.LastNote.Title)
                                                     </a>
                                                 }
                                                 else

@@ -95,10 +95,12 @@ namespace UITManagerWebServer.Controllers {
 
                 "Model" => alarms.OrderBy(a => a.Machine.Model),
                 "Model_desc" => alarms.OrderByDescending(a => a.Machine.Model),
-                "assigned_to_me" => alarms.Where(a => a.AlarmHistories.Any() &&
-                                                      a.AlarmHistories
-                                                          .OrderByDescending(h => h.ModificationDate)
-                                                          .First().User.Id == user.Id),
+                "assigned_to_me" => alarms.Where(a => a.AlarmHistories
+                                                         .OrderByDescending(h => h.ModificationDate)
+                                                         .FirstOrDefault() != null &&
+                                                         a.AlarmHistories
+                                                             .OrderByDescending(h => h.ModificationDate)
+                                                             .FirstOrDefault().User.Id == user.Id),
                 "unassigned" => alarms.Where(a => a.UserId == null),
                 "triggered_today" => alarms.Where(a => a.TriggeredAt.Date == DateTime.UtcNow.Date),
                 _ => alarms.OrderBy(a => a.Machine.Name)
