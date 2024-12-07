@@ -19,9 +19,9 @@
     <div class="table-responsive">
         <table class="table table-striped table-bordered" id="machine-table">
             <tbody>
-                @if (ViewData["TriggeredInfoValues"] is List<dynamic> triggeredInfoValues && triggeredInfoValues.Any())
+                @if (ViewData["TriggeredInfoValue"] is List<dynamic> triggeredInfoValue && triggeredInfoValue.Any())
                 {
-                    @foreach (var triggeredInfo in triggeredInfoValues)
+                    @foreach (var triggeredInfo in triggeredInfoValue)
                     {
                         <tr>
                             <td colspan="2">
@@ -30,11 +30,11 @@
                                         <p class="card-text m-0">
                                             @if (triggeredInfo.Condition == "IN")
                                             {
-                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is unexpectedly part of the acceptable values (@triggeredInfo.NormValue @triggeredInfo.Format).</p>
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is unexpectedly part of the acceptable Value (@triggeredInfo.NormValue @triggeredInfo.Format).</p>
                                             }
                                             else if (triggeredInfo.Condition == "NOT IN")
                                             {
-                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is not part of the expected values and should be <span>@triggeredInfo.NormValue @triggeredInfo.Format</span></p>
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is not part of the expected Value and should be <span>@triggeredInfo.NormValue @triggeredInfo.Format</span></p>
                                             }
                                             else if (triggeredInfo.Condition == "=")
                                             {
@@ -72,7 +72,7 @@
                 <tr>
                     <td class="font-weight-bold">CPU Model:</td>
                     <td>
-                        @Model.Machine.Informations.FirstOrDefault(obj => obj.Name.Contains("CPU", StringComparison.OrdinalIgnoreCase))?.Children.FirstOrDefault(o => o.Name.Contains("Model", StringComparison.OrdinalIgnoreCase))?.Values
+                        @Model.Machine.Informations.FirstOrDefault(obj => obj.Name.Contains("CPU", StringComparison.OrdinalIgnoreCase))?.Children.FirstOrDefault(o => o.Name.Contains("Model", StringComparison.OrdinalIgnoreCase))?.Value
                     </td>
                 </tr>
 
@@ -84,8 +84,8 @@
                         foreach (var disk in disks)
                         {
                             var diskName = disk.Name;
-                            var totalSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Total Size")?.Values;
-                            var freeSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Free Size")?.Values;
+                            var totalSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Total Size")?.Value;
+                            var freeSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Free Size")?.Value;
 
                             if (decimal.TryParse(totalSize?.Replace("Go", "").Trim(), out var res) &&
                                 decimal.TryParse(freeSize?.Replace("Go", "").Trim(), out var free))
@@ -118,8 +118,8 @@
                     <td>
                         @{
                             var ramComponent = Model.Machine.Informations.FirstOrDefault(c => c.Name == "Ram");
-                            var totalRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Total RAM")?.Values;
-                            var usedRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Used RAM")?.Values;
+                            var totalRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Total RAM")?.Value;
+                            var usedRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Used RAM")?.Value;
 
                             if (decimal.TryParse(totalRam?.Replace(" Go", "").Trim(), out var total) &&
                                 decimal.TryParse(usedRam?.Replace(" Go", "").Trim(), out var used))
@@ -138,7 +138,7 @@
                     <td class="font-weight-bold">Direct X:</td>
                     <td>
                         @{
-                            var directXVersion = Model.Machine.Informations.FirstOrDefault(v => v.Name == "Direct X")?.Values;
+                            var directXVersion = Model.Machine.Informations.FirstOrDefault(v => v.Name == "Direct X")?.Value;
                             @directXVersion
                         }
                     </td>

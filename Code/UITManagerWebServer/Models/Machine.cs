@@ -104,7 +104,7 @@
             {
                 if (info is Value value && value.Name == name)
                 {
-                    return value.Values;
+                    return value.Value;
                 }
 
                 if (info is Component component)
