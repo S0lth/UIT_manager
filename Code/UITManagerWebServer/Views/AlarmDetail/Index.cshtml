@@ -1,38 +1,24 @@
-@model UITManagerWebServer.Models.Alarm
 @{
     ViewData["Title"] = "Alarm Details";
 }
 
-<div class="container-fluid py-1" style="max-width: 1700px;" xmlns="http://www.w3.org/1999/html">
+<div class="container-fluid py-1" style="max-width: 1700px;">
     <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="d-flex align-items-center mt-3">
-                <h1 class="h2 fw-bold me-3">Machine's Alarm Details</h1>
-            </div>
-            @Html.Partial("_AlarmInformations")
+        <div class="col-12 mb-2">
+            <h1 class="h2 fw-bold">Machine's Alarm Details</h1>
         </div>
-        <div class="col-md-6">
-            @Html.Partial("_Notes")
+        <div class="col-md-6 mb-2">
+            @Html.Partial("_AlarmInformations", ViewData["Alarm"])
         </div>
-        <div class="col-md-6">
-            @Html.Partial("_MachineInformations")
+        <div class="col-md-6 mb-2">
+            @Html.Partial("_Notes", ViewData["Notes"])
+        </div>
+        <div class="col-md-6 mb-2">
+            @Html.Partial("_MachineInformations", ViewData["Alarm"])
         </div>
     </div>
 </div>
 <script>
-    document.getElementById('Search').addEventListener('keyup', function () {
-        const searchValue = this.value.toLowerCase();
-        const noteTable = document.getElementById('notes-table');
-        const tableRows = noteTable.querySelectorAll('tbody tr');
-        if (!noteTable.classList.contains('ignore')) {
-            tableRows.forEach(row => {
-                const cells = row.querySelectorAll('taaa');
-                const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(searchValue));
-                row.style.display = match ? '' : 'none';
-            });
-        }
-    });
-
     function updateAlarmStatus(alarmId, status) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
         if (!token) {

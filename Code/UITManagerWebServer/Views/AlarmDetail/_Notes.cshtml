@@ -1,3 +1,5 @@
+@model List<Note>
+
 @functions {
 
     string GetHeaderClass(string currentSortOrder, string column)
@@ -15,90 +17,144 @@
         };
     }
 
+    string GetIsSolutionIcon(bool sol)
+    {
+        return sol ? "badge bg-success" : "badge bg-secondary";
+    }
+
+    string GetIsSolutionText(bool sol)
+    {
+        return sol ? "Solution" : "Follow-Up Note";
+    }
+
 }
 
-<div class="col-md-12">
-    <div class="row">
-        <div class="col-md-12">
-            <h5 class="fw-bold text-uppercase mb-3">Notes</h5>
-        </div>
+<div class="card border-0 rounded mb-0 p-2">
+    <div class="card-header fw-bold d-flex justify-content-between align-items-center mb-3" style="height: 50px;">
+        <span>Notes</span>
     </div>
-
-    <div class="row">
-        <div class="col-md-6 d-flex">
-            <div class="form-outline w-100">
-                <input type="search" id="Search" class="form-control" placeholder="Search..."/>
+    <div class="card-body">
+        <div class="d-flex mb-3">
+            <div class="d-flex flex-grow-1 me-3">
+                <div class="form-outline w-100">
+                    <input type="search" id="Searchh" class="form-control" placeholder="Search..."/>
+                </div>
             </div>
         </div>
-
-        <div class="col-md-6 d-flex justify-content-end">
-            <form method="get" class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-end">
-                <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
-                    <span>Filter</span>
-                    <span class="ms-1">by</span>
-                </div>
-                <div class="dropdown me-2 mb-2 mb-md-0">
-                    <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
-                            class="form-control form-control-sm">
-                        <option type="submit" value="all">All</option>
-                        <option type="submit" value="true">Solution</option>
-                        <option type="submit" value="false">Follow-up</option>
+        <form method="get" class="d-flex gap-3 align-items-center justify-content-end" asp-action="Index">            <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]?.ToString()"/>
+            <div class="d-flex align-items-center">
+                <label for="SolutionFilter" class="me-2 text-muted">Filter by</label>
+                <div class="dropdown">
+                    <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter" class="form-select form-select-sm">
+                        <option value="" disabled selected>Type</option>
+                        <option value="">All</option>
+                        <option value="true">Solution</option>
+                        <option value="false">Follow-up</option>
                     </select>
                 </div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="card shadow-sm border-0 rounded">
-        <div class="card-body">
-
-            <div class="table-responsive" style="overflow-x: auto; max-height: 535px;">
-
-                <table class="table table-hover table-striped align-middle">
-                    <thead class="table-lightfix sticky-top bg-white">
-                    <tr>
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Note")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["Note"]"
-                               class="text-decoration-none text-dark">
-                                Note <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Note")"></i>
-                            </a>
-                        </th>
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["date"]"
-                               class="text-decoration-none text-dark">
-                                Date <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
-                            </a>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @if (ViewData["Notes"] is List<UITManagerWebServer.Models.Note> notes && notes.Any())
-                    {
-                        foreach (var note in notes)
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="dropdown" style="max-width: 150px;">
+                    <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter" class="form-select form-select-sm">
+                        <option value="" disabled selected>Author</option>
+                        <option value="">All Authors</option>
+                        @foreach (var author in ViewBag.Authors)
                         {
-                            <tr>
-                                <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@note.Title</td>
-                                <td>@note.CreatedAt.ToString("dd-MM-yyyy HH:mm")</td>
-                            </tr>
+                        <option value="@author.Id">
+                            @author.LastName @author.FirstName
+                        </option>
                         }
-                    }
-                    else
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="dropdown">
+                    <select asp-for="@ViewData["SortOrderNote"]" name="SortOrderNote" class="form-select form-select-sm">
+                        <option value="" disabled selected>Date</option>
+                        <option value="ndate">Newest First</option>
+                        <option value="ndate_desc">Oldest First</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='@Url.Action("Index")'">Reset</button>
+            </div>
+        </form>
+        <div class="table-responsive" style="overflow-x: auto; max-height: 1000px;">
+            <table class="table table-hover table-striped align-middle" id="notes-table">
+                <thead class="table-lightfix sticky-top bg-white">
+                <tr>
+                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "note")">
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["NoteSortParm"]"
+                           class="text-decoration-none text-dark">
+                            Note <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "note")"></i>
+                        </a>
+                    </th>
+                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
+                           class="text-decoration-none text-dark">
+                            Date <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
+                        </a>
+                    </th>
+                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "type")">
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["TypeSortParm"]"
+                           class="text-decoration-none text-dark">
+                            Type <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "type")"></i>
+                        </a>
+                    </th>
+                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "author")">
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["AuthorSortParm"]"
+                           class="text-decoration-none text-dark">
+                            Author <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "author")"></i>
+                        </a>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var note in Model)
                     {
                         <tr>
-                            <td>
-                                <div class="list-group-item text-center">
-                                    <div class="alert alert-secondary" role="alert">
-                                        No notes written.
-                                    </div>
-                                </div>
+                            <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id">@note.Title</a>
                             </td>
+                            <td>@note.CreatedAt.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td>
+                                <span
+                                    class="@GetIsSolutionIcon(@note.IsSolution)">@GetIsSolutionText(@note.IsSolution)</span>
+                            </td>
+                            <td>@note.Author.LastName @note.Author.FirstName</td>
                         </tr>
                     }
-                    </tbody>
-                </table>
-            </div>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">
+                            <div class="alert alert-secondary text-center" role="alert">
+                                No notes written.
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+<script>
+    document.getElementById('Searchh').addEventListener('keyup', function () {
+        const searchValue = this.value.toLowerCase();
+        const table = document.getElementById('notes-table');
+        const tableRows = table.querySelectorAll('tr');
+        if (tableRows.length > 1) {
+            tableRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(searchValue));
+                row.style.display = match ? '' : 'none';
+            });
+        }
+    });
+</script>

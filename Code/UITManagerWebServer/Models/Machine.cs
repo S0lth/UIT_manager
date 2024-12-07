@@ -93,5 +93,30 @@
 
             return serviceTag?.Values;
         }
+        public string GetInformationValueByName(string name)
+        {
+            return FindInformationValue(Informations, name);
+        }
+
+        private string FindInformationValue(List<Information> informations, string name)
+        {
+            foreach (var info in informations)
+            {
+                if (info is Value value && value.Name == name)
+                {
+                    return value.Values;
+                }
+
+                if (info is Component component)
+                {
+                    var result = FindInformationValue(component.Children, name);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
