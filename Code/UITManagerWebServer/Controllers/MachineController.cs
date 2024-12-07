@@ -26,7 +26,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string sortOrder, bool? statusFilter) {
+        public async Task<IActionResult> Index(string sortOrder, string filter, string search) {
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "LastSeen_desc";
             }
@@ -41,15 +41,43 @@ namespace UITManagerWebServer.Controllers {
             ViewData["NoteCountSortParam"] = sortOrder == "NoteCount" ? "NoteCount_desc" : "NoteCount";
             ViewData["LastNoteSortParam"] = sortOrder == "LastNote" ? "LastNote_desc" : "LastNote";
 
-            ViewData["StatusFilter"] = statusFilter.HasValue ? statusFilter : null;
+            ViewData["Filter"] = filter;
 
             IQueryable<Machine> machinesQuery =
                 _context.Machines.Include(m => m.Informations).Include(m => m.Notes).AsQueryable();
 
-            if (statusFilter.HasValue) {
-                machinesQuery = machinesQuery.Where(m => m.IsWorking == statusFilter);
+            if (filter == "working") {
+                machinesQuery = machinesQuery.Where(m => m.IsWorking == true);
+            }
+            if (filter == "not_working") {
+                machinesQuery = machinesQuery.Where(m => m.IsWorking == false);
+            }
+            if (filter == "alarm_triggered") {
+                machinesQuery = machinesQuery.Where(m => m.Alarms
+                    .Any(a => a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault() != null && 
+                        a.AlarmHistories
+                            .OrderByDescending(ah => ah.ModificationDate)
+                            .FirstOrDefault().StatusType.Name != "resolved"
+                    )
+                );
+            }
+            
+            if (!string.IsNullOrEmpty(search)) {
+                string searchLower = search.ToLower();
+                var machinesList = await machinesQuery.ToListAsync();
+                machinesList = machinesList.Where(m =>
+                    m.Name.ToLower().Contains(searchLower) ||
+                    m.Model.ToLower().Contains(searchLower) ||
+                    m.GetServiceTag().ToLower().Contains(searchLower) ||
+                    m.GetOsBuild().ToLower().Contains(searchLower) ||
+                    m.GetOsName().ToLower().Contains(searchLower) ||
+                    m.GetOsVersion().ToLower().Contains(searchLower)
+                ).ToList();
             }
 
+            
             List<Machine> machines = await machinesQuery.ToListAsync();
 
             IEnumerable<MachineViewModel> machineViewModels = machines.Select(m => new MachineViewModel {
@@ -145,7 +173,8 @@ namespace UITManagerWebServer.Controllers {
                     ParentId = a.ParentId,
                     Name = a.Name,
                     id = a.Id,
-                    Value = a.Values,
+                    Value = a.Value,
+                    Format = a.Format,
                     Children = new List<ComponentsViewModel>()
                 }).ToList();
 
@@ -166,6 +195,7 @@ namespace UITManagerWebServer.Controllers {
                 id = parent.id,
                 Name = parent.Name,
                 Value = parent.Value,
+                Format = parent.Format,
                 Children = new List<ComponentsViewModel>()
             };
 
@@ -176,7 +206,8 @@ namespace UITManagerWebServer.Controllers {
                     ParentId = child.ParentId,
                     Name = child.Name,
                     id = child.Id,
-                    Value = child.Values,
+                    Value = child.Value,
+                    Format = child.Format,
                     Children = new List<ComponentsViewModel>()
                 };
                 var childHierarchy = await BuildHierarchy(info, list);
@@ -425,6 +456,7 @@ namespace UITManagerWebServer.Controllers {
             public int id { get; set; }
             public string Name { get; set; }
             public string Value { get; set; }
+            public string Format { get; set; }
             public List<ComponentsViewModel> Children { get; set; }
         }
 

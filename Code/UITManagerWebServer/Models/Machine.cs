@@ -47,7 +47,7 @@
                 .OfType<Value>()
                 .FirstOrDefault(v => v.Name == "OS Name");
 
-            return osName?.Values;
+            return osName?.Value;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@
                 .OfType<Value>()
                 .FirstOrDefault(v => v.Name == "Os Version");
 
-            return osVersion?.Values;
+            return osVersion?.Value;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@
                 .OfType<Value>()
                 .FirstOrDefault(v => v.Name == "Os Build");
 
-            return osBuild?.Values;
+            return osBuild?.Value;
         }
 
         /// <summary>
@@ -91,7 +91,7 @@
                 .OfType<Value>()
                 .FirstOrDefault(v => v.Name == "Tag Service");
 
-            return serviceTag?.Values;
+            return serviceTag?.Value;
         }
         public string GetInformationValueByName(string name)
         {
