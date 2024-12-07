@@ -13,65 +13,68 @@
         <div class="col-md-6 mb-2">
             @Html.Partial("_AlarmInformations", ViewData["Alarm"])
         </div>
-        <div class="col-md-6 mb-2">
+
+        <div class="col-md-6 mb-2 d-flex flex-column" style="height: 100%;">
             @Html.Partial("_Notes", ViewData["Notes"])
         </div>
+        
         <div class="col-md-6 mb-2">
             @Html.Partial("_MachineInformations", ViewData["Alarm"])
         </div>
-    </div>
+        <div class="col-md-6 mb-5 align-content-end">
+            <div class="d-flex justify-content-end gap-3 m-6">
+                @{
+                    var previousUrl = TempData["PreviousUrl"]?.ToString();
+                    string previousPageName = "Previous Page";
 
-    <div class="d-flex justify-content-end gap-3 mt-4">
-        @{
-            var previousUrl = TempData["PreviousUrl"]?.ToString();
-            string previousPageName = "Previous Page";
+                    if (!string.IsNullOrEmpty(previousUrl))
+                    {
+                        var uri = new Uri(previousUrl);
+                        var path = uri.AbsolutePath;
 
-            if (!string.IsNullOrEmpty(previousUrl))
-            {
-                var uri = new Uri(previousUrl);
-                var path = uri.AbsolutePath;
+                        if (string.IsNullOrEmpty(path) || path == "/")
+                        {
+                            previousPageName = "Home";
+                        }
+                        else
+                        {
+                            var segments = path.Split('/');
 
-                if (string.IsNullOrEmpty(path) || path == "/")
-                {
-                    previousPageName = "Home";
+                            if (segments.Length >= 3)
+                            {
+                                previousPageName = string.Join(" ", segments[1], segments[2]).Replace("-", " ");
+                            }
+                            else if (segments.Length == 2)
+                            {
+                                previousPageName = segments[1].Replace("-", " ");
+                            }
+                            else
+                            {
+                                previousPageName = segments.LastOrDefault()?.Replace("-", " ") ?? "Previous Page";
+                            }
+                        }
+                    }
                 }
-                else
+
+                @if (previousUrl != null)
                 {
-                    var segments = path.Split('/');
-
-                    if (segments.Length >= 3)
-                    {
-                        previousPageName = string.Join(" ", segments[1], segments[2]).Replace("-", " ");
-                    }
-                    else if (segments.Length == 2)
-                    {
-                        previousPageName = segments[1].Replace("-", " ");
-                    }
-                    else
-                    {
-                        previousPageName = segments.LastOrDefault()?.Replace("-", " ") ?? "Previous Page";
-                    }
+                    <a class="btn btn-outline-secondary" href="@previousUrl">
+                        Back to @previousPageName
+                    </a>
                 }
-            }
-        }
 
-        @if (previousUrl != null)
-        {
-            <a class="btn btn-outline-secondary" href="@previousUrl">
-                Back to @previousPageName
-            </a>
-        }
-
-        <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Alarms">
-            View All Alarms
-        </a>
-        <a class="btn btn-outline-primary" asp-controller="Machine" asp-action="Details"
-           asp-route-id="@alarm.Machine.Id">
-            See Machine Details
-        </a>
-
+                <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Alarms">
+                    View All Alarms
+                </a>
+                <a class="btn btn-outline-primary" asp-controller="Machine" asp-action="Details"
+                   asp-route-id="@alarm.Machine.Id">
+                    See Machine Details
+                </a>
+            </div>
+        </div>
     </div>
 </div>
+
 
 <script>
     function updateAlarmStatus(alarmId, status) {

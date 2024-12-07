@@ -76,18 +76,21 @@ namespace UITManagerWebServer {
                     var machineValue = alarm.Machine.GetInformationValueByName(infoName);
 
                     if (!string.IsNullOrEmpty(machineValue)) {
-                        triggeredInfoList.Add(new {
+                        var triggeredInfo = new {
                             InfoName = infoName,
                             MachineValue = machineValue,
                             NormValue = norm.Value,
                             Condition = norm.Condition,
                             Format = norm.Format
-                        });
+                        };
+                        triggeredInfoList.Add(triggeredInfo);
                     }
                 }
             }
+            
+            Console.WriteLine(triggeredInfoList.ToArray());
 
-            ViewData["TriggeredInfoValues"] = triggeredInfoList;
+            ViewData["TriggeredInfoValue"] = triggeredInfoList;
 
             return View(ViewData.Model);
         }
