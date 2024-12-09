@@ -615,8 +615,8 @@ public static class Populate {
                     Format = "Null",
                     Children = new List<Information> {
                         new Value { Name = "OS Name", Machine = Machine, Value = Os[random.Next(Os.Length)],Format = "TEXT" },
-                        new Value { Name = "Os Version", Machine = Machine, Value = OsV[random.Next(OsV.Length)],Format = "TEXT" },
-                        new Value { Name = "Os Build", Machine = Machine, Value = OsB[random.Next(OsB.Length)],Format = "TEXT" },
+                        new Value { Name = "OS Version", Machine = Machine, Value = OsV[random.Next(OsV.Length)],Format = "TEXT" },
+                        new Value { Name = "OS Build", Machine = Machine, Value = OsB[random.Next(OsB.Length)],Format = "TEXT" },
                     }
                 });
 

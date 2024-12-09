@@ -1,0 +1,160 @@
+@model Alarm
+
+@functions {
+    public string FormatMachineValue(string machineValue)
+    {
+        if (decimal.TryParse(machineValue, out var result))
+        {
+            return result.ToString("F1");
+        }
+        return machineValue;
+    }
+}
+
+<div class="card border-0 rounded mb-0 p-2" style="height: 350px; overflow-y: auto;">
+    <div class="card-header fw-bold d-flex justify-content-between align-items-center mb-3" style="height: 50px;">
+        <span>Machine Details</span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered" id="machine-table">
+            <tbody>
+                @if (ViewData["TriggeredInfoValue"] is List<dynamic> triggeredInfoValue && triggeredInfoValue.Any())
+                {
+                    @foreach (var triggeredInfo in triggeredInfoValue)
+                    {
+                        <tr>
+                            <td colspan="2">
+                                <div class="card border-danger border-3 m-0 p-1">
+                                    <div class="card-body p-1 m-0">
+                                        <p class="card-text m-0">
+                                            @if (triggeredInfo.Condition == "IN")
+                                            {
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is unexpectedly part of the acceptable Value (@triggeredInfo.NormValue @triggeredInfo.Format).</p>
+                                            }
+                                            else if (triggeredInfo.Condition == "NOT IN")
+                                            {
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is not part of the expected Value and should be <span>@triggeredInfo.NormValue @triggeredInfo.Format</span></p>
+                                            }
+                                            else if (triggeredInfo.Condition == "=")
+                                            {
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is equal to <span>@triggeredInfo.NormValue @triggeredInfo.Format</span>.</p>
+                                            }
+                                            else if (triggeredInfo.Condition == "!=")
+                                            {
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is not equal to <span>@triggeredInfo.NormValue @triggeredInfo.Format</span>.</p>
+                                            }
+                                            else if (triggeredInfo.Condition == ">")
+                                            {
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is greater than <span>@triggeredInfo.NormValue @triggeredInfo.Format</span>.</p>
+                                            }
+                                            else if (triggeredInfo.Condition == "<")
+                                            {
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> is less than <span>@triggeredInfo.NormValue @triggeredInfo.Format</span>.</p>
+                                            }
+                                            else
+                                            {
+                                                <p><span class="text-danger">@FormatMachineValue(triggeredInfo.InfoName)</span> violates the expected norm: <span>@triggeredInfo.NormValue @triggeredInfo.Format</span>.</p>
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+
+                <tr>
+                    <td class="font-weight-bold">Machine Model:</td>
+                    <td>@Model.Machine?.Model</td>
+                </tr>
+                <tr>
+                    @foreach (var osComponent in Model.Machine.Informations.Where (v => v.Name == "OS"))
+                    {
+                        var osName = osComponent.Children.FirstOrDefault(obj => obj.Name == "OS Name")?.Value;
+                        var osVersion = osComponent.Children.FirstOrDefault(obj => obj.Name == "OS Version")?.Value;
+                        var osBuild = osComponent.Children.FirstOrDefault(obj => obj.Name == "OS Build")?.Value;
+                        <td class="font-weight-bold">OS</td>
+                        <td>Name: @osName @osVersion @osBuild</td>
+                    }
+                </tr>
+
+                <tr>
+                    <td class="font-weight-bold">CPU Model:</td>
+                    <td>
+                        @Model.Machine.Informations.FirstOrDefault(obj => obj.Name.Contains("CPU", StringComparison.OrdinalIgnoreCase))?.Children.FirstOrDefault(o => o.Name.Contains("Model", StringComparison.OrdinalIgnoreCase))?.Value
+                    </td>
+                </tr>
+
+                @foreach (var diskComponent in Model.Machine.Informations.Where(c => c.Name == "List Disk"))
+                {
+                    var disks = diskComponent.Children.FirstOrDefault(c => c.Name == "Disks")?.Children;
+                    if (disks != null)
+                    {
+                        foreach (var disk in disks)
+                        {
+                            var diskName = disk.Name;
+                            var totalSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Total Size")?.Value;
+                            var freeSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Free Size")?.Value;
+
+                            if (decimal.TryParse(totalSize?.Replace("Go", "").Trim(), out var res) &&
+                                decimal.TryParse(freeSize?.Replace("Go", "").Trim(), out var free))
+                            {
+                                var usedSpace = res - free;
+                                <tr>
+                                    <td class="font-weight-bold">Disk:</td>
+                                    <td>@diskName: @usedSpace.ToString("F1") Go / @res.ToString("F1") Go</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="font-weight-bold">@diskName:</td>
+                                    <td>Invalid Total or Free Size</td>
+                                </tr>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2" class="text-center">No disks found.</td>
+                        </tr>
+                    }
+                }
+
+                <tr>
+                    <td class="font-weight-bold">RAM:</td>
+                    <td>
+                        @{
+                            var ramComponent = Model.Machine.Informations.FirstOrDefault(c => c.Name == "Ram");
+                            var totalRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Total RAM")?.Value;
+                            var usedRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Used RAM")?.Value;
+
+                            if (decimal.TryParse(totalRam?.Replace(" Go", "").Trim(), out var total) &&
+                                decimal.TryParse(usedRam?.Replace(" Go", "").Trim(), out var used))
+                            {
+                                @($"{used.ToString("F1")} Go / {total.ToString("F1")} Go")
+                            }
+                            else
+                            {
+                                @("N/A")
+                            }
+                        }
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="font-weight-bold">Direct X:</td>
+                    <td>
+                        @{
+                            var directXVersion = Model.Machine.Informations.FirstOrDefault(v => v.Name == "Direct X")?.Value;
+                            @directXVersion
+                        }
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
