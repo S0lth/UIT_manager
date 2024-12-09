@@ -12,7 +12,7 @@ using UITManagerWebServer.Data;
 namespace UITManagerWebServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241205172243_InitialMigration")]
+    [Migration("20241207165700_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -266,6 +266,9 @@ namespace UITManagerWebServer.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsActivate")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("LastName")
                         .IsRequired()

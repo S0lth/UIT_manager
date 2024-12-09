@@ -1,0 +1,187 @@
+@model List<UITManagerWebServer.Controllers.UserController.UserViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@functions {
+
+    string GetHeaderClass(string currentSortOrder, string column) {
+        if (currentSortOrder == column || currentSortOrder == $"{column}_desc") {
+            return "bg-selected-header";
+        }
+
+        return string.Empty;
+    }
+
+    string GetSortIcon(string currentSortOrder, string column) {
+        if (currentSortOrder == column) {
+            return "bi bi-sort-down";
+        }
+        else if (currentSortOrder == $"{column}_desc") {
+            return "bi bi-sort-up";
+        }
+            return "bi bi-arrow-down-up";
+    }
+
+}
+
+<div id="alert-container" class="p-0 m-0"></div>
+<div class="container-fluid py-5 px-4" style="max-width: 1700px;">
+    <div class="row mb-2 fixed">
+        <div class="col-lg-12">
+            <h1 class="h2 fw-bold me-3">Employees</h1>
+            <div class="d-flex justify-content-between ">
+                <div class=" align-items-center">
+                    <div class="input-group" style="max-width: 400px;">
+                        <div class="form-outline" data-mdb-input-init>
+                            <input type="search" id="Search" class="form-control"
+                                   placeholder="Search..."/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card shadow-sm border-0 rounded">
+                <div class="card-body">
+                    <div>
+                        <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
+                            @if (Model.Count() == 0)
+                            {
+                            <div class="list-group-item text-center">
+                                <div class="alert alert-secondary" role="alert">
+                                    No Users
+                                </div>
+                            </div>
+                            }
+                            else
+                            {
+                                <table class="table table-hover table-striped align-middle">
+                                    <thead class="table-lightfix sticky-top ">
+                                    <tr>
+                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "FullName") fix">
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["FullNameSortParm"]"
+                                               class="text-decoration-none text-dark ">
+                                                Full Name <i
+                                                              class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "FullName")"></i>
+                                            </a>
+                                        </th>
+                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Email")">
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["EmailSortParm"]"
+                                               class="text-decoration-none text-dark">
+                                                Email <i
+                                                          class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Email")"></i>
+                                            </a>
+                                        </th>
+                                        <th class=" bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Role")">
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm"]"
+                                               class="text-decoration-none text-dark">
+                                                Role <i
+                                                         class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Role")"></i>
+                                            </a>
+                                        </th>
+                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "StartDate")">
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["StartDateSortParm"]"
+                                               class="text-decoration-none text-dark">
+                                                Start Date
+                                                <i
+                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "StartDate")">
+                                                </i>
+                                            </a>
+                                        </th>
+                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "EndDate")">
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["EndDateSortParm"]"
+                                               class="text-decoration-none text-dark">
+                                                End Date
+                                                <i
+                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "EndDate")">
+                                                </i>
+                                            </a>
+                                        </th>
+                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Active")">
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["ActiveSortParm"]"
+                                               class="text-decoration-none text-dark">
+                                                Active <i
+                                                           class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Active")"></i>
+                                            </a>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="text-secondary">
+                                                @item.FullName
+                                            </td>
+                                            <td class="text-secondary">
+                                                @item.Email    
+                                            </td>
+                                            <td class="text-secondary">
+                                                @item.Role
+                                            </td>
+                                            <td class="text-secondary">
+                                                @item.StartDate.ToString("dd/MM/yyyy")
+                                            </td>
+                                            <td class="text-secondary">
+                                                @(item.EndDate?.ToString("dd/MM/yyyy") ?? "")
+                                            </td>
+                                            <td class="text-secondary">
+                                                <input type="checkbox"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#toggleActiveStatusModal"
+                                                       data-item-id="@item.Id"
+                                                       data-is-active="@item.IsActivate"
+                                                       @(item.IsActivate ? "checked" : "") />
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][data-bs-toggle="modal"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('click', function() {
+            const userId = this.getAttribute('data-item-id');
+            const isActive = this.checked;
+
+            document.getElementById('toggleStatusId').value = userId;
+            document.querySelector('#toggleActiveStatusModal input[name="isActive"]').value = isActive;
+        });
+    });
+</script>
+
+<div class="modal fade" id="toggleActiveStatusModal" tabindex="-1" aria-labelledby="toggleActiveStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="toggleStatusForm" method="post" asp-action="ToggleIsActive">
+                <input type="hidden" id="toggleStatusId" name="id" />
+                <input type="hidden" name="isActive" value="true" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="toggleActiveStatusModalLabel">Change Active Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to change the active status of this item?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Applied</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

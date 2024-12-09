@@ -70,7 +70,8 @@ public static class Populate {
                 Email = "roger@example.com",
                 FirstName = "Roger",
                 LastName = "Ô",
-                StartDate = DateTime.SpecifyKind(new DateTime(2013, 1, 1), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(2013, 1, 1), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "pierre",
@@ -78,14 +79,16 @@ public static class Populate {
                 FirstName = "Pierre",
                 LastName = "BARBE",
                 StartDate = DateTime.SpecifyKind(new DateTime(2008, 1, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2012, 12, 31), DateTimeKind.Utc) // Ajout de la date de fin
+                EndDate = DateTime.SpecifyKind(new DateTime(2012, 12, 31), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "camille",
                 Email = "camille@example.com",
                 FirstName = "Camille",
                 LastName = "MILLET",
-                StartDate = DateTime.SpecifyKind(new DateTime(1998, 8, 8), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(1998, 8, 8), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "bernadette",
@@ -93,14 +96,16 @@ public static class Populate {
                 FirstName = "Bernadette",
                 LastName = "HARDY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 3, 15), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 3, 15), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "isaac",
                 Email = "isaac@example.com",
                 FirstName = "Isaac",
                 LastName = "DEVAUX",
-                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "aime_boulay_1",
@@ -108,7 +113,8 @@ public static class Populate {
                 FirstName = "Aimé",
                 LastName = "BOULAY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2022, 7, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2022, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2022, 8, 30), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "paul_de_bergerac_1",
@@ -116,7 +122,8 @@ public static class Populate {
                 FirstName = "Paul",
                 LastName = "DE BERGERAC",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 3, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "aime_boulay_2",
@@ -124,21 +131,24 @@ public static class Populate {
                 FirstName = "Aimé",
                 LastName = "BOULAY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "alfred_emmanuel",
                 Email = "alfred_emmanuel@example.com",
                 FirstName = "Alfred-Emmanuel",
                 LastName = "SEGUIN",
-                StartDate = DateTime.SpecifyKind(new DateTime(2000, 3, 15), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(2000, 3, 15), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "martin_etienne",
                 Email = "martin_etienne@example.com",
                 FirstName = "Martin-Étienne",
                 LastName = "LEFORT",
-                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "paul_guilbert",
@@ -146,7 +156,8 @@ public static class Populate {
                 FirstName = "Paul",
                 LastName = "GUILBERT",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc),
+                IsActivate = false
             }
         };
 
