@@ -1,395 +1,103 @@
-@model UITManagerWebServer.Models.Alarm
+@model Alarm
+
 @{
-ViewData["Title"] = "Index";
-var machine = (UITManagerWebServer.Models.ModelsView.DetailViewModel) ViewData["Machine"];
-var atribued = (UITManagerWebServer.Models.ApplicationUser)ViewData["techos"];
+    var alarm = (UITManagerWebServer.Models.Alarm)ViewData["Alarm"];
+    ViewData["Title"] = "Alarm Details";
 }
 
-@functions {
-string GetSeveryticolor(string currentSeverity)
-{
-return currentSeverity switch
-{
-"Critical" => "text-danger",
-"High" => "text-High",
-"Medium" => "text-warning",
-"Low" => "text-low",
-"Warning" => "text-secondary",
-_ => "text-secondary",
-};
-}
-
-string GetBGColorForAttribution(string? attribution)
-{
-return attribution == null ? "bg-danger text-white" : "bg-success text-white";
-}
-
-string GetHeaderClass(string currentSortOrder, string column)
-{
-return (currentSortOrder == column || currentSortOrder == $"{column}_desc") ? "bg-selected-header" : string.Empty;
-}
-
-string GetSortIcon(string currentSortOrder, string column)
-{
-return currentSortOrder switch
-{
-_ when currentSortOrder == column => "bi bi-sort-down",
-_ when currentSortOrder == $"{column}_desc" => "bi bi-sort-up",
-_ => "bi bi-arrow-down-up",
-};
-}
-}
-
-<div class="container-fluid py-1" style="max-width: 1700px;" xmlns="http://www.w3.org/1999/html">
-    <div class="row mt-4">
-        <!-- Left Column -->
-        <div class="col-md-6">
-            <!-- Alarm Details Card -->
-                <h4 class="fw-bold text-uppercase">@Model.NormGroup.Name</h4>
-                <h5 class="fw-bold text-uppercase">@Model.Machine.Name</h5>
-                <div class="d-flex align-items-center mt-3">
-                    <h5 class="fw-bold text-uppercase">Alarms Details </h5>
-            
-                </div>
-       
-
-            <div class="card shadow-sm border-0 rounded mb-4 p-4 bg-light">
-                <div class="mt-4">
-                    
-                    <div class="flex-row">
-                        <strong>Severity :</strong>
-                        <p class="@GetSeveryticolor(@Model.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name)">
-                            @Model.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name
-                        </p>
-                    </div>
-
-
-
-                <p><strong>Triggered At:</strong> <br> @Model.TriggeredAt.ToString("dd-MM-yyyy HH:mm")</p>
-
-
-                    <div class="form-group">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <!-- Attribution Dropdown -->
-                            <div class="me-3 w-50">
-                                <label for="AssignedUser"><strong>Attribution</strong></label>
-                                @if (@User.IsInRole("Technician"))
-                                {
-                                    if (@Model.GetLatestAlarmHistory()?.User.FirstName == null)
-                                    {
-                                        <p class="text-secondary">Unattribued</p>
-                                    }
-                                    else
-                                    {
-                                        <p class="text-success">@Model.GetLatestAlarmHistory()?.User.FirstName @Model.GetLatestAlarmHistory()?.User.LastName</p>
-                                    }
-                                }
-                                else
-                                {
-                                    
-                                    if (@Model.GetLatestAlarmHistory()?.User.FirstName == null)
-                                    {
-                                        
-                                        <select id="AssignedUser" name="AssignedUser" style="max-width: 300px "class="form-select form-select-sm  @GetBGColorForAttribution(@Model.GetLatestAlarmHistory()?.UserId)">
-                                            @{
-                                                var isFirst = true; 
-
-                                            }
-                                            @foreach (var user in ViewData["user"] as List<UITManagerWebServer.Models.ApplicationUser>)
-                                            {
-
-                                                if (isFirst)
-                                                {
-                                                    <option onclick="updateAlarmAttribution('@Model.Id', '')" selected value="">Unattribued</option>
-                                                    isFirst = false;
-                                                }
-                                                else
-                                                {
-                                                    <option onclick="updateAlarmAttribution('@Model.Id', '@user.Id')" value="@user.Id">
-                                                        @user.FirstName @user.LastName
-                                                    </option>
-                                                }
-                                            }
-                                        </select>
-
-                                    }
-                                    else
-                                    {   
-                                        <select id="AssignedUser" name="AssignedUser" style="max-width: 300px "class="form-select form-select-sm  @GetBGColorForAttribution(@Model.GetLatestAlarmHistory()?.UserId)">
-                                    @foreach (var user in ViewData["user"] as List<UITManagerWebServer.Models.ApplicationUser>)
-                                    {
-                                    var isSelected = user.Id == atribued.Id;
-
-                                    if (isSelected)
-                                    {
-                                    <option onclick="updateAlarmAttribution('@Model.Id', '@user.Id')" value="@user.Id" selected>
-                                        @user.FirstName @user.LastName
-                                    </option>
-                                    }
-                                    else
-                                    {
-                                    <option onclick="updateAlarmAttribution('@Model.Id', '@user.Id')" value="@user.Id">
-                                        @user.FirstName @user.LastName
-                                    </option>
-                                    }
-
-                                    }
-
-                                        </select>
-                                    }
-                                    
-
-                                }
-                            </div>
-
-                            <!-- Statut Dropdown -->
-                            <div class="w-50">
-                                <label for="AlarmStatus"><strong>Statut</strong></label>
-                                <select id="AlarmStatus" name="AlarmStatus" style="max-width: 300px "class="form-select form-select-sm" onchange="updateAlarmStatus(@Model.Id, this.value)">
-                                    @foreach (var status in ViewData["AlarmStatusTypes"] as List<UITManagerWebServer.Models.AlarmStatusType>)
-                                    {
-                                        if (Model?.GetLatestAlarmHistory()?.StatusType?.Id != null && status.Id == Model.GetLatestAlarmHistory().StatusType.Id)                                        {
-                                            <option selected value="@status.Name">
-                                                @status.Name
-                                            </option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@status.Name">
-                                                @status.Name
-                                            </option>
-                                        }
-                                        <option disabled class="text-secondary fst-italic fw-light" label="">@status.Description</option>
-
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Machine Details Card -->
-            <h5 class="fw-bold text-uppercase">Machine Details</h5>
-            <div class="card shadow-sm border-0 rounded mb-4 p-4" style="overflow-x: auto; max-height: 250px;">
-
-
-                <div class="container mt-4">
-                    <div class="row border-bottom pb-2">
-                        <div class="col-4 font-weight-bold">Machine Model:</div>
-                        <div class="col-8">@machine.Model</div>
-                    </div>
-                    <div class="row border-bottom py-2">
-                        <div class="col-4 font-weight-bold">CPU Model:</div>
-                        <div class="col-8">
-                            @machine.Informations.FirstOrDefault(obj => obj.Name.Contains("CPU", StringComparison.OrdinalIgnoreCase))?.Children.FirstOrDefault(o => o.Name.Contains("Model", StringComparison.OrdinalIgnoreCase)).Value
-                        </div>
-                    </div>
-                    @{
-                    bool first = true;
-                    }
-                    @foreach (var diskComponent in machine.Informations.Where(c => c.Name == "List Disk"))
-                    {
-                    var disks = diskComponent.Children.FirstOrDefault(c => c.Name == "Disks")?.Children;
-                    if (disks != null)
-                    {
-                    foreach (var disk in disks)
-                    {
-                    var diskName = disk.Name;
-                    var totalSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Total Size")?.Value;
-                    var freeSize = disk.Children.FirstOrDefault(v => v.Name == "Disk Free Size")?.Value;
-
-                    if (decimal.TryParse(totalSize?.Replace("Go", "").Trim(), out var res) &&
-                    decimal.TryParse(freeSize?.Replace("Go", "").Trim(), out var free))
-                    {
-                    var usedSpace = res - free;
-                    <div class="row border-bottom py-2">
-                        <div class="col-4 font-weight-bold">@((first) ? "Disk:" : "")</div>
-                        <div class="col-8">@diskName: @usedSpace Go / @res Go</div>
-                    </div>
-                    first = false;
-                    }
-                    else
-                    {
-                    <div class="row border-bottom py-2">
-                        <div class="col-4 font-weight-bold">@diskName:</div>
-                        <div class="col-8 text-danger">Invalid Total or Free Size</div>
-                    </div>
-                    }
-                    }
-                    }
-                    else
-                    {
-                    <div class="row border-bottom py-2">
-                        <div class="col-12 text-center">No disks found.</div>
-                    </div>
-                    }
-                    }
-
-                    @{
-                    var osComponent = machine.Informations.FirstOrDefault(c => c.Name == "OS");
-                    var osName = osComponent?.Children.FirstOrDefault(v => v.Name == "OS Name")?.Value;
-                    var osVersion = osComponent?.Children.FirstOrDefault(v => v.Name == "Os Version")?.Value;
-                    var osBuild = osComponent?.Children.FirstOrDefault(v => v.Name == "Os Build")?.Value;
-                    }
-                    <div class="row border-bottom py-2">
-                        <div class="col-4 font-weight-bold">OS:</div>
-                        <div class="col-8">@osName @osVersion @osBuild</div>
-                    </div>
-                    <div class="row border-bottom py-2">
-                        <div class="col-4 font-weight-bold">RAM:</div>
-                        <div class="col-8">
-                            @{
-                            var ramComponent = machine.Informations.FirstOrDefault(c => c.Name == "Ram");
-                            var totalRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Total RAM").Value;
-                            var usedRam = ramComponent?.Children.FirstOrDefault(v => v.Name == "Used RAM").Value;
-
-                            if (decimal.TryParse(totalRam?.Replace(" Go", "").Trim(), out var total) &&
-                            decimal.TryParse(usedRam?.Replace(" Go", "").Trim(), out var used))
-                            {
-                            @($"{used} Go / {total} Go")
-                            }
-                            else
-                            {
-                            @("N/A")
-                            }
-                            }
-                        </div>
-                    </div>
-                    <div class="row py-2">
-                        <div class="col-4 font-weight-bold">Direct X:</div>
-                        <div class="col-8">
-                            @{
-                            var directXVersion = machine.Informations.FirstOrDefault(v => v.Name == "Direct X").Value;
-                            @directXVersion
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid py-3" style="max-width: 1700px;">
+    <div class="row">
+        <div class="col-12 mb-2">
+            <h1 class="h2 fw-bold">Machine's Alarm Details</h1>
         </div>
 
-        <!-- Right Column -->
-        <div class="col-md-6">
-            <div class="row">
-                <div class="col-md-12">
-                    <h5 class="fw-bold text-uppercase mb-3">Notes</h5>
-                </div>
+        <div class="d-flex m-1 p-0 gap-2">
+            <div class="col-md-6 mb-2">
+                @Html.Partial("_AlarmInformations", ViewData["Alarm"])
             </div>
 
-            <div class="row">
-                <!-- Barre de recherche à gauche -->
-                <div class="col-md-6 d-flex">
-                    <div class="form-outline w-100">
-                        <input type="search" id="Search" class="form-control" placeholder="Search..." />
-                    </div>
-                </div>
-
-                <!-- Filtres à droite -->
-                <div class="col-md-6 d-flex justify-content-end">
-                    <form method="get" class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-end">
-                        <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
-                            <span>Filter</span>
-                            <span class="ms-1">by</span>
-                        </div>
-                        <div class="dropdown me-2 mb-2 mb-md-0">
-                            <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter" class="form-control form-control-sm">
-                                <option type="submit" value="all">All</option>
-                                <option type="submit" value="true">Solution</option>
-                                <option type="submit" value="false">Follow-up</option>
-                            </select>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="col-md-6 mb-2">
+                @Html.Partial("_Notes", ViewData["Notes"])
             </div>
-            <div class="card shadow-sm border-0 rounded">
-                <div class="card-body">
-                   
-                    <div class="table-responsive" style="overflow-x: auto; max-height: 535px;">
-                  
-                        <table class="table table-hover table-striped align-middle">
-                            <thead class="table-lightfix sticky-top bg-white">
-                            <tr>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Note")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["Note"]" class="text-decoration-none text-dark">
-                                        Note <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Note")"></i>
-                                    </a>
-                                </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["date"]" class="text-decoration-none text-dark">
-                                        Date <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
-                                    </a>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @if (ViewData["Notes"] is List<UITManagerWebServer.Models.Note> notes && notes.Any())
-                            {
-                                foreach (var note in notes)
-                                {
-                                    <tr>
-                                        <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@note.Title</td>
-                                        <td>@note.CreatedAt.ToString("dd-MM-yyyy HH:mm")</td>
-                                    </tr>
-                                }
-
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td>
-                                        <div class="list-group-item text-center">
-                                            <div class="alert alert-secondary" role="alert">
-                                                No notes written.
-                                            </div>
-                                        </div></td>
-                                </tr>
-                            }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        </div>
+        <div class="d-flex m-1 p-0 gap-2">
+            <div class="col-md-6 mb-2">
+                @Html.Partial("_MachineInformations", ViewData["Alarm"])
             </div>
         </div>
     </div>
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-end gap-3">
+                @{
+                    var previousUrl = TempData["PreviousUrl"]?.ToString();
+                    string previousPageName = "Previous Page";
+
+                    if (!string.IsNullOrEmpty(previousUrl))
+                    {
+                        var uri = new Uri(previousUrl);
+                        var path = uri.AbsolutePath;
+
+                        if (string.IsNullOrEmpty(path) || path == "/")
+                        {
+                            previousPageName = "Home";
+                        }
+                        else
+                        {
+                            var segments = path.Split('/');
+
+                            if (segments.Length >= 3)
+                            {
+                                previousPageName = string.Join(" ", segments[1], segments[2]).Replace("-", " ");
+                            }
+                            else if (segments.Length == 2)
+                            {
+                                previousPageName = segments[1].Replace("-", " ");
+                            }
+                            else
+                            {
+                                previousPageName = segments.LastOrDefault()?.Replace("-", " ") ?? "Previous Page";
+                            }
+                        }
+                    }
+                }
+
+                @if (previousUrl != null)
+                {
+                    <a class="btn btn-outline-secondary" href="@previousUrl">
+                        Back to @previousPageName
+                    </a>
+                }
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#alarmHistoryModal">
+                    Alarm Status History
+                </button>
+
+                <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Alarms">
+                    View All Alarms
+                </a>
+                <a class="btn btn-outline-primary" asp-controller="Machine" asp-action="Details"
+                   asp-route-id="@alarm.Machine.Id">
+                    See Machine Details
+                </a>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("_AlarmStatusHistoryModal", ViewData["Alarm"])
 </div>
-
-
-
-
 <script>
-    document.getElementById('Search').addEventListener('keyup', function () {
-        const searchValue = this.value.toLowerCase();
-        const noteTable = document.getElementById('notes-table'); 
-        const tableRows = noteTable.querySelectorAll('tbody tr');
-        if (!noteTable.classList.contains('ignore')){
-            tableRows.forEach(row => {
-                const cells = row.querySelectorAll('taaa');
-                const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(searchValue));
-                row.style.display = match ? '' : 'none';
-            });
-        }
-    });
-
-
-
     function updateAlarmStatus(alarmId, status) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
         if (!token) {
             alert('CSRF token is missing.');
             return;
         }
-
         fetch(`/AlarmDetail/UpdateStatus`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': token
             },
-            body: JSON.stringify({ id: alarmId, status: status })
+            body: JSON.stringify({id: alarmId, status: status})
         }).then(response => {
             if (!response.ok) {
                 alert('Error updating status.');
@@ -398,7 +106,6 @@ _ => "bi bi-arrow-down-up",
             alert('Network error updating status.');
         });
     }
-
 
     async function updateAlarmAttribution(alarmId, userId) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
@@ -412,20 +119,18 @@ _ => "bi bi-arrow-down-up",
             alert('Invalid alarm or user ID.');
             return;
         }
-
         try {
             const response = await fetch('/AlarmDetail/Attribution', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token // Ajout du token pour la protection CSRF
+                    'X-CSRF-TOKEN': token
                 },
                 body: JSON.stringify({
-                    id: alarmId, // ID de l'alarme
-                    userId: userId // ID de l'utilisateur
+                    id: alarmId,
+                    userId: userId
                 })
             });
-
             if (response.ok) {
                 const result = await response.json();
             } else {
@@ -436,6 +141,4 @@ _ => "bi bi-arrow-down-up",
             alert('An error occurred while updating the attribution.');
         }
     }
-
-
 </script>

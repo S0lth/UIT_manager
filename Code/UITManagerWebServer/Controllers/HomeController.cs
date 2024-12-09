@@ -290,7 +290,7 @@ namespace UITManagerWebServer.Controllers {
             var groupedBySite = alarms
                 .GroupBy(a => {
                     var machineName = a.Machine.Name;
-                    var siteName = machineName.Split('-')[1];
+                    var siteName = machineName.Split('-')[0];
                     return siteName;
                 })
                 .ToList();
