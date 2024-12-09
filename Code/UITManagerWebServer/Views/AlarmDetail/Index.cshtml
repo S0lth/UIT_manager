@@ -5,22 +5,26 @@
 
 @model Alarm
 
-<div class="container-fluid py-1" style="max-width: 1700px;">
-    <div class="row mt-4">
+<div class="container-fluid py-3" style="max-width: 1700px;">
+    <div class="row">
         <div class="col-12 mb-2">
             <h1 class="h2 fw-bold">Machine's Alarm Details</h1>
         </div>
-        <div class="col-md-6 mb-2">
-            @Html.Partial("_AlarmInformations", ViewData["Alarm"])
+
+        <div class="d-flex m-1 p-0 gap-2">
+            <div class="col-md-6 mb-2">
+                @Html.Partial("_AlarmInformations", ViewData["Alarm"])
+            </div>
+
+            <div class="col-md-6 mb-2">
+                @Html.Partial("_Notes", ViewData["Notes"])
+            </div>
         </div>
 
-        <div class="col-md-6 mb-2 d-flex flex-column" style="height: 100%;">
-            @Html.Partial("_Notes", ViewData["Notes"])
-        </div>
-        
         <div class="col-md-6 mb-2">
             @Html.Partial("_MachineInformations", ViewData["Alarm"])
         </div>
+
         <div class="col-md-6 mb-5 align-content-end">
             <div class="d-flex justify-content-end gap-3 m-6">
                 @{
@@ -74,6 +78,7 @@
         </div>
     </div>
 </div>
+
 
 
 <script>
