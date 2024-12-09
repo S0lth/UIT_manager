@@ -176,7 +176,7 @@ namespace UITManagerWebServer {
                 .ThenInclude(norm => norm.InformationName)
                 .ThenInclude(infoName => infoName.SubInformationNames)
                 .Include(a => a.User)
-                .Include(a => a.AlarmHistories)
+                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))
                 .ThenInclude(aStatus => aStatus.StatusType)
                 .Include(a => a.NormGroup.SeverityHistories)
                 .ThenInclude(sh => sh.Severity)
