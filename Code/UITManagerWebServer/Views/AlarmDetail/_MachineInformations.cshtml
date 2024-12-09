@@ -66,7 +66,17 @@
 
                 <tr>
                     <td class="font-weight-bold">Machine Model:</td>
-                    <td>@Model.Machine.Model</td>
+                    <td>@Model.Machine?.Model</td>
+                </tr>
+                <tr>
+                    @foreach (var osComponent in Model.Machine.Informations.Where (v => v.Name == "OS"))
+                    {
+                        var osName = osComponent.Children.FirstOrDefault(obj => obj.Name == "OS Name")?.Value;
+                        var osVersion = osComponent.Children.FirstOrDefault(obj => obj.Name == "OS Version")?.Value;
+                        var osBuild = osComponent.Children.FirstOrDefault(obj => obj.Name == "OS Build")?.Value;
+                        <td class="font-weight-bold">OS</td>
+                        <td>Name: @osName @osVersion @osBuild</td>
+                    }
                 </tr>
 
                 <tr>
