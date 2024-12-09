@@ -87,14 +87,13 @@ namespace UITManagerWebServer {
                     }
                 }
             }
-            
+
             Console.WriteLine(triggeredInfoList.ToArray());
 
             ViewData["TriggeredInfoValue"] = triggeredInfoList;
 
             return View(ViewData.Model);
         }
-
 
         private IQueryable<Note> ApplySorting(IQueryable<Note> query, string sortOrder) {
             switch (sortOrder) {

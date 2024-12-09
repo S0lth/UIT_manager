@@ -1,9 +1,9 @@
+@model Alarm
+
 @{
     var alarm = (UITManagerWebServer.Models.Alarm)ViewData["Alarm"];
     ViewData["Title"] = "Alarm Details";
 }
-
-@model Alarm
 
 <div class="container-fluid py-3" style="max-width: 1700px;">
     <div class="row">
@@ -68,6 +68,9 @@
                         Back to @previousPageName
                     </a>
                 }
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#alarmHistoryModal">
+                    Alarm Status History
+                </button>
 
                 <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Alarms">
                     View All Alarms
@@ -79,6 +82,7 @@
             </div>
         </div>
     </div>
+    @Html.Partial("_AlarmStatusHistoryModal", ViewData["Alarm"])
 </div>
 <script>
     function updateAlarmStatus(alarmId, status) {
