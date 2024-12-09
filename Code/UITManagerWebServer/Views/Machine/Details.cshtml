@@ -3,6 +3,11 @@
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    List<MachineController.ComponentsViewModel> informations = Model.Informations as List<MachineController.ComponentsViewModel>;
+    List<MachineController.ComponentsViewModel> informationsSorted = informations
+        .OrderByDescending(n => n.Name.Equals("Tag Service"))
+        .ThenBy(n => n.Name)
+        .ToList();
 }
 @functions {
 
@@ -81,7 +86,18 @@
             {
             <div class="p-3 ps-4" id="@headingId">
                 <div class="w-100">
-                    @info.Name: @info.Value
+                    @if(!info.Format.Equals("TEXT") && !info.Format.Equals("Null"))
+                    {
+                        double number;
+                        @if(double.TryParse(info.Value, out number))
+                        {
+                            <span>@info.Name: @number.ToString("0.##") @info.Format</span>
+                        } 
+                    }
+                    else
+                    {
+                        <span>@info.Name: @info.Value</span>
+                    }
                 </div>
             </div>
             }
@@ -133,17 +149,18 @@
         <div class="col-md-6">
             <div id="accordion">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="mb-0 d-flex justify-content-between h-100">
-                            <span class="btn btn-light font-weight-bold" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Machine Information
-                            </span>
-                            
-                        </h3>
-                    </div>
+                    
                     
                     <div class="accordion" id="informationAccordion">
-                        @foreach (MachineController.ComponentsViewModel info in Model.Informations)
+                        <div class="card-header">
+                            <h3 class="mb-0 d-flex justify-content-between h-100">
+                                <span class="btn btn-light font-weight-bold" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    <strong>Machine Information</strong>
+                                </span>
+                            
+                            </h3>
+                        </div>
+                        @foreach (MachineController.ComponentsViewModel info in informationsSorted)
                         {
                             RenderInformation(info, "informationAccordion");
                         }
@@ -360,23 +377,32 @@
                     <div class="list-group list-group-flush">
                         @if (Model.AnyNote)
                         {
-                            @foreach (var note in Model.Notes)
-                            {
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <p>
-                                            <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id"
-                                               class="text-primary text-decoration-none mb-1">
-                                                @note.Title
-                                            </a>
-                                        </p>
-                                        <small
-                                            class="text-muted">Author: @note.Author on @note.Date.ToString("dd/MM/yyyy HH:mm")</small>
-                                        <span
-                                            class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
-                                    </div>
-                                </div>
-                            }
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered">
+                                    <tbody>
+                                    @foreach (var note in Model.Notes)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <p class="mb-1">
+                                                            <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id"
+                                                               class="text-primary text-decoration-none text-truncate"
+                                                               style="display: block; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                                @note.Title
+                                                            </a>
+                                                        </p>
+                                                        <small class="text-muted">Author: @note.Author on @note.Date.ToString("dd-MM-yyyy HH:mm")</small>
+                                                    </div>
+                                                    <span class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
                         else
                         {
