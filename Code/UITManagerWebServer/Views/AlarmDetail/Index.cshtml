@@ -20,13 +20,15 @@
                 @Html.Partial("_Notes", ViewData["Notes"])
             </div>
         </div>
-
-        <div class="col-md-6 mb-2">
-            @Html.Partial("_MachineInformations", ViewData["Alarm"])
+        <div class="d-flex m-1 p-0 gap-2">
+            <div class="col-md-6 mb-2">
+                @Html.Partial("_MachineInformations", ViewData["Alarm"])
+            </div>
         </div>
-
-        <div class="col-md-6 mb-5 align-content-end">
-            <div class="d-flex justify-content-end gap-3 m-6">
+    </div>
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-end gap-3">
                 @{
                     var previousUrl = TempData["PreviousUrl"]?.ToString();
                     string previousPageName = "Previous Page";
@@ -78,9 +80,6 @@
         </div>
     </div>
 </div>
-
-
-
 <script>
     function updateAlarmStatus(alarmId, status) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
