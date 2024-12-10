@@ -85,7 +85,12 @@ namespace UITManagerWebServer.Controllers
         
         [HttpPost]
         [Authorize(Roles = "ITDirector")]
-        public async Task<IActionResult> ToggleIsActive(string id, bool isActive) {
+        public async Task<IActionResult> ToggleIsActive(string id, bool isActive,bool isCancel = false) {
+
+            if (isCancel) {
+                return RedirectToAction(nameof(Index));
+            }
+            
             var user = await _context.Users.FindAsync(id);
             if (user == null) {
                 return NotFound();
