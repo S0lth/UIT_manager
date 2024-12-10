@@ -27,7 +27,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
             if (_tagInformation != null) {
                 _tagInformation.TagService = "Test";
                 string json = _tagInformation.ToJson();
-                string expected = $"{{\"TagService\":\"Test\"}}";
+                string expected = $"{{\"TagService\":\"Test\",\"Format\":\"TEXT\"}}";
                 StringAssert.Contains(json, expected);
             }
         }

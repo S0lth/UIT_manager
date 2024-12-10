@@ -29,7 +29,7 @@ public class DirectXInformationTest {
         if (_directXInformation != null) {
             _directXInformation.DirectX = "DirectX 12";
             string json = _directXInformation.ToJson();
-            string expected = "{\"DirectX\":\"DirectX 12\"}";
+            string expected = "{\"DirectX\":\"DirectX 12\",\"FormatdirectX\":\"TEXT\"}";
             StringAssert.Contains(expected, json);
         }
         else {

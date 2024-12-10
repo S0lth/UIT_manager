@@ -24,7 +24,7 @@ public class DiskCollector : DataCollector {
             foreach (DriveInfo drive in DriveInfo.GetDrives()) {
                 if (drive.IsReady) {
                     diskCount++;
-                    disk.DisksName = drive.Name;
+                    disk.DiskName = drive.Name;
                     disk.DiskTotalSize = (drive.TotalSize / (1024 * 1024 * 1024));
                     disk.DiskFreeSize = (drive.TotalFreeSpace / (1024 * 1024 * 1024));
                     diskInformation.Disks.Add(disk);

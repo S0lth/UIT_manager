@@ -21,8 +21,8 @@ public class UserCollector : DataCollector {
             foreach (DirectoryEntry child in localMachine.Children) {
                 if (child.SchemaClassName == "User") {
                     UsersInformation.User user= new ();
-                    user.Name = child.Name;
-                    user.Scope = IsDomainUser() ? "Domaine" : "Local";
+                    user.UserName = child.Name;
+                    user.UserScope = IsDomainUser() ? "Domaine" : "Local";
                     users.UsersList.Add(user);
                 }
             }

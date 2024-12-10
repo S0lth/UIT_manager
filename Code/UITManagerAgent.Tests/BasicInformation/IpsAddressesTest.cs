@@ -25,13 +25,13 @@ public class IpsAddressesTest {
     [TestMethod]
     public void ToJson_ShouldReturnValidJson_WhenIPSAddressesAreManuallySet() {
         if (_ipsAddressesInformation != null) {
-            _ipsAddressesInformation.IpsList = new() {
+            _ipsAddressesInformation.Ips = new() {
                 "192.168.1.64",
                 "172.16.25.1",
                 "192.168.2.1",
             };
-            List<string> ipsList = _ipsAddressesInformation.IpsList;
-            string expectedJson = $"{{\"IpsList\":[\"{ipsList[0]}\",\"{ipsList[1]}\",\"{ipsList[2]}\"]}}";
+            List<string> ipsList = _ipsAddressesInformation.Ips;
+            string expectedJson = $"{{\"Ips\":[\"{ipsList[0]}\",\"{ipsList[1]}\",\"{ipsList[2]}\"],\"FormatIp\":\"TEXT\"}}";;
 
             Assert.AreEqual(expectedJson, _ipsAddressesInformation.ToJson());
         }
@@ -46,9 +46,9 @@ public class IpsAddressesTest {
     /// </summary>
     [TestMethod]
     public void ToJson_ShouldReturnValidJson_WhenIPSAddressesAreEmpty() {
-        string expectedJson = "{\"IpsList\":[]}";
+        string expectedJson = "{\"Ips\":[],\"FormatIp\":\"TEXT\"}";
         if (_ipsAddressesInformation != null) {
-            _ipsAddressesInformation.IpsList = new();
+            _ipsAddressesInformation.Ips = new();
             Assert.AreEqual(expectedJson, _ipsAddressesInformation.ToJson());
         }
         else {
@@ -66,14 +66,17 @@ public class IpsAddressesTest {
         IpsAddressesCollector ipsAddressesCollector = new();
         _ipsAddressesInformation = (IpsAddressesInformation)ipsAddressesCollector.Collect();
 
-        List<string> actualIPsList = _ipsAddressesInformation.IpsList;
+        List<string> actualIPsList = _ipsAddressesInformation.Ips;
 
-        string expected = "{\"IpsList\":[";
+        string expected = "{\"Ips\":[";
         if (actualIPsList.Count > 0) {
             foreach (string ip in actualIPsList) {
                 expected += $"\"{ip}\",";
             }
-            expected = expected.Remove(expected.Length - 1) + "]}";
+
+            
+            expected = expected.Remove(expected.Length - 1) + "]";
+            expected += ",\"FormatIp\":\"TEXT\"}";
         }
         Assert.AreEqual(expected, _ipsAddressesInformation.ToJson());
     }

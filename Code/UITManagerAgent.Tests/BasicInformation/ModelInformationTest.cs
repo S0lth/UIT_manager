@@ -26,7 +26,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
             if (_modelInformation != null) {
                 _modelInformation.Model = "82WM";
                 string json = _modelInformation.ToJson();
-                string expected = $"{{\"Model\":\"82WM\"}}";
+                string expected = $"{{\"Model\":\"82WM\",\"Format\":\"TEXT\"}}";
                 StringAssert.Contains(json, expected);
             }
         }

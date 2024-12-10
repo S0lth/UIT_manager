@@ -28,7 +28,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
             if (_upTimeInformation != null) {
                 _upTimeInformation.Milliseconds = 1000;
                 string json = _upTimeInformation.ToJson();
-                string expected = $"{{\"Days\":0,\"Hours\":00,\"Minutes\":00,\"Seconds\":01}}";
+                string expected = $"{{\"Days\":0,\"Hours\":00,\"Minutes\":00,\"Seconds\":01,\"Format\":\"TEXT\"}}";
                 StringAssert.Contains(json, expected);
             }
         }

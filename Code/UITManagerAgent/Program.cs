@@ -13,16 +13,13 @@ public class Program {
     private static async Task<Task> RunOnce() {
 
         ApiCommunicator apiCommunicator = new ApiCommunicator("api/v1/agent");
-
         MachineInformation machineInformation = new MachineInformation();
-
         Console.WriteLine(machineInformation.ToJson());
-
         bool success = await apiCommunicator.SendMachineInformationAsync(machineInformation);
 
         Console.WriteLine(success
-                ? "Les informations de la machine ont été envoyées avec succès."
-                : "Échec de l'envoi des informations de la machine.");
+                ? "Les informations de la machine ont ï¿½tï¿½ envoyï¿½es avec succï¿½s."
+                : "ï¿½chec de l'envoi des informations de la machine.");
 
         return Task.CompletedTask;
     }
