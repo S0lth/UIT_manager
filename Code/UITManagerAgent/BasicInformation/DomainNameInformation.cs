@@ -6,7 +6,7 @@ using UITManagerAgent.BasicInformation;
 /// </summary>
 public class DomainNameInformation : Information {
     private string? _domainName;
-    private string? _format = "Text";
+    private string? _format = "TEXT";
 
     /// <summary>
     /// accessors of the domainName field
@@ -14,6 +14,17 @@ public class DomainNameInformation : Information {
     public string? DomainName {
         get => _domainName;
         set => _domainName = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the format of the domain name information
+    /// </summary>
+    /// <value>
+    /// A string representing the format of domain name.
+    /// </value>
+    public string? Format {
+        get => _format;
+        set => _format = value;
     }
 
     /// <summary>

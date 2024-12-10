@@ -10,7 +10,7 @@ namespace UITManagerAgent.BasicInformation;
 [SupportedOSPlatform("windows")]
 public class UpTimeInformation : Information {
     private int _milliseconds;
-    private string? _format = "Text";
+    private string? _format = "TEXT";
 
     /// <summary>
     /// Provides a string representation of the uptime in the format "X days HH:MM:SS".
@@ -31,11 +31,22 @@ public class UpTimeInformation : Information {
     }
 
     /// <summary>
+    /// Gets or sets the format of the uptime information
+    /// </summary>
+    /// <value>
+    /// A string representing the format of uptime.
+    /// </value>
+    public string? Format {
+        get => _format;
+        set => _format = value;
+    }
+
+    /// <summary>
     /// Returns a Json string representation of the up time.
     /// </summary>
     /// <returns>A Json string that represents the up time.</returns>
     public override string ToJson() {
         TimeSpan timeSpan = TimeSpan.FromMilliseconds(_milliseconds);
-        return $"{{\"Days\":{(int)timeSpan.TotalDays},\"Hours\":{timeSpan.Hours:D2},\"Minutes\":{timeSpan.Minutes:D2},\"Seconds\":{timeSpan.Seconds:D2}}}";
+        return $"{{\"Days\":{(int)timeSpan.TotalDays},\"Hours\":{timeSpan.Hours:D2},\"Minutes\":{timeSpan.Minutes:D2},\"Seconds\":{timeSpan.Seconds:D2},\"Format\":{_format}}}";
     }
 }

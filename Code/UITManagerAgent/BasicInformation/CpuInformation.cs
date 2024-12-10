@@ -2,26 +2,21 @@
 
 namespace UITManagerAgent.BasicInformation;
 
-
 public class CpuInformation : Information {
     private int _logicalCpu;
-    private string _formatCpu;
+    private string _formatCpu = "NUMBER";
     private int _coreCount;
-    private string _formatCoreCount;
+    private string _formatCore = "NUMBER";
     private int _clockSpeed;
-    private string _formatClockSpeed;
+    private string _formatClockSpeed = "%";
     private string _model;
-    private string _formatModel;
+    private string _formatModel = "TEXT";
 
     public CpuInformation() {
         _logicalCpu = 0;
-        _formatCpu = "Number";
         _coreCount = 0;
-        _formatCoreCount = "Number";
         _clockSpeed = 0;
-        _formatClockSpeed = "%";
         _model = "";
-        _formatModel = "Text";
     }
 
     /// <summary>
@@ -36,6 +31,17 @@ public class CpuInformation : Information {
         get => _logicalCpu;
         set => _logicalCpu = value;
     }
+    
+    /// <summary>
+    /// Gets or sets the format of the CPU information.
+    /// </summary>
+    /// <value>
+    /// A string representing the format of CPU.
+    /// </value>
+    public string FormatCpu {
+        get => _formatCpu;
+        set => _formatCpu = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     /// <summary>
     /// Gets or sets the number of CPU cores.
@@ -48,6 +54,17 @@ public class CpuInformation : Information {
     public int CoreCount {
         get => _coreCount;
         set => _coreCount = value;
+    }
+    
+    /// <summary>
+    /// Gets or sets the format of the Core information.
+    /// </summary>
+    /// <value>
+    /// A string representing the format of Core
+    /// </value>
+    public string FormatCore {
+        get => _formatCore;
+        set => _formatCore = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>
@@ -62,6 +79,17 @@ public class CpuInformation : Information {
         get => _clockSpeed;
         set => _clockSpeed = value;
     }
+    
+    /// <summary>
+    /// Gets or sets the format of the clock speed information.
+    /// </summary>
+    /// <value>
+    /// A string representing the format of clock speed.
+    /// </value>
+    public string FormatClockSpeed {
+        get => _formatClockSpeed;
+        set => _formatClockSpeed = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     /// <summary>
     /// Gets or sets the model of the CPU.
@@ -70,9 +98,21 @@ public class CpuInformation : Information {
     /// A string representing the model name or identifier of the CPU. This property 
     /// allows you to specify or retrieve the model of the CPU for identification 
     /// purposes.
+    /// </value>
     public string Model {
         get => _model;
         set => _model = value;
+    }
+    
+    /// <summary>
+    /// Gets or sets the format of the CPU model information.
+    /// </summary>
+    /// <value>
+    /// A string representing the format of CPU model.
+    /// </value>
+    public string FormatModel {
+        get => _formatModel;
+        set => _formatModel = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>
@@ -88,7 +128,6 @@ public class CpuInformation : Information {
                "Clock Speed : " + string.Join(" MHz , ", _clockSpeed) + " MHz, " +
                "Model : " + string.Join(" , ", _model);
     }
-
 
     /// <summary>
     /// Returns a Json string representation of the cpuInformation

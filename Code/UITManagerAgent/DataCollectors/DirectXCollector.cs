@@ -37,7 +37,7 @@ public class DirectXCollector : DataCollector {
 
             Match match = Regex.Match(dxDiagOutput, @"DirectX Version:\s*DirectX\s*(\d+)");
             if (match.Success) {
-                directXInformation.DirectX = "DirectX " + match.Groups[1].Value;
+                directXInformation.DirectXVersion = "DirectX " + match.Groups[1].Value;
             }
         }
         catch (Exception ex) {

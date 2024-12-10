@@ -13,8 +13,9 @@ public class UsersInformation : Information {
 
     public class User {
         private string? _name;
+        private string? _formatName = "TEXT";
         private string? _scope;
-        private string? _format = "Text";
+        private string? _formatScope = "TEXT";
         
         public User() {
         }
@@ -33,11 +34,34 @@ public class UsersInformation : Information {
         }
 
         /// <summary>
+        /// Gets or sets the format of the username information
+        /// </summary>
+        /// <value>
+        /// A string representing the format of username.
+        /// </value>
+        public string? FormatName {
+            get => _formatName;
+            set => _formatName = value;
+        }
+
+        /// <summary>
         /// accessors of th Scope field
         /// </summary>
         public string? Scope {
             get => _scope;
             set => _scope = value;
+        }
+        
+        
+        /// <summary>
+        /// Gets or sets the format of the user scope information
+        /// </summary>
+        /// <value>
+        /// A string representing the format of user scope.
+        /// </value>
+        public string? FormatScope {
+            get => _formatScope;
+            set => _formatScope = value;
         }
         
         /// <summary>

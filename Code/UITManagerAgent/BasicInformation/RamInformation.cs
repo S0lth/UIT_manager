@@ -10,9 +10,11 @@ namespace UITManagerAgent.BasicInformation;
 [SupportedOSPlatform("windows")]
 public class RamInformation : Information {
     private ulong _totalMemory;
+    private string _formatTotalValue = "GB";
     private ulong _usedMemory;
+    private string _formatUsedValue = "GB";
     private ulong _freeMemory;
-    private string _formatValue = "GB";
+    private string _formatFreeValue = "GB";
 
     /// <summary>
     /// Returns a string representation of the RAM information.
@@ -36,11 +38,33 @@ public class RamInformation : Information {
     }
 
     /// <summary>
+    /// Gets or sets the format of the total ram information
+    /// </summary>
+    /// <value>
+    /// A string representing the format of total ram.
+    /// </value>
+    public string FormatTotalValue {
+        get => _formatTotalValue;
+        set => _formatTotalValue = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    /// <summary>
     /// accessors of the used memory field
     /// </summary>
     public ulong UsedMemory {
         get => _usedMemory;
         set => _usedMemory = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the format of the used ram information
+    /// </summary>
+    /// <value>
+    /// A string representing the format of used ram.
+    /// </value>
+    public string FormatUsedValue {
+        get => _formatUsedValue;
+        set => _formatUsedValue = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>
@@ -51,12 +75,23 @@ public class RamInformation : Information {
         set => _freeMemory = value;
     }
 
+    /// <summary>
+    /// Gets or sets the format of the free ram information
+    /// </summary>
+    /// <value>
+    /// A string representing the format of free ram.
+    /// </value>
+    public string FormatFreeValue {
+        get => _formatFreeValue;
+        set => _formatFreeValue = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     /// <summary>
     /// Returns a Json string representation of the ramInformation
     /// </summary>
     /// <returns>A Json string that represents the ramInformation .</returns>
     public override string ToJson() {
-        return $"{{\"TotalMemory\":\"{_totalMemory / (float)(1024 * 1024):F2}\",\"UsedMemory\":\"{_usedMemory / (float)(1024 * 1024):F2}\",\"FreeMemory\":\"{_freeMemory / (float)(1024 * 1024):F2}\"}}";
+        return
+            $"{{\"TotalMemory\":\"{_totalMemory / (float)(1024 * 1024):F2}\",\"Format total ram\":\"{_formatTotalValue}\", \"UsedMemory\":\"{_usedMemory / (float)(1024 * 1024):F2}\",\"Format used ram\":\"{_formatUsedValue}\",\"FreeMemory\":\"{_freeMemory / (float)(1024 * 1024):F2}\",\"Format free ram\":\"{_formatFreeValue}\"}}";
     }
 }

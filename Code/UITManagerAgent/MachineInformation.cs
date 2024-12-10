@@ -29,12 +29,12 @@ public class MachineInformation{
             new DomainNameCollector().Collect(),
             new IpsAddressesCollector().Collect(),
             new MachineNameCollector().Collect(),
+            new ModelCollectors().Collect(),
             new OsCollector().Collect(),
             new RamCollector().Collect(),
+            new TagCollector().Collect(),
             new UpTimeCollector().Collect(),
             new UserCollector().Collect(),
-            new ModelCollectors().Collect(),
-            new TagCollector().Collect(),
         };
     }
 
@@ -58,7 +58,7 @@ public class MachineInformation{
     public string ToJson() {
         List<string> json = new();
         foreach (Information information in InformationList) {
-            json.Add(information.ToJson());
+            json.Add(information.ToJson() + Environment.NewLine);
         }
         return $"[{string.Join(",", json)}]";
     }

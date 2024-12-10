@@ -9,19 +9,29 @@ public class DirectXInformation : Information {
     /// Holds the DirectX version as a string.
     /// </summary>
     private string? _directXVersion;
-    private string? _formatdirectX;
+    private string? _formatdirectX = "TEXT";
 
     public DirectXInformation() {
         _directXVersion = "";
-        _formatdirectX = "Text";
     }
 
     /// <summary>
     /// accessors of the domainName field
     /// </summary>
-    public string? DirectX {
+    public string? DirectXVersion {
         get => _directXVersion;
         set => _directXVersion = value;
+    }
+    
+    /// <summary>
+    /// Gets or sets the format of the directX information
+    /// </summary>
+    /// <value>
+    /// A string representing the format of directX.
+    /// </value>
+    public string? FormatdirectX {
+        get => _formatdirectX;
+        set => _formatdirectX = value;
     }
 
     /// <summary>
