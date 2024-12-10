@@ -3,8 +3,8 @@
 namespace UITManagerAgent.BasicInformation;
 
 public class CpuInformation : Information {
-    private int _logicalCpu;
-    private string _formatCpu = "NUMBER";
+    private int _logicalCore;
+    private string _formatLogical = "NUMBER";
     private int _coreCount;
     private string _formatCore = "NUMBER";
     private int _clockSpeed;
@@ -13,7 +13,7 @@ public class CpuInformation : Information {
     private string _formatModel = "TEXT";
 
     public CpuInformation() {
-        _logicalCpu = 0;
+        _logicalCore = 0;
         _coreCount = 0;
         _clockSpeed = 0;
         _model = "";
@@ -27,9 +27,9 @@ public class CpuInformation : Information {
     /// the count of logical processors available for computation. 
     /// The value should be a non-negative integer.
     /// </value>
-    public int LogicalCpu {
-        get => _logicalCpu;
-        set => _logicalCpu = value;
+    public int LogicalCore {
+        get => _logicalCore;
+        set => _logicalCore = value;
     }
     
     /// <summary>
@@ -38,9 +38,9 @@ public class CpuInformation : Information {
     /// <value>
     /// A string representing the format of CPU.
     /// </value>
-    public string FormatCpu {
-        get => _formatCpu;
-        set => _formatCpu = value ?? throw new ArgumentNullException(nameof(value));
+    public string FormatLogical {
+        get => _formatLogical;
+        set => _formatLogical = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public class CpuInformation : Information {
     /// <returns>A formatted string with the CPU details.</returns>
     public override string ToString() {
         return "CPU Information : " +
-               "Logical CPU Count : " + string.Join(" , ", _logicalCpu) + ", " +
+               "Logical CPU Count : " + string.Join(" , ", _logicalCore) + ", " +
                "Core Count : " + string.Join(" , ", _coreCount) + ", " +
                "Clock Speed : " + string.Join(" MHz , ", _clockSpeed) + " MHz, " +
                "Model : " + string.Join(" , ", _model);
