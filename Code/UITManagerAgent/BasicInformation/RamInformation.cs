@@ -12,6 +12,7 @@ public class RamInformation : Information {
     private ulong _totalMemory;
     private ulong _usedMemory;
     private ulong _freeMemory;
+    private string _formatValue = "GB";
 
     /// <summary>
     /// Returns a string representation of the RAM information.

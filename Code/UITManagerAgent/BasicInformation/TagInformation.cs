@@ -3,6 +3,7 @@ namespace UITManagerAgent.BasicInformation;
 
 public class TagInformation : Information{
     private string? _tagService;
+    private string? _format = "Text";
 
     
     /// <summary>

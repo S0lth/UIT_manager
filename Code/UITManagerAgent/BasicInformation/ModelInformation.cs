@@ -4,6 +4,7 @@ namespace UITManagerAgent.BasicInformation;
 
 public class ModelInformation : Information{
     private string? _model;
+    private string _format = "Text";
 
     /// <summary>
     /// accessors of the model field

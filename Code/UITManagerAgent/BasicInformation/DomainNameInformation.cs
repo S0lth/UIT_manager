@@ -6,6 +6,7 @@ using UITManagerAgent.BasicInformation;
 /// </summary>
 public class DomainNameInformation : Information {
     private string? _domainName;
+    private string? _format = "Text";
 
     /// <summary>
     /// accessors of the domainName field

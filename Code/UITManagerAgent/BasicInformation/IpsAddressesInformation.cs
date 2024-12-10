@@ -5,6 +5,7 @@ namespace UITManagerAgent.BasicInformation;
 /// </summary>
 public class IpsAddressesInformation : Information {
     private List<string> _ipsList = new();
+    private string? _formatIp = "Text";
     /// <summary>
     /// accessors of IpsAddresses List
     /// </summary>

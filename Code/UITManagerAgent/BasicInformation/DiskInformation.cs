@@ -13,6 +13,7 @@ namespace UITManagerAgent.BasicInformation {
             private string? _diskName = String.Empty;
             private long _diskTotalSize;
             private long _diskFreeSize;
+            private string _formatValue = "GB";
 
             /// <summary>
             /// accessors of the disksName field
@@ -62,6 +63,7 @@ namespace UITManagerAgent.BasicInformation {
         }
         private List<Disk> _disks = new List<Disk>();
         private int _numberDisk;
+        private string? _format = "Number";
 
         /// <summary>
         /// accessors of the list disks field

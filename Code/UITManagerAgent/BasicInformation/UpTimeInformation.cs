@@ -10,6 +10,7 @@ namespace UITManagerAgent.BasicInformation;
 [SupportedOSPlatform("windows")]
 public class UpTimeInformation : Information {
     private int _milliseconds;
+    private string? _format = "Text";
 
     /// <summary>
     /// Provides a string representation of the uptime in the format "X days HH:MM:SS".

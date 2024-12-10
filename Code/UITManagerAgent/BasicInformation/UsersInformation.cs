@@ -14,6 +14,7 @@ public class UsersInformation : Information {
     public class User {
         private string? _name;
         private string? _scope;
+        private string? _format = "Text";
         
         public User() {
         }

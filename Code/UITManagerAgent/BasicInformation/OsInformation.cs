@@ -11,8 +11,11 @@ public class OsInformation : Information {
     private ManagementObjectSearcher _wmiSearcher = new("SELECT * FROM Win32_OperatingSystem");
     private ManagementObject? _queryObj;
     private string? _osName;
+    private string _formatName = "Text";
     private string? _osVersion;
+    private string _formatVersion = "Text";
     private string? _osBuild;
+    private string _formatBuild = "Number";
 
     /// <summary>
     /// accessors of the wmiSearcher field

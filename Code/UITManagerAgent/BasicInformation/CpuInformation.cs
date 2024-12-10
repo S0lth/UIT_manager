@@ -5,15 +5,23 @@ namespace UITManagerAgent.BasicInformation;
 
 public class CpuInformation : Information {
     private int _logicalCpu;
+    private string _formatCpu;
     private int _coreCount;
+    private string _formatCoreCount;
     private int _clockSpeed;
+    private string _formatClockSpeed;
     private string _model;
+    private string _formatModel;
 
     public CpuInformation() {
         _logicalCpu = 0;
+        _formatCpu = "Number";
         _coreCount = 0;
+        _formatCoreCount = "Number";
         _clockSpeed = 0;
+        _formatClockSpeed = "%";
         _model = "";
+        _formatModel = "Text";
     }
 
     /// <summary>

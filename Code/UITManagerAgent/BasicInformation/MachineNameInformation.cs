@@ -5,6 +5,7 @@ using System.Text.Json;
 /// </summary>
 public class MachineNameInformation : Information {
     private string _machineName = String.Empty;
+    private string _format = "Text";
 
     /// <summary>
     /// accessors of the machineName field 

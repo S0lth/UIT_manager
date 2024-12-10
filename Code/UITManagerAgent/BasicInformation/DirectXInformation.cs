@@ -9,6 +9,12 @@ public class DirectXInformation : Information {
     /// Holds the DirectX version as a string.
     /// </summary>
     private string? _directXVersion;
+    private string? _formatdirectX;
+
+    public DirectXInformation() {
+        _directXVersion = "";
+        _formatdirectX = "Text";
+    }
 
     /// <summary>
     /// accessors of the domainName field
