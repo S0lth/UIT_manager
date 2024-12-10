@@ -13,9 +13,9 @@ namespace UITManagerAgent.BasicInformation {
             private string? _diskName = String.Empty;
             private string _formatDiskName = "TEXT";
             private long _diskTotalSize;
-            private string _formatTotalSize = "GO";
+            private string _formatTotalSize = "GB";
             private long _diskFreeSize;
-            private string _formatFreeSize = "GO";
+            private string _formatFreeSize = "GB";
 
             /// <summary>
             /// accessors of the disksName field
@@ -84,7 +84,7 @@ namespace UITManagerAgent.BasicInformation {
             /// </returns>
             public override string ToString() {
                 return "Disk name : " + _diskName + ", disk total size : " + _diskTotalSize +
-                       "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
+                       "GB, disk total free size : " + _diskFreeSize + "GB" + Environment.NewLine;
             }
 
             /// <summary>

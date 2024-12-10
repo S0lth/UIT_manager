@@ -10,23 +10,23 @@ namespace UITManagerAgent.BasicInformation;
 [SupportedOSPlatform("windows")]
 public class RamInformation : Information {
     private ulong _totalRam;
-    private string _formatTotalValue = "GO";
+    private string _formatTotalValue = "GB";
     private ulong _usedRam;
-    private string _formatUsedValue = "GO";
+    private string _formatUsedValue = "GB";
     private ulong _freeRam;
-    private string _formatFreeValue = "GO";
+    private string _formatFreeValue = "GB";
 
     /// <summary>
     /// Returns a string representation of the RAM information.
     /// </summary>
     /// <returns>
-    /// A formatted string showing total memory and used memory in GO.
+    /// A formatted string showing total memory and used memory in GB.
     /// </returns>
     public override string ToString() {
         return
-            $"Total memory : {_totalRam / (float)(1024 * 1024):F2} GO" + Environment.NewLine +
-            $"Used memory : {_usedRam / (float)(1024 * 1024):F2} GO" + Environment.NewLine +
-            $"Free memory : {_freeRam / (float)(1024 * 1024):F2} GO";
+            $"Total memory : {_totalRam / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
+            $"Used memory : {_usedRam / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
+            $"Free memory : {_freeRam / (float)(1024 * 1024):F2} GB";
     }
 
     /// <summary>
@@ -92,6 +92,6 @@ public class RamInformation : Information {
     /// <returns>A Json string that represents the ramInformation .</returns>
     public override string ToJson() {
         return
-            $"{{\"TotalMemory\":\"{_totalRam / (float)(1024 * 1024):F2}\",\"Format total ram\":\"{_formatTotalValue}\", \"UsedMemory\":\"{_usedRam / (float)(1024 * 1024):F2}\",\"Format used ram\":\"{_formatUsedValue}\",\"FreeMemory\":\"{_freeRam / (float)(1024 * 1024):F2}\",\"Format free ram\":\"{_formatFreeValue}\"}}";
+            $"{{\"TotalRam\":\"{_totalRam / (float)(1024 * 1024):F2}\",\"Format total ram\":\"{_formatTotalValue}\", \"UsedRam\":\"{_usedRam / (float)(1024 * 1024):F2}\",\"Format used ram\":\"{_formatUsedValue}\",\"FreeRam\":\"{_freeRam / (float)(1024 * 1024):F2}\",\"Format free ram\":\"{_formatFreeValue}\"}}";
     }
 }

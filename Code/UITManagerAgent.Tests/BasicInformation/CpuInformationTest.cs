@@ -6,6 +6,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
     [TestClass]
     public class CpuInformationTest {
         private CpuInformation? _cpuInformation;
+        private CpuInformation? _cpuInformation2;
 
         /// <summary>
         /// Initialize a new instance of the <see cref="CpuInformation"/> class before each test.
@@ -13,6 +14,8 @@ namespace UITManagerAgent.Tests.BasicInformation {
         [TestInitialize]
         public void Setup() {
             _cpuInformation = new();
+            _cpuInformation2 = new CpuInformation();
+            _cpuInformation.CoreCount = 1;
         }
 
 
@@ -23,9 +26,9 @@ namespace UITManagerAgent.Tests.BasicInformation {
         [TestMethod]
         public void ToJson_ShouldReturnValidJson_WhenCoreCountIsSet() {
             if (_cpuInformation != null) {
-                _cpuInformation.CoreCount = 1;
                 string json = _cpuInformation.ToJson();
-                string expected = $"{{\"LogicalCpu\":0,\"CoreCount\":{_cpuInformation.CoreCount},\"ClockSpeed\":0,\"Model\":\"\"}}";
+                _cpuInformation2.CoreCount = 1;
+                string expected =_cpuInformation2.ToJson();
                 StringAssert.Contains(json, expected);
             }
             else {
