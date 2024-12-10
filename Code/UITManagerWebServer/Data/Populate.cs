@@ -70,7 +70,8 @@ public static class Populate {
                 Email = "roger@example.com",
                 FirstName = "Roger",
                 LastName = "Ô",
-                StartDate = DateTime.SpecifyKind(new DateTime(2013, 1, 1), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(2013, 1, 1), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "pierre",
@@ -78,14 +79,16 @@ public static class Populate {
                 FirstName = "Pierre",
                 LastName = "BARBE",
                 StartDate = DateTime.SpecifyKind(new DateTime(2008, 1, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2012, 12, 31), DateTimeKind.Utc) // Ajout de la date de fin
+                EndDate = DateTime.SpecifyKind(new DateTime(2012, 12, 31), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "camille",
                 Email = "camille@example.com",
                 FirstName = "Camille",
                 LastName = "MILLET",
-                StartDate = DateTime.SpecifyKind(new DateTime(1998, 8, 8), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(1998, 8, 8), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "bernadette",
@@ -93,14 +96,16 @@ public static class Populate {
                 FirstName = "Bernadette",
                 LastName = "HARDY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 3, 15), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 3, 15), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "isaac",
                 Email = "isaac@example.com",
                 FirstName = "Isaac",
                 LastName = "DEVAUX",
-                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "aime_boulay_1",
@@ -108,7 +113,8 @@ public static class Populate {
                 FirstName = "Aimé",
                 LastName = "BOULAY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2022, 7, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2022, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2022, 8, 30), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "paul_de_bergerac_1",
@@ -116,7 +122,8 @@ public static class Populate {
                 FirstName = "Paul",
                 LastName = "DE BERGERAC",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 3, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "aime_boulay_2",
@@ -124,21 +131,24 @@ public static class Populate {
                 FirstName = "Aimé",
                 LastName = "BOULAY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc),
+                IsActivate = false
             },
             new ApplicationUser {
                 UserName = "alfred_emmanuel",
                 Email = "alfred_emmanuel@example.com",
                 FirstName = "Alfred-Emmanuel",
                 LastName = "SEGUIN",
-                StartDate = DateTime.SpecifyKind(new DateTime(2000, 3, 15), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(2000, 3, 15), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "martin_etienne",
                 Email = "martin_etienne@example.com",
                 FirstName = "Martin-Étienne",
                 LastName = "LEFORT",
-                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc)
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc),
+                IsActivate = true
             },
             new ApplicationUser {
                 UserName = "paul_guilbert",
@@ -146,7 +156,8 @@ public static class Populate {
                 FirstName = "Paul",
                 LastName = "GUILBERT",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc) // Date de fin ajoutée
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 8, 30), DateTimeKind.Utc),
+                IsActivate = false
             }
         };
 
@@ -263,7 +274,7 @@ public static class Populate {
 
         var normGroups = new List<NormGroup> {
             new NormGroup {
-                Name = "Storage exceeded",
+                Name = "Storage greater than 99%",
                 Priority = 9,
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true,
@@ -279,7 +290,7 @@ public static class Populate {
                     }
             },
             new NormGroup {
-                Name = "Obsolete operating system",
+                Name = "Obsolete operating system (to Windows 11)",
                 Priority = 8,
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true,
@@ -295,7 +306,7 @@ public static class Populate {
                     }
             },
             new NormGroup {
-                Name = "Ram 80% Used",
+                Name = "Ram usage greater than 80% of utilisation",
                 Priority = 6,
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true,
@@ -311,7 +322,7 @@ public static class Populate {
                     }
             },
             new NormGroup {
-                Name = "Storage 80% Used",
+                Name = "Storage usage greater than 80% of utilisation ",
                 Priority = 5,
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true,
@@ -327,7 +338,7 @@ public static class Populate {
                     }
             },
             new NormGroup {
-                Name = "DirectX Version",
+                Name = "DirectX not up to date",
                 Priority = 3,
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true,
@@ -343,7 +354,7 @@ public static class Populate {
                     }
             },
             new NormGroup {
-                Name = "Ram < 8GB",
+                Name = "Not enough Ram (less than 8GO)",
                 Priority = 1,
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true,
@@ -491,7 +502,7 @@ public static class Populate {
 
         // OS
         var Os = new[] { "Microsoft Windows 10 Enterprise", "Microsoft Windows 11 Enterprise" };
-        var OsV = new[] { "23h2", "24h2", "22h2", };
+        var OsV = new[] { "23H2", "24H2", "22H2", };
         var OsB = new[] { "22631", "26100", "19045" };
 
         // CPU
@@ -531,7 +542,28 @@ public static class Populate {
 
         // User
         var scoop = new[] { "local", "domain" };
-        var name = new[] { "Secretary", "Commercial", "Employee" };
+        var name = new[] { 
+            "Alice Johnson", 
+            "Bob Smith", 
+            "Charlie Davis", 
+            "Emma Brown", 
+            "John Taylor", 
+            "Sophia Wilson", 
+            "Michael Green", 
+            "Olivia Martinez", 
+            "Ethan Miller", 
+            "Isabella Clark", 
+            "James Carter", 
+            "Ava Harris", 
+            "Liam Walker", 
+            "Mia Thompson", 
+            "Noah Lewis", 
+            "Charlotte Robinson", 
+            "Lucas Young", 
+            "Amelia Hall", 
+            "Elijah Wright", 
+            "Harper King" 
+        };
 
         var machines = new List<Machine>();
 
@@ -1084,7 +1116,7 @@ public static class Populate {
         const string charsForSite = "ABC";
 
         var randomId = new string(Enumerable.Repeat(chars, 7).Select(s => s[random.Next(s.Length)]).ToArray());
-        var site = "Site-" +
+        var site = "" +
                    new string(Enumerable.Repeat(charsForSite, 1).Select(s => s[random.Next(s.Length)]).ToArray());
 
         return $"{site}-DESKTOP-{randomId}";

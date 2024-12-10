@@ -87,14 +87,13 @@ namespace UITManagerWebServer {
                     }
                 }
             }
-            
+
             Console.WriteLine(triggeredInfoList.ToArray());
 
             ViewData["TriggeredInfoValue"] = triggeredInfoList;
 
             return View(ViewData.Model);
         }
-
 
         private IQueryable<Note> ApplySorting(IQueryable<Note> query, string sortOrder) {
             switch (sortOrder) {
@@ -177,7 +176,7 @@ namespace UITManagerWebServer {
                 .ThenInclude(norm => norm.InformationName)
                 .ThenInclude(infoName => infoName.SubInformationNames)
                 .Include(a => a.User)
-                .Include(a => a.AlarmHistories)
+                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))
                 .ThenInclude(aStatus => aStatus.StatusType)
                 .Include(a => a.NormGroup.SeverityHistories)
                 .ThenInclude(sh => sh.Severity)

@@ -1,0 +1,43 @@
+@model List<UITManagerWebServer.Models.AlarmStatusHistory>
+
+<div class="card border-0 rounded mb-0 p-1">
+    <div class="card-header fw-bold d-flex justify-content-between align-items-center mb-1" style="height: 50px;">
+        <span>Alarm Status History</span>
+    </div>
+    <div class="card-body m-0 p-1">
+        <div class="table-responsive" style="overflow-x: auto; max-height: 1000px;">
+            <table class="table table-hover table-striped align-middle" id="alarm-status-history-table">
+                <thead class="table-lightfix sticky-top bg-white">
+                <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Modified By</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var history in Model)
+                    {
+                        <tr>
+                            <td>@history.ModificationDate</td>
+                            <td>@history.StatusType.Name</td>
+                            <td>@history.User.LastName @history.User.FirstName</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3">
+                            <div class="alert alert-secondary text-center" role="alert">
+                                No alarm status history available.
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
