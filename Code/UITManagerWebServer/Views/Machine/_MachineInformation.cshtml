@@ -1,0 +1,119 @@
+﻿@using UITManagerWebServer.Controllers
+@model MachineController.DetailsViewModel
+@{
+    List<MachineController.ComponentsViewModel> informations = Model.Informations;
+    List<MachineController.ComponentsViewModel> informationsSorted = informations
+        .OrderByDescending(n => n.Name.Equals("Tag Service"))
+        .ThenBy(n => n.Name)
+        .ToList();
+}
+@functions
+{
+    
+    private void RenderInformation(MachineController.ComponentsViewModel info, string parentAccordionId)
+    {
+        string accordionId = $"accordion-{info.id}";
+        string collapseId = $"collapse-{info.id}";
+        string headingId = $"heading-{info.id}";
+        <div class="accordion-item">
+            @if (!info.Children.Any())
+            {
+            <div class="p-3 ps-4" id="@headingId">
+                <div class="w-100">
+                    @if (!info.Format.Equals("TEXT") && !info.Format.Equals("Null"))
+                    {
+                        double number = 0;
+                        @if (double.TryParse(info.Value, out number))
+                        {
+                            <span>@info.Name: @number.ToString("0.##") @info.Format</span>
+                        }
+                    }
+                    else
+                    {
+                        <span>@info.Name: @info.Value</span>
+                    }
+                </div>
+            </div>
+            }
+            else
+            {
+                if (info.Name.Equals("User"))
+                {
+                    <div class="p-3 ps-4" id="@headingId">
+                        <div class="w-100">
+                            <span>@info.Children.Find(n => n.Name.Equals("User Name"))?.Value 
+                                (@info.Children.Find(n => n.Name.Equals("User Scope"))?.Value)</span>
+                        </div>
+                    </div>
+                }else if (info.Name.Equals("Disks"))
+                {
+                    foreach (var subinfo in info.Children)
+                    {
+                        RenderInformation(subinfo, accordionId);
+                    }
+                }else if (info.Name.Equals("OS"))
+                {
+                    <div class="p-3 ps-4" id="@headingId">
+                        <div class="w-100">
+                            <span>
+                                @info.Name:
+                                @foreach (MachineController.ComponentsViewModel i in info.Children)
+                                {
+                                    @($" {i.Value} ")
+                                }
+                            </span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                <h2 class="accordion-header ps-1" id="@headingId">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+                        @info.Name
+                    </button>
+                </h2>
+
+                <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId"
+                     data-bs-parent="#@parentAccordionId">
+                    <div class="accordion-body">
+                        <div class="accordion" id="@accordionId">
+
+                            @foreach (var subInfo in info.Children)
+                            {
+                            RenderInformation(subInfo, accordionId);
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+            }
+        </div>
+    }
+}
+
+<div class="col-md-6">
+    <div id="accordion">
+        <div class="card">
+            <div class="accordion" id="informationAccordion">
+                <div class="card-header">
+                    <h3 class="mb-0 d-flex justify-content-between h-100">
+                        <span class="btn btn-light font-weight-bold"
+                              data-toggle="collapse"
+                              data-target="#collapseOne"
+                              aria-expanded="true"
+                              aria-controls="collapseOne">
+                            <strong>
+                                Machine Information
+                            </strong>
+                        </span>
+                    </h3>
+                </div>
+                @foreach (MachineController.ComponentsViewModel info in informationsSorted)
+                {
+                    RenderInformation(info, "informationAccordion");
+                }
+            </div>
+        </div>
+    </div>
+</div>

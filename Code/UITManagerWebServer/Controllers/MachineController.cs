@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
@@ -14,9 +16,13 @@ using UITManagerWebServer.Models;
 namespace UITManagerWebServer.Controllers {
     public class MachineController : Controller {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public MachineController(ApplicationDbContext context) {
+
+        public MachineController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
+            _userManager = userManager;
+
         }
 
         public override void OnActionExecuting(ActionExecutingContext context) {
@@ -119,13 +125,13 @@ namespace UITManagerWebServer.Controllers {
         [Authorize]
         // GET: Machine/Details/5
         public async Task<IActionResult> Details(int? id, string sortOrder, string solutionFilter, string authorFilter,
-            string typeFilter) {
+            string typeFilter, string? noteDateFilter) {
             var machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             var notes = await getFilteredNotes(sortOrder, solutionFilter, authorFilter, id);
             var alarms = await getFilteredAlarms(sortOrder, id, typeFilter);
-            var information = await getMachineInformation(id);
+            var information = await GetMachineInformation(id);
             var authors = ViewBag.Authors = await _context.Users.ToListAsync();
             var detailView = new DetailsViewModel {
                 Id = machine.Id,
@@ -140,6 +146,7 @@ namespace UITManagerWebServer.Controllers {
                 AnyAlarms = alarms.Any(),
                 AnyNote = notes.Any(),
             };
+            
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "date_desc";
             }
@@ -152,14 +159,15 @@ namespace UITManagerWebServer.Controllers {
             ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
             ViewData["SolutionFilter"] = solutionFilter;
             ViewData["AuthorFilter"] = authorFilter;
-            ViewData["SortOrderNote"] = sortOrder.Contains("ndate_desc") ? "ndate" : "ndate_desc";
             ViewData["TypeFilter"] = typeFilter;
+            ViewData["SortOrderNote"] = noteDateFilter;
+            ViewData["CurrentUser"] = _userManager.GetUserId(User)??"";
 
             return View(detailView);
         }
         
         public async Task<IActionResult> ChangeWorking(int id, string sortOrder, string solutionFilter, 
-            string authorFilter, string typeFilter) {
+            string authorFilter, string typeFilter, string? noteDateFilter) {
             Machine? machine = await _context.Machines.FindAsync(id);
             if (machine != null) {
                 machine.IsWorking = !machine.IsWorking;
@@ -167,10 +175,10 @@ namespace UITManagerWebServer.Controllers {
             }
             
             return RedirectToAction("Details", new{id, sortOrder, 
-                solutionFilter, authorFilter, typeFilter});
+                solutionFilter, authorFilter, typeFilter, noteDateFilter});
         }
 
-        private async Task<List<ComponentsViewModel>> getMachineInformation(int? id) {
+        private async Task<List<ComponentsViewModel>> GetMachineInformation(int? id) {
             var list = _context.Components.Where(a => a.MachinesId == id).AsQueryable();
             var result = new List<ComponentsViewModel>();
 
@@ -238,10 +246,15 @@ namespace UITManagerWebServer.Controllers {
                 .Where(a => a.MachineId == id)
                 .AsQueryable();
 
+            var user = _userManager.GetUserAsync(User).Result.Id;
             if (typeFilter == "Resolved") {
                 alarmsQuery = alarmsQuery.Where(a =>
                     a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name ==
                     typeFilter);
+            }else if (typeFilter == "AssignedToMe") {
+                alarmsQuery = alarmsQuery.Where(a => a.User.Id.Equals(user));
+            }else if (typeFilter == "Unassigned") {
+                    alarmsQuery = alarmsQuery.Where(a => string.IsNullOrEmpty(a.User.Id));
             }else if (typeFilter != "All") {
                 alarmsQuery = alarmsQuery.Where(a =>
                     a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name !=
@@ -299,7 +312,7 @@ namespace UITManagerWebServer.Controllers {
                 case "attribution_desc":
                     return query.OrderByDescending(a => a.User == null ? "" : a.User.FirstName);
                 case "attribution":
-                    return query.OrderBy(a => a.User == null ? "" : a.User.FirstName);
+                    return query.OrderBy(a => a.User.FirstName);
                 case "alarmgroup":
                     return query.OrderBy(a => a.NormGroup.Name);
                 case "alarmgroup_desc":
@@ -321,7 +334,7 @@ namespace UITManagerWebServer.Controllers {
                 notesQuery = notesQuery.Where(n => n.IsSolution == isSolution);
             }
 
-            if (sortOrder == "date_desc") {
+            if (sortOrder == "ndate_desc") {
                 notesQuery = notesQuery.OrderByDescending(n => n.CreatedAt);
             }
             else {

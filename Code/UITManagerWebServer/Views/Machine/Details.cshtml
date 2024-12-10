@@ -1,22 +1,17 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@using UITManagerWebServer.Controllers
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    List<MachineController.ComponentsViewModel> informations = Model.Informations as List<MachineController.ComponentsViewModel>;
-    List<MachineController.ComponentsViewModel> informationsSorted = informations
-        .OrderByDescending(n => n.Name.Equals("Tag Service"))
-        .ThenBy(n => n.Name)
-        .ToList();
 }
 @functions {
 
-    public void getSavedSortingAndFilterInfoExcept(string? name)
+    private void GetSavedSortingAndFilterInfoExcept(string? name)
     {
         if (name != "sortOrder")
         {
             <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]"/>
         }
+
         if (name != "authorFilter")
         {
             <input type="hidden" name="authorFilter" value="@ViewData["AuthorFilter"]"/>
@@ -32,390 +27,42 @@
             <input type="hidden" name="typeFilter" value="@ViewData["TypeFilter"]"/>
         }
 
-        if (name != "SortOrderNote")
+        if (name != "noteDateFilter")
         {
-            <input type="hidden" name="SortOrderNote" value="@ViewData["SortOrderNote"]"/>
+            <input type="hidden" name="noteDateFilter" value="@ViewData["SortOrderNote"]"/>
         }
-        <input name="id" type="hidden" value="@Model.Id">
-    }
-    
-    string GetHeaderClass(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
-        {
-            return "bg-selected-header";
-        }
-
-        return string.Empty;
-    }
-
-
-    string GetSortIcon(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column)
-        {
-            return "bi bi-sort-down";
-        }
-        else if (currentSortOrder == $"{column}_desc")
-        {
-            return "bi bi-sort-up";
-        }
-
-        return "bi bi-arrow-down-up";
-    }
-
-
-    string GetIsSolutionIcon(bool sol)
-    {
-        return sol ? "badge bg-success" : "badge bg-secondary";
-    }
-
-    string GetIsSolutionText(bool sol)
-    {
-        return sol ? "Solution" : "Follow-Up Note";
-    }
-
-
-    private void RenderInformation(MachineController.ComponentsViewModel info, string parentAccordionId)
-    {
-        string accordionId = $"accordion-{info.id}";
-        string collapseId = $"collapse-{info.id}";
-        string headingId = $"heading-{info.id}";
-        <div class="accordion-item">
-            @if (!info.Children.Any())
-            {
-            <div class="p-3 ps-4" id="@headingId">
-                <div class="w-100">
-                    @if(!info.Format.Equals("TEXT") && !info.Format.Equals("Null"))
-                    {
-                        double number;
-                        @if(double.TryParse(info.Value, out number))
-                        {
-                            <span>@info.Name: @number.ToString("0.##") @info.Format</span>
-                        } 
-                    }
-                    else
-                    {
-                        <span>@info.Name: @info.Value</span>
-                    }
-                </div>
-            </div>
-            }
-            else
-            {
-            <h2 class="accordion-header ps-1" id="@headingId">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
-                    @info.Name
-                </button>
-            </h2>
         
-            <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#@parentAccordionId">
-                <div class="accordion-body">
-                    <div class="accordion" id="@accordionId">
+        <input type="hidden" name="id" value="@Model.Id"/>
         
-                        @foreach (var subInfo in info.Children)
-                        {
-                            RenderInformation(subInfo, accordionId);
-                        }
-                    </div>
-                </div>
-            </div>
-            }
-        </div>
     }
 }
 
-
-
-
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
-<div class="d-flex w-100 justify-content-between">
-    
-    <h1 class="fs-2 fw-bold me-3 text-nowrap">
-        @Model.Name
-    </h1>
-    
-    <form asp-action="ChangeWorking" method="post">
-        <input type="submit" class="btn-check" id="isWorking" autocomplete="off"  @(Model.IsWorking?"checked":"")>
-        @{
-            getSavedSortingAndFilterInfoExcept(null);
-        }
-        <label class="btn  @(Model.IsWorking? "btn-success":"btn-danger")" for="isWorking">Current machine state: @(Model.IsWorking? "Working": "Not working")</label>
-    </form>
-</div>
+    <div class="d-flex w-100 justify-content-between">
+        <h1 class="fs-2 fw-bold me-3 text-nowrap">
+            @Model.Name
+        </h1>
+            
+        <form asp-action="ChangeWorking" method="post">
+            <input type="submit" class="btn-check" id="isWorking" autocomplete="off"  @(Model.IsWorking?"checked":"")>
+            @{
+                GetSavedSortingAndFilterInfoExcept(null);
+            }
+            <label class="btn  @(Model.IsWorking ? "btn-success" : "btn-danger")" for="isWorking">
+                Current machine state: @(Model.IsWorking ? "Working" : "Not working")
+            </label>
+        </form>
+    </div>
 
-<span class="badge bg-opacity-50 bg-primary p-2 rounded-3 fs-6 text-white">Last seen  @Model.LastSeen.ToString("dd/MM/yyyy HH:mm")</span>
+    <span class="badge bg-opacity-50 bg-primary p-2 rounded-3 fs-6 text-white">Last seen  @Model.LastSeen.ToString("dd/MM/yyyy HH:mm")</span>
     <div class="row mt-4">
+        @(await Html.PartialAsync("_MachineInformation", Model, ViewData))
+        
         <div class="col-md-6">
-            <div id="accordion">
-                <div class="card">
-                    
-                    
-                    <div class="accordion" id="informationAccordion">
-                        <div class="card-header">
-                            <h3 class="mb-0 d-flex justify-content-between h-100">
-                                <span class="btn btn-light font-weight-bold" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    <strong>Machine Information</strong>
-                                </span>
-                            
-                            </h3>
-                        </div>
-                        @foreach (MachineController.ComponentsViewModel info in informationsSorted)
-                        {
-                            RenderInformation(info, "informationAccordion");
-                        }
-                    </div>
-                </div>
-            </div>
+            @(await Html.PartialAsync("_MachineAlarms", Model, ViewData))
+            @(await Html.PartialAsync("_MachineNotes", Model, ViewData))
         </div>
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-4 d-flex justify-content-between align-items-center">
-                        <span>Alarms</span>
-                        <form method="get"
-                              class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start">
-                            <div class="d-flex ms-auto flex-wrap">
-                                <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
-                                    <span>Filter</span>
-                                    <span class="ms-1">by</span>
-                                </div>
-                                <div class="dropdown me-2 mb-2 mb-md-0">
-                                    <select asp-for="@ViewData["TypeFilter"]" name="TypeFilter"
-                                            asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
-                                            asp-for-sol="@ViewData["SolutionFilter"]"
-                                            class="form-select form-select-sm"
-                                            style="display: inline-block; min-width: 120px;" asp->
-                                        <option value="" disabled selected>Type</option>
-                                        <option value="All">All</option>
-                                        <option value="InProgress">In progress</option>
-                                        <option value="Resolved">Resolved</option>
-                                    </select>
-                                    <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]"/>
-                                    <input type="hidden" name="solutionFilter" value="@ViewData["SolutionFilter"]"/>
-                                    <input type="hidden" name="authorFilter" value="@ViewData["AuthorFilter"]"/>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                    <a href="@Url.Action("Details")" class="btn btn-secondary btn-sm">Reset</a>
-                                </div>
-                            </div>
-                        </form>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-hover table-striped table-bordered rounded">
-                            <thead class="table-light sticky-top">
-                            @if (Model.AnyAlarms)
-                            {
-                                <tr>
-                                    <!-- Status Column -->
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
-                                        <a asp-action="Details"
-                                           asp-route-tab="@Context.Request.Query["tab"]"
-                                           asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]?.ToString()"
-                                           asp-route-typeFilter="@ViewData["TypeFilter"]"
-                                           asp-route-solutionFilter="@ViewData["SolutionFilter"]"
-                                           asp-route-authorFilter="@ViewData["AuthorFilter"]"
-                                           class="text-decoration-none text-dark">
-                                            Alarm
-                                            <i
-                                                class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
-                                        </a>
-                                    </th>
-
-                                    <!-- Severity Column -->
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
-                                        <a asp-action="Details"
-                                           asp-route-tab="@Context.Request.Query["tab"]"
-                                           asp-route-sortOrder="@ViewData["SeveritySortParam"]?.ToString()"
-                                           asp-route-typeFilter="@ViewData["TypeFilter"]"
-                                           asp-route-solutionFilter="@ViewData["SolutionFilter"]"
-                                           asp-route-authorFilter="@ViewData["AuthorFilter"]"
-                                           class="text-decoration-none text-dark">
-                                            Severity
-                                            <i
-                                                class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
-                                        </a>
-                                    </th>
-
-                                    <!-- AlarmGroup Column -->
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
-                                        <a asp-action="Details"
-                                           asp-route-tab="@Context.Request.Query["tab"]"
-                                           asp-route-sortOrder="@ViewData["StatusSortParam"]?.ToString()"
-                                           asp-route-typeFilter="@ViewData["TypeFilter"]"
-                                           asp-route-solutionFilter="@ViewData["SolutionFilter"]"
-                                           asp-route-authorFilter="@ViewData["AuthorFilter"]"
-                                           class="text-decoration-none text-dark">
-                                            Status
-                                            <i
-                                                class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
-                                        </a>
-                                    </th>
-
-                                    <!-- Date Column -->
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
-                                        <a asp-action="Details"
-                                           asp-route-tab="@Context.Request.Query["tab"]"
-                                           asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
-                                           asp-route-typeFilter="@ViewData["TypeFilter"]"
-                                           asp-route-solutionFilter="@ViewData["SolutionFilter"]"
-                                           asp-route-authorFilter="@ViewData["AuthorFilter"]"
-                                           class="text-decoration-none text-dark">
-                                            Date
-                                            <i
-                                                class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
-                                        </a>
-                                    </th>
-
-                                </tr>
-                            }
-                            </thead>
-
-
-                            <tbody>
-                            @if (Model.AnyAlarms)
-                            {
-                                @foreach (var item in Model.Alarms)
-                                {
-                                    <tr>
-                                        <td>
-                                            <a asp-controller="AlarmDetail" asp-action="Index"
-                                               asp-route-id="@item.AlarmId"
-                                               class="text-primary text-decoration-none">
-                                                @item.AlarmGroupName
-                                            </a>
-                                        </td>
-                                        <td>@item.Severity</td>
-                                        <td>@item.Status</td>
-                                        
-                                        <td>@item.TriggeredAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <div class="list-group-item text-center">
-                                    <div class="alert alert-secondary" role="alert">
-                                        this machine hasn't triggered any alarm yet
-                                    </div>
-                                </div>
-                            }
-
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-4 d-flex justify-content-between align-items-center">
-                        <span>Notes</span>
-                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                data-bs-target="#notesModal">
-                            <i class="bi bi-info-circle"></i>
-                        </button>
-                        <form method="get"
-                              class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start">
-                            <!-- Filtres à droite -->
-                            <div class="d-flex ms-auto flex-wrap">
-                                <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
-                                    <span>Filter</span>
-                                    <span class="ms-1">by</span>
-                                </div>
-                                <div class="dropdown me-2 mb-2 mb-md-0">
-                                    <select asp-for="@ViewData["SolutionFilter"]" 
-                                            name="SolutionFilter"
-                                            class="form-select form-select-sm" 
-                                            >
-                                        <option value="" disabled selected>Note Type</option>
-                                        <option value="all">All</option>
-                                        <option value="true">Solution</option>
-                                        <option value="false">Follow-up</option>
-                                    </select>
-                                </div>
-
-                                <div class="dropdown me-2 mb-2 mb-md-0">
-                                    <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter"
-                                            class="form-select form-select-sm"
-                                            >
-                                        <option value="" disabled selected>Author</option>
-                                        <option value="all">All Authors</option>
-                                        @foreach (var author in ViewBag.Authors)
-                                        {
-                                            <option value="@author.Id">
-                                                @author.LastName @author.FirstName
-                                            </option>
-                                        }
-                                    </select>
-                                </div>
-
-
-                                <div class="dropdown me-2 mb-2 mb-md-0">
-                                    <select asp-for="@ViewData["SortOrderNote"]" name="SortOrderNote"
-                                            class="form-select form-select-sm">
-                                        <option value="" disabled selected>Date</option>
-                                        <option value="ndate">Newest First</option>
-                                        <option value="ndate_desc">Oldest First</option>
-                                    </select>
-                                </div>
-                                @{
-                                    getSavedSortingAndFilterInfoExcept("SortOrderNote");
-                                }
-
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                    <a href="@Url.Action("Details")" class="btn btn-secondary btn-sm">Reset</a>
-                                </div>
-                            </div>
-                        </form>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        @if (Model.AnyNote)
-                        {
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered">
-                                    <tbody>
-                                    @foreach (var note in Model.Notes)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <p class="mb-1">
-                                                            <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id"
-                                                               class="text-primary text-decoration-none text-truncate"
-                                                               style="display: block; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                                @note.Title
-                                                            </a>
-                                                        </p>
-                                                        <small class="text-muted">Author: @note.Author on @note.Date.ToString("dd-MM-yyyy HH:mm")</small>
-                                                    </div>
-                                                    <span class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="list-group-item text-center">
-                                <div class="alert alert-secondary" role="alert">
-                                    No notes written.
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
+        
     </div>
 </div>
 
