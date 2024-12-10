@@ -11,10 +11,6 @@ public class DirectXInformation : Information {
     private string? _directX;
     private string? _formatdirectX = "TEXT";
 
-    public DirectXInformation() {
-        _directX = "";
-    }
-
     /// <summary>
     /// accessors of the domainName field
     /// </summary>
