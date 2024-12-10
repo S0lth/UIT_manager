@@ -47,6 +47,6 @@ public class UpTimeInformation : Information {
     /// <returns>A Json string that represents the up time.</returns>
     public override string ToJson() {
         TimeSpan timeSpan = TimeSpan.FromMilliseconds(_milliseconds);
-        return $"{{\"Days\":{(int)timeSpan.TotalDays},\"Hours\":{timeSpan.Hours:D2},\"Minutes\":{timeSpan.Minutes:D2},\"Seconds\":{timeSpan.Seconds:D2},\"Format\":{_format}}}";
+        return $"{{\"Days\":{(int)timeSpan.TotalDays},\"Hours\":{timeSpan.Hours:D2},\"Minutes\":{timeSpan.Minutes:D2},\"Seconds\":{timeSpan.Seconds:D2},\"Format\":\"{_format}\"}}";
     }
 }

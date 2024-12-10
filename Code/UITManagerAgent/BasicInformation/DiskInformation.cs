@@ -13,9 +13,9 @@ namespace UITManagerAgent.BasicInformation {
             private string? _diskName = String.Empty;
             private string _formatDiskName = "TEXT";
             private long _diskTotalSize;
-            private string _formatTotalValue = "GB";
+            private string _formatTotalSize = "GB";
             private long _diskFreeSize;
-            private string _formatFreeValue = "GB";
+            private string _formatFreeSize = "GB";
 
             /// <summary>
             /// accessors of the disksName field
@@ -50,9 +50,9 @@ namespace UITManagerAgent.BasicInformation {
             /// <value>
             /// A string representing the format of total memory.
             /// </value>
-            public string FormatTotalValue {
-                get => _formatTotalValue;
-                set => _formatTotalValue = value ?? throw new ArgumentNullException(nameof(value));
+            public string FormatTotalSize {
+                get => _formatTotalSize;
+                set => _formatTotalSize = value ?? throw new ArgumentNullException(nameof(value));
             }
             
             /// <summary>
@@ -69,9 +69,9 @@ namespace UITManagerAgent.BasicInformation {
             /// <value>
             /// A string representing the format of free memory.
             /// </value>
-            public string FormatFreeValue {
-                get => _formatFreeValue;
-                set => _formatFreeValue = value ?? throw new ArgumentNullException(nameof(value));
+            public string FormatFreeSize {
+                get => _formatFreeSize;
+                set => _formatFreeSize = value ?? throw new ArgumentNullException(nameof(value));
             }
 
             /// <summary>
@@ -84,7 +84,7 @@ namespace UITManagerAgent.BasicInformation {
             /// </returns>
             public override string ToString() {
                 return "Disk name : " + _diskName + ", disk total size : " + _diskTotalSize +
-                       "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
+                       "GB, disk total free size : " + _diskFreeSize + "GB" + Environment.NewLine;
             }
 
             /// <summary>

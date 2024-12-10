@@ -8,19 +8,19 @@ public class DirectXInformation : Information {
     /// <summary>
     /// Holds the DirectX version as a string.
     /// </summary>
-    private string? _directXVersion;
+    private string? _directX;
     private string? _formatdirectX = "TEXT";
 
     public DirectXInformation() {
-        _directXVersion = "";
+        _directX = "";
     }
 
     /// <summary>
     /// accessors of the domainName field
     /// </summary>
-    public string? DirectXVersion {
-        get => _directXVersion;
-        set => _directXVersion = value;
+    public string? DirectX {
+        get => _directX;
+        set => _directX = value;
     }
     
     /// <summary>
@@ -39,7 +39,7 @@ public class DirectXInformation : Information {
     /// </summary>
     /// <returns>A string in the format "DirectX Version: {version}".</returns>
     public override string ToString() {
-        return "DirectX Version: " + _directXVersion;
+        return "DirectX Version: " + _directX;
     }
 
     /// <summary>

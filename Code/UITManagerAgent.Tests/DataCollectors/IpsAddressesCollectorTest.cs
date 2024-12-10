@@ -13,13 +13,13 @@ public class IpsAddressesCollectorTests {
     /// </summary>
     [TestMethod]
     [SupportedOSPlatform("windows")]
-    public void Collect_ShouldReturnNonEmptyIpsList_WhenIPsAreAvailable() {
+    public void Collect_ShouldReturnNonEmptyIps_WhenIPsAreAvailable() {
         IpsAddressesCollector collector = new();
 
         IpsAddressesInformation result = (IpsAddressesInformation)collector.Collect();
 
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.IpsList.Count > 0, "Expected at least one IP address in the list.");
+        Assert.IsTrue(result.Ips.Count > 0, "Expected at least one IP address in the list.");
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class IpsAddressesCollectorTests {
         IpsAddressesInformation result = (IpsAddressesInformation)collector.Collect();
 
         Assert.IsNotNull(result);
-        foreach (string ip in result.IpsList) {
+        foreach (string ip in result.Ips) {
             Assert.IsFalse(IPAddress.Parse(ip).Equals(loopbackAddress),
                 "The IP list should not contain loopback addresses like 127.0.0.1.");
         }
@@ -52,7 +52,7 @@ public class IpsAddressesCollectorTests {
             IpsAddressesInformation result = (IpsAddressesInformation)collector.Collect();
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.IpsList.Count >= 0, "The IP list should handle exceptions gracefully.");
+            Assert.IsTrue(result.Ips.Count >= 0, "The IP list should handle exceptions gracefully.");
         }
         catch (SocketException) {
             Assert.Fail("The method should handle SocketException and not throw it.");
