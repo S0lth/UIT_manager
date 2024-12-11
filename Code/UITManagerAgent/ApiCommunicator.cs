@@ -7,7 +7,6 @@ namespace UITManagerAgent;
 /// This class communicates with a remote API by sending machine information via HTTP POST requests.
 /// </summary>
 public class ApiCommunicator {
-
     private readonly HttpClient _httpClient;
     private readonly string _apiUrl;
 
@@ -29,7 +28,6 @@ public class ApiCommunicator {
     /// </returns>
     public async Task<bool> SendMachineInformationAsync(MachineInformation machineInformation) {
         try {
-
             _httpClient.BaseAddress = new Uri("http://localhost:5014/");
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

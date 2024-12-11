@@ -14,6 +14,13 @@ public class Program {
         Console.WriteLine("=> Task scheduler stopped.");
     }
 
+    /// <summary>
+    /// Sends the machine information to a specified API endpoint.
+    /// </summary>
+    /// <returns>
+    /// An asynchronous task that completes once the operation is executed. 
+    /// The returned task always represents a completed operation.
+    /// </returns>
     [SupportedOSPlatform("windows")]
     private static async Task<Task> SendMachineInformation() {
         ApiCommunicator apiCommunicator = new ApiCommunicator("api/v1/agent");
@@ -27,7 +34,4 @@ public class Program {
 
         return Task.CompletedTask;
     }
-    
-    
-    
 }
