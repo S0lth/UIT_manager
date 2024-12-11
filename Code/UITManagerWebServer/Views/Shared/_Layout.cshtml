@@ -27,8 +27,8 @@
                     {
                         <li class="nav-item me-3">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Alarm" ? "active-link" : "") text-fs-1"
-                               asp-area="" asp-controller="Alarms" asp-action="Index">
-                                Alarm
+                               asp-area="" asp-controller="Alarm" asp-action="Index">
+                                Alarms
                             </a>
                         </li>
 
@@ -41,7 +41,7 @@
                         
                         <li class="nav-item me-3">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Notes" ? "active-link" : "") text-fs-1"
-                               asp-area="" asp-controller="Notes" asp-action="Index">
+                               asp-area="" asp-controller="Note" asp-action="Index">
                                 Notes
                             </a>
                         </li>

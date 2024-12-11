@@ -33,23 +33,7 @@
 
 }
 
-@functions
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{
+@functions {
     string GetBGColorForAttribution(string? attribution)
     {
         return attribution == null ? "bg-danger text-white" : "bg-success text-white";
@@ -87,6 +71,7 @@
     }
 
 }
+
 <div id="alert-container" class="p-0 m-0"></div>
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <div class="row mb-2 fixed">
@@ -104,7 +89,7 @@
 
                 <div class="d-flex align-items-center">
                     <span class="me-2 text-muted">Filtered by</span>
-                    <form method="get" asp-action="Index" asp-controller="Alarms" class="d-flex align-items-center">
+                    <form method="get" asp-action="Index" asp-controller="Alarm" class="d-flex align-items-center">
                         <select asp-for="@ViewData["sortOrder"]" name="sortOrder" class="form-select">
                             <
                             <option value="all">All</option>
@@ -362,7 +347,6 @@
     }
 
 
-
     document.getElementById('Search').addEventListener('keyup', function () {
         const searchValue = this.value.toLowerCase();
         const tableRows = document.querySelectorAll('table tbody tr');
@@ -385,6 +369,7 @@
             }
         });
     });
+
     function showAlert(message, type) {
         const alertContainer = document.getElementById('alert-container');
 

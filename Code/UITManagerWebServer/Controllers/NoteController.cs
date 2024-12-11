@@ -7,11 +7,11 @@ using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Controllers
 {
-    public class NotesController : Controller
+    public class NoteController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public NotesController(ApplicationDbContext context)
+        public NoteController(ApplicationDbContext context)
         {
             _context = context;
         }

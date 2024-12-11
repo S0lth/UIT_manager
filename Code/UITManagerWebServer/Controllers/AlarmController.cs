@@ -13,12 +13,12 @@ using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Controllers {
-    public class AlarmsController : Controller {
+    public class AlarmController : Controller {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
 
-        public AlarmsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
+        public AlarmController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
             _userManager = userManager;
         }

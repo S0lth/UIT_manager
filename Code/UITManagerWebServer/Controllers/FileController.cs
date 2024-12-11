@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using UITManagerWebServer.Data;
 
-public class FilesController : Controller {
+public class FileController : Controller {
     private readonly ApplicationDbContext _context;
 
-    public FilesController(ApplicationDbContext context) {
+    public FileController(ApplicationDbContext context) {
         _context = context;
     }
 
