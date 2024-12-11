@@ -39,27 +39,24 @@ public class ApiCommunicator {
             HttpResponseMessage response = await _httpClient.PostAsync(_apiUrl,jsonContent);
 
             if (response.IsSuccessStatusCode) {
-                Console.WriteLine("Données envoyées avec succès.");
+                Console.WriteLine("=> Machine's Information received successfully.");
                 return true;
             }
             else {
-                Console.WriteLine($"Erreur HTTP : {response.StatusCode}");
-                Console.WriteLine($"Message : {await response.Content.ReadAsStringAsync()}");
+                Console.WriteLine($"=> Machine's Information could not be received.\nERROR HTTP : {response.StatusCode} \n{await response.Content.ReadAsStringAsync()}");
                 return false;
             }
         }
         catch (HttpRequestException ex) {
-            Console.WriteLine("Erreur réseau ou HTTP détectée :");
-            Console.WriteLine($"Message : {ex.Message}");
+            Console.WriteLine($"=> ERROR network or HTTP detected : {ex.Message}");
             return false;
         }
         catch (Exception ex) {
-            Console.WriteLine("Une erreur imprévue est survenue :");
-            Console.WriteLine($"Message : {ex.Message}");
+            Console.WriteLine($"=> Unexpected ERROR : {ex.Message}");
             return false;
         }
         finally {
-            Console.WriteLine("Fin de l'opération d'envoi des données.");
+            Console.WriteLine("=> End of Machine Information operation");
         }
     }
 }

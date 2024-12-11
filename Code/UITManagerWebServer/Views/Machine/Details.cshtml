@@ -3,6 +3,7 @@
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 @functions {
 
     private void GetSavedSortingAndFilterInfoExcept(string? name)
@@ -31,20 +32,21 @@
         {
             <input type="hidden" name="noteDateFilter" value="@ViewData["SortOrderNote"]"/>
         }
-        
+
         <input type="hidden" name="id" value="@Model.Id"/>
-        
     }
+
 }
 
-<div class="container-fluid py-5 px-4" style="max-width: 1700px;">
+<div class="container-fluid py-3" style="max-width: 1700px;">
     <div class="d-flex w-100 justify-content-between">
         <h1 class="fs-2 fw-bold me-3 text-nowrap">
             @Model.Name
         </h1>
-            
+
         <form asp-action="ChangeWorking" method="post">
-            <input type="submit" class="btn-check" id="isWorking" autocomplete="off"  @(Model.IsWorking?"checked":"")>
+            <input type="submit" class="btn-check" id="isWorking" autocomplete="off"
+                   @(Model.IsWorking ? "checked" : "")>
             @{
                 GetSavedSortingAndFilterInfoExcept(null);
             }
@@ -54,18 +56,72 @@
         </form>
     </div>
 
-    <span class="badge bg-opacity-50 bg-primary p-2 rounded-3 fs-6 text-white">Last seen  @Model.LastSeen.ToString("dd/MM/yyyy HH:mm")</span>
-    <div class="row mt-4">
-        @(await Html.PartialAsync("_MachineInformation", Model, ViewData))
-        
-        <div class="col-md-6">
-            @(await Html.PartialAsync("_MachineAlarms", Model, ViewData))
-            @(await Html.PartialAsync("_MachineNotes", Model, ViewData))
+    <span
+        class="badge bg-opacity-50 bg-primary p-2 rounded-3 fs-6 text-white">Last seen @Model.LastSeen.ToString("dd/MM/yyyy HH:mm")</span>
+    <div class="row mt-2">
+        <div class="d-flex m-1 p-0 gap-2">
+            <div class="col-md-6 mb-2">
+                @(await Html.PartialAsync("_MachineInformation", Model, ViewData))
+            </div>
+            <div class="col-md-6 mb-2">
+                <div class="d-flex flex-column gap-2">
+                    @(await Html.PartialAsync("_MachineAlarms", Model, ViewData))
+                    @(await Html.PartialAsync("_MachineNotes", Model, ViewData))
+                </div>
+            </div>
+
         </div>
-        
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-end gap-3">
+                @{
+                    var previousUrl = TempData["PreviousUrl"]?.ToString();
+                    string previousPageName = "Previous Page";
+
+                    if (!string.IsNullOrEmpty(previousUrl))
+                    {
+                        var uri = new Uri(previousUrl);
+                        var path = uri.AbsolutePath;
+
+                        if (string.IsNullOrEmpty(path) || path == "/")
+                        {
+                            previousPageName = "Home";
+                        }
+                        else
+                        {
+                            var segments = path.Split('/');
+
+                            if (segments.Length >= 3)
+                            {
+                                previousPageName = string.Join(" ", segments[1], segments[2]).Replace("-", " ");
+                            }
+                            else if (segments.Length == 2)
+                            {
+                                previousPageName = segments[1].Replace("-", " ");
+                            }
+                            else
+                            {
+                                previousPageName = segments.LastOrDefault()?.Replace("-", " ") ?? "Previous Page";
+                            }
+                        }
+                    }
+                }
+
+                @if (previousUrl != null)
+                {
+                    <a class="btn btn-outline-secondary" href="@previousUrl">
+                        Back to @previousPageName
+                    </a>
+                }
+                <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Machine">
+                    View all machines
+                </a>
+            </div>
+        </div>
     </div>
 </div>
-
 <div class="modal fade" id="notesModal" tabindex="-1" aria-labelledby="notesModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
