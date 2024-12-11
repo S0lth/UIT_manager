@@ -147,7 +147,7 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
-        [Route("Alarms/UpdateStatus")]
+        [Route("Alarm/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Status)) {
                 return BadRequest(new { success = false, message = "Invalid data." });
@@ -188,7 +188,7 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
-        [Route("Alarms/Attribution")]
+        [Route("Alarm/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
             if (request == null || string.IsNullOrEmpty(request.Id) || string.IsNullOrEmpty(request.UserId)) {
                 return BadRequest(new { success = false, message = "Invalid request data." });
