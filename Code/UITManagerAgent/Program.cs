@@ -1,25 +1,36 @@
 using System.Runtime.Versioning;
 using UITManagerAgent;
 
-
 [SupportedOSPlatform("windows")]
 public class Program {
 
     public static async Task Main(string[] args) {
-        await RunOnce();
+        using (TaskSchedulerAgent scheduler = new TaskSchedulerAgent(2, SendMachineInformation))
+        {
+            Console.WriteLine("=> Task scheduler is running. Press Enter to exit...");
+            Console.ReadLine();
+        }
+
+        Console.WriteLine("=> Task scheduler stopped.");
     }
 
+    /// <summary>
+    /// Sends the machine information to a specified API endpoint.
+    /// </summary>
+    /// <returns>
+    /// An asynchronous task that completes once the operation is executed. 
+    /// The returned task always represents a completed operation.
+    /// </returns>
     [SupportedOSPlatform("windows")]
-    private static async Task<Task> RunOnce() {
-
+    private static async Task<Task> SendMachineInformation() {
         ApiCommunicator apiCommunicator = new ApiCommunicator("api/v1/agent");
         MachineInformation machineInformation = new MachineInformation();
         Console.WriteLine(machineInformation.ToJson());
         bool success = await apiCommunicator.SendMachineInformationAsync(machineInformation);
 
         Console.WriteLine(success
-                ? "Les informations de la machine ont �t� envoy�es avec succ�s."
-                : "�chec de l'envoi des informations de la machine.");
+                ? "=> Machine's Information sent successfully."
+                : "=> Machine's Information could not be sent.");
 
         return Task.CompletedTask;
     }
