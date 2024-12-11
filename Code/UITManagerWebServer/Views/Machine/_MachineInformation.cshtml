@@ -92,28 +92,26 @@
     }
 }
 
-<div class="col-md-6">
-    <div id="accordion">
-        <div class="card">
-            <div class="accordion" id="informationAccordion">
-                <div class="card-header">
-                    <h3 class="mb-0 d-flex justify-content-between h-100">
-                        <span class="btn btn-light font-weight-bold"
-                              data-toggle="collapse"
-                              data-target="#collapseOne"
-                              aria-expanded="true"
-                              aria-controls="collapseOne">
-                            <strong>
-                                Machine Information
-                            </strong>
-                        </span>
-                    </h3>
-                </div>
-                @foreach (MachineController.ComponentsViewModel info in informationsSorted)
-                {
-                    RenderInformation(info, "informationAccordion");
-                }
+<div id="accordion">
+    <div class="card">
+        <div class="accordion" id="informationAccordion">
+            <div class="card-header">
+                <h3 class="mb-0 d-flex justify-content-between h-100">
+                    <span class="btn btn-light font-weight-bold"
+                          data-toggle="collapse"
+                          data-target="#collapseOne"
+                          aria-expanded="true"
+                          aria-controls="collapseOne">
+                        <strong>
+                            Machine Information
+                        </strong>
+                    </span>
+                </h3>
             </div>
+            @foreach (MachineController.ComponentsViewModel info in informationsSorted)
+            {
+                RenderInformation(info, "informationAccordion");
+            }
         </div>
     </div>
 </div>
