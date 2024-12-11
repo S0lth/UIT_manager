@@ -14,7 +14,7 @@
                     <div class="col-md-4 mb-2">
                         <div class="card shadow-sm border-0 rounded">
                             <div class="card-body p-2">
-                                <h6 class="card-title mb-2">Machines with Alarm Triggered</h6>
+                                <h6 class="card-title mb-2">Machines with Alarms Triggered</h6>
                                 <p class="fs-5">
                                     <a asp-action="Index"
                                        asp-controller="Machine"
@@ -29,7 +29,7 @@
                     <div class="col-md-4 mb-2">
                         <div class="card shadow-sm border-0 rounded">
                             <div class="card-body p-2">
-                                <h6 class="card-title mb-2">Unresolved Alarm</h6>
+                                <h6 class="card-title mb-2">Unresolved Alarms</h6>
                                 <p class="fs-5">
                                     <a asp-action="Index" asp-controller="Alarm"
                                        class="badge bg-@((Model.AlarmsNotResolvedCount == 0) ? "success" : "primary")">
@@ -42,7 +42,7 @@
                     <div class="col-md-4 mb-2">
                         <div class="card shadow-sm border-0 rounded">
                             <div class="card-body p-2">
-                                <h6 class="card-title mb-2">Alarm Triggered Today</h6>
+                                <h6 class="card-title mb-2">Alarms Triggered Today</h6>
                                 <p class="fs-5">
                                     <a asp-action="Index"
                                        asp-controller="Alarm"
@@ -68,7 +68,7 @@
                        asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
                        class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "unprocessed" ? "none" : "auto")">
-                        Unprocessed Alarm
+                        Unprocessed Alarms
                     </a>
                 </li>
 
@@ -81,7 +81,7 @@
                        asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
                        class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "newest" ? "none" : "auto")">
-                        Newest Alarm
+                        Newest Alarms
                     </a>
                 </li>
 
@@ -94,7 +94,7 @@
                        asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
                        class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")"
                        style="pointer-events: @(Model.ActiveTab == "overdue" ? "none" : "auto")">
-                        Alarm Exceeding Estimated Processing Time
+                        Alarms Exceeding Estimated Processing Time
                     </a>
                 </li>
 

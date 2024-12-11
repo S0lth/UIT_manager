@@ -6,15 +6,15 @@
             <div class="modal-header">
                 @if (Context.Request.Query["tab"] == "unprocessed")
                 {
-                    <h5 class="modal-title" id="alarmModalLabel">Information on Unprocessed Alarm</h5>
+                    <h5 class="modal-title" id="alarmModalLabel">Information on Unprocessed Alarms</h5>
                 }
                 else if (Context.Request.Query["tab"] == "newest")
                 {
-                    <h5 class="modal-title" id="alarmModalLabel">Information on Newest Alarm</h5>
+                    <h5 class="modal-title" id="alarmModalLabel">Information on Newest Alarms</h5>
                 }
                 else if (Context.Request.Query["tab"] == "overdue")
                 {
-                    <h5 class="modal-title" id="overdueModalLabel">Information on Alarm Exceeding Estimated Processing
+                    <h5 class="modal-title" id="overdueModalLabel">Information on Alarms Exceeding Estimated Processing
                         Time</h5>
                 }
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
