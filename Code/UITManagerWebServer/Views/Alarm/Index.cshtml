@@ -2,7 +2,7 @@
 @model IEnumerable<UITManagerWebServer.Models.Alarm>
 
 @{
-    ViewData["Title"] = "Alarms";
+    ViewData["Title"] = "Alarm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -71,11 +71,12 @@
     }
 
 }
+
 <div id="alert-container" class="p-0 m-0"></div>
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <div class="row mb-2 fixed">
         <div class="col-lg-12">
-            <h1 class="h2 fw-bold me-3">Alarms</h1>
+            <h1 class="h2 fw-bold me-3">Alarm</h1>
             <div class="d-flex justify-content-between ">
                 <div class=" align-items-center">
                     <div class="input-group" style="max-width: 400px;">
@@ -88,14 +89,14 @@
 
                 <div class="d-flex align-items-center">
                     <span class="me-2 text-muted">Filtered by</span>
-                    <form method="get" asp-action="Index" asp-controller="Alarms" class="d-flex align-items-center">
+                    <form method="get" asp-action="Index" asp-controller="Alarm" class="d-flex align-items-center">
                         <select asp-for="@ViewData["sortOrder"]" name="sortOrder" class="form-select">
                             <
                             <option value="all">All</option>
                             <option value="assigned_to_me">Assigned to me</option>
                             <option value="assigned">Assigned</option>
                             <option value="unassigned">Unassigned</option>
-                            <option value="triggered_today">Trigerred today</option>
+                            <option value="triggered_today">Trigered today</option>
                         </select>
 
                         <button type="submit" class="btn btn-primary btn-sm ms-2">Filter</button>
@@ -115,7 +116,7 @@
                             {
                                 <div class="list-group-item text-center">
                                     <div class="alert alert-secondary" role="alert">
-                                        this machine hasn't triggered any alarm yet
+                                        this machine hasn't triggered any alarms yet
                                     </div>
                                 </div>
                             }
@@ -125,7 +126,7 @@
                                     <thead class="table-lightfix sticky-top ">
                                     <tr>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine") fix">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParam"]"
                                                class="text-decoration-none text-dark ">
                                                 Host <i
                                                     class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
@@ -139,14 +140,14 @@
                                             </a>
                                         </th>
                                         <th class=" bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Status <i
                                                     class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Severity
                                                 <i
@@ -155,7 +156,7 @@
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Alarm
                                                 <i
@@ -164,7 +165,7 @@
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Date <i
                                                     class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
@@ -292,7 +293,7 @@
             return;
         }
 
-        fetch(`/Alarms/UpdateStatus`, {
+        fetch(`/Alarm/UpdateStatus`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -324,7 +325,7 @@
         }
 
         try {
-            const response = await fetch('/Alarms/Attribution', {
+            const response = await fetch('/Alarm/Attribution', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -346,7 +347,6 @@
             showAlert('An error occurred while updating the attribution.', 'danger');
         }
     }
-
 
 
     document.getElementById('Search').addEventListener('keyup', function () {
@@ -371,6 +371,7 @@
             }
         });
     });
+
     function showAlert(message, type) {
         const alertContainer = document.getElementById('alert-container');
 

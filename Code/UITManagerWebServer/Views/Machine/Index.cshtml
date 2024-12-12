@@ -183,12 +183,12 @@
 
                                             <td class="text-secondary">
                                                 <div class="d-flex align-items-center">
-                                                    <a asp-controller="Notes" asp-action="Index" 
+                                                    <a asp-controller="Note" asp-action="Index" 
                                                        asp-route-search="@item.Name"
                                                        class="text-primary text-decoration-none">
                                                         @item.NoteCount
                                                     </a>
-                                                    <a asp-controller="Notes" asp-action="Create"
+                                                    <a asp-controller="Note" asp-action="Create"
                                                        asp-route-id="@item.Id"
                                                        class="ms-auto me-4 text-primary text-decoration-none">
                                                         <i class="bi bi-file-plus"></i>
@@ -199,7 +199,7 @@
                                             <td class="text-secondary">
                                                 @if (item.NoteCount != 0)
                                                 {
-                                                    <a asp-controller="Notes" asp-action="Details"
+                                                    <a asp-controller="Note" asp-action="Details"
                                                        asp-route-id="@item.LastNote.Id"
                                                        class="text-primary text-decoration-none"
                                                        style="max-width: 200px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">

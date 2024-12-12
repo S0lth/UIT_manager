@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
@@ -24,21 +23,21 @@ namespace UITManagerWebServer.Controllers {
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
-        [Authorize(Roles = "MaintenanceManager,ITDirector")]
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Index(string sortOrder) {
-            var normGroups = _context.NormGroups
+            IQueryable<NormGroup> normGroups = _context.NormGroups
                 .Include(ng => ng.SeverityHistories)
                 .AsQueryable();
 
-            var viewModels = new List<NormGroupPageViewModel>();
+            List<NormGroupPageViewModel> viewModels = new List<NormGroupPageViewModel>();
 
-            foreach (var ng in normGroups) {
+            foreach (NormGroup ng in normGroups) {
                 viewModels.Add(new NormGroupPageViewModel {
                     Id = ng.Id, NormGroupName = ng.Name, Priority = ng.Priority, IsEnable = ng.IsEnable
                 });
             }
 
-            foreach (var viewModel in viewModels) {
+            foreach (NormGroupPageViewModel viewModel in viewModels) {
                 viewModel.Severity = await _context.SeverityHistories
                     .Where(sh => sh.IdNormGroup == viewModel.Id)
                     .OrderByDescending(sh => sh.UpdateDate)
@@ -50,13 +49,12 @@ namespace UITManagerWebServer.Controllers {
 
             ViewData["SortOrder"] = sortOrder;
 
-            ViewData["AlarmGroupSortParm"] = sortOrder == "AlarmGroup" ? "AlarmGroup_desc" : "AlarmGroup";
-            ViewData["SeveritySortParm"] = sortOrder == "Severity" ? "Severity_desc" : "Severity";
-            ViewData["PrioritySortParm"] = sortOrder == "Priority" ? "Priority_desc" : "Priority";
-            ViewData["NbAlarmSortParm"] = sortOrder == "NbAlarm" ? "NbAlarm_desc" : "NbAlarm";
-            ViewData["EnableSortParm"] = sortOrder == "Enable" ? "Enable_desc" : "Enable";
-
-
+            ViewData["AlarmGroupSortParam"] = sortOrder == "AlarmGroup" ? "AlarmGroup_desc" : "AlarmGroup";
+            ViewData["SeveritySortParam"] = sortOrder == "Severity" ? "Severity_desc" : "Severity";
+            ViewData["PrioritySortParam"] = sortOrder == "Priority" ? "Priority_desc" : "Priority";
+            ViewData["NbAlarmSortParam"] = sortOrder == "NbAlarm" ? "NbAlarm_desc" : "NbAlarm";
+            ViewData["EnableSortParam"] = sortOrder == "Enable" ? "Enable_desc" : "Enable";
+            
             viewModels = sortOrder switch {
                 "AlarmGroup_desc" => viewModels.OrderByDescending(vm => vm.NormGroupName).ToList(),
                 "AlarmGroup" => viewModels.OrderBy(vm => vm.NormGroupName).ToList(),
@@ -93,8 +91,10 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] 
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Delete(int id) {
-            var normGroup = await _context.NormGroups.FindAsync(id);
+            NormGroup? normGroup = await _context.NormGroups.FindAsync(id);
 
             if (normGroup == null) {
                 return NotFound();
@@ -106,10 +106,10 @@ namespace UITManagerWebServer.Controllers {
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "MaintenanceManager,ITDirector")]
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Details(int? id) {
             if (id == null) return NotFound();
-            var normGroup = await _context.NormGroups
+            NormGroup? normGroup = await _context.NormGroups
                 .Include(ng => ng.Norms)
                 .Include(ng => ng.SeverityHistories)
                 .FirstOrDefaultAsync(ng => ng.Id == id);
@@ -126,10 +126,10 @@ namespace UITManagerWebServer.Controllers {
                 .Where(s => s.IdNormGroup == id)
                 .ToListAsync();
 
-            var histories = new List<object>();
+            List<object> histories = new List<object>();
 
-            foreach (var history in normGroup.SeverityHistories) {
-                var user = await _userManager.FindByIdAsync(history.UserId);
+            foreach (SeverityHistory history in normGroup.SeverityHistories) {
+                ApplicationUser? user = await _userManager.FindByIdAsync(history.UserId);
                 if (user != null) {
                     histories.Add(new {
                         UserFirstName = user.FirstName,
@@ -146,9 +146,11 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] 
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public IActionResult DeleteNorm(int normId) {
             int id = 0;
-            var norm = _context.Norms.FirstOrDefault(n => n.Id == normId);
+            Norm? norm = _context.Norms.FirstOrDefault(n => n.Id == normId);
             if (norm != null) {
                 id = norm.NormGroupId;
                 if (id != 0) {
@@ -159,12 +161,11 @@ namespace UITManagerWebServer.Controllers {
 
             return RedirectToAction("Edit", new { id = id });
         }
-
-
-        [HttpGet]
-        [Authorize(Roles = "MaintenanceManager,ITDirector")]
+        
+        [HttpGet] 
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Edit(int id) {
-            var normGroup = await _context.NormGroups
+            NormGroup? normGroup = await _context.NormGroups
                 .Include(ng => ng.Norms)
                 .Include(ng => ng.SeverityHistories)
                 .FirstOrDefaultAsync(ng => ng.Id == id);
@@ -172,16 +173,16 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound();
             }
 
-            var latestSeverityHistory = normGroup.GetLatestSeverityHistory();
-            var idSeverity = latestSeverityHistory.IdSeverity;
-            var norms = normGroup.Norms;
-            var severityHistories = normGroup.SeverityHistories;
-            var informationNames = await _context.InformationNames
+            SeverityHistory latestSeverityHistory = normGroup.GetLatestSeverityHistory();
+            int idSeverity = latestSeverityHistory.IdSeverity;
+            List<Norm> norms = normGroup.Norms;
+            List<SeverityHistory> severityHistories = normGroup.SeverityHistories;
+            List<InformationName> informationNames = await _context.InformationNames
                 .Include(ng => ng.SubInformationNames)
                 .ToListAsync();
-            var severities = await _context.Severities.ToListAsync();
+            List<Severity> severities = await _context.Severities.ToListAsync();
 
-            var normgroupmodel = new NormGroupModel {
+            NormGroupModel normgroupmodel = new NormGroupModel {
                 Id = id,
                 IdSeverity = idSeverity,
                 IsEnable = normGroup.IsEnable,
@@ -198,14 +199,16 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken] 
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Edit(NormGroupModel model, string expected) {
             NormGroup? normGroup = await _context.NormGroups
                 .Include(ng => ng.Norms)
                 .Include(ng => ng.SeverityHistories)
                 .FirstOrDefaultAsync(c => c.Id == model.Id);
 
-            var regex = new Regex(@"^(\d{1,3})\s(\d{2}):(\d{2}):(\d{2})$");
-            var match = regex.Match(expected);
+            Regex regex = new Regex(@"^(\d{1,3})\s(\d{2}):(\d{2}):(\d{2})$");
+            Match match = regex.Match(expected);
 
             if (!match.Success) {
                 return View("Index");
@@ -269,7 +272,7 @@ namespace UITManagerWebServer.Controllers {
                 }
             }
 
-            var latestSeverityHistory = normGroup.GetLatestSeverityHistory();
+            SeverityHistory latestSeverityHistory = normGroup.GetLatestSeverityHistory();
             latestSeverityHistory.IdSeverity = model.IdSeverity;
 
             _context.Update(normGroup);
@@ -280,11 +283,12 @@ namespace UITManagerWebServer.Controllers {
 
             return RedirectToAction("Details", new { id = model.Id });
         }
-
-
+        
         [HttpPost]
+        [ValidateAntiForgeryToken] 
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> ToggleIsEnable(int id, bool isEnable) {
-            var normGroup = await _context.NormGroups.FindAsync(id);
+            NormGroup? normGroup = await _context.NormGroups.FindAsync(id);
 
             if (normGroup == null) {
                 return NotFound();
@@ -297,6 +301,8 @@ namespace UITManagerWebServer.Controllers {
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Create() {
             ViewData["InformationsName"] = await _context
                 .InformationNames
@@ -305,12 +311,13 @@ namespace UITManagerWebServer.Controllers {
             ViewData["SeveritiesName"] = await _context.Severities.ToListAsync();
             return View();
         }
-
-
+        
         [HttpPost]
+        [ValidateAntiForgeryToken] 
+        [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Create(NormGroupModel normGroupModel, string expected) {
-            var regex = new Regex(@"^(\d{1,3})\s(\d{2}):(\d{2}):(\d{2})$");
-            var match = regex.Match(expected);
+            Regex regex = new Regex(@"^(\d{1,3})\s(\d{2}):(\d{2}):(\d{2})$");
+            Match match = regex.Match(expected);
 
             if (!match.Success) {
                 return View("Index");
