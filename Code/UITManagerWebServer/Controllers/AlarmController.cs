@@ -139,8 +139,8 @@ namespace UITManagerWebServer.Controllers {
         }
         
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken] 
-        [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
         [Route("Alarm/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Status)) {
@@ -257,13 +257,12 @@ namespace UITManagerWebServer.Controllers {
             return View(alarm);
         }
 
-        [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
+        [Authorize]
         public IActionResult Details(string id) {
             return Redirect($"/AlarmDetail/Index/{id}");
         }
     }
-
-
+    
     public class UpdateStatusRequest {
         public int Id { get; set; }
         public string Status { get; set; }

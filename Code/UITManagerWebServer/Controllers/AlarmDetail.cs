@@ -182,11 +182,10 @@ namespace UITManagerWebServer {
 
             return alarm;
         }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken] 
-        [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
+        [Authorize]
         [Route("AlarmDetail/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Status)) {
@@ -344,8 +343,8 @@ namespace UITManagerWebServer {
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public async Task<IActionResult> Edit(int id,
             [Bind("Id,TriggeredAt,MachineId,NormGroupId,UserId")]
             Alarm alarm) {
