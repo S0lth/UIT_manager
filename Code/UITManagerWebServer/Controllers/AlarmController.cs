@@ -141,6 +141,7 @@ namespace UITManagerWebServer.Controllers {
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken] 
         [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
         [Route("Alarm/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
@@ -182,6 +183,7 @@ namespace UITManagerWebServer.Controllers {
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken] 
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
         [Route("Alarm/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
@@ -231,7 +233,6 @@ namespace UITManagerWebServer.Controllers {
 
 
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Alarm alarm) {
             if (ModelState.IsValid) {
@@ -259,6 +260,7 @@ namespace UITManagerWebServer.Controllers {
             return View(alarm);
         }
 
+        [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
         public IActionResult Details(string id) {
             return Redirect($"/AlarmDetail/Index/{id}");
         }
