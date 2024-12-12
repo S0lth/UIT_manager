@@ -847,7 +847,7 @@ public static class Populate {
     private static async Task SeedAlarms(ApplicationDbContext context, List<Machine> machines, List<NormGroup> normGroups, UserManager<ApplicationUser> userManager,bool noAlarm) {
         var random = new Random();
 
-        var rolesToFind = new List<string> { "MaintenanceManager", "ITDirector" };
+        var rolesToFind = new List<string> { "Technician" };
 
         var usersInRoles = new List<ApplicationUser>();
 

@@ -47,10 +47,10 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
             else if (tab == "newest") {
-                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true);
             }
             else if (tab == "overdue") {
-                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, overdue: true, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails(sortOrder, overdue: true, orderByDate: true);
             }
             else {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
@@ -77,12 +77,12 @@ namespace UITManagerWebServer.Controllers {
 
             ViewData["SortOrder"] = sortOrder;
             ViewData["SortOrderNote"] = sortOrderNote;
-            ViewData["MachineSortParm"] = sortOrder.Contains("machine_desc") ? "machine" : "machine_desc";
-            ViewData["ModelSortParm"] = sortOrder.Contains("model_desc") ? "model" : "model_desc";
-            ViewData["StatusSortParm"] = sortOrder.Contains("status_desc") ? "status" : "status_desc";
-            ViewData["SeveritySortParm"] = sortOrder.Contains("severity_desc") ? "severity" : "severity_desc";
-            ViewData["AlarmGroupSortParm"] = sortOrder.Contains("alarmgroup_desc") ? "alarmgroup" : "alarmgroup_desc";
-            ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
+            ViewData["MachineSortParam"] = sortOrder.Contains("machine_desc") ? "machine" : "machine_desc";
+            ViewData["ModelSortParam"] = sortOrder.Contains("model_desc") ? "model" : "model_desc";
+            ViewData["StatusSortParam"] = sortOrder.Contains("status_desc") ? "status" : "status_desc";
+            ViewData["SeveritySortParam"] = sortOrder.Contains("severity_desc") ? "severity" : "severity_desc";
+            ViewData["AlarmGroupSortParam"] = sortOrder.Contains("alarmgroup_desc") ? "alarmgroup" : "alarmgroup_desc";
+            ViewData["DateSortParam"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
 
 
             ViewData["SeverityAlarmsCount"] = JsonConvert.SerializeObject(viewModel.SeverityAlarmsCount);
@@ -152,8 +152,10 @@ namespace UITManagerWebServer.Controllers {
                 alarmsQuery = alarmsQuery
                     .Where(a =>
                         a.TriggeredAt < DateTime.UtcNow - a.NormGroup.MaxExpectedProcessingTime)
-                    .Include(a =>
-                        a.NormGroup.SeverityHistories.OrderByDescending(aa => aa.Severity.Name != "Resolved"));
+                    .Where(a =>
+                        a.AlarmHistories
+                            .OrderByDescending(ah => ah.ModificationDate)
+                            .FirstOrDefault().StatusType.Name != "Resolved");
             }
 
             if (orderByDate) {
