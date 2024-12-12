@@ -42,13 +42,12 @@ namespace UITManagerWebServer.Controllers {
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmHistories)
-                .ThenInclude(aStatus => aStatus.StatusType)
+                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))                .ThenInclude(aStatus => aStatus.StatusType)
                 .Include(a => a.NormGroup.SeverityHistories)
                 .ThenInclude(sh => sh.Severity)
                 .Include(a => a.User)
                 .AsQueryable()
                 .Where(a => a.AlarmHistories
-                    .OrderByDescending(h => h.ModificationDate)
                     .Select(h => h.StatusType.Name)
                     .FirstOrDefault() != "Resolved");
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View;
 using Newtonsoft.Json;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
@@ -46,14 +47,15 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
             else if (tab == "newest") {
-                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true);
             }
             else if (tab == "overdue") {
-                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, overdue: true, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails(sortOrder, overdue: true, orderByDate: true);
             }
             else {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
+            
 
             var viewModel = new HomePageViewModel {
                 Notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote),
@@ -81,7 +83,8 @@ namespace UITManagerWebServer.Controllers {
             ViewData["SeveritySortParam"] = sortOrder.Contains("severity_desc") ? "severity" : "severity_desc";
             ViewData["AlarmGroupSortParam"] = sortOrder.Contains("alarmgroup_desc") ? "alarmgroup" : "alarmgroup_desc";
             ViewData["DateSortParam"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
-            
+
+
             ViewData["SeverityAlarmsCount"] = JsonConvert.SerializeObject(viewModel.SeverityAlarmsCount);
 
             ViewData["AssignedOrNotAlarmCount"] = JsonConvert.SerializeObject(viewModel.AssignedOrNotAlarmCount);
@@ -95,7 +98,7 @@ namespace UITManagerWebServer.Controllers {
 
         private async Task<List<NoteViewModel>> FetchFilteredNotes(string solutionFilter, string authorFilter,
             string sortOrderNote) {
-            IQueryable<Note> notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
+            var notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
 
             if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
                 bool isSolution = solutionFilter.ToLower() == "true";
@@ -109,7 +112,7 @@ namespace UITManagerWebServer.Controllers {
                 notesQuery = notesQuery.OrderBy(n => n.CreatedAt);
             }
 
-            List<Note> notes = await notesQuery.ToListAsync();
+            var notes = await notesQuery.ToListAsync();
 
             if (!string.IsNullOrEmpty(authorFilter)) {
                 notes = notes.Where(n => n.AuthorId == authorFilter).ToList();
@@ -130,7 +133,7 @@ namespace UITManagerWebServer.Controllers {
             bool overdue = false,
             bool orderByDate = false,
             int? takeTop = null) {
-            IQueryable<Alarm> alarmsQuery = _context.Alarms
+            var alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmHistories)
@@ -149,8 +152,10 @@ namespace UITManagerWebServer.Controllers {
                 alarmsQuery = alarmsQuery
                     .Where(a =>
                         a.TriggeredAt < DateTime.UtcNow - a.NormGroup.MaxExpectedProcessingTime)
-                    .Include(a =>
-                        a.NormGroup.SeverityHistories.OrderByDescending(aa => aa.Severity.Name != "Resolved"));
+                    .Where(a =>
+                        a.AlarmHistories
+                            .OrderByDescending(ah => ah.ModificationDate)
+                            .FirstOrDefault().StatusType.Name != "Resolved");
             }
 
             if (orderByDate) {
@@ -163,7 +168,7 @@ namespace UITManagerWebServer.Controllers {
                 alarmsQuery = alarmsQuery.Take(takeTop.Value);
             }
 
-            List<Alarm> alarms = await alarmsQuery.ToListAsync();
+            var alarms = await alarmsQuery.ToListAsync();
 
             return alarms.Select(a => new AlarmViewModel {
                 MachineName = a.Machine.Name,
@@ -231,7 +236,9 @@ namespace UITManagerWebServer.Controllers {
 
         private async Task<int> GetMachinesWithActiveAlarms() {
             int activeAlarms = await _context.Alarms
-                .Where(a => a.AlarmHistories.Any(ah => ah.StatusType.Name != "Closed"))
+                .Where(a => a.AlarmHistories
+                    .OrderByDescending(ah => ah.ModificationDate)
+                    .FirstOrDefault().StatusType.Name != "Resolved")
                 .Select(a => a.Machine)
                 .Distinct()
                 .CountAsync();
@@ -255,47 +262,49 @@ namespace UITManagerWebServer.Controllers {
         
             return severityCounts.ToDictionary(g => g.Severity, g => g.AlarmCount);
         }
-        
+
+
+
         private async Task<Dictionary<string, int>> GetAssignedOrNotAlarmCount() {
-            List<Alarm> alarmCounts = await _context.Alarms
+            var alarmCounts = await _context.Alarms
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
                     .FirstOrDefault().StatusType.Name != "Resolved")
                 .ToListAsync();
 
-            int assignedCount = alarmCounts.Count(a => a.UserId != null);
-            int unassignedCount = alarmCounts.Count(a => a.UserId == null);
+            var assignedCount = alarmCounts.Count(a => a.UserId != null);
+            var unassignedCount = alarmCounts.Count(a => a.UserId == null);
 
-            Dictionary<string, int> result =
+            var result =
                 new Dictionary<string, int> { { "Assigned", assignedCount }, { "Unassigned", unassignedCount } };
 
             return result;
         }
 
         private async Task<Dictionary<string, Dictionary<string, double>>> FetchAlarmCountsBySiteAndSeverity() {
-            List<Alarm> alarms = await _context.Alarms
+            var alarms = await _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .ThenInclude(ng => ng.SeverityHistories)
                 .ThenInclude(sh => sh.Severity)
                 .ToListAsync();
 
-            Dictionary<string, Dictionary<string, double>> result = new Dictionary<string, Dictionary<string, double>>();
+            var result = new Dictionary<string, Dictionary<string, double>>();
 
-            List<IGrouping<string, Alarm>> groupedBySite = alarms
+            var groupedBySite = alarms
                 .GroupBy(a => {
-                    string? machineName = a.Machine.Name;
-                    string siteName = machineName.Split('-')[0];
+                    var machineName = a.Machine.Name;
+                    var siteName = machineName.Split('-')[0];
                     return siteName;
                 })
                 .ToList();
 
-            foreach (IGrouping<string, Alarm> siteGroup in groupedBySite) {
-                int totalAlarms = siteGroup.Count();
+            foreach (var siteGroup in groupedBySite) {
+                var totalAlarms = siteGroup.Count();
 
                 var severityCounts = siteGroup
                     .Select(a => {
-                        string? mostRecentSeverity = a.NormGroup.SeverityHistories
+                        var mostRecentSeverity = a.NormGroup.SeverityHistories
                             .OrderByDescending(sh => sh.UpdateDate)
                             .FirstOrDefault()?.Severity.Name;
 
@@ -306,7 +315,7 @@ namespace UITManagerWebServer.Controllers {
                     .Select(g => new { Severity = g.Key, Count = g.Count() })
                     .ToList();
 
-                Dictionary<string, double> severityPercentages = severityCounts.ToDictionary(
+                var severityPercentages = severityCounts.ToDictionary(
                     g => g.Severity,
                     g => (double)g.Count / totalAlarms * 100);
 
@@ -317,15 +326,13 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult> GetFilteredNotes(string solutionFilter, string authorFilter,
             string sortOrderNote) {
-            List<NoteViewModel> notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
+            var notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
             return PartialView("_NotesList", notes);
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetFilteredAlarmsList(string tab, string sortOrder) {
             List<AlarmViewModel> selectedAlarms = new List<AlarmViewModel>();
 
@@ -349,7 +356,7 @@ namespace UITManagerWebServer.Controllers {
         }
         
         private async Task<int> GetAlarmsNotResolvedCount() {
-            int alarmsNotResolvedCount = await _context.Alarms
+            var alarmsNotResolvedCount = await _context.Alarms
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
                     .FirstOrDefault().StatusType.Name != "Resolved")
@@ -359,19 +366,17 @@ namespace UITManagerWebServer.Controllers {
         }
         
         private async Task<int> GetAlarmsTriggeredTodayCount() {
-            DateTime today = DateTime.UtcNow.Date;
+            var today = DateTime.UtcNow.Date;
     
-            int alarmsTriggeredTodayCount = await _context.Alarms
+            var alarmsTriggeredTodayCount = await _context.Alarms
                 .Where(a => a.TriggeredAt.Date == today)
                 .CountAsync();
 
             return alarmsTriggeredTodayCount;
         }
 
-        [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> GetAlarmCountsBySiteAndSeverity() {
-            Dictionary<string, Dictionary<string, double>> alarmCountsBySiteAndSeverity = await FetchAlarmCountsBySiteAndSeverity();
+            var alarmCountsBySiteAndSeverity = await FetchAlarmCountsBySiteAndSeverity();
             return PartialView("_AlarmDistributionBySiteAndSeverity", alarmCountsBySiteAndSeverity);
         }
     }
