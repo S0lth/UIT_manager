@@ -31,7 +31,7 @@ namespace UITManagerWebServer.Models {
         /// </summary>
         /// <returns>The most recent status history entry of the alarm, or <c>null</c> if no history is available.</returns>
         public AlarmStatusHistory GetLatestAlarmHistory() {
-            return AlarmHistories?.OrderByDescending(h => h.ModificationDate).FirstOrDefault();
+            return AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault();
         }
 
         /// <summary>

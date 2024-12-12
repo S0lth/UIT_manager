@@ -912,7 +912,7 @@ public static class Populate {
                         UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                     };
 
-                    AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                    alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
                 }
                 
                 // Closed Alarm
@@ -925,7 +925,7 @@ public static class Populate {
                         UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                     };
                     
-                    AddStatusHistory(nbStatus, oldAlarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                    alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes, usersInRoles, random));
                     alarms.Add(oldAlarm);
                 }
             }
@@ -944,7 +944,7 @@ public static class Populate {
                     UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
                 };
 
-                AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
 
                 alarms.Add(alarm);
             } else {
@@ -957,7 +957,7 @@ public static class Populate {
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                 };
 
-                AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
 
                 alarms.Add(alarm);
             }
@@ -984,7 +984,7 @@ public static class Populate {
                             UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
                         };
                         
-                        AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                        alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
 
                         alarms.Add(alarm);
                     }
@@ -999,7 +999,7 @@ public static class Populate {
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                         };
                     
-                        AddStatusHistory(nbStatus, oldAlarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                        alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes, usersInRoles, random));
                         alarms.Add(oldAlarm);
                     }
                 }
@@ -1017,7 +1017,7 @@ public static class Populate {
                             UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
                         };
                         
-                        AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                        alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
 
                         alarms.Add(alarm);
                     }
@@ -1032,7 +1032,7 @@ public static class Populate {
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                         };
                     
-                        AddStatusHistory(nbStatus, oldAlarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                        alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes, usersInRoles, random));
                         alarms.Add(oldAlarm);
                     }
                 }
@@ -1054,7 +1054,7 @@ public static class Populate {
                     UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
                 };
 
-                AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
 
                 alarms.Add(alarm);
             }
@@ -1068,7 +1068,7 @@ public static class Populate {
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                 };
 
-                AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
 
                 alarms.Add(alarm);
             }
@@ -1089,7 +1089,7 @@ public static class Populate {
                     UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
                 };
             
-                AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
 
                 alarms.Add(alarm);
             }
@@ -1103,7 +1103,7 @@ public static class Populate {
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                 };
             
-                AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles, random));
 
                 alarms.Add(alarm);
             }
@@ -1241,7 +1241,9 @@ public static class Populate {
         return random.NextDouble() * (maximum - minimum) + minimum;
     }
     
-    private static void AddStatusHistory(int nbStatus,Alarm alarm,List<AlarmStatusHistory> alarmStatusHistories,List<AlarmStatusType> alarmStatusTypes,List<ApplicationUser>usersInRoles,Random random) {
+    private static List<AlarmStatusHistory> AddStatusHistory(int nbStatus,Alarm alarm,List<AlarmStatusType> alarmStatusTypes,List<ApplicationUser>usersInRoles,Random random) {
+
+        List<AlarmStatusHistory> alarmStatusHistories = new List<AlarmStatusHistory>();
         
         if(alarm.UserId == null) {
             nbStatus = 1;
@@ -1249,7 +1251,7 @@ public static class Populate {
         DateTime tempModificationDate = default;
         for (int i = 0; i < nbStatus; i++) {
             if (i == 0) {
-                tempModificationDate = alarm.TriggeredAt.AddHours(-random.Next(1, 240));
+                tempModificationDate = alarm.TriggeredAt.AddHours(random.Next(1, 240));
                 alarmStatusHistories.Add(
                     new AlarmStatusHistory {
                         Alarm = alarm,
@@ -1258,7 +1260,7 @@ public static class Populate {
                         UserId = null
                     }); 
             } else {
-                tempModificationDate = tempModificationDate.AddHours(-random.Next(1, 240));
+                tempModificationDate = tempModificationDate.AddHours(random.Next(1, 240));
                 alarmStatusHistories.Add(
                    new AlarmStatusHistory {
                        Alarm = alarm,
@@ -1268,5 +1270,7 @@ public static class Populate {
                    }); 
             }
         }
+
+        return alarmStatusHistories;
     }
 }

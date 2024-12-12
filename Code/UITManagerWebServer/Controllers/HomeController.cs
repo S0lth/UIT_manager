@@ -25,6 +25,7 @@ namespace UITManagerWebServer.Controllers {
         [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string solutionFilter, string authorFilter,
             string tab, string sortOrderNote) {
+            
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
             Console.WriteLine(Request.Headers["Referer"].ToString());
             ViewData["SolutionFilter"] = solutionFilter;
@@ -47,10 +48,10 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
             else if (tab == "newest") {
-                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true);
             }
             else if (tab == "overdue") {
-                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, overdue: true, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails( sortOrder, overdue: true, orderByDate: true);
             }
             else {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
@@ -152,8 +153,10 @@ namespace UITManagerWebServer.Controllers {
                 alarmsQuery = alarmsQuery
                     .Where(a =>
                         a.TriggeredAt < DateTime.UtcNow - a.NormGroup.MaxExpectedProcessingTime)
-                    .Include(a =>
-                        a.NormGroup.SeverityHistories.OrderByDescending(aa => aa.Severity.Name != "Resolved"));
+                    .Where(a =>
+                        a.AlarmHistories
+                            .OrderByDescending(ah => ah.ModificationDate)
+                            .FirstOrDefault().StatusType.Name != "Resolved");
             }
 
             if (orderByDate) {
@@ -234,7 +237,9 @@ namespace UITManagerWebServer.Controllers {
 
         private async Task<int> GetMachinesWithActiveAlarms() {
             var activeAlarms = await _context.Alarms
-                .Where(a => a.AlarmHistories.Any(ah => ah.StatusType.Name != "Closed"))
+                .Where(a => a.AlarmHistories
+                    .OrderByDescending(ah => ah.ModificationDate)
+                    .FirstOrDefault().StatusType.Name != "Resolved")
                 .Select(a => a.Machine)
                 .Distinct()
                 .CountAsync();
