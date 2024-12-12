@@ -7,7 +7,7 @@ using Information = UITManagerWebServer.Models.Information;
 namespace UITManagerWebServer.Data;
 
 public static class Populate {
-    public static async Task Initialize(IServiceProvider serviceProvider) {
+    public static async Task Initialize(IServiceProvider serviceProvider, bool noAlarm) {
         using var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -21,7 +21,7 @@ public static class Populate {
 
         var machines = SeedMachines(context);
 
-        await SeedAlarms(context, machines, normGroups, userManager);
+        await SeedAlarms(context, machines, normGroups, userManager,noAlarm);
 
         SeedNotes(context, machines);
 
@@ -844,7 +844,7 @@ public static class Populate {
         return machines;
     }
 
-    private static async Task SeedAlarms(ApplicationDbContext context, List<Machine> machines, List<NormGroup> normGroups, UserManager<ApplicationUser> userManager) {
+    private static async Task SeedAlarms(ApplicationDbContext context, List<Machine> machines, List<NormGroup> normGroups, UserManager<ApplicationUser> userManager,bool noAlarm) {
         var random = new Random();
 
         var rolesToFind = new List<string> { "MaintenanceManager", "ITDirector" };
@@ -901,29 +901,44 @@ public static class Populate {
             //if(ramUsed / ramTot > Double.Parse(normGroups[2].Norms.Find(n => n.Name.Equals("Ram usage > 80%")).Value)/100){
             if(ramUsed / ramTot > 0.8){
                 Console.WriteLine(("-----------------------Ram 80-----------------------------------"));
-                
-                //int nbStatus = random.Next(1, alarmStatusTypes.Count-1);
-                int nbStatus = random.Next(1, 3);
-                
-                var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                    Machine = machine,
-                    NormGroup = normGroups[2],
-                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                };
+                int nbStatus;
+                if (!noAlarm) {
+                    nbStatus = random.Next(1, 3);
+                    
+                    var alarm = new Alarm {
+                        TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
+                        Machine = machine,
+                        NormGroup = normGroups[2],
+                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                    };
 
-                AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                    AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                }
+                
+                // Closed Alarm
+                for (int j = 0; j < 3; j++) {
+                    nbStatus = 3;
+                    var oldAlarm = new Alarm {
+                        TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(1,365)).AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
+                        Machine = machine,
+                        NormGroup = normGroups[2],
+                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                    };
+                    
+                    AddStatusHistory(nbStatus, oldAlarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                    alarms.Add(oldAlarm);
+                }
             }
             
             Console.WriteLine(("-----------------------Ram 2-----------------------------------"));
             
             //if (ramTot < int.Parse(normGroups[4].Norms.Find(n => n.Name.Equals("Ram < 8GB")).Value)*100) {
-            if (ramTot < 8) {
+            if (ramTot < 8 && !noAlarm) {
                 Console.WriteLine(("-----------------------Ram 8GB-----------------------------------"));
-                int nbStatus = random.Next(1, 3);
+                int nbStatus= random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
                     Machine = machine,
                     NormGroup = normGroups[5],
                     UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -933,9 +948,10 @@ public static class Populate {
 
                 alarms.Add(alarm);
             } else {
+                // Closed alarm
                 int nbStatus = 3;
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(1,365)).AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
                     Machine = machine,
                     NormGroup = normGroups[5],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -957,23 +973,27 @@ public static class Populate {
                 //if (diskUsed / diskTot > Double.Parse(normGroups[0].Norms.Find(n => n.Name.Equals("Storage full")).Value)/100) {
                 if (diskUsed / diskTot > 0.99) {
                     Console.WriteLine(("-----------------------Storage Full-----------------------------------"));
-                    int nbStatus = random.Next(1, 3);
+                    int nbStatus;
 
-                    var alarm = new Alarm {
-                        TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                        Machine = machine,
-                        NormGroup = normGroups[0],
-                        UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
-                    };
-                    
-                    AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
+                    if (!noAlarm) {
+                        nbStatus = random.Next(1, 3);
+                        var alarm = new Alarm {
+                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
+                            Machine = machine,
+                            NormGroup = normGroups[0],
+                            UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
+                        };
+                        
+                        AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
 
-                    alarms.Add(alarm);
+                        alarms.Add(alarm);
+                    }
 
+                    // Closed alarm
                     for (int j = 0; j < 20; j++) {
                         nbStatus = 3;
                         var oldAlarm = new Alarm {
-                            TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                            TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(1,365)).AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
                             Machine = machine,
                             NormGroup = normGroups[0],
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -986,23 +1006,27 @@ public static class Populate {
                 //else if (diskUsed / diskTot > Double.Parse(normGroups[3].Norms.Find(n => n.Name.Equals("Storage over 80%")).Value)/100) {
                 else if (diskUsed / diskTot > 0.8) {
                     Console.WriteLine(("-----------------------Storage 80-----------------------------------"));
-                    int nbStatus = random.Next(1, 3);
+                    int nbStatus;
 
-                    var alarm = new Alarm {
-                        TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                        Machine = machine,
-                        NormGroup = normGroups[3],
-                        UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
-                    };
+                    if (!noAlarm) {
+                        nbStatus = random.Next(1, 3);
+                        var alarm = new Alarm {
+                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
+                            Machine = machine,
+                            NormGroup = normGroups[3],
+                            UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
+                        };
+                        
+                        AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
 
-                    AddStatusHistory(nbStatus, alarm, alarmStatusHistories, alarmStatusTypes, usersInRoles, random);
-
-                    alarms.Add(alarm);
+                        alarms.Add(alarm);
+                    }
                     
+                    // Closed Alarm
                     for (int j = 0; j < 20; j++) {
                         nbStatus = 3;
                         var oldAlarm = new Alarm {
-                            TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                            TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(1,365)).AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
                             Machine = machine,
                             NormGroup = normGroups[3],
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1019,12 +1043,12 @@ public static class Populate {
             
             Console.WriteLine(("-----------------------DirectX-----------------------------------"));
             //if (!infoDirectX.Value.Equals(normGroups[4].Norms.Find(n => n.Name.Equals("Old Direct")).Value)) {
-            if (!infoDirectX.Value.Equals("DirectX 12")) {
+            if (!infoDirectX.Value.Equals("DirectX 12") && !noAlarm) {
                 Console.WriteLine(("-----------------------Wrong DirectX-----------------------------------"));
                 int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
                     Machine = machine,
                     NormGroup = normGroups[4],
                     UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -1035,10 +1059,10 @@ public static class Populate {
                 alarms.Add(alarm);
             }
             else {
+                // Closed alarm
                 int nbStatus = 3;
-
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(1,365)).AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
                     Machine = machine,
                     NormGroup = normGroups[4],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1054,12 +1078,12 @@ public static class Populate {
             Console.WriteLine(("-----------------------OS-----------------------------------"));
             Console.WriteLine(infoOs.Children.Find(i => i.Name == "OS Name").Value);
             //if (infoOs.Children.Find(i => i.Name == "OS Name").Value.Contains(normGroups[1].Norms.Find(n => n.Name.Equals("Windows 10 detected")).Value)) {
-            if (infoOs.Children.Find(i => i.Name == "OS Name").Value.Contains("10")) {
+            if (infoOs.Children.Find(i => i.Name == "OS Name").Value.Contains("10") && !noAlarm) {
                 Console.WriteLine(("-----------------------Wrong OS-----------------------------------"));
                 int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
                     Machine = machine,
                     NormGroup = normGroups[1],
                     UserId = random.Next(0,101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -1070,10 +1094,10 @@ public static class Populate {
                 alarms.Add(alarm);
             }
             else {
+                //Closed alarm
                 int nbStatus = 3;
-
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(1,365)).AddHours(-random.Next(0,24)).AddMinutes(-random.Next(0,60)),
                     Machine = machine,
                     NormGroup = normGroups[1],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1083,34 +1107,6 @@ public static class Populate {
 
                 alarms.Add(alarm);
             }
-
-            // Alarm Closed
-            /*int alarmCount = random.Next(1, 3);
-            for (int i = 0; i < alarmCount; i++) {
-                int nbDays = random.Next(20, 144);
-                var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddDays(-nbDays),
-                    Machine = machine,
-                    NormGroup = normGroups[random.Next(normGroups.Count)],
-                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                };
-
-                int historyCount = random.Next(1, 3);
-
-                for (i = 0; i < historyCount; i++) {
-                    alarmStatusHistories.Add(
-                        new AlarmStatusHistory {
-                            Alarm = alarm,
-                            StatusType = alarmStatusTypes[i],
-                            ModificationDate = DateTime.UtcNow.AddDays(nbDays).AddHours(-10 + i),
-                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                        });
-                }
-
-                alarms.Add(alarm);
-            }*/
-          
-            //alarms.Add(alarmUnassigned);
         }
 
         context.AlarmHistories.AddRange(alarmStatusHistories);
@@ -1250,24 +1246,30 @@ public static class Populate {
         if(alarm.UserId == null) {
             nbStatus = 1;
         }
-        
+
+        Console.WriteLine(nbStatus);
+        DateTime tempModificationDate = default;
         for (int i = 0; i < nbStatus; i++) {
             if (i == 0) {
+                tempModificationDate = alarm.TriggeredAt.AddHours(-random.Next(1, 240));
                 alarmStatusHistories.Add(
                     new AlarmStatusHistory {
                         Alarm = alarm,
                         StatusType = alarmStatusTypes[i],
-                        ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
+                        ModificationDate = tempModificationDate,
                         UserId = null
                     }); 
+                Console.WriteLine(alarmStatusTypes[i].Name);
             } else {
+                tempModificationDate = tempModificationDate.AddHours(-random.Next(1, 240));
                 alarmStatusHistories.Add(
                    new AlarmStatusHistory {
                        Alarm = alarm,
                        StatusType = alarmStatusTypes[i],
-                       ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
+                       ModificationDate = tempModificationDate,
                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                    }); 
+                Console.WriteLine(alarmStatusTypes[i].Name);
             }
         }
     }
