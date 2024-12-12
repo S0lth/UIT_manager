@@ -1108,7 +1108,7 @@ public static class Populate {
                 alarms.Add(alarm);
             }
         }
-
+        
         context.AlarmHistories.AddRange(alarmStatusHistories);
         context.Alarms.AddRange(alarms);
         context.SaveChanges();
@@ -1246,8 +1246,6 @@ public static class Populate {
         if(alarm.UserId == null) {
             nbStatus = 1;
         }
-
-        Console.WriteLine(nbStatus);
         DateTime tempModificationDate = default;
         for (int i = 0; i < nbStatus; i++) {
             if (i == 0) {
@@ -1259,7 +1257,6 @@ public static class Populate {
                         ModificationDate = tempModificationDate,
                         UserId = null
                     }); 
-                Console.WriteLine(alarmStatusTypes[i].Name);
             } else {
                 tempModificationDate = tempModificationDate.AddHours(-random.Next(1, 240));
                 alarmStatusHistories.Add(
@@ -1269,7 +1266,6 @@ public static class Populate {
                        ModificationDate = tempModificationDate,
                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                    }); 
-                Console.WriteLine(alarmStatusTypes[i].Name);
             }
         }
     }
