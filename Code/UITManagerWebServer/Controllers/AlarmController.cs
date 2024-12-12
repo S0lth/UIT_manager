@@ -12,7 +12,7 @@ namespace UITManagerWebServer.Controllers {
     public class AlarmController : Controller {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        
+
         public AlarmController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
             _userManager = userManager;
@@ -56,7 +56,7 @@ namespace UITManagerWebServer.Controllers {
                 string[] searchTerms = search.ToLower().Split(',');
 
                 alarms = alarms.Where(a =>
-                    searchTerms.All(term => 
+                    searchTerms.All(term =>
                         a.Machine.Name.ToLower().Contains(term) ||
                         a.Machine.Model.ToLower().Contains(term) ||
                         a.NormGroup.Name.ToLower().Contains(term) ||
@@ -137,10 +137,10 @@ namespace UITManagerWebServer.Controllers {
 
             return View(await alarms.ToListAsync());
         }
-        
+
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Route("Alarm/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Status)) {
@@ -155,7 +155,8 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound(new { success = false, message = "Alarm not found." });
             }
 
-            AlarmStatusType? statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
+            AlarmStatusType? statusType =
+                await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
             if (statusType == null) {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
@@ -175,12 +176,17 @@ namespace UITManagerWebServer.Controllers {
             }
 
             catch (Exception ex) {
-                return StatusCode(500, new { success = false, message = "An error occurred while updating status." });
+                return StatusCode(500, new {
+                    success = false,
+                    message = "An error occurred while updating status.",
+                    error = ex.Message, 
+                    stackTrace = ex.StackTrace
+                });
             }
         }
-        
+
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
         [Route("Alarm/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
@@ -227,7 +233,7 @@ namespace UITManagerWebServer.Controllers {
                     });
             }
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -262,7 +268,7 @@ namespace UITManagerWebServer.Controllers {
             return Redirect($"/AlarmDetail/Index/{id}");
         }
     }
-    
+
     public class UpdateStatusRequest {
         public int Id { get; set; }
         public string Status { get; set; }
