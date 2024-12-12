@@ -26,7 +26,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
             if (_diskInformation != null) {
                 DiskCollector diskCollector = new();
                 string json = _diskInformation.ToJson();
-                string expected = $"{{\"Disks\":[],\"NumberDisk\":{_diskInformation.NumberDisk}}}";
+                string expected = $"{{\"Disks\":[],\"NumberDisk\":{_diskInformation.NumberDisk},\"FormatNumberDisk\":\"NUMBER\"}}";
                 StringAssert.Contains(json, expected);
             }
         }

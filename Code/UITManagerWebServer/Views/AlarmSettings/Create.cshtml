@@ -25,7 +25,7 @@
     </div>
 }
 <div class="container">
-    <h1 class="">New Criteria</h1>
+    <h1 class="">Create Criteria</h1>
 <div class="card shadow-sm border-0 rounded p-3">
     <div class="table-responsive">
         <form method="post" asp-action="Create">
@@ -78,8 +78,16 @@
                     <input type="text" class="form-control" name="NormGroupName" value="@(Model?.NormGroupName ?? "")" required/>
                 </td>
                 <td>
-                    <input class="form-control" type="text" id="timeInput" name="expected" placeholder="DD hh:mm:ss"
-                           pattern="^\d{1,3}\s\d{2}:\d{2}:\d{2}$" required title="DD hh:mm:ss" />
+                    <input
+                        class="form-control"
+                        id="timeInput"
+                        name="expected"
+                        placeholder="DD hh:mm:ss"
+                        pattern="^\d{1,3}\s\d{2}:\d{2}:\d{2}$"
+                        inputmode="numeric"
+                        required
+                        title="Format must be DD hh:mm:ss (e.g., 01 12:30:45)"
+                    /><small id="errorMsg" style="color: red; display: none;">Invalid format! Use dd hh:mm:ss.</small>
                 </td>
                 <td>
                     <input type="number" class="form-control" min="1" max="9" name="Priority" value="9"/>
@@ -274,6 +282,34 @@
     window.onload = function() {
         addRow();
     };
+
+
+
+
+
+
+
+
+    const timeInput = document.getElementById("timeInput");
+    const errorMessage = document.getElementById("errorMessage");
+    const timeForm = document.getElementById("timeForm");
+
+    const input = document.getElementById("timeInput");
+
+    input.addEventListener("input", (e) => {
+        const value = input.value.replace(/\D/g, ""); // Supprime tout ce qui n'est pas un chiffre
+        const day = value.slice(0, 2);              // Les deux premiers caractères (jour)
+        const hour = value.slice(2, 4);            // Les deux suivants (heure)
+        const minute = value.slice(4, 6);          // Les deux suivants (minute)
+        const second = value.slice(6, 8);          // Les deux suivants (seconde)
+
+        let formattedValue = day;
+        if (hour) formattedValue += ` ${hour}`;
+        if (minute) formattedValue += `:${minute}`;
+        if (second) formattedValue += `:${second}`;
+
+        input.value = formattedValue;
+    });
 
 </script>
 

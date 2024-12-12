@@ -11,15 +11,29 @@ namespace UITManagerAgent.BasicInformation {
         /// </summary>
         public class Disk {
             private string? _diskName = String.Empty;
+            private string _formatDiskName = "TEXT";
             private long _diskTotalSize;
+            private string _formatTotalSize = "GB";
             private long _diskFreeSize;
+            private string _formatFreeSize = "GB";
 
             /// <summary>
             /// accessors of the disksName field
             /// </summary>
-            public string? DisksName {
+            public string? DiskName {
                 get => _diskName;
                 set => _diskName = value;
+            }
+
+            /// <summary>
+            /// Gets or sets the format of the disk name information
+            /// </summary>
+            /// <value>
+            /// A string representing the format of disk name.
+            /// </value>
+            public string FormatDiskName {
+                get => _formatDiskName;
+                set => _formatDiskName = value ?? throw new ArgumentNullException(nameof(value));
             }
 
             /// <summary>
@@ -30,13 +44,34 @@ namespace UITManagerAgent.BasicInformation {
                 set => _diskTotalSize = value;
             }
 
-
+            /// <summary>
+            /// Gets or sets the format of the total memory information
+            /// </summary>
+            /// <value>
+            /// A string representing the format of total memory.
+            /// </value>
+            public string FormatTotalSize {
+                get => _formatTotalSize;
+                set => _formatTotalSize = value ?? throw new ArgumentNullException(nameof(value));
+            }
+            
             /// <summary>
             /// accessors of the diskFreeSize field
             /// </summary>
             public long DiskFreeSize {
                 get => _diskFreeSize;
                 set => _diskFreeSize = value;
+            }
+            
+            /// <summary>
+            /// Gets or sets the format of the free memory information
+            /// </summary>
+            /// <value>
+            /// A string representing the format of free memory.
+            /// </value>
+            public string FormatFreeSize {
+                get => _formatFreeSize;
+                set => _formatFreeSize = value ?? throw new ArgumentNullException(nameof(value));
             }
 
             /// <summary>
@@ -49,7 +84,7 @@ namespace UITManagerAgent.BasicInformation {
             /// </returns>
             public override string ToString() {
                 return "Disk name : " + _diskName + ", disk total size : " + _diskTotalSize +
-                       "Go, disk total free size : " + _diskFreeSize + "Go" + Environment.NewLine;
+                       "GB, disk total free size : " + _diskFreeSize + "GB" + Environment.NewLine;
             }
 
             /// <summary>
@@ -60,8 +95,10 @@ namespace UITManagerAgent.BasicInformation {
                 return JsonSerializer.Serialize(this);
             }
         }
+        
         private List<Disk> _disks = new List<Disk>();
         private int _numberDisk;
+        private string? _formatNumberDisk = "NUMBER";
 
         /// <summary>
         /// accessors of the list disks field
@@ -78,7 +115,7 @@ namespace UITManagerAgent.BasicInformation {
         /// A <see cref="string"/> representing the name of the first disk, 
         /// </returns>
         public String? GetFirstDiskName() {
-            return _disks.First().DisksName;
+            return _disks.First().DiskName;
         }
 
         /// <summary>
@@ -89,6 +126,16 @@ namespace UITManagerAgent.BasicInformation {
             set => _numberDisk = value;
         }
 
+        /// <summary>
+        /// Gets or sets the format of the number disk information
+        /// </summary>
+        /// <value>
+        /// A string representing the format of number disk information.
+        /// </value>
+        public string? FormatNumberDisk {
+            get => _formatNumberDisk;
+            set => _formatNumberDisk = value;
+        }
 
         /// <summary>
         /// Returns a formatted string representation of the disk information, 

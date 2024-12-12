@@ -30,7 +30,7 @@ public class MachineNameTest {
         if (_machineNameInformation != null) {
             _machineNameInformation.MachineName = "DESKTOP_AAAAAA";
             string json = _machineNameInformation.ToJson();
-            string expected = "{\"MachineName\":\"DESKTOP_AAAAAA\"}";
+            string expected = "{\"MachineName\":\"DESKTOP_AAAAAA\",\"Format\":\"TEXT\"}";
             StringAssert.Contains(expected, json);
         }
         else {
@@ -49,7 +49,7 @@ public class MachineNameTest {
             MachineNameCollector machineNameCollector = new();
             _machineNameInformation = (MachineNameInformation)machineNameCollector.Collect();
             string json = _machineNameInformation.ToJson();
-            string expected = $"{{\"MachineName\":\"{_machineNameInformation.MachineName}\"}}";
+            string expected = $"{{\"MachineName\":\"{_machineNameInformation.MachineName}\",\"Format\":\"TEXT\"}}";
             StringAssert.Contains(json, expected);
         }
     }

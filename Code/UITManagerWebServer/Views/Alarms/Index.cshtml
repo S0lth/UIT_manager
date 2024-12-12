@@ -9,7 +9,6 @@
 <form method="post" id="alarm-status-update">
     @Html.AntiForgeryToken()
 </form>
-<script src="js/AlarmeView.js"></script>
 
 @functions {
 
@@ -35,6 +34,21 @@
 }
 
 @functions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {
     string GetBGColorForAttribution(string? attribution)
     {
@@ -73,54 +87,53 @@
     }
 
 }
-
-<!--// host | model | status| severity | Alarm | Date | Attribution-->
-
+<div id="alert-container" class="p-0 m-0"></div>
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <div class="row mb-2 fixed">
         <div class="col-lg-12">
             <h1 class="h2 fw-bold me-3">Alarms</h1>
-
             <div class="d-flex justify-content-between ">
                 <div class=" align-items-center">
-
-
                     <div class="input-group" style="max-width: 400px;">
-
-
                         <div class="form-outline" data-mdb-input-init>
-                            <input type="search" id="Search" class="form-control" placeholder="Search..."/>
+                            <input type="search" id="Search" class="form-control"
+                                   placeholder="Search..."/>
                         </div>
                     </div>
                 </div>
 
                 <div class="d-flex align-items-center">
                     <span class="me-2 text-muted">Filtered by</span>
-                    <select id="filter" class="form-select" style="max-width: 150px;" onchange="redirectToSortOrder(this.value)">
-                        <option value="a">All</option>
-                        <option value="b">Assigned to me</option>
-                        <option value="c">Unassigned</option>
-                    </select>
+                    <form method="get" asp-action="Index" asp-controller="Alarms" class="d-flex align-items-center">
+                        <select asp-for="@ViewData["sortOrder"]" name="sortOrder" class="form-select">
+                            <
+                            <option value="all">All</option>
+                            <option value="assigned_to_me">Assigned to me</option>
+                            <option value="assigned">Assigned</option>
+                            <option value="unassigned">Unassigned</option>
+                            <option value="triggered_today">Trigerred today</option>
+                        </select>
 
+                        <button type="submit" class="btn btn-primary btn-sm ms-2">Filter</button>
+                        <a asp-action="Index" class="btn btn-secondary btn-sm ms-2">Reset</a>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-
     <div class="row justify-content-center">
         <div class="col-lg-12">
             <div class="card shadow-sm border-0 rounded">
                 <div class="card-body">
-                    <div >
-                        <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">    
+                    <div>
+                        <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
                             @if (Model.Count() == 0)
                             {
-                            <div class="list-group-item text-center">
-                                <div class="alert alert-secondary" role="alert">
-                                    this machine hasn't triggered any alarm yet
+                                <div class="list-group-item text-center">
+                                    <div class="alert alert-secondary" role="alert">
+                                        this machine hasn't triggered any alarm yet
+                                    </div>
                                 </div>
-                            </div>
                             }
                             else
                             {
@@ -130,19 +143,22 @@
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine") fix">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
                                                class="text-decoration-none text-dark ">
-                                                Host <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
+                                                Host <i
+                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Model")">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["ModelSortParam"]"
                                                class="text-decoration-none text-dark">
-                                                Model <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Model")"></i>
+                                                Model <i
+                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Model")"></i>
                                             </a>
                                         </th>
                                         <th class=" bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]"
                                                class="text-decoration-none text-dark">
-                                                Status <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
+                                                Status <i
+                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
@@ -166,113 +182,113 @@
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
                                                class="text-decoration-none text-dark">
-                                                Date <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
+                                                Date <i
+                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Attribution")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["AttributionSortParam"]"
+                                            <a asp-action="Index"
+                                               asp-route-sortOrder="@ViewData["AttributionSortParam"]"
                                                class="text-decoration-none text-dark">
-                                                Attribution <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Attribution")"></i>
+                                                Attribution <i
+                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Attribution")"></i>
                                             </a>
                                         </th>
                                     </tr>
                                     </thead>
-
-                                    <tbody >
-
+                                    <tbody>
                                     @foreach (var item in Model)
                                     {
                                         <tr>
                                             <td>
-                                                <a asp-controller="Machine" asp-action="Details" asp-route-id="@item.Machine.Id"
+                                                <a asp-controller="Machine" asp-action="Details"
+                                                   asp-route-id="@item.Machine.Id"
                                                    class="text-primary text-decoration-none">
                                                     @item.Machine.Name
                                                 </a>
                                             </td>
-
-
                                             <td class="text-secondary">
                                                 @item.Machine.Model
                                             </td>
                                             <td>
-                                                <select style="max-width: 300px "class="form-select form-select-sm"
+                                                <select style="max-width: 300px " class="form-select form-select-sm"
                                                         onchange="updateAlarmStatus(@item.Id, this.value)">
                                                     @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
                                                     {
                                                         @if (statusType.Name == @item.GetLatestAlarmHistory()
-                                                               ?.StatusType?.Name.ToString())
+                                                                     ?.StatusType?.Name.ToString())
                                                         {
-                                                            <option selected value="@statusType.Name">@statusType.Name </option>
+                                                            <option selected
+                                                                    value="@statusType.Name">@statusType.Name </option>
                                                         }
                                                         else
                                                         {
                                                             <option value="@statusType.Name">@statusType.Name</option>
                                                         }
 
-                                                        <option disabled class="text-secondary fst-italic fw-light" label="">@statusType.Description</option>
+                                                        <option disabled class="text-secondary fst-italic fw-light"
+                                                                label="">@statusType.Description</option>
                                                     }
                                                 </select>
                                             </td>
                                             <td class="@GetSeveryticolor(@item.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name)">@item.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name</td>
 
                                             <td class="text-secondary">
-                                                <a asp-action="Details"  asp-route-id="@item.Id" asp-route-idMachine ="@item.Machine.Id"
+                                                <a asp-action="Details" asp-route-id="@item.Id"
+                                                   asp-route-idMachine="@item.Machine.Id"
                                                    class="text-primary text-decoration-none">
                                                     @Html.DisplayFor(modelItem => item.NormGroup.Name)
                                                 </a>
                                             </td>
-
-
                                             <td class="text-secondary">
                                                 @Html.DisplayFor(modelItem => item.TriggeredAt)
                                             </td>
                                             <td>
-
                                                 @if (@User.IsInRole("Technician"))
                                                 {
                                                     if (@item.GetLatestAlarmHistory()?.User.FirstName == null)
                                                     {
                                                         <p clasx="text-secondary">Unattribued </p>
-
                                                     }
 
                                                     <p clasx="text-secondary">@item.GetLatestAlarmHistory()?.User.FirstName @item.GetLatestAlarmHistory()?.User.LastName </p>
                                                 }
                                                 else
                                                 {
-                                                    <select onchange="updateAlarmAttribution('@item.Id', value)" class="form-select form-select-sm @GetBGColorForAttribution(@item.GetLatestAlarmHistory()?.UserId)">
+                                                    <select onchange="updateAlarmAttribution('@item.Id', value)"
+                                                            class="form-select form-select-sm @GetBGColorForAttribution(@item.GetLatestAlarmHistory()?.UserId)">
                                                         @{ bool isFirst = true; }
-
-
                                                         @foreach (var user in ViewData["user"] as IEnumerable<UITManagerWebServer.Models.ApplicationUser>)
                                                         {
                                                             if (@user.Id == @item.UserId && isFirst == true)
                                                             {
                                                                 isFirst = false;
 
-                                                                <option selected value="@user.Id" > @user.FirstName @user.LastName</option>
+                                                                <option selected
+                                                                        value="@user.Id"> @user.FirstName @user.LastName</option>
                                                             }
                                                             else if (@item.GetLatestAlarmHistory()?.UserId == null && isFirst == true)
                                                             {
                                                                 isFirst = false;
-                                                                <option onclick="updateAlarmAttribution('@item.Id', '@user.Id')" selected value="">Unattribued</option>
+                                                                <option
+                                                                    onclick="updateAlarmAttribution('@item.Id', '@user.Id')"
+                                                                    selected value="">Unattribued
+                                                                </option>
                                                             }
                                                             else
                                                             {
-                                                                <option onclick="updateAlarmAttribution('@item.Id', '@user.Id')" value="@user.Id">@user.FirstName @user.LastName</option>
+                                                                <option
+                                                                    onclick="updateAlarmAttribution('@item.Id', '@user.Id')"
+                                                                    value="@user.Id">@user.FirstName @user.LastName</option>
                                                             }
                                                         }
                                                     </select>
                                                 }
-
-
                                             </td>
-
                                         </tr>
                                     }
                                     </tbody>
                                 </table>
-
                             }
                         </div>
                     </div>
@@ -282,12 +298,11 @@
     </div>
 </div>
 
-
 <script>
     function updateAlarmStatus(alarmId, status) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
         if (!token) {
-            alert('CSRF token is missing.');
+            showAlert('CSRF token is missing.', 'danger');
             return;
         }
 
@@ -297,27 +312,28 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': token
             },
-            body: JSON.stringify({ id: alarmId, status: status })
+            body: JSON.stringify({id: alarmId, status: status})
         }).then(response => {
-            if (!response.ok) {
-                alert('Error updating status.');
+            if (response.ok) {
+                showAlert('Status updated successfully!', 'success');
+            } else {
+                showAlert('Error updating status.', 'danger');
             }
         }).catch(error => {
-            alert('Network error updating status.');
+            showAlert('Network error updating status.', 'danger');
         });
     }
-
 
     async function updateAlarmAttribution(alarmId, userId) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
         if (!token) {
-            alert('CSRF token is missing.');
+            showAlert('CSRF token is missing.', 'danger');
             return;
         }
 
         if (!alarmId || !userId) {
-            alert('Invalid alarm or user ID.');
+            showAlert('Invalid alarm or user ID.', 'danger');
             return;
         }
 
@@ -326,62 +342,30 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token // Ajout du token pour la protection CSRF
+                    'X-CSRF-TOKEN': token
                 },
                 body: JSON.stringify({
-                    id: alarmId, // ID de l'alarme
-                    userId: userId // ID de l'utilisateur
+                    id: alarmId,
+                    userId: userId
                 })
             });
 
             if (response.ok) {
-                const result = await response.json();
+                showAlert('Attribution updated successfully!', 'success');
             } else {
-                alert('Error: Failed to update attribution. Status code: ' + response.status);
+                showAlert('Error: Failed to update attribution. Status code: ' + response.status, 'danger');
             }
         } catch (error) {
             console.error('Network or server error:', error);
-            alert('An error occurred while updating the attribution.');
+            showAlert('An error occurred while updating the attribution.', 'danger');
         }
     }
-    
 
 
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const savedValue = localStorage.getItem('selectedFilter'); 
-        if (savedValue) {
-            const selectElement = document.getElementById('filter');
-            if (selectElement) {
-                selectElement.value = savedValue; 
-            }
-        }
-    });
-
-    function saveSelection(value) {
-        localStorage.setItem('selectedFilter', value);
-    }
-
-
-
-    function redirectToSortOrder(sortOrder) {
-        saveSelection(sortOrder);
-        const url = `/Alarms/Index?sortOrder=${encodeURIComponent(sortOrder)}`;
-        window.location.href = url;
-    }
-
-
-    function handleSelectChange(selectElement) {
-        const selectedValue = selectElement.value;
-
-        const url = `/ControllerName/Index?sortOrder=${selectedValue}`; 
-        window.location.href = url;
-    }
 
     document.getElementById('Search').addEventListener('keyup', function () {
-        const searchValue = this.value.toLowerCase(); 
-        const tableRows = document.querySelectorAll('table tbody tr'); 
+        const searchValue = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll('table tbody tr');
 
         tableRows.forEach(row => {
             const cells = row.querySelectorAll('td');
@@ -389,11 +373,11 @@
 
             cells.forEach(cell => {
                 if (cell.textContent.toLowerCase().includes(searchValue)) {
-                    match = true; 
+                    match = true;
                 }
             });
 
-          
+
             if (match) {
                 row.style.display = '';
             } else {
@@ -401,4 +385,20 @@
             }
         });
     });
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alert-container');
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+        alertContainer.appendChild(alertDiv);
+
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+
 </script>

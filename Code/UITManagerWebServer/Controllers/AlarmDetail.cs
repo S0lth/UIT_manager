@@ -1,14 +1,9 @@
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
@@ -30,147 +25,167 @@ namespace UITManagerWebServer {
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
-        public async Task<IActionResult> Index(string SortOrder, int id, string solutionFilter) {
-            ViewData["SortOrder"] = SortOrder;
-            ViewData["date"] = SortOrder == "date" ? "date_desc" : "date";
-            ViewData["Note"] = SortOrder == "note" ? "note_desc" : "note";
+        public async Task<IActionResult> Index(string sortOrder, int id, string solutionFilter, string authorFilter,
+            string sortOrderNote) {
+            if (string.IsNullOrEmpty(sortOrder)) {
+                sortOrder = "date";
+            }
+
+            ViewData["SortOrder"] = sortOrder;
             ViewData["SolutionFilter"] = solutionFilter;
-            var users = _context.Users.ToList();
+            ViewData["AuthorFilter"] = authorFilter;
+            ViewData["SortOrderNote"] = sortOrderNote;
 
-            var alarm =  _context.Alarms
-                .Include(a => a.Machine) // Inclure les informations sur la machine
-                .Include(a => a.NormGroup) // Inclure le NormGroup
-                .Include(a => a.AlarmHistories) // Inclure les historiques d'alarme
-                .ThenInclude(aStatus => aStatus.StatusType) // Inclure les types de statut associés
-                .Include(a => a.NormGroup.SeverityHistories) // Inclure les historiques de sévérité
-                .ThenInclude(sh => sh.Severity) // Inclure les sévérités associées
-                .Include(a => a.User) // Inclure l'utilisateur lié à l'alarme
-                .FirstOrDefault(a => a.Id == id);
+            ViewData["NoteSortParm"] = sortOrder.Contains("note_desc") ? "note" : "note_desc";
+            ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
+            ViewData["TypeSortParm"] = sortOrder.Contains("type_desc") ? "type" : "type_desc";
+            ViewData["AuthorSortParm"] = sortOrder.Contains("author_desc") ? "author" : "author_desc";
 
-            var machineId = alarm?.Machine?.Id;
-            var alarmUsers = _context.Alarms
-                .Where(a => a.Id == id) // Filtre pour une alarme spfique
-                .Select(a => a.User) // Sélectionne uniquement l'utilisateur lié à l'alarme
-                .FirstOrDefault();
-            var notes = _context.Notes
-                .Include(note => note.Machine) // Inclut les machines associées
-                .Include(note => note.Author) // Inclut les informations de l'auteur, si applicable
-                .ToList();
-
-
-            notes = SortOrder switch {
-                "date" => notes.OrderBy(n => n.CreatedAt).ToList(),
-                "date_desc" => notes.OrderByDescending(n => n.CreatedAt).ToList(),
-                "note" => notes.OrderBy(n => n.Title).ToList(),
-                "note_desc" => notes.OrderByDescending(n => n.Title).ToList(),
-                _ => notes
-            };
-
-            notes = solutionFilter switch {
-                "true" => notes.Where(n => n.IsSolution).ToList(),
-                "false" => notes.Where(n => !n.IsSolution).ToList(),
-                _ => notes
-            };
-
-
-            var machine = await _context.Machines
-                .FirstOrDefaultAsync(m => m.Id == machineId);
-            var alarms = await getFilteredAlrms(SortOrder, machineId, "");
-            var information = await getMachineInformation(machineId);
-            var authors = ViewBag.Authors = await _context.Users.ToListAsync();
-            var detailView = new DetailViewModel() {
-                Id = machine.Id,
-                Name = machine.Name,
-                LastSeen = machine.LastSeen,
-                Model = machine.Model,
-                IsWorking = machine.IsWorking,
-                Notes = null,
-                Alarms = alarms,
-                Authors = authors,
-                Informations = information,
-                AnyAlarms = alarms.Any(),
-                AnyNote = notes.Any(),
-            };
-
-
+            var alarm = await getAlarm(id);
             if (alarm == null) {
                 return NotFound();
             }
 
+            var alarmCount = await _context.Alarms
+                .Where(a => a.MachineId == alarm.MachineId && a.NormGroupId == alarm.MachineId)
+                .CountAsync();
+
+            var alarmCountAll = await _context.Alarms
+                .Where(a => a.NormGroupId == alarm.NormGroupId)
+                .CountAsync();
+
             ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
-            ViewData["user"] = users;
-            ViewData["Machine"] = detailView;
+            ViewData["Alarm"] = alarm;
+            ViewData["user"] = _context.Users.ToList();
+            ViewData["AlarmCount"] = alarmCount;
+            ViewData["AlarmCountAll"] = alarmCountAll;
+
+
+            var notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
+
+            notes = ApplySorting(notes.AsQueryable(), sortOrder).ToList();
             ViewData["Notes"] = notes;
-            ViewData["techos"] = alarmUsers;
 
 
-            return View(alarm);
+            ViewData["Authors"] = ViewBag.Authors = await _context.Users.ToListAsync();
+
+            var triggeredInfoList = new List<dynamic>();
+            foreach (var norm in alarm.NormGroup.Norms) {
+                if (norm.InformationName != null) {
+                    var infoName = norm.InformationName.Name;
+                    var machineValue = alarm.Machine.GetInformationValueByName(infoName);
+
+                    if (!string.IsNullOrEmpty(machineValue)) {
+                        var triggeredInfo = new {
+                            InfoName = infoName,
+                            MachineValue = machineValue,
+                            NormValue = norm.Value,
+                            Condition = norm.Condition,
+                            Format = norm.Format
+                        };
+                        triggeredInfoList.Add(triggeredInfo);
+                    }
+                }
+            }
+
+            Console.WriteLine(triggeredInfoList.ToArray());
+
+            ViewData["TriggeredInfoValue"] = triggeredInfoList;
+
+            return View(ViewData.Model);
+        }
+
+        private IQueryable<Note> ApplySorting(IQueryable<Note> query, string sortOrder) {
+            switch (sortOrder) {
+                case "note_desc":
+                    return query.OrderByDescending(n => n.Title);
+                case "note":
+                    return query.OrderBy(n => n.Title);
+                case "date_desc":
+                    return query.OrderByDescending(n => n.CreatedAt);
+                case "date":
+                    return query.OrderBy(n => n.CreatedAt);
+                case "type_desc":
+                    return query.OrderByDescending(n => n.IsSolution);
+                case "type":
+                    return query.OrderBy(n => n.IsSolution);
+                case "author_desc":
+                    return query.OrderByDescending(n => n.Author.LastName);
+                case "author":
+                    return query.OrderBy(n => n.Author.LastName);
+                default:
+                    return query.OrderByDescending(n => n.CreatedAt);
+            }
         }
 
 
-        private async Task<List<InnerAlarmViewModel>> getFilteredAlrms(string sortOrder, int? id, string typeFilter) {
-            var alarmsQuery = _context.Alarms
+        public List<Information> FindMatchingInformations(int machineId, string informationName) {
+            var machine = _context.Machines
+                .Include(m => m.Informations) // Charger les informations de la machine
+                .FirstOrDefault(m => m.Id == machineId);
+
+            if (machine == null) {
+                return new List<Information>();
+            }
+
+            var matchingInformations = machine.Informations
+                .SelectMany(info => info.Children)
+                .Where(child =>
+                    child.Name.Equals(informationName, StringComparison.OrdinalIgnoreCase)) // Filtrer par nom
+                .ToList();
+
+            return matchingInformations;
+        }
+
+
+        private async Task<List<Note>> FetchFilteredNotes(string solutionFilter, string authorFilter,
+            string sortOrderNote) {
+            var notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
+
+            // Filtrer par type de solution si nécessaire
+            if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
+                bool isSolution = solutionFilter.ToLower() == "true";
+                notesQuery = notesQuery.Where(n => n.IsSolution == isSolution);
+            }
+
+            // Appliquer le tri des notes selon l'ordre spécifié
+            if (sortOrderNote == "ndate_desc") {
+                notesQuery = notesQuery.OrderByDescending(n => n.CreatedAt);
+            }
+            else if (sortOrderNote == "ndate") {
+                notesQuery = notesQuery.OrderBy(n => n.CreatedAt);
+            }
+
+            var notes = await notesQuery.ToListAsync();
+
+            // Filtrer par auteur si nécessaire
+            if (!string.IsNullOrEmpty(authorFilter)) {
+                notes = notes.Where(n => n.AuthorId == authorFilter).ToList();
+            }
+
+            return notes;
+        }
+
+        private async Task<Alarm> getAlarm(int id) {
+            var alarm = await _context.Alarms
                 .Include(a => a.Machine)
+                .ThenInclude(aa => aa.Informations)
+                .ThenInclude(i => i.Children)
                 .Include(a => a.NormGroup)
+                .ThenInclude(ng => ng.Norms)
+                .ThenInclude(norm => norm.InformationName)
+                .ThenInclude(infoName => infoName.SubInformationNames)
                 .Include(a => a.User)
-                .Include(a => a.AlarmHistories)
+                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))
                 .ThenInclude(aStatus => aStatus.StatusType)
                 .Include(a => a.NormGroup.SeverityHistories)
                 .ThenInclude(sh => sh.Severity)
-                .Where(a => a.MachineId == id)
-                .AsQueryable();
+                .Where(a => a.Id == id)
+                .FirstOrDefaultAsync();
 
-            if (typeFilter == "Resolved") {
-                alarmsQuery = alarmsQuery.Where(a =>
-                    a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name ==
-                    typeFilter);
-            }
-
-            if (typeFilter != "Resolved" && typeFilter != "All") {
-                alarmsQuery = alarmsQuery.Where(a =>
-                    a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name !=
-                    "Resolved");
-            }
-
-            alarmsQuery = ApplySorting(alarmsQuery, sortOrder);
-
-            var alarms = await alarmsQuery.ToListAsync();
-
-            return alarms.Select(a => new InnerAlarmViewModel {
-                MachineId = a.Machine.Id,
-                AlarmId = a.Id,
-                Status = a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault()?.StatusType.Name,
-                Severity = a.NormGroup.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()
-                    ?.Severity.Name,
-                AlarmGroupName = a.NormGroup.Name,
-                TriggeredAt = a.TriggeredAt,
-            }).ToList();
+            return alarm;
         }
 
-
-        private async Task<List<InnerComponentsViewModel>> getMachineInformation(int? id) {
-            var list = _context.Components.Where(a => a.MachinesId == id).AsQueryable();
-            var result = new List<InnerComponentsViewModel>();
-
-            // Parcourir la liste pour trouver les éléments sans parent (racines)
-            var rootElements = await list.Where(e => e.ParentId == null).ToListAsync();
-            var model = rootElements.Select(
-                a => new InnerComponentsViewModel {
-                    MachineId = a.Machine.Id,
-                    ParentId = a.ParentId,
-                    Name = a.Name,
-                    id = a.Id,
-                    Value = a.Values,
-                    Children = new List<InnerComponentsViewModel>()
-                }).ToList();
-
-            foreach (var root in model) {
-                var hierarchy = await BuildHierarchy(root, list.ToList());
-                result.Add(hierarchy);
-            }
-
-            return result;
-        }
 
         [HttpPost]
         [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
@@ -338,7 +353,8 @@ namespace UITManagerWebServer {
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
-            [Bind("Id,TriggeredAt,MachineId,NormGroupId,UserId")] Alarm alarm) {
+            [Bind("Id,TriggeredAt,MachineId,NormGroupId,UserId")]
+            Alarm alarm) {
             if (id != alarm.Id) {
                 return NotFound();
             }
@@ -444,84 +460,8 @@ namespace UITManagerWebServer {
                     return query.OrderByDescending(a => a.TriggeredAt);
             }
         }
-
-
-        private async Task<InnerComponentsViewModel> BuildHierarchy(InnerComponentsViewModel parent,
-            List<Information> list) {
-            var children = list.Where(e => e.ParentId == parent.id).ToList();
-
-            var parentViewModel = new InnerComponentsViewModel {
-                MachineId = parent.MachineId,
-                ParentId = parent.ParentId,
-                id = parent.id,
-                Name = parent.Name,
-                Value = parent.Value,
-                Children = new List<InnerComponentsViewModel>()
-            };
-
-            // Ajouter les enfants comme sous-éléments
-            foreach (var child in children) {
-                var info = new InnerComponentsViewModel {
-                    MachineId = child.Machine.Id,
-                    ParentId = child.ParentId,
-                    Name = child.Name,
-                    id = child.Id,
-                    Value = child.Values,
-                    Children = new List<InnerComponentsViewModel>()
-                };
-                var childHierarchy = await BuildHierarchy(info, list);
-                parentViewModel.Children.Add(childHierarchy);
-            }
-
-            return parentViewModel;
-        }
     }
 
-
-    public class InnerAlarmViewModel {
-        public int MachineId { get; set; }
-        public int AlarmId { get; set; }
-        public string Status { get; set; }
-        public string Severity { get; set; }
-        public string AlarmGroupName { get; set; }
-        public DateTime TriggeredAt { get; set; }
-    }
-
-    // ViewModel pour les notes
-    public class InnerNoteViewModel {
-        public string Author { get; set; }
-        public int MachineId { get; set; }
-        public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public bool IsSolution { get; set; }
-        public string Title { get; set; }
-    }
-
-    // viewModel pour les information d'une machine
-    public class InnerComponentsViewModel {
-        public int MachineId { get; set; }
-        public int? ParentId { get; set; }
-        public int id { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public List<InnerComponentsViewModel> Children { get; set; }
-    }
-
-    /*public class InnerDetailsViewModel {
-        public int? Id { get; set; }
-        public List<InnerAlarmViewModel> Alarms { get; set; }
-        public List<InnerNoteViewModel> Notes { get; set; }
-        public List<InnerComponentsViewModel> Informations { get; set; }
-        public List<ApplicationUser> Authors { get; set; }
-        public string Model { get; set; }
-        public string Name { get; set; }
-        public bool IsWorking { get; set; }
-        public DateTime? LastSeen { get; set; }
-        public bool AnyNote { get; set; }
-        public bool AnyAlarms { get; set; }
-
-    }
-    */
     public class UpdateStatusRequest {
         public int Id { get; set; }
         public string Status { get; set; }

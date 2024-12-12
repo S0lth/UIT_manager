@@ -12,31 +12,56 @@ public class UsersInformation : Information {
     private List<User> _usersList = new();
 
     public class User {
-        private string? _name;
-        private string? _scope;
+        private string? _userName;
+        private string? _formatName = "TEXT";
+        private string? _userScope;
+        private string? _formatScope = "TEXT";
         
         public User() {
         }
         
         public User(string? name, string? scope) {
-            _name = name;   
-            _scope = scope;
+            _userName = name;   
+            _userScope = scope;
         }
 
         /// <summary>
         /// accessors of th Name field
         /// </summary>
-        public string? Name {
-            get => _name;
-            set => _name = value;
+        public string? UserName {
+            get => _userName;
+            set => _userName = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the format of the username information
+        /// </summary>
+        /// <value>
+        /// A string representing the format of username.
+        /// </value>
+        public string? FormatName {
+            get => _formatName;
+            set => _formatName = value;
         }
 
         /// <summary>
         /// accessors of th Scope field
         /// </summary>
-        public string? Scope {
-            get => _scope;
-            set => _scope = value;
+        public string? UserScope {
+            get => _userScope;
+            set => _userScope = value;
+        }
+        
+        
+        /// <summary>
+        /// Gets or sets the format of the user scope information
+        /// </summary>
+        /// <value>
+        /// A string representing the format of user scope.
+        /// </value>
+        public string? FormatScope {
+            get => _formatScope;
+            set => _formatScope = value;
         }
         
         /// <summary>

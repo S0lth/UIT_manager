@@ -47,7 +47,7 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
             else if (tab == "newest") {
-                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, takeTop: 100, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
             }
             else if (tab == "overdue") {
                 selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, overdue: true, orderByDate: true);
@@ -55,13 +55,15 @@ namespace UITManagerWebServer.Controllers {
             else {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
-
+            
 
             var viewModel = new HomePageViewModel {
                 Notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote),
                 TotalMachines = await GetTotalMachines(),
                 MachinesWithActiveAlarms = await GetMachinesWithActiveAlarms(),
-                NormGroupAlarmsCount = await GetNormGroupAlarmsCount(),
+                AlarmsNotResolvedCount = await GetAlarmsNotResolvedCount(),
+                AlarmsTriggeredTodayCount = await GetAlarmsTriggeredTodayCount(),
+                SeverityAlarmsCount = await GetAlarmsBySeverity(),
                 AssignedOrNotAlarmCount = await GetAssignedOrNotAlarmCount(),
                 AlarmCountsBySiteAndSeverity = await FetchAlarmCountsBySiteAndSeverity(),
                 Alarms = selectedAlarms,
@@ -83,7 +85,7 @@ namespace UITManagerWebServer.Controllers {
             ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
 
 
-            ViewData["AlarmTypeOccurrences"] = JsonConvert.SerializeObject(viewModel.NormGroupAlarmsCount);
+            ViewData["SeverityAlarmsCount"] = JsonConvert.SerializeObject(viewModel.SeverityAlarmsCount);
 
             ViewData["AssignedOrNotAlarmCount"] = JsonConvert.SerializeObject(viewModel.AssignedOrNotAlarmCount);
 
@@ -240,17 +242,23 @@ namespace UITManagerWebServer.Controllers {
             return activeAlarms;
         }
 
-        private async Task<Dictionary<string, int>> GetNormGroupAlarmsCount() {
-            var normGroupCounts = await _context.Alarms
+        private async Task<Dictionary<string, int>> GetAlarmsBySeverity() {
+            var severityCounts = await _context.Alarms
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
-                    .FirstOrDefault().StatusType.Name != "Resolved")
-                .GroupBy(a => a.NormGroup.Name)
-                .Select(g => new { NormGroupName = g.Key, AlarmCount = g.Count() })
+                    .FirstOrDefault().StatusType.Name != "Resolved") 
+                .Select(a => new {
+                    Severity = a.NormGroup.SeverityHistories
+                        .OrderByDescending(sh => sh.UpdateDate)
+                        .FirstOrDefault().Severity.Name
+                })
+                .GroupBy(a => a.Severity)
+                .Select(g => new { Severity = g.Key, AlarmCount = g.Count() })
                 .ToListAsync();
-
-            return normGroupCounts.ToDictionary(g => g.NormGroupName, g => g.AlarmCount);
+        
+            return severityCounts.ToDictionary(g => g.Severity, g => g.AlarmCount);
         }
+
 
 
         private async Task<Dictionary<string, int>> GetAssignedOrNotAlarmCount() {
@@ -282,7 +290,7 @@ namespace UITManagerWebServer.Controllers {
             var groupedBySite = alarms
                 .GroupBy(a => {
                     var machineName = a.Machine.Name;
-                    var siteName = machineName.Split('-')[1];
+                    var siteName = machineName.Split('-')[0];
                     return siteName;
                 })
                 .ToList();
@@ -329,7 +337,7 @@ namespace UITManagerWebServer.Controllers {
                     selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
                     break;
                 case "newest":
-                    selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, takeTop: 100, orderByDate: true);
+                    selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
                     break;
                 case "overdue":
                     selectedAlarms =
@@ -341,6 +349,26 @@ namespace UITManagerWebServer.Controllers {
             }
 
             return PartialView("_AlarmsList", selectedAlarms);
+        }
+        
+        private async Task<int> GetAlarmsNotResolvedCount() {
+            var alarmsNotResolvedCount = await _context.Alarms
+                .Where(a => a.AlarmHistories
+                    .OrderByDescending(ah => ah.ModificationDate)
+                    .FirstOrDefault().StatusType.Name != "Resolved")
+                .CountAsync();
+
+            return alarmsNotResolvedCount;
+        }
+        
+        private async Task<int> GetAlarmsTriggeredTodayCount() {
+            var today = DateTime.UtcNow.Date;
+    
+            var alarmsTriggeredTodayCount = await _context.Alarms
+                .Where(a => a.TriggeredAt.Date == today)
+                .CountAsync();
+
+            return alarmsTriggeredTodayCount;
         }
 
         public async Task<IActionResult> GetAlarmCountsBySiteAndSeverity() {

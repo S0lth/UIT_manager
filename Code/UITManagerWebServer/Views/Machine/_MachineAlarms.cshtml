@@ -1,0 +1,224 @@
+﻿@using UITManagerWebServer.Controllers
+@model MachineController.DetailsViewModel
+@functions
+{
+    void GetSavedSortingAndFilterInfoExcept(string? name)
+    {
+        if (name != "sortOrder")
+        {
+            <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]"/>
+        }
+
+        if (name != "authorFilter")
+        {
+            <input type="hidden" name="authorFilter" value="@ViewData["AuthorFilter"]"/>
+        }
+
+        if (name != "solutionFilter")
+        {
+            <input type="hidden" name="solutionFilter" value="@ViewData["SolutionFilter"]"/>
+        }
+
+        if (name != "typeFilter")
+        {
+            <input type="hidden" name="typeFilter" value="@ViewData["TypeFilter"]"/>
+        }
+
+        if (name != "noteDateFilter")
+        {
+            <input type="hidden" name="noteDateFilter" value="@ViewData["SortOrderNote"]"/>
+        }
+        
+        <input type="hidden" name="id" value="@Model.Id"/>
+        
+    }
+    
+    string GetHeaderClass(string? currentSortOrder, string column)
+    {
+        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
+            return "bg-selected-header";
+        return string.Empty;
+    }
+
+
+    string GetSortIcon(string? currentSortOrder, string column)
+    {
+        if (currentSortOrder == column)
+        {
+            return "bi bi-sort-down";
+        }
+        else if (currentSortOrder == $"{column}_desc")
+        {
+            return "bi bi-sort-up";
+        }
+
+        return "bi bi-arrow-down-up";
+    }
+}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-3 d-flex justify-content-between align-items-center">
+            <span>Alarms</span>
+            <form method="get" class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start">
+                <div class="d-flex ms-auto flex-wrap">
+                    <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
+                        <span>Filter</span>
+                        <span class="ms-1">by</span>
+                    </div>
+                    <div class="dropdown me-2 mb-2 mb-md-0">
+                        <select asp-for="@ViewData["TypeFilter"]" name="TypeFilter"
+                                asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
+                                asp-for-sol="@ViewData["SolutionFilter"]"
+                                class="form-select form-select-sm"
+                                style="display: inline-block; min-width: 120px;" asp->
+                            <option value="" disabled selected>
+                                Type
+                            </option>
+
+                            <option value="All">
+                                All
+                            </option>
+
+                            <option value="InProgress">
+                                In progress
+                            </option>
+
+                            <option value="Resolved">
+                                Resolved
+                            </option>
+
+                            <option value="AssignedToMe">
+                                Assigned to me
+                            </option>
+
+                            <option value="Unassigned">
+                                Unassigned
+                            </option>
+                        </select>
+                        @{
+                            GetSavedSortingAndFilterInfoExcept(null);
+                        }
+                        </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Filter
+                        </button>
+                        <a href="@Url.Action("Details")" class="btn btn-secondary btn-sm">
+                            Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-hover table-striped table-bordered rounded">
+                <thead class="table-light sticky-top">
+                @if (Model.AnyAlarms)
+                {
+                    <tr>
+                        <!-- Status Column -->
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
+                            <a asp-action="Details"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]?.ToString()"
+                               asp-route-typeFilter="@ViewData["TypeFilter"]"
+                               asp-route-solutionFilter="@ViewData["SolutionFilter"]"
+                               asp-route-authorFilter="@ViewData["AuthorFilter"]"
+                               asp-route-noteDateFilter="@ViewData["SortOrderNote"]"
+                               class="text-decoration-none text-dark">
+                                Alarm
+                                <i
+                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
+                            </a>
+                        </th>
+
+                        <!-- Severity Column -->
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
+                            <a asp-action="Details"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["SeveritySortParam"]?.ToString()"
+                               asp-route-typeFilter="@ViewData["TypeFilter"]"
+                               asp-route-solutionFilter="@ViewData["SolutionFilter"]"
+                               asp-route-authorFilter="@ViewData["AuthorFilter"]"
+                               asp-route-noteDateFilter="@ViewData["SortOrderNote"]"
+
+                               class="text-decoration-none text-dark">
+                                Severity
+                                <i
+                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
+                            </a>
+                        </th>
+
+                        <!-- AlarmGroup Column -->
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
+                            <a asp-action="Details"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["StatusSortParam"]?.ToString()"
+                               asp-route-typeFilter="@ViewData["TypeFilter"]"
+                               asp-route-solutionFilter="@ViewData["SolutionFilter"]"
+                               asp-route-noteDateFilter="@ViewData["SortOrderNote"]"
+                               asp-route-authorFilter="@ViewData["AuthorFilter"]"
+                               class="text-decoration-none text-dark">
+                                Status
+                                <i
+                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
+                            </a>
+                        </th>
+
+                        <!-- Date Column -->
+                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
+                            <a asp-action="Details"
+                               asp-route-tab="@Context.Request.Query["tab"]"
+                               asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
+                               asp-route-typeFilter="@ViewData["TypeFilter"]"
+                               asp-route-solutionFilter="@ViewData["SolutionFilter"]"
+                               asp-route-authorFilter="@ViewData["AuthorFilter"]"
+                               asp-route-noteDateFilter="@ViewData["SortOrderNote"]"
+                               class="text-decoration-none text-dark">
+                                Date
+                                <i
+                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
+                            </a>
+                        </th>
+
+                    </tr>
+                }
+                </thead>
+
+
+                <tbody>
+                @if (Model.AnyAlarms)
+                {
+                    @foreach (var item in Model.Alarms)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="AlarmDetail" asp-action="Index"
+                                   asp-route-id="@item.AlarmId"
+                                   class="text-primary text-decoration-none">
+                                    @item.AlarmGroupName
+                                </a>
+                            </td>
+                            <td>@item.Severity</td>
+                            <td>@item.Status</td>
+                            
+                            <td>@item.TriggeredAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <div class="list-group-item text-center">
+                        <div class="alert alert-secondary" role="alert">
+                            this machine hasn't triggered any alarm yet
+                        </div>
+                    </div>
+                }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

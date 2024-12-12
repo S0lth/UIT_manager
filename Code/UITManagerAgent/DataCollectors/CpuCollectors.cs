@@ -21,7 +21,7 @@ public class CpuCollectors : DataCollector {
     public Information Collect() {
         CpuInformation cpu = new CpuInformation();
         try {
-            cpu.LogicalCpu = GetProcessorCount();
+            cpu.LogicalCore = GetProcessorCount();
             cpu.CoreCount = GetNumberOfCores();
             cpu.ClockSpeed = GetCurrentClockSpeed();
             cpu.Model = GetModelCPU();
