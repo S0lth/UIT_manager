@@ -80,25 +80,25 @@
                             <thead class="table-light">
                             <tr>
                                 <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]"
+                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]"
                                        class="text-decoration-none text-dark">
                                         Alarm Name <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "AlarmGroup")"></i>
                                     </a>
                                 </th>
                                 <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParm"]"
+                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParam"]"
                                        class="text-decoration-none text-dark">
                                         Severity <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Severity")"></i>
                                     </a>
                                 </th>
                                 <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Priority")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["PrioritySortParm"]"
+                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["PrioritySortParam"]"
                                        class="text-decoration-none text-dark">
                                         Priority <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Priority")"></i>
                                     </a>
                                 </th>
                                 <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "NbAlarm")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NbAlarmSortParm"]"
+                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["NbAlarmSortParam"]"
                                        class="text-decoration-none text-dark">
                                         Number Alarm
                                         <i
@@ -107,7 +107,7 @@
                                     </a>
                                 </th>
                                 <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Enable")">
-                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["EnableSortParm"]"
+                                    <a asp-action="Index" asp-route-sortOrder="@ViewData["EnableSortParam"]"
                                        class="text-decoration-none text-dark">
                                         Enable <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Enable")"></i>
                                     </a>

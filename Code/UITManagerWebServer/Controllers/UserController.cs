@@ -1,17 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
-namespace UITManagerWebServer.Controllers
-{
+namespace UITManagerWebServer.Controllers {
     public class UserController : Controller {
         private readonly ApplicationDbContext _context;
 
@@ -21,14 +14,13 @@ namespace UITManagerWebServer.Controllers
 
         [Authorize(Roles = "ITDirector")]
         public async Task<IActionResult> Index(string sortOrder) {
-
             var userRolesDb = _context.Users
                 .Select(user => new {
                     UserId = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
-                    StartDate = user.StartDate,  
+                    StartDate = user.StartDate,
                     EndDate = user.EndDate,
                     IsActivate = user.IsActivate,
                     Role = _context.UserRoles
@@ -40,8 +32,8 @@ namespace UITManagerWebServer.Controllers
                         .FirstOrDefault()
                 });
 
-            var users = new List<UserViewModel> ();
-            
+            List<UserViewModel> users = new List<UserViewModel>();
+
             foreach (var user in userRolesDb) {
                 users.Add(
                     new UserViewModel {
@@ -55,7 +47,7 @@ namespace UITManagerWebServer.Controllers
                     }
                 );
             }
-            
+
             ViewData["SortOrder"] = sortOrder;
 
             ViewData["FullNameSortParm"] = sortOrder == "FullName" ? "FullName_desc" : "FullName";
@@ -82,21 +74,21 @@ namespace UITManagerWebServer.Controllers
             });
             return View(users);
         }
-        
+
         [HttpPost]
         [Authorize(Roles = "ITDirector")]
-        public async Task<IActionResult> ToggleIsActive(string id, bool isActive,bool isCancel = false) {
-
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleIsActive(string id, bool isActive, bool isCancel = false) {
             if (isCancel) {
                 return RedirectToAction(nameof(Index));
             }
-            
-            var user = await _context.Users.FindAsync(id);
+
+            ApplicationUser? user = await _context.Users.FindAsync(id);
             if (user == null) {
                 return NotFound();
             }
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string? currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (currentUserId == id) {
                 return RedirectToAction(nameof(Index));
             }
@@ -115,10 +107,9 @@ namespace UITManagerWebServer.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
+        
         public class UserViewModel {
-            public string Id {get; set;}
+            public string Id { get; set; }
             public string FullName { get; set; }
             public string Email { get; set; }
             public DateTime StartDate { get; set; }
@@ -126,6 +117,5 @@ namespace UITManagerWebServer.Controllers
             public bool IsActivate { get; set; }
             public string Role { get; set; }
         }
-
     }
 }
