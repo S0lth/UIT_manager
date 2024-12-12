@@ -3,6 +3,7 @@ using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent;
+
 /// <summary>
 /// Global class that regroups all <see cref="Information"/> in a single List
 /// </summary>
@@ -62,5 +63,4 @@ public class MachineInformation{
         }
         return $"[{string.Join(",", json)}]";
     }
-
 }
