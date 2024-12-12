@@ -27,7 +27,6 @@ namespace UITManagerWebServer.Controllers
         // GET: Notes
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string search, bool? isSolution, string authorId, string sortOrder)
         {
             ViewData["Search"] = search;
@@ -115,7 +114,6 @@ namespace UITManagerWebServer.Controllers
         // GET: Notes/Details/5
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -170,7 +168,6 @@ namespace UITManagerWebServer.Controllers
         // GET: Notes/Edit/5
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -227,7 +224,6 @@ namespace UITManagerWebServer.Controllers
         // GET: Notes/Delete/5
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

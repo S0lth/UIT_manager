@@ -293,7 +293,6 @@ namespace UITManagerWebServer {
 
         // GET: AlarmDetail/Create
         [HttpGet]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public IActionResult Create() {
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id");
@@ -324,7 +323,6 @@ namespace UITManagerWebServer {
 
         // GET: AlarmDetail/Edit/5
         [HttpGet]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {

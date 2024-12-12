@@ -115,7 +115,6 @@ namespace UITManagerWebServer.Controllers {
         // GET: Machine/Details/5
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(int? id, string sortOrder, string solutionFilter, string authorFilter,
             string typeFilter, string? noteDateFilter) {
             Machine? machine = await _context.Machines
@@ -350,7 +349,6 @@ namespace UITManagerWebServer.Controllers {
         // GET: Machine/Create
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public IActionResult Create() {
             return View();
         }
@@ -374,7 +372,6 @@ namespace UITManagerWebServer.Controllers {
         // GET: Machine/Edit/5
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
@@ -422,7 +419,6 @@ namespace UITManagerWebServer.Controllers {
         // GET: Machine/Delete/5
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int? id) {
             if (id == null) {
                 return NotFound();

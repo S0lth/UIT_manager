@@ -318,7 +318,6 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult> GetFilteredNotes(string solutionFilter, string authorFilter,
             string sortOrderNote) {
             List<NoteViewModel> notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
@@ -327,7 +326,6 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpGet]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> GetFilteredAlarmsList(string tab, string sortOrder) {
             List<AlarmViewModel> selectedAlarms = new List<AlarmViewModel>();
 

@@ -162,8 +162,7 @@ namespace UITManagerWebServer.Controllers {
             return RedirectToAction("Edit", new { id = id });
         }
         
-        [HttpGet]
-        [ValidateAntiForgeryToken] 
+        [HttpGet] 
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Edit(int id) {
             NormGroup? normGroup = await _context.NormGroups
@@ -303,7 +302,6 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpGet]
-        [ValidateAntiForgeryToken] 
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Create() {
             ViewData["InformationsName"] = await _context
