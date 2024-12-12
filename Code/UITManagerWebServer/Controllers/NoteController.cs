@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
+using File = UITManagerWebServer.Models.File;
 
 namespace UITManagerWebServer.Controllers
 {
@@ -23,7 +25,9 @@ namespace UITManagerWebServer.Controllers
         }
 
         // GET: Notes
-        
+        [HttpGet]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(string search, bool? isSolution, string authorId, string sortOrder)
         {
             ViewData["Search"] = search;
@@ -44,7 +48,7 @@ namespace UITManagerWebServer.Controllers
             ViewData["AuthorSortParm"] = sortOrder == "author" ? "author_desc" : "author";
             ViewData["IsSolutionSortParm"] = sortOrder == "issolution" ? "issolution_desc" : "issolution";
 
-            var notesQuery = _context.Notes.Include(n => n.Author).Include(n => n.Machine).AsQueryable();
+            IQueryable<Note> notesQuery = _context.Notes.Include(n => n.Author).Include(n => n.Machine).AsQueryable();
             
             if (!string.IsNullOrEmpty(search))
             {
@@ -103,12 +107,15 @@ namespace UITManagerWebServer.Controllers
                     break;
             }
 
-            var notes = await notesQuery.ToListAsync();
+            List<Note> notes = await notesQuery.ToListAsync();
 
             return View(notes);
         }
 
         // GET: Notes/Details/5
+        [HttpGet]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -116,7 +123,7 @@ namespace UITManagerWebServer.Controllers
                 return NotFound();
             }
             
-            var note = await _context.Notes
+            Note? note = await _context.Notes
                 .Include(n => n.Author)
                 .Include(n => n.Machine)
                 .Include(n => n.Files)
@@ -126,9 +133,9 @@ namespace UITManagerWebServer.Controllers
                 return NotFound();
             }
             
-            foreach (var file in note.Files)
+            foreach (File file in note.Files)
             {
-                var fileUrl = $"{Request.Scheme}://{Request.Host}/files/{file.Id}";
+                string fileUrl = $"{Request.Scheme}://{Request.Host}/files/{file.Id}";
                 note.Content = note.Content.Replace($"({file.FileName})", $"({fileUrl})");
             }
 
@@ -145,6 +152,7 @@ namespace UITManagerWebServer.Controllers
 
         // POST: Notes/Create
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Content,CreatedAt,AuthorId,MachineId,IsSolution")] Note note)
         {
@@ -160,6 +168,9 @@ namespace UITManagerWebServer.Controllers
         }
 
         // GET: Notes/Edit/5
+        [HttpGet]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -167,7 +178,7 @@ namespace UITManagerWebServer.Controllers
                 return NotFound();
             }
 
-            var note = await _context.Notes.FindAsync(id);
+            Note? note = await _context.Notes.FindAsync(id);
             if (note == null)
             {
                 return NotFound();
@@ -179,6 +190,7 @@ namespace UITManagerWebServer.Controllers
 
         // POST: Notes/Edit/5
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Content,CreatedAt,AuthorId,MachineId,IsSolution")] Note note)
         {
@@ -213,6 +225,9 @@ namespace UITManagerWebServer.Controllers
         }
 
         // GET: Notes/Delete/5
+        [HttpGet]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -220,7 +235,7 @@ namespace UITManagerWebServer.Controllers
                 return NotFound();
             }
 
-            var note = await _context.Notes
+            Note? note = await _context.Notes
                 .Include(n => n.Author)
                 .Include(n => n.Machine)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -234,10 +249,11 @@ namespace UITManagerWebServer.Controllers
 
         // POST: Notes/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var note = await _context.Notes.FindAsync(id);
+            Note? note = await _context.Notes.FindAsync(id);
             if (note != null)
             {
                 _context.Notes.Remove(note);
