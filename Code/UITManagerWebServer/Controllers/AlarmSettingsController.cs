@@ -161,8 +161,7 @@ namespace UITManagerWebServer.Controllers {
 
             return RedirectToAction("Edit", new { id = id });
         }
-
-
+        
         [HttpGet]
         [ValidateAntiForgeryToken] 
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
