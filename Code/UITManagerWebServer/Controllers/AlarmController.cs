@@ -231,10 +231,11 @@ namespace UITManagerWebServer.Controllers {
 
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Alarm alarm) {
             if (ModelState.IsValid) {
-                var newStatusType = _context.AlarmStatusTypes
+                AlarmStatusType? newStatusType = _context.AlarmStatusTypes
                     .FirstOrDefault(s => s.Name == "New");
 
                 if (newStatusType == null) {
@@ -242,9 +243,8 @@ namespace UITManagerWebServer.Controllers {
                     return View(alarm);
                 }
 
-                var alarmHistory = new AlarmStatusHistory {
+                AlarmStatusHistory alarmHistory = new AlarmStatusHistory {
                     StatusTypeId = newStatusType.Id, ModificationDate = DateTime.Now,
-                    // UserId = null              
                 };
                 alarm.AddAlarmHistory(alarmHistory);
 
