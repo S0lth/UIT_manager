@@ -19,6 +19,7 @@ public class FileController : Controller {
 
     [HttpGet("/files/{fileId}")]
     [Authorize]
+    [ValidateAntiForgeryToken]
     public IActionResult GetFile(int fileId) {
         File? file = _context.Files.FirstOrDefault(f => f.Id == fileId);
 

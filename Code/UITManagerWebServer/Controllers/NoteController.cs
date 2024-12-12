@@ -23,6 +23,7 @@ namespace UITManagerWebServer.Controllers
         }
 
         // GET: Notes
+        
         public async Task<IActionResult> Index(string search, bool? isSolution, string authorId, string sortOrder)
         {
             ViewData["Search"] = search;

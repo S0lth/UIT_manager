@@ -12,8 +12,7 @@ namespace UITManagerWebServer.Controllers {
     public class AlarmController : Controller {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-
-
+        
         public AlarmController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
             _userManager = userManager;
@@ -138,8 +137,7 @@ namespace UITManagerWebServer.Controllers {
 
             return View(await alarms.ToListAsync());
         }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken] 
         [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
@@ -180,8 +178,7 @@ namespace UITManagerWebServer.Controllers {
                 return StatusCode(500, new { success = false, message = "An error occurred while updating status." });
             }
         }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken] 
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
@@ -230,10 +227,10 @@ namespace UITManagerWebServer.Controllers {
                     });
             }
         }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult Create(Alarm alarm) {
             if (ModelState.IsValid) {
                 AlarmStatusType? newStatusType = _context.AlarmStatusTypes

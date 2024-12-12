@@ -1,15 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
@@ -17,12 +10,10 @@ namespace UITManagerWebServer.Controllers {
     public class MachineController : Controller {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-
-
+        
         public MachineController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
             _userManager = userManager;
-
         }
 
         public override void OnActionExecuting(ActionExecutingContext context) {
@@ -72,7 +63,7 @@ namespace UITManagerWebServer.Controllers {
             
             if (!string.IsNullOrEmpty(search)) {
                 string searchLower = search.ToLower();
-                var machinesList = await machinesQuery.ToListAsync();
+                List<Machine> machinesList = await machinesQuery.ToListAsync();
                 machinesList = machinesList.Where(m =>
                     m.Name.ToLower().Contains(searchLower) ||
                     m.Model.ToLower().Contains(searchLower) ||
@@ -82,7 +73,6 @@ namespace UITManagerWebServer.Controllers {
                     m.GetOsVersion().ToLower().Contains(searchLower)
                 ).ToList();
             }
-
             
             List<Machine> machines = await machinesQuery.ToListAsync();
 
@@ -122,18 +112,20 @@ namespace UITManagerWebServer.Controllers {
             return View(machineViewModels.ToList());
         }
 
-        [Authorize]
         // GET: Machine/Details/5
+        [HttpGet]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Details(int? id, string sortOrder, string solutionFilter, string authorFilter,
             string typeFilter, string? noteDateFilter) {
-            var machine = await _context.Machines
+            Machine? machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            var notes = await getFilteredNotes(sortOrder, solutionFilter, authorFilter, id);
-            var alarms = await getFilteredAlarms(sortOrder, id, typeFilter);
-            var information = await GetMachineInformation(id);
-            var authors = ViewBag.Authors = await _context.Users.ToListAsync();
-            var detailView = new DetailsViewModel {
+            List<NoteViewModel> notes = await getFilteredNotes(sortOrder, solutionFilter, authorFilter, id);
+            List<AlarmViewModel> alarms = await getFilteredAlarms(sortOrder, id, typeFilter);
+            List<ComponentsViewModel> information = await GetMachineInformation(id);
+            dynamic authors = ViewBag.Authors = await _context.Users.ToListAsync();
+            DetailsViewModel detailView = new DetailsViewModel {
                 Id = machine.Id,
                 Name = machine.Name,
                 LastSeen = machine.LastSeen,
@@ -166,6 +158,7 @@ namespace UITManagerWebServer.Controllers {
             return View(detailView);
         }
         
+        [Authorize]
         public async Task<IActionResult> ChangeWorking(int id, string sortOrder, string solutionFilter, 
             string authorFilter, string typeFilter, string? noteDateFilter) {
             Machine? machine = await _context.Machines.FindAsync(id);
@@ -179,12 +172,11 @@ namespace UITManagerWebServer.Controllers {
         }
 
         private async Task<List<ComponentsViewModel>> GetMachineInformation(int? id) {
-            var list = _context.Components.Where(a => a.MachinesId == id).AsQueryable();
-            var result = new List<ComponentsViewModel>();
-
-            // Parcourir la liste pour trouver les éléments sans parent (racines)
-            var rootElements = await list.Where(e => e.ParentId == null).ToListAsync();
-            var model = rootElements.Select(
+            IQueryable<Information> list = _context.Components.Where(a => a.MachinesId == id).AsQueryable();
+            List<ComponentsViewModel> result = new List<ComponentsViewModel>();
+            
+            List<Information> rootElements = await list.Where(e => e.ParentId == null).ToListAsync();
+            List<ComponentsViewModel> model = rootElements.Select(
                 a => new ComponentsViewModel {
                     MachineId = a.Machine.Id,
                     ParentId = a.ParentId,
@@ -195,8 +187,8 @@ namespace UITManagerWebServer.Controllers {
                     Children = new List<ComponentsViewModel>()
                 }).ToList();
 
-            foreach (var root in model) {
-                var hierarchy = await BuildHierarchy(root, list.ToList());
+            foreach (ComponentsViewModel root in model) {
+                ComponentsViewModel hierarchy = await BuildHierarchy(root, list.ToList());
                 result.Add(hierarchy);
             }
 
@@ -204,9 +196,9 @@ namespace UITManagerWebServer.Controllers {
         }
 
         private async Task<ComponentsViewModel> BuildHierarchy(ComponentsViewModel parent, List<Information> list) {
-            var children = list.Where(e => e.ParentId == parent.id).ToList();
+            List<Information> children = list.Where(e => e.ParentId == parent.id).ToList();
 
-            var parentViewModel = new ComponentsViewModel {
+            ComponentsViewModel parentViewModel = new ComponentsViewModel {
                 MachineId = parent.MachineId,
                 ParentId = parent.ParentId,
                 id = parent.id,
@@ -216,9 +208,8 @@ namespace UITManagerWebServer.Controllers {
                 Children = new List<ComponentsViewModel>()
             };
 
-            // Ajouter les enfants comme sous-éléments
-            foreach (var child in children) {
-                var info = new ComponentsViewModel {
+            foreach (Information child in children) {
+                ComponentsViewModel info = new ComponentsViewModel {
                     MachineId = child.Machine.Id,
                     ParentId = child.ParentId,
                     Name = child.Name,
@@ -227,7 +218,7 @@ namespace UITManagerWebServer.Controllers {
                     Format = child.Format,
                     Children = new List<ComponentsViewModel>()
                 };
-                var childHierarchy = await BuildHierarchy(info, list);
+                ComponentsViewModel childHierarchy = await BuildHierarchy(info, list);
                 parentViewModel.Children.Add(childHierarchy);
             }
 
@@ -235,7 +226,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         private async Task<List<AlarmViewModel>> getFilteredAlarms(string sortOrder, int? id, string typeFilter) {
-            var alarmsQuery = _context.Alarms
+            IQueryable<Alarm> alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.User)
@@ -246,7 +237,7 @@ namespace UITManagerWebServer.Controllers {
                 .Where(a => a.MachineId == id)
                 .AsQueryable();
 
-            var user = _userManager.GetUserAsync(User).Result.Id;
+            string user = _userManager.GetUserAsync(User).Result.Id;
             if (typeFilter == "Resolved") {
                 alarmsQuery = alarmsQuery.Where(a =>
                     a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name ==
@@ -263,7 +254,7 @@ namespace UITManagerWebServer.Controllers {
 
             alarmsQuery = ApplySorting(alarmsQuery, sortOrder);
 
-            var alarms = await alarmsQuery.ToListAsync();
+            List<Alarm> alarms = await alarmsQuery.ToListAsync();
 
             return alarms.Select(a => new AlarmViewModel {
                 MachineId = a.Machine.Id,
@@ -280,6 +271,7 @@ namespace UITManagerWebServer.Controllers {
             if (string.IsNullOrEmpty(sortOrder)) {
                 return query.OrderByDescending(a => a.TriggeredAt);
             }
+
             switch (sortOrder.ToLower()) {
                 case "machine_desc":
                     return query.OrderByDescending(a => a.Machine.Name);
@@ -322,12 +314,9 @@ namespace UITManagerWebServer.Controllers {
             }
         }
 
-        
-        
-
         private async Task<List<NoteViewModel>> getFilteredNotes(string sortOrder, string solutionFilter,
             string authorFilter, int? id) {
-            var notesQuery = _context.Notes.Include(n => n.Author).Where(n => n.MachineId == id).AsQueryable();
+            IQueryable<Note> notesQuery = _context.Notes.Include(n => n.Author).Where(n => n.MachineId == id).AsQueryable();
 
             if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
                 bool isSolution = solutionFilter.ToLower() == "true";
@@ -341,7 +330,7 @@ namespace UITManagerWebServer.Controllers {
                 notesQuery = notesQuery.OrderBy(n => n.CreatedAt);
             }
 
-            var notes = await notesQuery.ToListAsync();
+            List<Note> notes = await notesQuery.ToListAsync();
 
             if (!string.IsNullOrEmpty(authorFilter) && authorFilter != "all") {
                 notes = notes.Where(n =>
@@ -359,6 +348,9 @@ namespace UITManagerWebServer.Controllers {
         }
 
         // GET: Machine/Create
+        [HttpGet]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public IActionResult Create() {
             return View();
         }
@@ -367,6 +359,7 @@ namespace UITManagerWebServer.Controllers {
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,IsWorking,Model,LastSeen")] Machine machine) {
             if (ModelState.IsValid) {
@@ -379,12 +372,15 @@ namespace UITManagerWebServer.Controllers {
         }
 
         // GET: Machine/Edit/5
+        [HttpGet]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
             }
 
-            var machine = await _context.Machines.FindAsync(id);
+            Machine? machine = await _context.Machines.FindAsync(id);
             if (machine == null) {
                 return NotFound();
             }
@@ -396,6 +392,7 @@ namespace UITManagerWebServer.Controllers {
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IsWorking,Model,LastSeen")] Machine machine) {
             if (id != machine.Id) {
@@ -423,12 +420,15 @@ namespace UITManagerWebServer.Controllers {
         }
 
         // GET: Machine/Delete/5
+        [HttpGet]
+        [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int? id) {
             if (id == null) {
                 return NotFound();
             }
 
-            var machine = await _context.Machines
+            Machine? machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (machine == null) {
                 return NotFound();
@@ -439,9 +439,10 @@ namespace UITManagerWebServer.Controllers {
 
         // POST: Machine/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            var machine = await _context.Machines.FindAsync(id);
+            Machine? machine = await _context.Machines.FindAsync(id);
             if (machine != null) {
                 _context.Machines.Remove(machine);
             }
@@ -453,8 +454,7 @@ namespace UITManagerWebServer.Controllers {
         private bool MachineExists(int id) {
             return _context.Machines.Any(e => e.Id == id);
         }
-
-
+        
         public class AlarmViewModel {
             public int MachineId { get; set; }
             public int AlarmId { get; set; }
@@ -464,7 +464,6 @@ namespace UITManagerWebServer.Controllers {
             public DateTime TriggeredAt { get; set; }
         }
 
-        // ViewModel pour les notes
         public class NoteViewModel {
             public string Author { get; set; }
             public int MachineId { get; set; }
@@ -474,7 +473,6 @@ namespace UITManagerWebServer.Controllers {
             public string Title { get; set; }
         }
 
-        // viewModel pour les information d'une machine
         public class ComponentsViewModel {
             public int MachineId { get; set; }
             public int? ParentId { get; set; }

@@ -119,6 +119,7 @@ namespace UITManagerWebServer {
             }
         }
         
+        [Authorize]
         public List<Information> FindMatchingInformations(int machineId, string informationName) {
             Machine? machine = _context.Machines
                 .Include(m => m.Informations)
@@ -222,8 +223,7 @@ namespace UITManagerWebServer {
                 return StatusCode(500, new { success = false, message = "An error occurred while updating status." });
             }
         }
-
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken] 
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
@@ -292,6 +292,9 @@ namespace UITManagerWebServer {
         }
 
         // GET: AlarmDetail/Create
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public IActionResult Create() {
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id");
             ViewData["NormGroupId"] = new SelectList(_context.NormGroups, "Id", "Id");
@@ -320,6 +323,9 @@ namespace UITManagerWebServer {
 
 
         // GET: AlarmDetail/Edit/5
+        [HttpGet]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
@@ -373,6 +379,9 @@ namespace UITManagerWebServer {
         }
 
         // GET: AlarmDetail/Delete/5
+        [HttpGet, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public async Task<IActionResult> Delete(int? id) {
             if (id == null) {
                 return NotFound();
@@ -407,8 +416,7 @@ namespace UITManagerWebServer {
         private bool AlarmExists(int id) {
             return _context.Alarms.Any(e => e.Id == id);
         }
-
-
+        
         private IQueryable<Alarm> ApplySorting(IQueryable<Alarm> query, string sortOrder) {
             if (string.IsNullOrEmpty(sortOrder)) {
                 return query.OrderByDescending(a => a.TriggeredAt);

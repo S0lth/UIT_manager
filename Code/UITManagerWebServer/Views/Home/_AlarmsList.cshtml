@@ -73,7 +73,7 @@
                         <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["MachineSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
@@ -85,7 +85,7 @@
                         <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "model")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["ModelSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["ModelSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
@@ -97,7 +97,7 @@
                         <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["StatusSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
@@ -109,7 +109,7 @@
                         <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["SeveritySortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
@@ -121,7 +121,7 @@
                         <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
@@ -133,7 +133,7 @@
                         <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
