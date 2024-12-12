@@ -31,5 +31,6 @@
     <ItemGroup>
       <Folder Include="Areas\" />
       <Folder Include="Images\" />
+      <Folder Include="Migrations\" />
     </ItemGroup>
 </Project>

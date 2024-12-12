@@ -2,7 +2,7 @@
 @model IEnumerable<UITManagerWebServer.Models.Alarm>
 
 @{
-    ViewData["Title"] = "Alarms";
+    ViewData["Title"] = "Alarm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -33,23 +33,7 @@
 
 }
 
-@functions
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{
+@functions {
     string GetBGColorForAttribution(string? attribution)
     {
         return attribution == null ? "bg-danger text-white" : "bg-success text-white";
@@ -87,11 +71,12 @@
     }
 
 }
+
 <div id="alert-container" class="p-0 m-0"></div>
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <div class="row mb-2 fixed">
         <div class="col-lg-12">
-            <h1 class="h2 fw-bold me-3">Alarms</h1>
+            <h1 class="h2 fw-bold me-3">Alarm</h1>
             <div class="d-flex justify-content-between ">
                 <div class=" align-items-center">
                     <div class="input-group" style="max-width: 400px;">
@@ -104,14 +89,14 @@
 
                 <div class="d-flex align-items-center">
                     <span class="me-2 text-muted">Filtered by</span>
-                    <form method="get" asp-action="Index" asp-controller="Alarms" class="d-flex align-items-center">
+                    <form method="get" asp-action="Index" asp-controller="Alarm" class="d-flex align-items-center">
                         <select asp-for="@ViewData["sortOrder"]" name="sortOrder" class="form-select">
                             <
                             <option value="all">All</option>
                             <option value="assigned_to_me">Assigned to me</option>
                             <option value="assigned">Assigned</option>
                             <option value="unassigned">Unassigned</option>
-                            <option value="triggered_today">Trigerred today</option>
+                            <option value="triggered_today">Trigered today</option>
                         </select>
 
                         <button type="submit" class="btn btn-primary btn-sm ms-2">Filter</button>
@@ -131,7 +116,7 @@
                             {
                                 <div class="list-group-item text-center">
                                     <div class="alert alert-secondary" role="alert">
-                                        this machine hasn't triggered any alarm yet
+                                        this machine hasn't triggered any alarms yet
                                     </div>
                                 </div>
                             }
@@ -306,7 +291,7 @@
             return;
         }
 
-        fetch(`/Alarms/UpdateStatus`, {
+        fetch(`/Alarm/UpdateStatus`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -338,7 +323,7 @@
         }
 
         try {
-            const response = await fetch('/Alarms/Attribution', {
+            const response = await fetch('/Alarm/Attribution', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -360,7 +345,6 @@
             showAlert('An error occurred while updating the attribution.', 'danger');
         }
     }
-
 
 
     document.getElementById('Search').addEventListener('keyup', function () {
@@ -385,6 +369,7 @@
             }
         });
     });
+
     function showAlert(message, type) {
         const alertContainer = document.getElementById('alert-container');
 

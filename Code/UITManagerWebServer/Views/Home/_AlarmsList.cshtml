@@ -1,19 +1,19 @@
 @model List<UITManagerWebServer.Models.ModelsView.AlarmViewModel>
 
 @{
-    string pageTitle = "Alarms"; 
+    string pageTitle = "Alarm"; 
 
     if (Context.Request.Query["tab"] == "unprocessed")
     {
-        pageTitle = "Unprocessed Alarms";
+        pageTitle = "Unprocessed Alarm";
     }
     else if (Context.Request.Query["tab"] == "newest")
     {
-        pageTitle = "Newest Alarms";
+        pageTitle = "Newest Alarm";
     }
     else if (Context.Request.Query["tab"] == "overdue")
     {
-        pageTitle = "Alarms Exceeding Estimated Processing Time";
+        pageTitle = "Alarm Exceeding Estimated Processing Time";
     }
 }
 

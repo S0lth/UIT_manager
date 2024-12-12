@@ -61,7 +61,7 @@
 
             Value? osVersion = osComponent?.Children?
                 .OfType<Value>()
-                .FirstOrDefault(v => v.Name == "Os Version");
+                .FirstOrDefault(v => v.Name == "OS Version");
 
             return osVersion?.Value;
         }
@@ -77,7 +77,7 @@
 
             Value? osBuild = osComponent?.Children?
                 .OfType<Value>()
-                .FirstOrDefault(v => v.Name == "Os Build");
+                .FirstOrDefault(v => v.Name == "OS Build");
 
             return osBuild?.Value;
         }

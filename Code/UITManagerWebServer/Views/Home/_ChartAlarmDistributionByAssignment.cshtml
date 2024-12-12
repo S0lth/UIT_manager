@@ -3,7 +3,7 @@
 <div class="card mb-4">
     <div class="card-body">
         <h5 class="card-title">
-            Assigned Alarms
+            Assigned Alarm
             <button type="button" class="btn btn-link" data-bs-toggle="modal"
                     data-bs-target="#chart1Modal">
                 <i class="bi bi-info-circle"></i>
@@ -63,7 +63,7 @@
                             },
                             title: {
                                 display: false,
-                                text: 'Alarms Distribution by Assignment'
+                                text: 'Alarm Distribution by Assignment'
                             }
                         },
                         scales: {
@@ -78,7 +78,7 @@
                         const index = elements[0].index;
                         const label = labels_assign[index];
                         const sortOrder = label.toLowerCase();
-                        window.location.href = `/Alarms?sortOrder=${sortOrder}`;
+                        window.location.href = `/Alarm?sortOrder=${sortOrder}`;
                     }
                 };
             }
