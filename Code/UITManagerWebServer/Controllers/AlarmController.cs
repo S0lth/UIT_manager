@@ -30,21 +30,20 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [Authorize]
-        [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string search) {
             ViewData["SortOrder"] = sortOrder;
-            ViewData["MachineSortParm"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
-            ViewData["StatusSortParm"] = sortOrder == "Status" ? "Status_desc" : "Status";
-            ViewData["SeveritySortParm"] = sortOrder == "Severity" ? "Severity_desc" : "Severity";
-            ViewData["AlarmGroupSortParm"] = sortOrder == "AlarmGroup" ? "AlarmGroup_desc" : "AlarmGroup";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "Date_desc" : "Date";
+            ViewData["MachineSortParam"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
+            ViewData["StatusSortParam"] = sortOrder == "Status" ? "Status_desc" : "Status";
+            ViewData["SeveritySortParam"] = sortOrder == "Severity" ? "Severity_desc" : "Severity";
+            ViewData["AlarmGroupSortParam"] = sortOrder == "AlarmGroup" ? "AlarmGroup_desc" : "AlarmGroup";
+            ViewData["DateSortParam"] = sortOrder == "Date" ? "Date_desc" : "Date";
             ViewData["ModelSortParam"] = sortOrder == "Model" ? "Model_desc" : "Model";
             ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
 
-            var users = _context.Users.ToList();
-            var user = await _userManager.GetUserAsync(User);
+            List<ApplicationUser> users = _context.Users.ToList();
+            ApplicationUser? user = await _userManager.GetUserAsync(User);
 
-            var alarms = _context.Alarms
+            IQueryable<Alarm> alarms = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmHistories)
@@ -58,7 +57,7 @@ namespace UITManagerWebServer.Controllers {
                     .Select(h => h.StatusType.Name)
                     .FirstOrDefault() != "Resolved");
 
-            if (!String.IsNullOrEmpty(search)) {
+            if (!string.IsNullOrEmpty(search)) {
                 string[] searchTerms = search.ToLower().Split(',');
 
                 alarms = alarms.Where(a =>
@@ -153,7 +152,7 @@ namespace UITManagerWebServer.Controllers {
                 return BadRequest(new { success = false, message = "Invalid data." });
             }
 
-            var alarm = await _context.Alarms
+            Alarm? alarm = await _context.Alarms
                 .Include(a => a.AlarmHistories)
                 .FirstOrDefaultAsync(a => a.Id == request.Id);
 
@@ -161,14 +160,14 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound(new { success = false, message = "Alarm not found." });
             }
 
-            var statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
+            AlarmStatusType? statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
             if (statusType == null) {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
 
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var newAlarmHistory = new AlarmStatusHistory {
+            AlarmStatusHistory newAlarmHistory = new AlarmStatusHistory {
                 StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, UserId = userId
             };
 
@@ -195,7 +194,7 @@ namespace UITManagerWebServer.Controllers {
             }
 
             try {
-                var alarm = await _context.Alarms
+                Alarm? alarm = await _context.Alarms
                     .Include(a => a.Machine)
                     .Include(a => a.NormGroup)
                     .FirstOrDefaultAsync(a => a.Id.ToString() == request.Id);
@@ -204,14 +203,14 @@ namespace UITManagerWebServer.Controllers {
                     return NotFound(new { success = false, message = "Alarm not found." });
                 }
 
-                var user = await _userManager.FindByIdAsync(request.UserId);
+                ApplicationUser? user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null) {
                     return NotFound(new { success = false, message = "User not found." });
                 }
 
                 alarm.UserId = request.UserId;
 
-                var alarmStatusHistory = new AlarmStatusHistory {
+                AlarmStatusHistory alarmStatusHistory = new AlarmStatusHistory {
                     AlarmId = alarm.Id,
                     StatusType =
                         await _context.AlarmStatusTypes.FirstOrDefaultAsync(s =>

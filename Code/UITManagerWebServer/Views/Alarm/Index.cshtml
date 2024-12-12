@@ -126,7 +126,7 @@
                                     <thead class="table-lightfix sticky-top ">
                                     <tr>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine") fix">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParam"]"
                                                class="text-decoration-none text-dark ">
                                                 Host <i
                                                     class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")"></i>
@@ -140,14 +140,14 @@
                                             </a>
                                         </th>
                                         <th class=" bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Status <i
                                                     class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Severity
                                                 <i
@@ -156,7 +156,7 @@
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Alarm
                                                 <i
@@ -165,7 +165,7 @@
                                             </a>
                                         </th>
                                         <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Date")">
-                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
+                                            <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Date <i
                                                     class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Date")"></i>
