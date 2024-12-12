@@ -28,7 +28,7 @@
                         <li class="nav-item me-3">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Alarm" ? "active-link" : "") text-fs-1"
                                asp-area="" asp-controller="Alarm" asp-action="Index">
-                                Alarms
+                                Raised alerts
                             </a>
                         </li>
 
@@ -49,7 +49,7 @@
                             @if (User.IsInRole("ITDirector") || User.IsInRole("MaintenanceManager")){
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AlarmSettings" ? "active-link" : "") text-fs-1"
                                    asp-area="" asp-controller="AlarmSettings" asp-action="Index">
-                                    Alarm Settings
+                                    Alarms
                                 </a>
                             }
                         </li>
@@ -57,7 +57,7 @@
                             @if (User.IsInRole("ITDirector")){
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" ? "active-link" : "") text-fs-1"
                                    asp-area="" asp-controller="User" asp-action="Index">
-                                    Employees
+                                    Users
                                 </a>
                             }
                         </li>
