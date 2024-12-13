@@ -49,8 +49,9 @@ namespace UITManagerWebServer.Controllers {
                 .Include(a => a.User)
                 .AsQueryable()
                 .Where(a => a.AlarmHistories
-                    .Select(h => h.StatusType.Name)
-                    .FirstOrDefault() != "Resolved");
+                    .OrderByDescending(h => h.ModificationDate) 
+                    .FirstOrDefault()! 
+                    .StatusType.Name != "Resolved");
 
             if (!string.IsNullOrEmpty(search)) {
                 string[] searchTerms = search.ToLower().Split(',');
