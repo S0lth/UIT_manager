@@ -6,12 +6,12 @@ postgres_password=hdksldjufiad
 postgres_database=uitmanager
 ```
 ## Webapp Login
-- ITDirector
-  - username: `oroger`
-  - password: `StrongerPassword!1`
-- MaintenanceManager
-  - username: `milletcamille`
-  - password: `StrongerPassword!1`
 - Technician
   - username: `devauxisaac`
-  - password: `StrongerPassword!1 `
+  - password: `StrongerPassword!1`
+- Maintenance Manager
+  - username: `milletcamille`
+  - password: `StrongerPassword!1`
+- IT Director
+  - username: `oroger`
+  - password: `StrongerPassword!1`

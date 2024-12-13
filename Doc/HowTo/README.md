@@ -37,6 +37,11 @@ Before you begin, ensure that the following are installed on your machine:
     $ cd ~/uitmanager/Database/
     $ docker-compose up -d
     ```
+    If your have the new version of docker compose use:
+    ```bash
+    $ cd ~/uitmanager/Database/
+    $ docker compose up -d
+    ```
 4. Your database will now be set up. To ensure everything is running smoothly without errors, execute the following checks:
     - To check the running container:
     ```bash
