@@ -347,7 +347,7 @@ public static class Populate {
                     }
             },
             new NormGroup {
-                Name = "Not enough Ram (less than 8GO)",
+                Name = "Not enough Ram (less than 8 GB)",
                 Priority = 1,
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true,
@@ -681,9 +681,9 @@ public static class Populate {
                     Value = "Null",
                     Format = "Null",
                     Children = new List<Information> {
-                        new Value { Name = "Total RAM", Machine = machine, Value = ramTotal.ToString(), Format = "Go" },
-                        new Value { Name = "Used RAM", Machine = machine, Value = ramUsed.ToString(), Format = "Go" },
-                        new Value { Name = "Free RAM", Machine = machine, Value = ramFree.ToString(), Format = "Go" }
+                        new Value { Name = "Total RAM", Machine = machine, Value = ramTotal.ToString(), Format = "GB" },
+                        new Value { Name = "Used RAM", Machine = machine, Value = ramUsed.ToString(), Format = "GB" },
+                        new Value { Name = "Free RAM", Machine = machine, Value = ramFree.ToString(), Format = "GB" }
                     }
                 });
 
@@ -727,16 +727,16 @@ public static class Populate {
                                 new Value {
                                     Name = "Disk Total Size",
                                     Value = diskTotal.ToString(),
-                                    Format = "Go",
+                                    Format = "GB",
                                     Machine = machine
                                 },
                                 new Value {
-                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "Go", Machine = machine
+                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
                                 },
                                 new Value {
                                     Name = "Disk Free Size",
                                     Value = diskFree.ToString(),
-                                    Format = "Go",
+                                    Format = "GB",
                                     Machine = machine
                                 }
                             }
@@ -757,16 +757,16 @@ public static class Populate {
                                 new Value {
                                     Name = "Disk Total Size",
                                     Value = diskTotal.ToString(),
-                                    Format = "Go",
+                                    Format = "GB",
                                     Machine = machine
                                 },
                                 new Value {
-                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "Go", Machine = machine
+                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
                                 },
                                 new Value {
                                     Name = "Disk Free Size",
                                     Value = diskFree.ToString(),
-                                    Format = "Go",
+                                    Format = "GB",
                                     Machine = machine
                                 }
                             }
@@ -787,16 +787,16 @@ public static class Populate {
                                 new Value {
                                     Name = "Disk Total Size",
                                     Value = diskTotal.ToString(),
-                                    Format = "Go",
+                                    Format = "GB",
                                     Machine = machine
                                 },
                                 new Value {
-                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "Go", Machine = machine
+                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
                                 },
                                 new Value {
                                     Name = "Disk Free Size",
                                     Value = diskFree.ToString(),
-                                    Format = "Go",
+                                    Format = "GB",
                                     Machine = machine
                                 }
                             }
@@ -816,13 +816,13 @@ public static class Populate {
                         Format = "Null",
                         Children = new List<Information> {
                             new Value {
-                                Name = "Disk Total Size", Value = diskTotal.ToString(), Format = "Go", Machine = machine
+                                Name = "Disk Total Size", Value = diskTotal.ToString(), Format = "GB", Machine = machine
                             },
                             new Value {
-                                Name = "Disk Used", Value = diskUsed.ToString(), Format = "Go", Machine = machine
+                                Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
                             },
                             new Value {
-                                Name = "Disk Free Size", Value = diskFree.ToString(), Format = "Go", Machine = machine
+                                Name = "Disk Free Size", Value = diskFree.ToString(), Format = "GB", Machine = machine
                             }
                         }
                     };
