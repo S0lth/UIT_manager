@@ -10,6 +10,8 @@
 
 @functions
 
+
+
 {
     private string FormatUptime(string uptimeValue)
     {
@@ -32,6 +34,7 @@
                    $"{(minutes > 0 ? $"{minutes} minute{(minutes > 1 ? "s" : "")} " : "")}" +
                    $"{(seconds > 0 ? $"{seconds} second{(seconds > 1 ? "s" : "")}" : "")}".Trim();
         }
+
         Console.WriteLine(uptimeValue);
         return uptimeValue;
     }
@@ -44,7 +47,7 @@
         <div class="accordion-item">
             @if (!info.Children.Any())
             {
-                <div class="p-3 ps-4" id="@headingId">
+             <div class="p-3 ps-4" id="@headingId">
                     <div class="w-100">
                         @if (!info.Format.Equals("TEXT") && !info.Format.Equals("Null"))
                         {
@@ -57,8 +60,8 @@
                         else if (info.Name.Equals("UpTime"))
                         {
                             <span><strong>@info.Name</strong> @FormatUptime(info.Value)</span>
-
-                        }else
+                        }
+                        else
                         {
                             <span><strong>@info.Name</strong> @info.Value</span>
                         }
@@ -78,10 +81,14 @@
                 }
                 else if (info.Name.Equals("Disks"))
                 {
-                    foreach (var subinfo in info.Children)
-                    {
-                        RenderInformation(subinfo, accordionId);
-                    }
+                    <div class="p-3 ps-4" id="@headingId">
+                        <div class="w-100">
+                            @foreach (var subinfo in info.Children)
+                            {
+                            RenderInformation(subinfo, accordionId);
+                            }
+                        </div>
+                    </div>
                 }
                 else if (info.Name.Equals("OS"))
                 {
@@ -102,7 +109,15 @@
                     <h2 class="accordion-header ps-1" id="@headingId">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
-                            <span><strong>@info.Name</strong></span>
+                            @if (info.Name.Equals("Ram")) {
+                                <span><strong>RAM</strong></span>
+    
+                            }else if (info.Name.Equals("List Disk")) {
+                                <span><strong>Disks</strong></span>
+                            }
+                            else {
+                                <span><strong>@info.Name</strong></span>
+                            }
                         </button>
                     </h2>
 
