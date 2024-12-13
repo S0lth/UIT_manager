@@ -7,10 +7,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<form method="post" id="alarm-status-update">
-    @Html.AntiForgeryToken()
-</form>
-
 <div id="alert-container" class="p-0 m-0"></div>
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <div class="row mb-2 fixed">
@@ -135,25 +131,28 @@
                                                 @item.Machine.Model
                                             </td>
                                             <td>
-                                                <select style="max-width: 300px " class="form-select form-select-sm"
-                                                        onchange="updateAlarmStatus(@item.Id, this.value)">
-                                                    @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
-                                                    {
-                                                        @if (statusType.Name == @item.GetLatestAlarmHistory()
-                                                                     ?.StatusType?.Name)
-                                                        {
-                                                            <option selected
-                                                                    value="@statusType.Name">@statusType.Name </option>
-                                                        }
-                                                        else
-                                                        {
-                                                            <option value="@statusType.Name">@statusType.Name</option>
-                                                        }
+                                                <div class="dropdown">
+                                                    <button class="btn btn-light dropdown-toggle" type="button"
+                                                            id="dropdownMenuButton" data-bs-toggle="dropdown"
+                                                            aria-expanded="false" data-alarm-id="@item.Id">
+                                                        @item.GetLatestAlarmHistory()?.StatusType?.Name
+                                                    </button>
 
-                                                        <option disabled class="text-secondary fst-italic fw-light"
-                                                                label="">@statusType.Description</option>
-                                                    }
-                                                </select>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton"
+                                                        style="background-color: white;">
+                                                        @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
+                                                        {
+                                                            <li>
+                                                                <a class="dropdown-item"
+                                                                   onclick="updateAlarmStatus(@item.Id, '@statusType.Name')">
+                                                                    <strong>@statusType.Name</strong>
+                                                                    <span
+                                                                        class="text-muted ms-2">@statusType.Description</span>
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
                                             </td>
                                             <td class="@ViewHelpers.GetSeveryticolor(@item.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name)">@item.NormGroup?.SeverityHistories.OrderByDescending(sh => sh.UpdateDate).FirstOrDefault()?.Severity?.Name</td>
 
@@ -225,23 +224,40 @@
 </div>
 
 <script>
-    function updateAlarmStatus(alarmId, status) {
+    async function updateAlarmStatus(alarmId, status) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
         if (!token) {
             showAlert('CSRF token is missing.', 'danger');
             return;
         }
 
-        fetch(`/Alarm/UpdateStatus`, {
+        await fetch(`/Alarm/UpdateStatus`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': token
             },
             body: JSON.stringify({id: alarmId, status: status})
-        }).then(response => {
+        }).then(async response => {
             if (response.ok) {
-                showAlert('Status updated successfully!', 'success');
+                const alertMessage = await response.text();
+                document.getElementById('alert-container').innerHTML = alertMessage;
+                setTimeout(() => document.getElementById('alert-container').innerHTML = '', 5000);
+
+                const dropdownButton = document.querySelector(`#dropdownMenuButton[data-alarm-id="${alarmId}"]`);
+                if (dropdownButton) {
+                    dropdownButton.textContent = status;
+                }
+
+                const dropdownItems = dropdownButton?.nextElementSibling.querySelectorAll('.dropdown-item');
+                dropdownItems.forEach(item => {
+                    if (item.textContent.trim() === status) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+
             } else {
                 showAlert('Error updating status.', 'danger');
             }
@@ -249,6 +265,7 @@
             showAlert('Network error updating status.', 'danger');
         });
     }
+
 
     async function updateAlarmAttribution(alarmId, userId) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
