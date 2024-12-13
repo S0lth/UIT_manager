@@ -58,10 +58,6 @@ Before you begin, ensure that the following are installed on your machine:
     local     database_postgres_data
     ```
     Ensure that the volume `database_postgres_data` exists.
-
-## Running the Project
-Once you have configured the projects to start, click the **Run** button in the top-right corner of Rider/VS Studio. This will launch all selected projects simultaneously, each in its own console window.
-
 ## Applying Migrations
 To apply migrations to your PostgreSQL Docker container, run the following commands:
 ```bash
@@ -75,6 +71,8 @@ $ rm -r Migrations
 $ dotnet ef migrations add init
 $ dotnet ef database update
 ```
+## Running the Project
+Once you have configured the projects to start, click the **Run** button in the top-right corner of Rider/VS Studio. This will launch all selected projects simultaneously, each in its own console window.
 ## Stopping the Project
 1. To stop all running projects in Rider/VS Studio, click the Stop button in the top-right corner. This will terminate all processes related to the running projects.
 2. To stop the Docker container, run the following command in the terminal:
