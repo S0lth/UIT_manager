@@ -103,7 +103,7 @@
                                 var usedSpace = res - free;
                                 <tr>
                                     <td class="font-weight-bold">Disk</td>
-                                    <td>@diskName: @usedSpace.ToString("F1") Go / @res.ToString("F1") Go</td>
+                                    <td>@diskName: @usedSpace.ToString("F1") GB / @res.ToString("F1") GB</td>
                                 </tr>
                             }
                             else
@@ -134,7 +134,7 @@
                             if (decimal.TryParse(totalRam?.Replace(" Go", "").Trim(), out var total) &&
                                 decimal.TryParse(usedRam?.Replace(" Go", "").Trim(), out var used))
                             {
-                                @($"{used.ToString("F1")} Go / {total.ToString("F1")} Go")
+                                @($"{used.ToString("F1")} GB / {total.ToString("F1")} GB")
                             }
                             else
                             {
