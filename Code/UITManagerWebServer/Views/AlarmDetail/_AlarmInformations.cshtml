@@ -110,17 +110,18 @@
                         </div>
                         <div class="d-flex mb-1 align-items-center">
                             <p class="mb-0 fw-bold me-2">Machine State</p>
-                            <div class="mt-1">
+                            <div class="d-flex align-items-center">
                                 @if (Model.Machine.IsWorking)
                                 {
-                                    <span class="text-success">Working</span>
+                                    <span class="text-success" style="line-height: 1.25;">Working</span>
                                 }
                                 else
                                 {
-                                    <span class="text-danger">Not working</span>
+                                    <span class="text-danger" style="line-height: 1.25;">Not working</span>
                                 }
                             </div>
                         </div>
+
                     </div>
                 </div>
 
