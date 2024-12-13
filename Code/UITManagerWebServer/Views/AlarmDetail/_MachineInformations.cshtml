@@ -65,7 +65,7 @@
                 }
 
                 <tr>
-                    <td class="font-weight-bold">Machine Model:</td>
+                    <td class="font-weight-bold">Machine Model</td>
                     <td>@Model.Machine?.Model</td>
                 </tr>
                 <tr>
@@ -80,7 +80,7 @@
                 </tr>
 
                 <tr>
-                    <td class="font-weight-bold">CPU Model:</td>
+                    <td class="font-weight-bold">CPU Model</td>
                     <td>
                         @Model.Machine.Informations.FirstOrDefault(obj => obj.Name.Contains("CPU", StringComparison.OrdinalIgnoreCase))?.Children.FirstOrDefault(o => o.Name.Contains("Model", StringComparison.OrdinalIgnoreCase))?.Value
                     </td>
@@ -102,14 +102,14 @@
                             {
                                 var usedSpace = res - free;
                                 <tr>
-                                    <td class="font-weight-bold">Disk:</td>
+                                    <td class="font-weight-bold">Disk</td>
                                     <td>@diskName: @usedSpace.ToString("F1") Go / @res.ToString("F1") Go</td>
                                 </tr>
                             }
                             else
                             {
                                 <tr>
-                                    <td class="font-weight-bold">@diskName:</td>
+                                    <td class="font-weight-bold">@diskName</td>
                                     <td>Invalid Total or Free Size</td>
                                 </tr>
                             }
@@ -124,7 +124,7 @@
                 }
 
                 <tr>
-                    <td class="font-weight-bold">RAM:</td>
+                    <td class="font-weight-bold">RAM</td>
                     <td>
                         @{
                             var ramComponent = Model.Machine.Informations.FirstOrDefault(c => c.Name == "Ram");
@@ -145,7 +145,7 @@
                 </tr>
 
                 <tr>
-                    <td class="font-weight-bold">Direct X:</td>
+                    <td class="font-weight-bold">Direct X</td>
                     <td>
                         @{
                             var directXVersion = Model.Machine.Informations.FirstOrDefault(v => v.Name == "Direct X")?.Value;
