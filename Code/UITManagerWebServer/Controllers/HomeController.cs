@@ -47,7 +47,7 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
             else if (tab == "newest") {
-                selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true, newest: true);
             }
             else if (tab == "overdue") {
                 selectedAlarms = await GetAlarmsWithDetails(sortOrder, overdue: true, orderByDate: true);
@@ -132,6 +132,7 @@ namespace UITManagerWebServer.Controllers {
             string sortOrder = null,
             bool overdue = false,
             bool orderByDate = false,
+            bool newest = false,
             int? takeTop = null) {
             var alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
@@ -147,7 +148,12 @@ namespace UITManagerWebServer.Controllers {
                     .OrderByDescending(h => h.ModificationDate)
                     .FirstOrDefault().StatusType.Name == "New");
             }
+            if (newest)
+            {
+                DateTime tenDaysAgo = DateTime.UtcNow.AddDays(-10);
 
+                alarmsQuery = alarmsQuery.Where(a => a.TriggeredAt >= tenDaysAgo);
+            }
             if (overdue) {
                 alarmsQuery = alarmsQuery
                     .Where(a =>
@@ -341,11 +347,11 @@ namespace UITManagerWebServer.Controllers {
                     selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
                     break;
                 case "newest":
-                    selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
+                    selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true, newest: true);
                     break;
                 case "overdue":
                     selectedAlarms =
-                        await GetAlarmsWithDetails("Resolved", sortOrder, overdue: true, orderByDate: true);
+                        await GetAlarmsWithDetails(sortOrder, overdue: true, orderByDate: true);
                     break;
                 default:
                     selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
