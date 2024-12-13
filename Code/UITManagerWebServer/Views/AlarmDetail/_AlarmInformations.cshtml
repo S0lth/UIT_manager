@@ -57,7 +57,7 @@
                             <div class="d-flex flex-column">
                                 <label for="AlarmStatus"><strong>Status</strong></label>
                                 <div class="dropdown">
-                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="max-width: 300px;">
+                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" data-alarm-id="@Model.Id" style="max-width: 300px;">
                                         <span>@Model.AlarmHistories.OrderByDescending(a => a.ModificationDate).FirstOrDefault().StatusType.Name</span>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="background-color: white;">
@@ -180,3 +180,41 @@
         </div>
     </div>
 </div>
+<script>
+    async function updateAlarmStatus(alarmId, status) {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        if (!token) {
+            showAlert('CSRF token is missing.', 'danger');
+            return;
+        }
+
+        await fetch(`/Alarm/UpdateStatus`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token
+            },
+            body: JSON.stringify({id: alarmId, status: status})
+        }).then(async response => {
+            if (response.ok) {
+                document.getElementById('alert-container').innerHTML = await response.text();
+                setTimeout(() => document.getElementById('alert-container').innerHTML = '', 5000);
+
+                const dropdownButton = document.querySelector(`#dropdownMenuButton[data-alarm-id="${alarmId}"]`);
+                if (dropdownButton) {
+                    dropdownButton.textContent = status;
+                }
+
+                const dropdownItems = dropdownButton?.nextElementSibling.querySelectorAll('.dropdown-item');
+                dropdownItems.forEach(item => {
+                    if (item.textContent.trim() === status) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+        }).catch(error => {
+        });
+    }
+</script>

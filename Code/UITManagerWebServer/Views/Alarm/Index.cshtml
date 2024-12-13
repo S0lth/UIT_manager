@@ -257,12 +257,8 @@
                         item.classList.remove('active');
                     }
                 });
-
-            } else {
-                showAlert('Error updating status.', 'danger');
             }
         }).catch(error => {
-            showAlert('Network error updating status.', 'danger');
         });
     }
 
