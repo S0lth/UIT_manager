@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Versioning;
+using System.Text.Json;
 using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;
 
@@ -9,6 +10,8 @@ namespace UITManagerAgent;
 /// </summary>
 public class MachineInformation{
     private List<Information> _informationList = new();
+    private Information _machineName;    
+    private Information _model;
 
     /// <summary>
     /// Accessors of <see cref="MachineInformation.Informations"/> field
@@ -18,19 +21,29 @@ public class MachineInformation{
         set => _informationList = value;
     }
 
+    public Information MachineName {
+        get => _machineName;
+        set => _machineName = value;
+    }
+    
+    public Information Model {
+        get => _model;
+        set => _model = value;
+    }
+
     /// <summary>
     /// Constructor that add each <see cref="Information"/> into the List <see cref="Informations"/>
     /// </summary>
     [SupportedOSPlatform("windows")]
     public MachineInformation() {
+        MachineName = new MachineNameCollector().Collect();
+        Model = new ModelCollectors().Collect();
         InformationList = new(){
             new CpuCollectors().Collect(),
             new DirectXCollector().Collect(),
             new DiskCollector().Collect(),
             new DomainNameCollector().Collect(),
             new IpsAddressesCollector().Collect(),
-            new MachineNameCollector().Collect(),
-            new ModelCollectors().Collect(),
             new OsCollector().Collect(),
             new RamCollector().Collect(),
             new TagCollector().Collect(),
@@ -58,6 +71,8 @@ public class MachineInformation{
     /// <returns>A string as a Json format which contains all <see cref="InformationList"/></returns>
     public string ToJson() {
         List<string> json = new();
+        json.Add("Name : " +_machineName.ToJson()+ Environment.NewLine);
+        json.Add(_model.ToJson()+ Environment.NewLine);
         foreach (Information information in InformationList) {
             json.Add(information.ToJson() + Environment.NewLine);
         }

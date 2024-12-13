@@ -3,4 +3,7 @@
 GET {{UITManagerApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
+POST {{UITManagerApi_HostAddress}}/agent/
+Accept: application/json
+
 ###
