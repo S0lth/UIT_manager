@@ -1,3 +1,4 @@
+@using UITManagerWebServer.Helpers
 @model IEnumerable<UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupPageViewModel>
 
 @{
@@ -6,54 +7,6 @@
 }
 
 <script src="js/site.js"></script>
-
-@functions {
-
-    string GetHeaderClass(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
-        {
-            return "bg-selected-header";
-        }
-
-        return string.Empty;
-    }
-
-    string GetSortIcon(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column)
-        {
-            return "bi bi-sort-down";
-        }
-        else if (currentSortOrder == $"{column}_desc")
-        {
-            return "bi bi-sort-up";
-        }
-
-        return "bi bi-arrow-down-up";
-    }
-
-    string GetSeveryticolor(string currentSeverity)
-    {
-        switch (currentSeverity)
-        {
-            case ("Critical"):
-                return "text-danger";
-            case ("High"):
-                return "text-High";
-            case ("Medium"):
-                return "text-warning";
-            case ("Low"):
-                return "text-low";
-            case ("Warning"):
-                return "text-secondary";
-        }
-
-        return "text-secondary";
-    }
-
-}
-
 
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <div class="row mb-2">
@@ -79,37 +32,37 @@
                         <table class="table table-hover table-striped align-middle">
                             <thead class="table-light">
                             <tr>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
+                                <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "AlarmGroup")">
                                     <a asp-action="Index" asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]"
                                        class="text-decoration-none text-dark">
-                                        Alarm Name <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "AlarmGroup")"></i>
+                                        Alarm Name <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "AlarmGroup")"></i>
                                     </a>
                                 </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
+                                <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Severity")">
                                     <a asp-action="Index" asp-route-sortOrder="@ViewData["SeveritySortParam"]"
                                        class="text-decoration-none text-dark">
-                                        Severity <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Severity")"></i>
+                                        Severity <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Severity")"></i>
                                     </a>
                                 </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Priority")">
+                                <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Priority")">
                                     <a asp-action="Index" asp-route-sortOrder="@ViewData["PrioritySortParam"]"
                                        class="text-decoration-none text-dark">
-                                        Priority <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Priority")"></i>
+                                        Priority <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Priority")"></i>
                                     </a>
                                 </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "NbAlarm")">
+                                <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "NbAlarm")">
                                     <a asp-action="Index" asp-route-sortOrder="@ViewData["NbAlarmSortParam"]"
                                        class="text-decoration-none text-dark">
                                         Number Alarm
                                         <i
-                                            class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "NbAlarm")">
+                                            class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "NbAlarm")">
                                         </i>
                                     </a>
                                 </th>
-                                <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Enable")">
+                                <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Enable")">
                                     <a asp-action="Index" asp-route-sortOrder="@ViewData["EnableSortParam"]"
                                        class="text-decoration-none text-dark">
-                                        Enable <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Enable")"></i>
+                                        Enable <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Enable")"></i>
                                     </a>
                                 </th>
                                 <th>
@@ -118,7 +71,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach (var item in Model)
+                            @foreach (var item in @Model)
                             {
                                 <tr>
                                     <td>
@@ -127,7 +80,7 @@
                                             @item.NormGroupName
                                         </a>
                                     </td>
-                                    <td class="@GetSeveryticolor(@item.Severity)">
+                                    <td class="@ViewHelpers.GetSeveryticolor(@item.Severity)">
                                         @item.Severity
                                     </td>
                                     <td>

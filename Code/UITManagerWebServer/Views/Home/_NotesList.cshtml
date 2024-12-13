@@ -1,21 +1,8 @@
+@using UITManagerWebServer.Helpers
 @model List<UITManagerWebServer.Models.ModelsView.NoteViewModel>
 
-@functions {
-
-    string GetIsSolutionIcon(bool sol)
-    {
-        return sol ? "badge bg-success" : "badge bg-secondary";
-    }
-
-    string GetIsSolutionText(bool sol)
-    {
-        return sol ? "Solution" : "Follow-Up Note";
-    }
-
-}
-
 <div class="card mb-4">
-        @if (!Model.Any())
+        @if (!@Model.Any())
         {
             <div class="alert alert-secondary" role="alert">
                 No notes written.
@@ -41,7 +28,7 @@
                                             </p>
                                             <small class="text-muted">Author: @note.Author on @note.Date.ToString("dd-MM-yyyy HH:mm")</small>
                                         </div>
-                                        <span class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
+                                        <span class="@ViewHelpers.GetIsSolutionIcon(note.IsSolution)">@ViewHelpers.GetIsSolutionText(note.IsSolution)</span>
                                     </div>
                                 </td>
                             </tr>

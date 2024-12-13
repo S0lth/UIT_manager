@@ -1,4 +1,5 @@
 ﻿@using UITManagerWebServer.Controllers
+@using UITManagerWebServer.Helpers
 @model MachineController.DetailsViewModel
 @functions{
      private void GetSavedSortingAndFilterInfoExcept(string? name)
@@ -132,7 +133,7 @@
                                             </p>
                                             <small class="text-muted">Author: @note.Author on @note.Date.ToString("dd-MM-yyyy HH:mm")</small>
                                         </div>
-                                        <span class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
+                                        <span class="@ViewHelpers.GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
                                     </div>
                                 </td>
                             </tr>

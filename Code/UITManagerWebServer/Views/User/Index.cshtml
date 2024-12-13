@@ -1,30 +1,9 @@
+@using UITManagerWebServer.Helpers
 @model List<UITManagerWebServer.Controllers.UserController.UserViewModel>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-@functions {
-
-    string GetHeaderClass(string currentSortOrder, string column) {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc") {
-            return "bg-selected-header";
-        }
-
-        return string.Empty;
-    }
-
-    string GetSortIcon(string currentSortOrder, string column) {
-        if (currentSortOrder == column) {
-            return "bi bi-sort-down";
-        }
-        else if (currentSortOrder == $"{column}_desc") {
-            return "bi bi-sort-up";
-        }
-            return "bi bi-arrow-down-up";
-    }
-
 }
 
 <div id="alert-container" class="p-0 m-0"></div>
@@ -63,50 +42,50 @@
                                 <table class="table table-hover table-striped align-middle">
                                     <thead class="table-lightfix sticky-top ">
                                     <tr>
-                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "FullName") fix">
+                                        <th class="bg-white @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "FullName") fix">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["FullNameSortParm"]"
                                                class="text-decoration-none text-dark ">
                                                 Full Name <i
-                                                              class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "FullName")"></i>
+                                                              class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "FullName")"></i>
                                             </a>
                                         </th>
-                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Email")">
+                                        <th class="bg-white @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Email")">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["EmailSortParm"]"
                                                class="text-decoration-none text-dark">
                                                 Email <i
-                                                          class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Email")"></i>
+                                                          class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Email")"></i>
                                             </a>
                                         </th>
-                                        <th class=" bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Role")">
+                                        <th class=" bg-white @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Role")">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["RoleSortParm"]"
                                                class="text-decoration-none text-dark">
                                                 Role <i
-                                                         class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Role")"></i>
+                                                         class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Role")"></i>
                                             </a>
                                         </th>
-                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "StartDate")">
+                                        <th class="bg-white @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "StartDate")">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["StartDateSortParm"]"
                                                class="text-decoration-none text-dark">
                                                 Start Date
                                                 <i
-                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "StartDate")">
+                                                    class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "StartDate")">
                                                 </i>
                                             </a>
                                         </th>
-                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "EndDate")">
+                                        <th class="bg-white @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "EndDate")">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["EndDateSortParm"]"
                                                class="text-decoration-none text-dark">
                                                 End Date
                                                 <i
-                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "EndDate")">
+                                                    class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "EndDate")">
                                                 </i>
                                             </a>
                                         </th>
-                                        <th class="bg-white @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Active")">
+                                        <th class="bg-white @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Active")">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["ActiveSortParm"]"
                                                class="text-decoration-none text-dark">
                                                 Active <i
-                                                           class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Active")"></i>
+                                                           class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Active")"></i>
                                             </a>
                                         </th>
                                     </tr>

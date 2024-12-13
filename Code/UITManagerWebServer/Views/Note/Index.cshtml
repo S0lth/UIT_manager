@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using UITManagerWebServer.Helpers
 @model IEnumerable<UITManagerWebServer.Models.Note>
 
 @{
@@ -6,34 +8,6 @@
 }
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
-
-@functions {
-
-    string GetHeaderClass(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
-        {
-            return "bg-selected-header";
-        }
-
-        return string.Empty;
-    }
-
-    string GetSortIcon(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column)
-        {
-            return "bi bi-sort-down";
-        }
-        else if (currentSortOrder == $"{column}_desc")
-        {
-            return "bi bi-sort-up";
-        }
-
-        return "bi bi-arrow-down-up";
-    }
-
-}
 
 <div class="container-fluid py-5 px-4" style="max-width: 1700px;">
     <div class="row mb-2 fixed">
@@ -92,7 +66,7 @@
                     <table class="table table-hover table-striped align-middle">
                         <thead class="table-lightfix sticky-top">
                         <tr>
-                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "title")">
+                            <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "title")">
                                 <a asp-action="Index"
                                    asp-route-search="@ViewData["Search"]"
                                    asp-route-isSolution="@ViewData["IsSolution"]"
@@ -100,10 +74,10 @@
                                    asp-route-sortOrder="@ViewData["TitleSortParm"]?.ToString()"
                                    class="text-decoration-none text-dark">
                                     @Html.DisplayNameFor(model => model.Title)
-                                    <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "title")"></i>
+                                    <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "title")"></i>
                                 </a>
                             </th>
-                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
+                            <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
                                 <a asp-action="Index"
                                    asp-route-search="@ViewData["Search"]"
                                    asp-route-isSolution="@ViewData["IsSolution"]"
@@ -111,10 +85,10 @@
                                    asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
                                    class="text-decoration-none text-dark">
                                     Host
-                                    <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
+                                    <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
                                 </a>
                             </th>
-                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "createdat")">
+                            <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "createdat")">
                                 <a asp-action="Index"
                                    asp-route-search="@ViewData["Search"]"
                                    asp-route-isSolution="@ViewData["IsSolution"]"
@@ -122,10 +96,10 @@
                                    asp-route-sortOrder="@ViewData["CreatedAtSortParm"]?.ToString()"
                                    class="text-decoration-none text-dark">
                                     Date
-                                    <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "createdat")"></i>
+                                    <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "createdat")"></i>
                                 </a>
                             </th>
-                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "author")">
+                            <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "author")">
                                 <a asp-action="Index"
                                    asp-route-search="@ViewData["Search"]"
                                    asp-route-isSolution="@ViewData["IsSolution"]"
@@ -133,10 +107,10 @@
                                    asp-route-sortOrder="@ViewData["AuthorSortParm"]?.ToString()"
                                    class="text-decoration-none text-dark">
                                     @Html.DisplayNameFor(model => model.Author)
-                                    <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "author")"></i>
+                                    <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "author")"></i>
                                 </a>
                             </th>
-                            <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "issolution")">
+                            <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "issolution")">
                                 <a asp-action="Index"
                                    asp-route-search="@ViewData["Search"]"
                                    asp-route-isSolution="@ViewData["IsSolution"]"
@@ -144,7 +118,7 @@
                                    asp-route-sortOrder="@ViewData["IsSolutionSortParm"]?.ToString()"
                                    class="text-decoration-none text-dark">
                                     Type
-                                    <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "issolution")"></i>
+                                    <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "issolution")"></i>
                                 </a>
                             </th>
                         </tr>
