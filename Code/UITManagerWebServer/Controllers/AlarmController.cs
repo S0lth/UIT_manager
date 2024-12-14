@@ -223,7 +223,7 @@ namespace UITManagerWebServer.Controllers {
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { success = true, message = "Alarm attribution updated successfully." });
+                return PartialView("_AlertMessage", new { success = true, message = "Attribution updated successfully." });
             }
             catch (Exception ex) {
                 return StatusCode(500,

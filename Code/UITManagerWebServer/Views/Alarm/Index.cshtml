@@ -147,7 +147,8 @@
                                                                 <a class="dropdown-item"
                                                                    onclick="updateAlarmStatus(@item.Id, '@statusType.Name')">
                                                                     <strong>@statusType.Name</strong>
-                                                                    <div class="text-muted ms-2">@statusType.Description</div>
+                                                                    <div
+                                                                        class="text-muted ms-2">@statusType.Description</div>
                                                                 </a>
 
                                                             </li>
@@ -227,10 +228,6 @@
 <script>
     async function updateAlarmStatus(alarmId, status) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-        if (!token) {
-            showAlert('CSRF token is missing.', 'danger');
-            return;
-        }
 
         await fetch(`/Alarm/UpdateStatus`, {
             method: 'POST',
@@ -267,16 +264,6 @@
     async function updateAlarmAttribution(alarmId, userId) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
-        if (!token) {
-            showAlert('CSRF token is missing.', 'danger');
-            return;
-        }
-
-        if (!alarmId || !userId) {
-            showAlert('Invalid alarm or user ID.', 'danger');
-            return;
-        }
-
         try {
             const response = await fetch('/Alarm/Attribution', {
                 method: 'POST',
@@ -289,15 +276,14 @@
                     userId: userId
                 })
             });
-
             if (response.ok) {
-                showAlert('Attribution updated successfully!', 'success');
-            } else {
-                showAlert('Error: Failed to update attribution. Status code: ' + response.status, 'danger');
+                const alertMessage = await response.text();
+                document.getElementById('alert-container').innerHTML = alertMessage;
+                setTimeout(() => document.getElementById('alert-container').innerHTML = '', 5000);
             }
+
         } catch (error) {
             console.error('Network or server error:', error);
-            showAlert('An error occurred while updating the attribution.', 'danger');
         }
     }
 
