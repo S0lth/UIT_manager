@@ -67,7 +67,7 @@ public static class Populate {
         var users = new List<ApplicationUser> {
             new ApplicationUser {
                 UserName = "oroger",
-                Email = "o.roger@UIT.be",
+                Email = "o.roger@uit.be",
                 FirstName = "Roger",
                 LastName = "Ô",
                 StartDate = DateTime.SpecifyKind(new DateTime(2013, 1, 1), DateTimeKind.Utc),
@@ -75,7 +75,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "barbepierre",
-                Email = "barbe.pierre@UIT.be",
+                Email = "barbe.pierre@uit.be",
                 FirstName = "Pierre",
                 LastName = "BARBE",
                 StartDate = DateTime.SpecifyKind(new DateTime(2008, 1, 1), DateTimeKind.Utc),
@@ -84,7 +84,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "milletcamille",
-                Email = "millet.camille@UIT.be",
+                Email = "millet.camille@uit.be",
                 FirstName = "Camille",
                 LastName = "MILLET",
                 StartDate = DateTime.SpecifyKind(new DateTime(1998, 8, 8), DateTimeKind.Utc),
@@ -92,7 +92,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "hardybernadette",
-                Email = "hardy.bernadette@UIT.be",
+                Email = "hardy.bernadette@uit.be",
                 FirstName = "Bernadette",
                 LastName = "HARDY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc),
@@ -101,7 +101,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "devauxisaac",
-                Email = "devaux.isaac@UIT.be",
+                Email = "devaux.isaac@uit.be",
                 FirstName = "Isaac",
                 LastName = "DEVAUX",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc),
@@ -109,7 +109,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "boulayaime",
-                Email = "boulay.aime@UIT.be",
+                Email = "boulay.aime@uit.be",
                 FirstName = "Aimé",
                 LastName = "BOULAY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
@@ -118,7 +118,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "debergeracpaul",
-                Email = "debergerac.paul@UIT.com",
+                Email = "debergerac.paul@uit.com",
                 FirstName = "Paul",
                 LastName = "DE BERGERAC",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 3, 1), DateTimeKind.Utc),
@@ -127,7 +127,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "seguinalfredemmanuel",
-                Email = "seguin.alfredemmanuel@UIT.be",
+                Email = "seguin.alfredemmanuel@uit.be",
                 FirstName = "Alfred-Emmanuel",
                 LastName = "SEGUIN",
                 StartDate = DateTime.SpecifyKind(new DateTime(2000, 3, 15), DateTimeKind.Utc),
@@ -135,7 +135,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "lefortmartinetienne",
-                Email = "lefort.martinetienne_@UIT.be",
+                Email = "lefort.martinetienne_@uit.be",
                 FirstName = "Martin-Étienne",
                 LastName = "LEFORT",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc),
@@ -143,7 +143,7 @@ public static class Populate {
             },
             new ApplicationUser {
                 UserName = "guilbertpaul",
-                Email = "guilbert.paul@UIT.be",
+                Email = "guilbert.paul@uit.be",
                 FirstName = "Paul",
                 LastName = "GUILBERT",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
