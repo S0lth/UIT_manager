@@ -15,7 +15,7 @@
                 <th scope="col">
                     <a href="@Url.Action("Index", "Alarm", new { search = "" })">Site</a>
                 </th>
-                @if (Model != null && Model.Count > 0)
+                @if (Model != null && @Model.Count > 0)
                 {
                     var severityList = Model.Values
                         .SelectMany(d => d.Keys)

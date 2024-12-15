@@ -42,14 +42,16 @@ namespace UITManagerWebServer.Controllers {
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmHistories)
-                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))                .ThenInclude(aStatus => aStatus.StatusType)
+                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))
+                .ThenInclude(aStatus => aStatus.StatusType)
                 .Include(a => a.NormGroup.SeverityHistories)
                 .ThenInclude(sh => sh.Severity)
                 .Include(a => a.User)
                 .AsQueryable()
                 .Where(a => a.AlarmHistories
-                    .Select(h => h.StatusType.Name)
-                    .FirstOrDefault() != "Resolved");
+                    .OrderByDescending(h => h.ModificationDate) 
+                    .FirstOrDefault()! 
+                    .StatusType.Name != "Resolved");
 
             if (!string.IsNullOrEmpty(search)) {
                 string[] searchTerms = search.ToLower().Split(',');
@@ -139,7 +141,6 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
         [Route("Alarm/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Status)) {
@@ -154,8 +155,7 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound(new { success = false, message = "Alarm not found." });
             }
 
-            AlarmStatusType? statusType =
-                await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
+            AlarmStatusType? statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
             if (statusType == null) {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
@@ -163,29 +163,29 @@ namespace UITManagerWebServer.Controllers {
             string userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             AlarmStatusHistory newAlarmHistory = new AlarmStatusHistory {
-                StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, UserId = userId
+                StatusTypeId = statusType.Id, 
+                ModificationDate = DateTime.UtcNow, 
+                UserId = userId
             };
 
             alarm.AlarmHistories.Add(newAlarmHistory);
 
             try {
                 await _context.SaveChangesAsync();
-
-                return Ok(new { success = true, message = "Status updated successfully." });
+        
+                return PartialView("_AlertMessage", new { success = true, message = "Status updated successfully." });
             }
-
             catch (Exception ex) {
                 return StatusCode(500, new {
                     success = false,
                     message = "An error occurred while updating status.",
-                    error = ex.Message, 
-                    stackTrace = ex.StackTrace
+                    error = ex.Message
                 });
             }
         }
 
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
         [Route("Alarm/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
@@ -223,7 +223,7 @@ namespace UITManagerWebServer.Controllers {
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { success = true, message = "Alarm attribution updated successfully." });
+                return PartialView("_AlertMessage", new { success = true, message = "Attribution updated successfully." });
             }
             catch (Exception ex) {
                 return StatusCode(500,
