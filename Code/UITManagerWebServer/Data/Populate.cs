@@ -31,6 +31,7 @@ public static class Populate {
     private static void DeleteDb(ApplicationDbContext context) {
         if (context.Machines.Any() || context.NormGroups.Any()) {
             context.Alarms.RemoveRange(context.Alarms);
+            context.Files.RemoveRange(context.Files);
             context.Notes.RemoveRange(context.Notes);
             context.Norms.RemoveRange(context.Norms);
             context.NormGroups.RemoveRange(context.NormGroups);
