@@ -6,4 +6,6 @@ Accept: application/json
 POST {{UITManagerApi_HostAddress}}/agent/
 Accept: application/json
 
+GET {{UITManagerApi_HostAddress}}/agent/
+Accept: application/json
 ###
