@@ -1,3 +1,4 @@
+@using UITManagerWebServer.Helpers
 @model IEnumerable<UITManagerWebServer.Controllers.MachineController.MachineViewModel>
 
 
@@ -6,62 +7,38 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@functions {
-
-    string GetHeaderClass(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
-        {
-            return "bg-selected-header";
-        }
-
-        return string.Empty;
-    }
-
-    string GetSortIcon(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column)
-        {
-            return "bi bi-sort-down";
-        }
-
-        return currentSortOrder == $"{column}_desc" ? "bi bi-sort-up" : "bi bi-arrow-down-up";
-    }
-
-}
-
 <div class="container-fluid py-5 px-4" style="max-width: 1700px; overflow-y: auto;">
     <div class="row mb-2 fixed">
-        <div class="col-lg-12">
-            <h1 class="h2 fw-bold me-3">Inventory</h1>
-        </div>
-
-        <div class="d-flex justify-content-lg-end gap-3  ">
-            <div class=" align-items-center">
-                <div class="input-group" style="max-width: 400px;">
-                    <div class="form-outline" data-mdb-input-init>
-                        <input type="search" id="searchBoxInventory" class="form-control"
-                               placeholder="Search..." onkeyup="searchInInventory()"/>
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h2 fw-bold">Inventory</h1>
+            <div class="d-flex gap-3">
+                <div class="align-items-center">
+                    <div class="input-group" style="max-width: 400px;">
+                        <div class="form-outline" data-mdb-input-init>
+                            <input type="search" id="searchBoxInventory" class="form-control"
+                                   placeholder="Search..." onkeyup="searchInInventory()"/>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="d-flex align-items-center">
-                <span class="me-2 text-muted">Filtered by</span>
-                <form method="get" action="@Url.Action("Index")" class="d-flex align-items-center">
-                    <select asp-for="@ViewData["Filter"]" name="Filter"
-                            class="form-select form-control-sm">
-                        <option value="">All</option>
-                        <option value="working">Working</option>
-                        <option value="not_working">Not Working</option>
-                        <option value="alarm_triggered">Machine affected by an alarm</option>
-                    </select>
+                <div class="d-flex align-items-center">
+                    <span class="me-2 text-muted">Filtered by</span>
+                    <form method="get" action="@Url.Action("Index")" class="d-flex align-items-center">
+                        <select asp-for="@ViewData["Filter"]" name="Filter"
+                                class="form-select form-control-sm">
+                            <option value="">All</option>
+                            <option value="working">Working</option>
+                            <option value="not_working">Not Working</option>
+                            <option value="alarm_triggered">Machine affected by an alarm</option>
+                        </select>
 
-                    <button type="submit" class="btn btn-primary btn-sm ms-2">Filter</button>
-                    <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm ms-2">Reset</a>
-                </form>
+                        <button type="submit" class="btn btn-primary btn-sm ms-2">Filter</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary btn-sm ms-2">Reset</a>
+                    </form>
+                </div>
             </div>
         </div>
+
     </div>
 
     <div class="row justify-content-center">
@@ -73,68 +50,68 @@
                             <table class="table table-hover table-striped align-middle" id ="inventoryTable">
                                 <thead class="table-lightfix sticky-top bg-white">
                                 <tr>
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
+                                    <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Machine")">
                                         <div class="d-flex align-items-center">
                                             <a asp-action="Index" asp-route-sortOrder="@ViewData["MachineSortParam"]"
                                                class="text-decoration-none text-dark">
                                                 Host <i
-                                                    class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")">&emsp;</i>
+                                                    class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Machine")">&emsp;</i>
                                             </a>
                                         </div>
                                     </th>
 
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastSeen")">
+                                    <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastSeen")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["LastSeenSortParam"]"
                                            class="text-decoration-none text-dark">
                                             Last Seen <i
-                                                class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastSeen")"></i>
+                                                class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastSeen")"></i>
                                         </a>
                                     </th>
 
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Os")">
+                                    <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Os")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["OsSortParam"]"
                                            class="text-decoration-none text-dark">
-                                            OS <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Os")"></i>
+                                            OS <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Os")"></i>
                                         </a>
                                     </th>
 
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Build")">
+                                    <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Build")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["BuildSortParam"]"
                                            class="text-decoration-none text-dark">
                                             Build <i
-                                                class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Build")"></i>
+                                                class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Build")"></i>
                                         </a>
                                     </th>
 
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "ServiceTag")">
+                                    <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "ServiceTag")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["ServiceTagSortParam"]"
                                            class="text-decoration-none text-dark">
                                             Service Tag <i
-                                                class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "ServiceTag")"></i>
+                                                class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "ServiceTag")"></i>
                                         </a>
                                     </th>
 
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
+                                    <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "Status")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["StatusSortParam"]"
                                            class="text-decoration-none text-dark">
                                             Status <i
-                                                class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
+                                                class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "Status")"></i>
                                         </a>
                                     </th>
 
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "NoteCount")">
+                                    <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "NoteCount")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["NoteCountSortParam"]"
                                            class="text-decoration-none text-dark">
                                             Notes <i
-                                                class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "NoteCount")"></i>
+                                                class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "NoteCount")"></i>
                                         </a>
                                     </th>
 
-                                    <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastNote")">
+                                    <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "LastNote")">
                                         <a asp-action="Index" asp-route-sortOrder="@ViewData["LastNoteSortParam"]"
                                            class="text-decoration-none text-dark">
                                             Last Note <i
-                                                class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastNote")"></i>
+                                                class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "LastNote")"></i>
                                         </a>
                                     </th>
                                 </tr>

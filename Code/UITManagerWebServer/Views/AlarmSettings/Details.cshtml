@@ -231,7 +231,7 @@
                     Back to @previousPageName
                 </a>
                 }
-                <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Machine">
+                <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Alarm" asp-route-search="@Model.Name">
                     View all related machine alarms
                 </a>
             </div>
@@ -239,4 +239,4 @@
     </div>
 </div>
 
-@(await Html.PartialAsync("_Modals"))
+@(await Html.PartialAsync("_Modals", @Model))

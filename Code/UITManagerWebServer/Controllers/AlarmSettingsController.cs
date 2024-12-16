@@ -371,9 +371,14 @@ namespace UITManagerWebServer.Controllers {
 
         private async Task<int> GetTotalAlarms(string normGroupName) {
             return await _context.Alarms
-                .Where(a => a.NormGroup.Name == normGroupName)
+                .Where(a => a.NormGroup.Name == normGroupName &&
+                            a.AlarmHistories
+                                .OrderByDescending(h => h.ModificationDate) 
+                                .FirstOrDefault()! 
+                                .StatusType.Name != "Resolved") 
                 .CountAsync();
         }
+
 
         private async Task<string> GetLastSeverity(int idNormGroup) {
             return await _context.SeverityHistories
