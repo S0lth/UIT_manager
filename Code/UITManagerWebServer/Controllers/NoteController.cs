@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,16 +7,20 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 using File = UITManagerWebServer.Models.File;
+using Ganss.Xss;
+
 
 namespace UITManagerWebServer.Controllers
 {
     public class NoteController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public NoteController(ApplicationDbContext context)
+        public NoteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -141,28 +146,97 @@ namespace UITManagerWebServer.Controllers
         }
 
         // GET: Notes/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int id)
         {
             ViewData["AuthorId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id");
+            ViewData["Machine"] = id;
+            var user = await _userManager.GetUserAsync(User);
+            ViewData["CurrentUser"] = user;
             return View();
+        }
+        
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("No Files.");
+            
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Images");
+            var filePath = Path.Combine(uploadPath, fileName);
+            if (!Directory.Exists(uploadPath))
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await file.CopyToAsync(memoryStream);
+                var newFile = new File
+                {
+                    FileName = fileName,
+                    FileContent = memoryStream.ToArray(),
+                    MimeType = file.ContentType,
+                    IsTemporary = true
+                };
+                _context.Files.Add(newFile);
+                await _context.SaveChangesAsync();
+            }
+            return Ok(new { url = $"{fileName}", fileName });
         }
 
         // POST: Notes/Create
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Content,CreatedAt,AuthorId,MachineId,IsSolution")] Note note)
-        {
-            if (ModelState.IsValid)
+        public async Task<IActionResult> Create(Note note) {
+            Console.WriteLine(note.IsSolution);
+            // avoid xss injections
+            var sanitizer = new HtmlSanitizer();
+            note.Content = sanitizer.Sanitize(note.Content);
+            
+            // avoid ID duplication 
+            Note newNote = new Note {
+                CreatedAt = DateTime.UtcNow, 
+                Content = note.Content,
+                MachineId = note.MachineId,
+                AuthorId = note.AuthorId,
+                Files = note.Files,
+                IsSolution = note.IsSolution,
+                Title = note.Title
+            };
+            _context.Add(newNote);
+            
+            await _context.SaveChangesAsync();
+            
+            var tempFiles = await _context.Files
+                .Where(f => f.IsTemporary)
+                .ToListAsync();
+
+            foreach (var file in tempFiles)
             {
-                _context.Add(note);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (!note.Content.Contains(file.FileName)) {
+                    _context.Files.Remove(file);
+                    string filePath = Path.Combine("Images", file.FileName);
+                    System.IO.File.Delete(filePath);
+                }
+                else {
+                    file.NoteId = newNote.Id;
+                    file.IsTemporary = false;    
+                }
+                
             }
-            ViewData["AuthorId"] = new SelectList(_context.Users, "Id", "Id", note.AuthorId);
-            ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id", note.MachineId);
-            return View(note);
+
+            _context.Files.UpdateRange(tempFiles);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Notes/Edit/5
