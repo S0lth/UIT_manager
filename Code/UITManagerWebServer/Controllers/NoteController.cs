@@ -161,19 +161,22 @@ namespace UITManagerWebServer.Controllers
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No Files.");
-            
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Images");
+            var filePath = Path.Combine(uploadPath, fileName);
+
+            /*var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Images");
             var filePath = Path.Combine(uploadPath, fileName);
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
-            }
+            }*/
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            /*using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
-            }
+            }*/
 
             using (var memoryStream = new MemoryStream())
             {
@@ -223,14 +226,11 @@ namespace UITManagerWebServer.Controllers
             {
                 if (!note.Content.Contains(file.FileName)) {
                     _context.Files.Remove(file);
-                    string filePath = Path.Combine("Images", file.FileName);
-                    System.IO.File.Delete(filePath);
                 }
                 else {
                     file.NoteId = newNote.Id;
                     file.IsTemporary = false;    
                 }
-                
             }
 
             _context.Files.UpdateRange(tempFiles);
