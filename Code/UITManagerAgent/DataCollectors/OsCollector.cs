@@ -9,7 +9,8 @@ namespace UITManagerAgent.DataCollectors;
 /// Collects OS information.
 /// </summary>
 public class OsCollector : DataCollector {
-    
+    [SupportedOSPlatform("windows")]
+    private ManagementObjectSearcher _searcher = new ManagementObjectSearcher("select * from Win32_Processor");
     
     /// <summary>
     /// Retrieves the current os information from the system.
@@ -23,7 +24,7 @@ public class OsCollector : DataCollector {
 
         try {
             ManagementObject? queryObj =
-                osInformation.WmiSearcher.Get().OfType<ManagementObject>().FirstOrDefault();
+                _searcher.Get().OfType<ManagementObject>().FirstOrDefault();
 
             if (queryObj != null) {
                 string? osName = queryObj["Caption"].ToString();
@@ -38,21 +39,21 @@ public class OsCollector : DataCollector {
                 }
 
                 if (osName != null && osVersion != null && osBuild != null) {
-                    osInformation.OsName = osName;
-                    osInformation.OsVersion = osVersion;
-                    osInformation.OsBuild = osBuild;
+                    osInformation.InformationAgents[0].Value = osName;
+                    osInformation.InformationAgents[1].Value = osVersion;
+                    osInformation.InformationAgents[2].Value = osBuild;
                 }
                 else {
-                    osInformation.OsName = "Unknown OS";
-                    osInformation.OsVersion = "Unknown Version";
-                    osInformation.OsBuild = "Unknown Build Number";
+                    osInformation.InformationAgents[0].Value = "Unknown OS";
+                    osInformation.InformationAgents[1].Value = "Unknown Version";
+                    osInformation.InformationAgents[2].Value = "Unknown Build Number";
                 }
             }
         }
         catch (Exception ex) {
-            osInformation.OsName = "Unknown OS";
-            osInformation.OsVersion = "Unknown Version";
-            osInformation.OsBuild = "Unknown Build Number";
+            osInformation.InformationAgents[0].Value = "Unknown OS";
+            osInformation.InformationAgents[1].Value = "Unknown Version";
+            osInformation.InformationAgents[2].Value = "Unknown Build Number";
             Console.WriteLine(ex.Message);
         }
 

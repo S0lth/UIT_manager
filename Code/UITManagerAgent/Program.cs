@@ -1,10 +1,17 @@
 using System.Runtime.Versioning;
 using UITManagerAgent;
+using UITManagerAgent.BasicInformation;
+using UITManagerAgent.DataCollectors;
 
 [SupportedOSPlatform("windows")]
 public class Program {
 
     public static async Task Main(string[] args) {
+        
+        MachineInformation machineInformation = new();
+        machineInformation.GetValue();
+        Console.WriteLine(machineInformation.ToJson());
+        
         using (TaskSchedulerAgent scheduler = new TaskSchedulerAgent(2, SendMachineInformation))
         {
             Console.WriteLine("=> Task scheduler is running. Press Enter to exit...");
@@ -23,7 +30,7 @@ public class Program {
     /// </returns>
     [SupportedOSPlatform("windows")]
     private static async Task<Task> SendMachineInformation() {
-        ApiCommunicator apiCommunicator = new ApiCommunicator("api/v1/agent");
+        ApiCommunicator apiCommunicator = new ApiCommunicator("api/v1.0/agent");
         MachineInformation machineInformation = new MachineInformation();
         Console.WriteLine(machineInformation.ToJson());
         bool success = await apiCommunicator.SendMachineInformationAsync(machineInformation);

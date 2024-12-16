@@ -20,7 +20,7 @@ public class ModelCollectors : DataCollector {
         ManagementObject? managementObject = collection.OfType<ManagementObject>().FirstOrDefault();
 
         if (managementObject != null) {
-            modelInformation.Model = managementObject["Model"]?.ToString() ?? "Unknown Model";
+            modelInformation.Model.Value = managementObject["Model"]?.ToString() ?? "Unknown Model";
         }
 
         return modelInformation;

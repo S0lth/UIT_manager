@@ -27,9 +27,14 @@ public class RamCollector : DataCollector {
         ManagementObject? memObj = moc.Cast<ManagementObject>().FirstOrDefault();
 
         if (memObj != null) {
-            ramInformation.TotalRam = Convert.ToUInt64(memObj["TotalVisibleMemorySize"]);
-            ramInformation.FreeRam = Convert.ToUInt64(memObj["FreePhysicalMemory"]);
-            ramInformation.UsedRam = ramInformation.TotalRam - ramInformation.FreeRam;
+            
+            ulong ramTot = Convert.ToUInt64(memObj["TotalVisibleMemorySize"]);
+            ulong ramFree = Convert.ToUInt64(memObj["FreePhysicalMemory"]);
+            ulong ramUsed = ramTot - ramFree;
+            
+            ramInformation.InformationAgents[0].Value = (ramTot / (float)(1024 * 1024)).ToString("F2");
+            ramInformation.InformationAgents[1].Value = (ramUsed / (float)(1024 * 1024)).ToString("F2");
+            ramInformation.InformationAgents[2].Value = (ramFree / (float)(1024 * 1024)).ToString("F2");
         }
 
         return ramInformation;
