@@ -113,10 +113,10 @@ namespace UITManagerApi.Controllers
                 ProcessInformationAgent(info, machine, machine.Informations);
             }
             
-            _context.Machines.Add(machine);
+            _context.Machines.Update(machine);
             await _context.SaveChangesAsync();
 
-            await _hubContext.Clients.All.SendAsync("ReceiveMessage", 403);
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", machine.Id);
             return CreatedAtAction("GetMachine", new { id = machine.Id }, machine);
         }
         
