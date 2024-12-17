@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using UITManagerApi.Data;
+using UITManagerApi.Hubs;
 using UITManagerApi.Models;
 
 namespace UITManagerApi.Controllers
@@ -17,10 +19,12 @@ namespace UITManagerApi.Controllers
     public class AgentController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<ApiHub> _hubContext;
 
-        public AgentController(ApplicationDbContext context)
+        public AgentController(ApplicationDbContext context,IHubContext<ApiHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // GET: api/Agent
@@ -31,19 +35,6 @@ namespace UITManagerApi.Controllers
         }
 
         // GET: api/Agent/5
-        /*[HttpGet("{id}")]
-        public async Task<ActionResult<Machine>> GetMachine(int id)
-        {
-            var machine = await _context.Machines.FindAsync(id);
-
-            if (machine == null)
-            {
-                return NotFound();
-            }
-
-            return machine;
-        }*/
-        
         [HttpGet("{id}")]
         public async Task<ActionResult<Machine>> GetMachine(int id)
         {
@@ -117,41 +108,6 @@ namespace UITManagerApi.Controllers
             Machine machine = new Machine {
                 Name = machineAgent.Name, Model = machineAgent.Model, IsWorking = true, LastSeen = DateTime.UtcNow
             };
-
-            /*foreach (InformationAgent info in machineAgent.Informations) {
-
-                if (info.InformationAgents.Count == 0) {
-                    machine.Informations.Add(
-                        new Value { Machine = machine, Name = info.Name, Value = info.Value, Format = info.Format }
-                    );
-                }
-                else {
-                    var component = new Component { Machine = machine, Name = info.Name, Value = info.Value, Format = info.Format};
-                    foreach(InformationAgent infoAgent in info.InformationAgents) {
-                        if (infoAgent.InformationAgents.Count == 0) {
-                            component.Children.Add(
-                                new Value { Machine = machine, Name = infoAgent.Name, Value = infoAgent.Value, Format = infoAgent.Format }
-                            );
-                        }
-                        else {
-                            var component2 = new Component { Machine = machine, Name = infoAgent.Name, Value = infoAgent.Value, Format = infoAgent.Format};
-                            foreach(InformationAgent infoAgent2 in infoAgent.InformationAgents) {
-                                if (infoAgent2.InformationAgents.Count == 0) {
-                                    component.Children.Add(
-                                        new Value { Machine = machine, Name = infoAgent2.Name, Value = infoAgent2.Value, Format = infoAgent2.Format }
-                                    );
-                                }
-                                else {
-                                    var component3 = new Component { Machine = machine, Name = infoAgent2.Name, Value = infoAgent2.Value, Format = infoAgent2.Format};
-
-                                }
-                            }
-                            component.Children.Add(component2);
-                        }
-                    }
-                    machine.Informations.Add(component);
-                }
-            }*/
             
             foreach (var info in machineAgent.Informations) {
                 ProcessInformationAgent(info, machine, machine.Informations);
@@ -160,6 +116,7 @@ namespace UITManagerApi.Controllers
             _context.Machines.Add(machine);
             await _context.SaveChangesAsync();
 
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", 10);
             return CreatedAtAction("GetMachine", new { id = machine.Id }, machine);
         }
         
