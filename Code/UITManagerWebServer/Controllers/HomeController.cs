@@ -16,14 +16,16 @@ namespace UITManagerWebServer.Controllers {
             _context = context;
         }
 
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
         private void SetBreadcrumb(ActionExecutingContext context) {
             List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
 
             breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
-
-
-            string currentAction = context.ActionDescriptor.RouteValues["action"];
-
 
             if (context.ActionArguments.ContainsKey("tab")) {
                 string tab = context.ActionArguments["tab"].ToString();

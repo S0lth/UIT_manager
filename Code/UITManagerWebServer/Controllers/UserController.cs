@@ -13,6 +13,12 @@ namespace UITManagerWebServer.Controllers {
             _context = context;
         }
         
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
         private void SetBreadcrumb(ActionExecutingContext context) {
             List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
 
@@ -33,14 +39,6 @@ namespace UITManagerWebServer.Controllers {
             switch (currentAction) {
                 case "Index":
                     breadcrumbs.Last().IsActive = true; 
-                    break;
-
-                case "ToggleIsActive":
-                    breadcrumbs.Add(new BreadcrumbItem { 
-                        Title = "Modify Activation", 
-                        Url = string.Empty, 
-                        IsActive = true 
-                    });
                     break;
             }
 

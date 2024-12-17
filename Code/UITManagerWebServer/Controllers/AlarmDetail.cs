@@ -18,6 +18,12 @@ namespace UITManagerWebServer {
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
         private void SetBreadcrumb(ActionExecutingContext context) {
             List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
 
@@ -46,17 +52,18 @@ namespace UITManagerWebServer {
                     });
                     
                     break;
-
-                case "Create":
-                    breadcrumbs.Add(new BreadcrumbItem {
-                        Title = "Create an alarm", Url = string.Empty, IsActive = true
-                    });
-                    break;
-
+                
                 case "Edit":
-                    breadcrumbs.Add(new BreadcrumbItem {
-                        Title = "Edit alarm ", Url = string.Empty, IsActive = true
-                    });
+                    alarmId = Convert.ToInt32(context.ActionArguments["id"]);
+                    alarm = _context.Alarms.FirstOrDefault(a => a.Id == alarmId);
+                    
+                    if (alarm != null) {
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = "Edit machine's Alarm",
+                            Url = string.Empty,
+                            IsActive = true
+                        });
+                    }
                     break;
 
                 case "Delete":

@@ -17,13 +17,19 @@ namespace UITManagerWebServer.Controllers {
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
         private void SetBreadcrumb(ActionExecutingContext context) {
             List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
 
             breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
 
             breadcrumbs.Add(new BreadcrumbItem {
-                Title = "Alarm Settings", Url = Url.Action("Index", "AlarmSettings"), IsActive = false
+                Title = "Alarms", Url = Url.Action("Index", "AlarmSettings"), IsActive = false
             });
 
             string currentAction = context.ActionDescriptor.RouteValues["action"];
@@ -51,26 +57,9 @@ namespace UITManagerWebServer.Controllers {
 
                 case "Create":
                     breadcrumbs.Add(new BreadcrumbItem {
-                        Title = "Alarm's settings - Create : ", Url = string.Empty, IsActive = true
+                        Title = "Create an alarm", Url = string.Empty, IsActive = true
                     });
 
-                    break;
-
-                case "Delete":
-                    normGroupId = Convert.ToInt32(context.ActionArguments["id"]);
-                    normGroup = _context.NormGroups.FirstOrDefault(a => a.Id == normGroupId);
-
-                    if (normGroup != null) {
-                        breadcrumbs.Add(new BreadcrumbItem {
-                            Title = "Alarm's settings - Delete : " + normGroup.Name, Url = string.Empty, IsActive = true
-                        });
-                    }
-
-                    break;
-
-                case "ToggleIsEnable":
-                    breadcrumbs.Add(
-                        new BreadcrumbItem { Title = "Enable/Disable Alarm", Url = string.Empty, IsActive = true });
                     break;
             }
 
@@ -78,7 +67,7 @@ namespace UITManagerWebServer.Controllers {
                 string id = context.ActionDescriptor.RouteValues["id"];
                 if (int.TryParse(id, out int normGroupId2)) {
                     breadcrumbs.Add(new BreadcrumbItem {
-                        Title = $"Norm Group {normGroupId2}", Url = string.Empty, IsActive = true
+                        Title = $"Criteria Group {normGroupId2}", Url = string.Empty, IsActive = true
                     });
                 }
             }

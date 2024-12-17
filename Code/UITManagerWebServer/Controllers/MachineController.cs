@@ -28,10 +28,6 @@ namespace UITManagerWebServer.Controllers {
             string currentAction = context.ActionDescriptor.RouteValues["action"];
 
             switch (currentAction) {
-                case "Index":
-                    breadcrumbs.Last().IsActive = true;
-                    break;
-
                 case "Details":
                     int machineId = Convert.ToInt32(context.ActionArguments["id"]);
                     var machine = _context.Machines.FirstOrDefault(a => a.Id == machineId);
@@ -43,7 +39,6 @@ namespace UITManagerWebServer.Controllers {
                         });
                     }
                     break;
-
             }
 
             ViewData["Breadcrumbs"] = breadcrumbs;

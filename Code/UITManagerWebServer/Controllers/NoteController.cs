@@ -10,83 +10,64 @@ using File = UITManagerWebServer.Models.File;
 using Ganss.Xss;
 
 
-namespace UITManagerWebServer.Controllers
-{
-    public class NoteController : Controller
-    {
+namespace UITManagerWebServer.Controllers {
+    public class NoteController : Controller {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public NoteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
-        {
+        public NoteController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
             _userManager = userManager;
         }
-        
-        private void SetBreadcrumb(ActionExecutingContext context)
-        {
+
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
+        private void SetBreadcrumb(ActionExecutingContext context) {
             List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
 
-            breadcrumbs.Add(new BreadcrumbItem {
-                Title = "Home",
-                Url = Url.Action("Index", "Home"),
-                IsActive = false
-            });
+            breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
 
             breadcrumbs.Add(new BreadcrumbItem {
-                Title = "Notes",
-                Url = Url.Action("Index", "Note"),
-                IsActive = false
+                Title = "Notes", Url = Url.Action("Index", "Note"), IsActive = false
             });
 
             string currentAction = context.ActionDescriptor.RouteValues["action"];
 
-            switch (currentAction)
-            {
+            switch (currentAction) {
                 case "Index":
                     breadcrumbs.Last().IsActive = true;
                     break;
 
                 case "Create":
-                    breadcrumbs.Add(new BreadcrumbItem {
-                        Title = "Create Note",
-                        Url = string.Empty,
-                        IsActive = true
-                    });
+                    breadcrumbs.Add(new BreadcrumbItem { Title = "Create Note", Url = string.Empty, IsActive = true });
                     break;
-                
+
                 case "Details":
                     int noteId = Convert.ToInt32(context.ActionArguments["id"]);
                     var note = _context.Notes.FirstOrDefault(a => a.Id == noteId);
                     if (note != null) {
-                        breadcrumbs.Add(new BreadcrumbItem {
-                            Title = note.Title,
-                            Url = string.Empty,
-                            IsActive = true
-                        });
+                        breadcrumbs.Add(new BreadcrumbItem { Title = note.Title, Url = string.Empty, IsActive = true });
                     }
+
                     break;
 
                 case "Edit":
-                    breadcrumbs.Add(new BreadcrumbItem {
-                        Title = "Edit Note",
-                        Url = string.Empty,
-                        IsActive = true
-                    });
-                    break;
+                    noteId = Convert.ToInt32(context.ActionArguments["id"]);
+                    note = _context.Notes.FirstOrDefault(a => a.Id == noteId);
+                    if (note != null) {
+                        breadcrumbs.Add(new BreadcrumbItem { Title = note.Title, Url = string.Empty, IsActive = true });
+                    }
 
-                case "Delete":
-                    breadcrumbs.Add(new BreadcrumbItem {
-                        Title = "Delete Note",
-                        Url = string.Empty,
-                        IsActive = true
-                    });
                     break;
             }
 
             ViewData["Breadcrumbs"] = breadcrumbs;
         }
-        
+
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
 
@@ -98,16 +79,14 @@ namespace UITManagerWebServer.Controllers
         // GET: Notes
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Index(string search, bool? isSolution, string authorId, string sortOrder)
-        {
+        public async Task<IActionResult> Index(string search, bool? isSolution, string authorId, string sortOrder) {
             ViewData["Search"] = search;
             ViewData["IsSolution"] = isSolution;
             ViewData["AuthorId"] = authorId;
 
             ViewBag.Authors = await _context.Users.ToListAsync();
-            
-            if (string.IsNullOrEmpty(sortOrder))
-            {
+
+            if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "createdat";
             }
 
@@ -119,9 +98,8 @@ namespace UITManagerWebServer.Controllers
             ViewData["IsSolutionSortParm"] = sortOrder == "issolution" ? "issolution_desc" : "issolution";
 
             IQueryable<Note> notesQuery = _context.Notes.Include(n => n.Author).Include(n => n.Machine).AsQueryable();
-            
-            if (!string.IsNullOrEmpty(search))
-            {
+
+            if (!string.IsNullOrEmpty(search)) {
                 notesQuery = notesQuery.Where(n =>
                     n.Title.Contains(search) ||
                     n.Content.Contains(search) ||
@@ -130,18 +108,15 @@ namespace UITManagerWebServer.Controllers
                 );
             }
 
-            if (isSolution.HasValue)
-            {
+            if (isSolution.HasValue) {
                 notesQuery = notesQuery.Where(n => n.IsSolution == isSolution);
             }
 
-            if (!string.IsNullOrEmpty(authorId))
-            {
+            if (!string.IsNullOrEmpty(authorId)) {
                 notesQuery = notesQuery.Where(n => n.AuthorId == authorId);
             }
 
-            switch (sortOrder)
-            {
+            switch (sortOrder) {
                 case "title":
                     notesQuery = notesQuery.OrderBy(n => n.Title);
                     break;
@@ -185,25 +160,21 @@ namespace UITManagerWebServer.Controllers
         // GET: Notes/Details/5
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Details(int? id) {
+            if (id == null) {
                 return NotFound();
             }
-            
+
             Note? note = await _context.Notes
                 .Include(n => n.Author)
                 .Include(n => n.Machine)
                 .Include(n => n.Files)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (note == null)
-            {
+            if (note == null) {
                 return NotFound();
             }
-            
-            foreach (File file in note.Files)
-            {
+
+            foreach (File file in note.Files) {
                 string fileUrl = $"{Request.Scheme}://{Request.Host}/files/{file.Id}";
                 note.Content = note.Content.Replace($"({file.FileName})", $"({fileUrl})");
             }
@@ -212,8 +183,7 @@ namespace UITManagerWebServer.Controllers
         }
 
         // GET: Notes/Create
-        public async Task<IActionResult> Create(int id)
-        {
+        public async Task<IActionResult> Create(int id) {
             ViewData["AuthorId"] = new SelectList(_context.Users, "Id", "Id");
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id");
             ViewData["Machine"] = id;
@@ -221,10 +191,9 @@ namespace UITManagerWebServer.Controllers
             ViewData["CurrentUser"] = user;
             return View();
         }
-        
+
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadImage(IFormFile file)
-        {
+        public async Task<IActionResult> UploadImage(IFormFile file) {
             if (file == null || file.Length == 0)
                 return BadRequest("No Files.");
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
@@ -244,11 +213,9 @@ namespace UITManagerWebServer.Controllers
                 await file.CopyToAsync(stream);
             }*/
 
-            using (var memoryStream = new MemoryStream())
-            {
+            using (var memoryStream = new MemoryStream()) {
                 await file.CopyToAsync(memoryStream);
-                var newFile = new File
-                {
+                var newFile = new File {
                     FileName = fileName,
                     FileContent = memoryStream.ToArray(),
                     MimeType = file.ContentType,
@@ -257,6 +224,7 @@ namespace UITManagerWebServer.Controllers
                 _context.Files.Add(newFile);
                 await _context.SaveChangesAsync();
             }
+
             return Ok(new { url = $"{fileName}", fileName });
         }
 
@@ -269,10 +237,10 @@ namespace UITManagerWebServer.Controllers
             // avoid xss injections
             var sanitizer = new HtmlSanitizer();
             note.Content = sanitizer.Sanitize(note.Content);
-            
+
             // avoid ID duplication 
             Note newNote = new Note {
-                CreatedAt = DateTime.UtcNow, 
+                CreatedAt = DateTime.UtcNow,
                 Content = note.Content,
                 MachineId = note.MachineId,
                 AuthorId = note.AuthorId,
@@ -281,21 +249,20 @@ namespace UITManagerWebServer.Controllers
                 Title = note.Title
             };
             _context.Add(newNote);
-            
+
             await _context.SaveChangesAsync();
-            
+
             var tempFiles = await _context.Files
                 .Where(f => f.IsTemporary)
                 .ToListAsync();
 
-            foreach (var file in tempFiles)
-            {
+            foreach (var file in tempFiles) {
                 if (!note.Content.Contains(file.FileName)) {
                     _context.Files.Remove(file);
                 }
                 else {
                     file.NoteId = newNote.Id;
-                    file.IsTemporary = false;    
+                    file.IsTemporary = false;
                 }
             }
 
@@ -308,18 +275,16 @@ namespace UITManagerWebServer.Controllers
         // GET: Notes/Edit/5
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Edit(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
             Note? note = await _context.Notes.FindAsync(id);
-            if (note == null)
-            {
+            if (note == null) {
                 return NotFound();
             }
+
             ViewData["AuthorId"] = new SelectList(_context.Users, "Id", "Id", note.AuthorId);
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id", note.MachineId);
             return View(note);
@@ -329,33 +294,29 @@ namespace UITManagerWebServer.Controllers
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Content,CreatedAt,AuthorId,MachineId,IsSolution")] Note note)
-        {
-            if (id != note.Id)
-            {
+        public async Task<IActionResult> Edit(int id,
+            [Bind("Id,Content,CreatedAt,AuthorId,MachineId,IsSolution")] Note note) {
+            if (id != note.Id) {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
+            if (ModelState.IsValid) {
+                try {
                     _context.Update(note);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!NoteExists(note.Id))
-                    {
+                catch (DbUpdateConcurrencyException) {
+                    if (!NoteExists(note.Id)) {
                         return NotFound();
                     }
-                    else
-                    {
+                    else {
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["AuthorId"] = new SelectList(_context.Users, "Id", "Id", note.AuthorId);
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id", note.MachineId);
             return View(note);
@@ -364,10 +325,8 @@ namespace UITManagerWebServer.Controllers
         // GET: Notes/Delete/5
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
+        public async Task<IActionResult> Delete(int? id) {
+            if (id == null) {
                 return NotFound();
             }
 
@@ -375,8 +334,7 @@ namespace UITManagerWebServer.Controllers
                 .Include(n => n.Author)
                 .Include(n => n.Machine)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (note == null)
-            {
+            if (note == null) {
                 return NotFound();
             }
 
@@ -387,11 +345,9 @@ namespace UITManagerWebServer.Controllers
         [HttpPost, ActionName("Delete")]
         [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
             Note? note = await _context.Notes.FindAsync(id);
-            if (note != null)
-            {
+            if (note != null) {
                 _context.Notes.Remove(note);
             }
 
@@ -399,8 +355,7 @@ namespace UITManagerWebServer.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool NoteExists(int id)
-        {
+        private bool NoteExists(int id) {
             return _context.Notes.Any(e => e.Id == id);
         }
     }
