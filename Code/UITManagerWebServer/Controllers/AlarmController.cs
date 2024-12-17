@@ -18,8 +18,40 @@ namespace UITManagerWebServer.Controllers {
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Raised Alarms", Url = Url.Action("Index", "Alarm"), IsActive = false
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+
+            switch (currentAction) {
+                case "Index":
+                    breadcrumbs.Last().IsActive = true; 
+                    break;
+
+                case "Details":
+                    breadcrumbs.Add(new BreadcrumbItem { Title = "Details", Url = string.Empty, IsActive = true });
+                    break;
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
 
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
@@ -49,8 +81,8 @@ namespace UITManagerWebServer.Controllers {
                 .Include(a => a.User)
                 .AsQueryable()
                 .Where(a => a.AlarmHistories
-                    .OrderByDescending(h => h.ModificationDate) 
-                    .FirstOrDefault()! 
+                    .OrderByDescending(h => h.ModificationDate)
+                    .FirstOrDefault()!
                     .StatusType.Name != "Resolved");
 
             if (!string.IsNullOrEmpty(search)) {
@@ -155,7 +187,8 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound(new { success = false, message = "Alarm not found." });
             }
 
-            AlarmStatusType? statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
+            AlarmStatusType? statusType =
+                await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
             if (statusType == null) {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
@@ -163,24 +196,19 @@ namespace UITManagerWebServer.Controllers {
             string userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             AlarmStatusHistory newAlarmHistory = new AlarmStatusHistory {
-                StatusTypeId = statusType.Id, 
-                ModificationDate = DateTime.UtcNow, 
-                UserId = userId
+                StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, UserId = userId
             };
 
             alarm.AlarmHistories.Add(newAlarmHistory);
 
             try {
                 await _context.SaveChangesAsync();
-        
+
                 return PartialView("_AlertMessage", new { success = true, message = "Status updated successfully." });
             }
             catch (Exception ex) {
-                return StatusCode(500, new {
-                    success = false,
-                    message = "An error occurred while updating status.",
-                    error = ex.Message
-                });
+                return StatusCode(500,
+                    new { success = false, message = "An error occurred while updating status.", error = ex.Message });
             }
         }
 
@@ -223,7 +251,8 @@ namespace UITManagerWebServer.Controllers {
 
                 await _context.SaveChangesAsync();
 
-                return PartialView("_AlertMessage", new { success = true, message = "Attribution updated successfully." });
+                return PartialView("_AlertMessage",
+                    new { success = true, message = "Attribution updated successfully." });
             }
             catch (Exception ex) {
                 return StatusCode(500,
