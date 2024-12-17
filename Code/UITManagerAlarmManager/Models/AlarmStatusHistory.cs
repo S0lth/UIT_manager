@@ -1,4 +1,4 @@
-﻿namespace UITManagerWebServer.Models {
+﻿namespace UITManagerAlarmManager.Models {
 
     /// <summary>
     /// Represents a record of changes made to the status of an alarm.

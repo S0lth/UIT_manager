@@ -1,4 +1,4 @@
-﻿namespace UITManagerWebServer.Models {
+﻿namespace UITManagerAlarmManager.Models {
     /// <summary>
     /// Represents a specific norm, which belongs to a norm group and may define compliance standards.
     /// </summary>

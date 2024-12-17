@@ -1,4 +1,4 @@
-﻿namespace UITManagerWebServer.Models {
+﻿namespace UITManagerAlarmManager.Models {
     /// <summary>
     /// Represents the type of an alarm status, providing details such as name and description.
     /// </summary>

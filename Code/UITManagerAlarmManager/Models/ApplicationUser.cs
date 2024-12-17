@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace UITManagerWebServer.Models {
+namespace UITManagerAlarmManager.Models {
     public class ApplicationUser : IdentityUser{
        public string FirstName { get; set; }
        public string LastName { get; set; }

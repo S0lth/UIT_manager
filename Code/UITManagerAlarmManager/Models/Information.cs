@@ -1,4 +1,4 @@
-﻿namespace UITManagerWebServer.Models {
+﻿namespace UITManagerAlarmManager.Models {
     public abstract class Information {
         public int Id { get; set; }
         public string Name { get; set; }

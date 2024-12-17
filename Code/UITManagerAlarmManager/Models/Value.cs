@@ -1,4 +1,4 @@
-﻿namespace UITManagerWebServer.Models {
+﻿namespace UITManagerAlarmManager.Models {
     public class Value : Information {
         
     }
