@@ -24,31 +24,6 @@ public class RamInformationTest {
     }
 
     /// <summary>
-    /// Tests the <see cref="RamInformation.ToString"/> method to ensure it returns the correct format.
-    /// </summary>
-    /*
-    [TestMethod]
-    public void Test_ToString_ReturnsCorrectFormat() {
-        ulong TotalRam = 8 * 1024 * 1024;
-        ulong UsedRam = 5 * 1024 * 1024;
-        ulong FreeRam = TotalRam - UsedRam;
-
-        if (_ramInformation != null) {
-            _ramInformation.InformationAgents[0].Value = (8 * 1024 * 1024)+"";
-            _ramInformation.InformationAgents[1].Value  = (5 * 1024 * 1024)+"";
-            _ramInformation.InformationAgents[2].Value  = (3 * 1024 * 1024)+"";
-
-            string result = _ramInformation.ToString();
-
-            string expected = $"Total memory : {TotalRam / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
-                              $"Used memory : {UsedRam / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
-                              $"Free memory : {FreeRam / (float)(1024 * 1024):F2} GB";
-
-            Assert.AreEqual(expected, result);
-        }
-    }*/
-
-    /// <summary>
     /// Tests setting memory values to ensure they are stored correctly.
     /// </summary>
     [TestMethod]
