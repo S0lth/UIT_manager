@@ -17,8 +17,80 @@ namespace UITManagerWebServer.Controllers {
             _userManager = userManager;
         }
 
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Alarm Settings", Url = Url.Action("Index", "AlarmSettings"), IsActive = false
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+            string controllerName = context.ActionDescriptor.RouteValues["controller"];
+
+
+            switch (currentAction) {
+                case "Index":
+                    breadcrumbs.Last().IsActive = true;
+                    break;
+                
+                case "Details":
+                    int normGroupId = Convert.ToInt32(context.ActionArguments["id"]);
+                    var normGroup = _context.NormGroups.FirstOrDefault(a => a.Id == normGroupId);
+                    
+                    if (normGroup != null) {
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = normGroup.Name,
+                            Url = string.Empty,
+                            IsActive = true
+                        });
+                    }
+
+                    break;
+
+                case "Create":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Alarm's settings - Create : ", Url = string.Empty, IsActive = true
+                    });
+
+                    break;
+
+                case "Delete":
+                    normGroupId = Convert.ToInt32(context.ActionArguments["id"]);
+                    normGroup = _context.NormGroups.FirstOrDefault(a => a.Id == normGroupId);
+
+                    if (normGroup != null) {
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = "Alarm's settings - Delete : " + normGroup.Name, Url = string.Empty, IsActive = true
+                        });
+                    }
+
+                    break;
+
+                case "ToggleIsEnable":
+                    breadcrumbs.Add(
+                        new BreadcrumbItem { Title = "Enable/Disable Alarm", Url = string.Empty, IsActive = true });
+                    break;
+            }
+
+            if (controllerName == "AlarmSettings" && context.ActionDescriptor.RouteValues.ContainsKey("id")) {
+                string id = context.ActionDescriptor.RouteValues["id"];
+                if (int.TryParse(id, out int normGroupId2)) {
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = $"Norm Group {normGroupId2}", Url = string.Empty, IsActive = true
+                    });
+                }
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+
+
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
 
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
@@ -54,7 +126,7 @@ namespace UITManagerWebServer.Controllers {
             ViewData["PrioritySortParam"] = sortOrder == "Priority" ? "Priority_desc" : "Priority";
             ViewData["NbAlarmSortParam"] = sortOrder == "NbAlarm" ? "NbAlarm_desc" : "NbAlarm";
             ViewData["EnableSortParam"] = sortOrder == "Enable" ? "Enable_desc" : "Enable";
-            
+
             viewModels = sortOrder switch {
                 "AlarmGroup_desc" => viewModels.OrderByDescending(vm => vm.NormGroupName).ToList(),
                 "AlarmGroup" => viewModels.OrderBy(vm => vm.NormGroupName).ToList(),
@@ -91,7 +163,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Delete(int id) {
             NormGroup? normGroup = await _context.NormGroups.FindAsync(id);
@@ -146,7 +218,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public IActionResult DeleteNorm(int normId) {
             int id = 0;
@@ -161,8 +233,8 @@ namespace UITManagerWebServer.Controllers {
 
             return RedirectToAction("Edit", new { id = id });
         }
-        
-        [HttpGet] 
+
+        [HttpGet]
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Edit(int id) {
             NormGroup? normGroup = await _context.NormGroups
@@ -199,7 +271,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Edit(NormGroupModel model, string expected) {
             NormGroup? normGroup = await _context.NormGroups
@@ -283,9 +355,9 @@ namespace UITManagerWebServer.Controllers {
 
             return RedirectToAction("Details", new { id = model.Id });
         }
-        
+
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> ToggleIsEnable(int id, bool isEnable) {
             NormGroup? normGroup = await _context.NormGroups.FindAsync(id);
@@ -311,9 +383,9 @@ namespace UITManagerWebServer.Controllers {
             ViewData["SeveritiesName"] = await _context.Severities.ToListAsync();
             return View();
         }
-        
+
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "MaintenanceManager, ITDirector")]
         public async Task<IActionResult> Create(NormGroupModel normGroupModel, string expected) {
             Regex regex = new Regex(@"^(\d{1,3})\s(\d{2}):(\d{2}):(\d{2})$");
@@ -373,9 +445,9 @@ namespace UITManagerWebServer.Controllers {
             return await _context.Alarms
                 .Where(a => a.NormGroup.Name == normGroupName &&
                             a.AlarmHistories
-                                .OrderByDescending(h => h.ModificationDate) 
-                                .FirstOrDefault()! 
-                                .StatusType.Name != "Resolved") 
+                                .OrderByDescending(h => h.ModificationDate)
+                                .FirstOrDefault()!
+                                .StatusType.Name != "Resolved")
                 .CountAsync();
         }
 

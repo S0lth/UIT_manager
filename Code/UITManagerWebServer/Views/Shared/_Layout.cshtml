@@ -69,6 +69,12 @@
     </nav>
 </header>
 
+<div class="container mt-2">
+    @if (ViewData["Breadcrumbs"] != null) {
+        var breadcrumbs = ViewData["Breadcrumbs"] as List<BreadcrumbItem>;
+        @Html.Partial("_Breadcrumb", breadcrumbs)
+    }
+</div>
 
 <main role="main" class="pb-3">
     @RenderBody()

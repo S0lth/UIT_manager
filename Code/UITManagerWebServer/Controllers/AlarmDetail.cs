@@ -18,8 +18,62 @@ namespace UITManagerWebServer {
             _userManager = userManager;
         }
 
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+
+            switch (currentAction) {
+                case "Index":
+                    int alarmId = Convert.ToInt32(context.ActionArguments["id"]);
+                    var alarm = _context.Alarms.FirstOrDefault(a => a.Id == alarmId);
+                    if (alarm != null) {
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = "Machine's Alarm Details",
+                            Url = string.Empty,
+                            IsActive = true
+                        });
+                    }
+                    break;
+
+                case "Details":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Alarm's details", Url = string.Empty, IsActive = true
+                    });
+                    
+                    break;
+
+                case "Create":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Create an alarm", Url = string.Empty, IsActive = true
+                    });
+                    break;
+
+                case "Edit":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Edit alarm ", Url = string.Empty, IsActive = true
+                    });
+                    break;
+
+                case "Delete":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Delete alarm", Url = string.Empty, IsActive = true
+                    });
+                    break;
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+
+
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
 
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
@@ -42,7 +96,7 @@ namespace UITManagerWebServer {
             ViewData["AuthorSortParm"] = sortOrder.Contains("author_desc") ? "author" : "author_desc";
 
             Alarm? alarm = await getAlarm(id);
-            
+
             if (alarm == null) {
                 return NotFound();
             }
@@ -118,7 +172,7 @@ namespace UITManagerWebServer {
                     return query.OrderByDescending(n => n.CreatedAt);
             }
         }
-        
+
         [Authorize]
         public List<Information> FindMatchingInformations(int machineId, string informationName) {
             Machine? machine = _context.Machines
@@ -132,12 +186,12 @@ namespace UITManagerWebServer {
             List<Information> matchingInformations = machine.Informations
                 .SelectMany(info => info.Children)
                 .Where(child =>
-                    child.Name.Equals(informationName, StringComparison.OrdinalIgnoreCase)) 
+                    child.Name.Equals(informationName, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
             return matchingInformations;
         }
-        
+
         private async Task<List<Note>> FetchFilteredNotes(string solutionFilter, string authorFilter,
             string sortOrderNote) {
             IQueryable<Note> notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
@@ -182,9 +236,9 @@ namespace UITManagerWebServer {
 
             return alarm;
         }
-        
+
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Authorize]
         [Route("AlarmDetail/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
@@ -200,7 +254,8 @@ namespace UITManagerWebServer {
                 return NotFound(new { success = false, message = "Alarm not found." });
             }
 
-            AlarmStatusType? statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
+            AlarmStatusType? statusType =
+                await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
             if (statusType == null) {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
@@ -222,9 +277,9 @@ namespace UITManagerWebServer {
                 return StatusCode(500, new { success = false, message = "An error occurred while updating status." });
             }
         }
-        
+
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
         [Route("AlarmDetail/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
@@ -413,7 +468,7 @@ namespace UITManagerWebServer {
         private bool AlarmExists(int id) {
             return _context.Alarms.Any(e => e.Id == id);
         }
-        
+
         private IQueryable<Alarm> ApplySorting(IQueryable<Alarm> query, string sortOrder) {
             if (string.IsNullOrEmpty(sortOrder)) {
                 return query.OrderByDescending(a => a.TriggeredAt);
@@ -465,6 +520,6 @@ namespace UITManagerWebServer {
 
     public class UpdateAssignedUserRequest {
         public string Id { get; set; }
-        public string UserId { get; set; } 
+        public string UserId { get; set; }
     }
 }

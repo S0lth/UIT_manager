@@ -22,10 +22,76 @@ namespace UITManagerWebServer.Controllers
             _context = context;
             _userManager = userManager;
         }
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            base.OnActionExecuting(context);
         
+        private void SetBreadcrumb(ActionExecutingContext context)
+        {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Home",
+                Url = Url.Action("Index", "Home"),
+                IsActive = false
+            });
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Notes",
+                Url = Url.Action("Index", "Note"),
+                IsActive = false
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+
+            switch (currentAction)
+            {
+                case "Index":
+                    breadcrumbs.Last().IsActive = true;
+                    break;
+
+                case "Create":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Create Note",
+                        Url = string.Empty,
+                        IsActive = true
+                    });
+                    break;
+                
+                case "Details":
+                    int noteId = Convert.ToInt32(context.ActionArguments["id"]);
+                    var note = _context.Notes.FirstOrDefault(a => a.Id == noteId);
+                    if (note != null) {
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = note.Title,
+                            Url = string.Empty,
+                            IsActive = true
+                        });
+                    }
+                    break;
+
+                case "Edit":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Edit Note",
+                        Url = string.Empty,
+                        IsActive = true
+                    });
+                    break;
+
+                case "Delete":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Delete Note",
+                        Url = string.Empty,
+                        IsActive = true
+                    });
+                    break;
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+        
+        public override void OnActionExecuting(ActionExecutingContext context) {
+            base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
+
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
