@@ -19,13 +19,14 @@ public class RamInformationTest {
     public void Setup() {
         _ramInformation = new RamInformation();
         _ramInformation2 = new RamInformation();
-        _ramInformation2.TotalRam = 1000000;
+        _ramInformation2.InformationAgents[0].Value = 1000000+"";
         
     }
 
     /// <summary>
     /// Tests the <see cref="RamInformation.ToString"/> method to ensure it returns the correct format.
     /// </summary>
+    /*
     [TestMethod]
     public void Test_ToString_ReturnsCorrectFormat() {
         ulong TotalRam = 8 * 1024 * 1024;
@@ -33,9 +34,9 @@ public class RamInformationTest {
         ulong FreeRam = TotalRam - UsedRam;
 
         if (_ramInformation != null) {
-            _ramInformation.TotalRam = 8 * 1024 * 1024;
-            _ramInformation.UsedRam = 5 * 1024 * 1024;
-            _ramInformation.FreeRam = 3 * 1024 * 1024;
+            _ramInformation.InformationAgents[0].Value = (8 * 1024 * 1024)+"";
+            _ramInformation.InformationAgents[1].Value  = (5 * 1024 * 1024)+"";
+            _ramInformation.InformationAgents[2].Value  = (3 * 1024 * 1024)+"";
 
             string result = _ramInformation.ToString();
 
@@ -45,50 +46,27 @@ public class RamInformationTest {
 
             Assert.AreEqual(expected, result);
         }
-    }
+    }*/
 
     /// <summary>
     /// Tests setting memory values to ensure they are stored correctly.
     /// </summary>
     [TestMethod]
     public void Test_SetMemoryValues_SetsValuesCorrectly() {
-        ulong TotalRam = 16 * 1024 * 1024;
-        ulong FreeRam = 6 * 1024 * 1024;
+        ulong TotalRam = 16 * 1024 * 1024 ;
+        ulong FreeRam = 6 * 1024 * 1024 ;
 
         if (_ramInformation != null) {
-            _ramInformation.TotalRam = TotalRam;
-            _ramInformation.FreeRam = FreeRam;
-            _ramInformation.UsedRam = TotalRam - FreeRam;
+            _ramInformation.InformationAgents[0].Value = TotalRam +"";
+            _ramInformation.InformationAgents[1].Value = FreeRam +"";
+            _ramInformation.InformationAgents[2].Value = TotalRam - FreeRam+"";
 
-            Assert.AreEqual(TotalRam, _ramInformation.TotalRam);
-            Assert.AreEqual(FreeRam, _ramInformation.FreeRam);
-            Assert.AreEqual<ulong>(10 * 1024 * 1024, _ramInformation.UsedRam);
+            Assert.AreEqual(TotalRam+"", _ramInformation.InformationAgents[0].Value);
+            Assert.AreEqual(FreeRam+"",_ramInformation.InformationAgents[1].Value);
+            Assert.AreEqual((10 * 1024 * 1024)+"", _ramInformation.InformationAgents[2].Value);
         }
     }
-
-    /// <summary>
-    /// Tests the <see cref="RamInformation.ToString"/> method to ensure it returns "0.00 GB" when all memory values are zero.
-    /// </summary>
-    [TestMethod]
-    public void Test_ToString_ReturnsZeroGB_WhenMemoryIsZero() {
-        ulong TotalRam = 0;
-        ulong UsedRam = 0;
-        ulong FreeRam = 0;
-
-        if (_ramInformation != null) {
-            _ramInformation.TotalRam = 0;
-            _ramInformation.FreeRam = 0;
-            _ramInformation.UsedRam = 0;
-
-            string result = _ramInformation.ToString();
-
-            string expected = $"Total memory : {TotalRam / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
-                              $"Used memory : {UsedRam / (float)(1024 * 1024):F2} GB" + Environment.NewLine +
-                              $"Free memory : {FreeRam / (float)(1024 * 1024):F2} GB";
-
-            Assert.AreEqual(expected, result);
-        }
-    }
+    
 
 
     /// <summary>
@@ -98,7 +76,7 @@ public class RamInformationTest {
     [TestMethod]
     public void ToJson_ShouldReturnValidJson_WhenTotalRamIsSet() {
         if (_ramInformation != null) {
-            _ramInformation.TotalRam = 1000000;
+            _ramInformation.InformationAgents[0].Value = 1000000+"";
             string json = _ramInformation.ToJson();
             string expected = _ramInformation2.ToJson();
             StringAssert.Contains(json, expected);

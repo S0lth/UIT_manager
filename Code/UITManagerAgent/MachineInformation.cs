@@ -69,14 +69,6 @@ public class MachineInformation{
         string nameJson = $"\"Name\":\"{Name.MachineName.Value}\"";
         string modelJson = $"\"Model\":\"{Model.Model.Value}\"";
 
-        return $"{{{nameJson},\"Informations\":[{informationListJson}],{modelJson}}}";
+        return $"{{{nameJson},{modelJson},\"Informations\":[{informationListJson}]}}";
     }
 }
-
-/*List<string> json = new();
-json.Add("Name : " +_machineName.ToJson()+ Environment.NewLine);
-json.Add(_model.ToJson()+ Environment.NewLine);
-foreach (Information information in InformationList) {
-    json.Add(information.ToJson() + Environment.NewLine);
-}
-return $"[{string.Join(",", json)}]";*/

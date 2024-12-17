@@ -7,11 +7,7 @@ using UITManagerAgent.DataCollectors;
 public class Program {
 
     public static async Task Main(string[] args) {
-        
-        MachineInformation machineInformation = new();
-        machineInformation.GetValue();
-        Console.WriteLine(machineInformation.ToJson());
-        
+
         using (TaskSchedulerAgent scheduler = new TaskSchedulerAgent(2, SendMachineInformation))
         {
             Console.WriteLine("=> Task scheduler is running. Press Enter to exit...");

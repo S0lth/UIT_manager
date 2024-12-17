@@ -28,8 +28,8 @@ public class OsInformationTest {
     [SupportedOSPlatform("windows")]
     public void ToJson_ShouldReturnValidJson_WhenOsAttributesAreSet() {
         if (_osInformation != null) {
-            _osInformation.OsName = "Test";
-            _osInformation.OsVersion = "1.0.0.0";
+            _osInformation.InformationAgents[0].Value = "Test";
+            _osInformation.InformationAgents[2].Value = "1.0.0.0";
             
             string json = _osInformation.ToJson();
             int expectedLeftBrace = json.Count(c => c == '{'),
@@ -54,8 +54,8 @@ public class OsInformationTest {
         string json = _osInformation.ToJson();
         
         List<string> informations = new() {
-            "OsName",
-            "OsVersion",
+            "OS Name",
+            "OS Version",
         };
         
         foreach (string informationName in informations) {

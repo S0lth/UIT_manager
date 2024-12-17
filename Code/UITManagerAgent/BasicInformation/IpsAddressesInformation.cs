@@ -7,7 +7,7 @@ public class IpsAddressesInformation : Information {
     /// <summary>
     /// Ip main fields.
     /// </summary>
-    public InnerValue Ip { get; set; } = new("CPU", "null");
+    public InnerValue Ip { get; set; } = new("IP", "null");
     
     /// <summary>
     /// Accessor for the list of IP address information agents.

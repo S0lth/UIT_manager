@@ -59,7 +59,7 @@ public class DirectXCollectorTests {
         if (_directXCollector != null) {
             DirectXInformation result = (DirectXInformation)_directXCollector.Collect();
             if (result.DirectX != null) {
-                Assert.IsTrue(result.DirectX.Contains("DirectX"),
+                Assert.IsTrue(result.DirectX.Name.Contains("DirectX"),
                     "The DirectX version should contain the word 'DirectX'.");
             }
         }

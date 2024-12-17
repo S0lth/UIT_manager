@@ -19,11 +19,6 @@ public class DiskInformation : Information {
     /// </summary>
     /// <returns>A Json string that represents the DiskInformation.</returns>
     public override string ToJson() {
-        
-        string disksJson = string.Join(",", InformationAgents[0].InformationAgents!.Select(disks => 
-            $@"{{""Name"":""{disks.Name}"",""Value"":""{disks.Value}"",""Format"":""{disks.Format}"",""InformationAgents"":[{
-                string.Join(",", disks.InformationAgents!.Select(disk => 
-                    $@"{{""Name"":""{disk.Name}"",""Value"":""{disk.Value}"",""Format"":""{disk.Format}""}}"))}]}}"));
 
         string agentsJson = CreateAgentsJson();
         
