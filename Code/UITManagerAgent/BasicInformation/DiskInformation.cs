@@ -72,6 +72,7 @@ public class DiskInformation : Information {
         /// </summary>
         public InnerValue DiskTot { get; set; } = new("Disk Total Size","GB");
         public InnerValue DiskUsed { get; set; } = new("Disk Used","GB");
+        public InnerValue DiskUsedPercent { get; set; } = new("Disk Used","%");
         public InnerValue DiskFree { get; set; } = new("Disk Free","GB");
         
         /// <summary>
@@ -82,6 +83,7 @@ public class DiskInformation : Information {
             List<InnerValue> innerValues = new();
             innerValues.Add(DiskTot);
             innerValues.Add(DiskUsed);
+            innerValues.Add(DiskUsedPercent);
             innerValues.Add(DiskFree);
             return innerValues;
         }

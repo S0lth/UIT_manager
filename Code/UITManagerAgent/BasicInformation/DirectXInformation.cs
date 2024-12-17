@@ -7,7 +7,7 @@ public class DirectXInformation : Information {
     /// <summary>
     /// accessors of the DirectX field
     /// </summary>
-    public InnerValue DirectX { get; set; } = new("DirectX","TEXT");
+    public InnerValue DirectX { get; set; } = new("Direct X","TEXT");
     
     /// <summary>
     /// Returns a Json string representation of the directX version.

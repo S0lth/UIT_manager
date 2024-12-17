@@ -35,6 +35,8 @@ public class RamCollector : DataCollector {
             ramInformation.InformationAgents[0].Value = (ramTot / (float)(1024 * 1024)).ToString("F2");
             ramInformation.InformationAgents[1].Value = (ramUsed / (float)(1024 * 1024)).ToString("F2");
             ramInformation.InformationAgents[2].Value = (ramFree / (float)(1024 * 1024)).ToString("F2");
+            double ramUsedPercent = Double.Parse(ramInformation.InformationAgents[1].Value!) / Double.Parse(ramInformation.InformationAgents[0].Value!) * 100;
+            ramInformation.InformationAgents[3].Value = (ramUsedPercent).ToString("F2");
         }
 
         return ramInformation;

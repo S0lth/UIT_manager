@@ -30,10 +30,11 @@ public class DiskCollector : DataCollector {
                     long diskTot = drive.TotalSize / (1024 * 1024 * 1024);
                     long diskFree = drive.TotalFreeSpace / (1024 * 1024 * 1024);
                     long diskUsed = diskTot - diskFree;
-                    
                     disk.DiskTot.Value = diskTot.ToString("F2");
                     disk.DiskFree.Value = diskFree.ToString("F2");
                     disk.DiskUsed.Value = diskUsed.ToString("F2");
+                    double diskUsedPercent = Double.Parse(disk.DiskUsed.Value)/Double.Parse(disk.DiskTot.Value)*100;
+                    disk.DiskUsedPercent.Value = diskUsedPercent.ToString("F2");
                     innerValues.Add(new InnerValue(drive.Name + "\\","null","null",disk.GetList()));
                     
                 }

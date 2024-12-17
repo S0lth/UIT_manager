@@ -116,7 +116,7 @@ namespace UITManagerApi.Controllers
             _context.Machines.Add(machine);
             await _context.SaveChangesAsync();
 
-            await _hubContext.Clients.All.SendAsync("ReceiveMessage", 10);
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", 403);
             return CreatedAtAction("GetMachine", new { id = machine.Id }, machine);
         }
         

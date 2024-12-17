@@ -18,7 +18,8 @@ public class RamInformation : Information {
     public List<InnerValue> InformationAgents { get; set; } = new() {
         new InnerValue("Total RAM", "GB"),
         new InnerValue("Used RAM", "GB"),
-        new InnerValue("Free RAM", "GB")
+        new InnerValue("Free RAM", "GB"),
+        new InnerValue("Used RAM", "%")
     };
 
     /// <summary>
