@@ -10,7 +10,7 @@ namespace UITManagerAgent.DataCollectors;
 /// </summary>
 public class OsCollector : DataCollector {
     [SupportedOSPlatform("windows")]
-    private ManagementObjectSearcher _searcher = new ManagementObjectSearcher("select * from Win32_Processor");
+    private ManagementObjectSearcher _searcher = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
     
     /// <summary>
     /// Retrieves the current os information from the system.

@@ -1,11 +1,14 @@
-﻿namespace UITManagerApi.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UITManagerApi.Models;
  /// <summary>
  /// Represents a machine
  /// </summary>
  public class Machine {
      public int Id { get; set; }
 
-     public string? Name { get; set; }
+     [Required]
+     public string Name { get; set; }
 
      public List<Information> Informations { get; set; }
 
