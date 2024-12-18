@@ -104,7 +104,7 @@ namespace UITManagerApi.Controllers
         [HttpPost]
         public async Task<ActionResult<MachineAgent>> PostMachine(MachineAgent machineAgent) {
             
-            
+            //todo : isworking garder info bd
             Machine machine = new Machine {
                 Name = machineAgent.Name, Model = machineAgent.Model, IsWorking = true, LastSeen = DateTime.UtcNow
             };

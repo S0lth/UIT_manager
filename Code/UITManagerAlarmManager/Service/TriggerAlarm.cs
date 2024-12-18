@@ -9,8 +9,7 @@ public  class TriggerAlarm {
     public TriggerAlarm(ApplicationDbContext context) {
             _context = context; 
     }
-
-
+    
     public async Task Triggered(int machineId) {
         
         Console.WriteLine("Hello");
@@ -27,7 +26,7 @@ public  class TriggerAlarm {
         List<AlarmStatusType> listStatus = await _context.AlarmStatusTypes.ToListAsync();
 
         foreach (NormGroup normGroup in listNormsGroups) {
-
+// il faut que tous les triggers soit activer
             bool alreadyTrigger = false;
             foreach (Norm norm in normGroup.Norms) {
                 Console.WriteLine("Norms : "  + norm.InformationName.Name + " ////// Format : " + norm.Format);
