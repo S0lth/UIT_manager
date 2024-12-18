@@ -35,6 +35,15 @@ namespace UITManagerApi.Tests {
             agentController = new AgentController(_dbContext, _mockhub.Object);
         }
 
+        /// <summary>
+        /// Test method for verifying the behavior of the PostMachine method.
+        /// </summary>
+        /// <remarks>
+        /// This test ensures that:
+        /// - A machine is successfully added to the database.
+        /// - SignalR is triggered to notify clients of the new machine.
+        /// - The machine's properties match the expected values.
+        /// </remarks>
         [TestMethod]
         public async Task PostMachine_ShouldUpdateMachineAndSendMessage()
         {
