@@ -8,6 +8,7 @@ namespace UITManagerWebServer.Data;
 
 public static class Populate {
     public static async Task Initialize(IServiceProvider serviceProvider, bool noAlarm) {
+        
         using var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();

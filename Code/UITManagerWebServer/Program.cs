@@ -20,12 +20,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 builder.Services.AddScoped<SignInManager<ApplicationUser>, CustomSignInManager>();
 
-builder.Services.Configure<IdentityOptions>(options =>  {
-    options.Password.RequireDigit = true; 
+builder.Services.Configure<IdentityOptions>(options => {
+    options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true; 
+    options.Password.RequireLowercase = true;
 
     options.User.RequireUniqueEmail = true;
 });
@@ -44,21 +44,30 @@ else {
     app.UseHsts();
 }
 
-using (var scope = app.Services.CreateScope())
-{
+using (var scope = app.Services.CreateScope()) {
     var services = scope.ServiceProvider;
     Console.WriteLine("hello");
-    try
-    {
-        Console.WriteLine("i'm in");
-        // Populate without alarm trigger today
-        //await Populate.Initialize(services,true);
-        // Populate with alarm trigger today
-        //await Populate.Initialize(services,false);
-        Console.WriteLine("Database populated successfully.");
+    try {
+        using var context = new ApplicationDbContext(
+            services.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
+
+        bool hasData = await context.Machines.AnyAsync();
+
+        if (!hasData) {
+            // Si aucune donnée n'existe, effectuer le populate
+            Console.WriteLine("Database is empty. Starting population...");
+
+            // Populate without alarm trigger today
+            //await Populate.Initialize(services,true);
+            // Populate with alarm trigger today
+            await Populate.Initialize(services,false);            
+            Console.WriteLine("Database populated successfully.");
+        }
+        else {
+            Console.WriteLine("Database already contains data. Skipping population.");
+        }
     }
-    catch (Exception ex)
-    {
+    catch (Exception ex) {
         Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
     }
 }
