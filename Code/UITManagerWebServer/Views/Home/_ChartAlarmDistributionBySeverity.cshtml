@@ -20,7 +20,6 @@
 
         <script>
             const alarmData = @Html.Raw(ViewData["SeverityAlarmsCount"]);
-            //const alarmData = {};
             const labels = Object.keys(alarmData);
             const data = Object.values(alarmData);
 
@@ -33,6 +32,20 @@
 
                 const modifiedLabels = labels.map((label, index) => `${label} (${data[index]})`);
 
+                const severityColors = {
+                    'Critical': '#f44336',
+                    'High': '#ff9800',
+                    'Medium': '#ffeb3b',
+                    'Low': '#2196f3',
+                    'Warning': '#9e9e9e'
+                };
+
+                // Associer les couleurs en fonction de la sévérité dans le label
+                const backgroundColors = labels.map(label => {
+                    const severity = label.split(' ')[0]; // Extraire la sévérité du label
+                    return severityColors[severity] || '#9c27b0'; // Couleur par défaut (violet) si non trouvée
+                });
+
                 const ctx = document.getElementById('ChartAlarmDistributionByNormGroup').getContext('2d');
 
                 const chart = new Chart(ctx, {
@@ -43,7 +56,7 @@
                             label: 'Number of Occurrences',
                             data: data,
                             borderWidth: 1,
-                            backgroundColor: ['#4caf50', '#f44336', '#ffeb3b', '#2196f3', '#9c27b0'], // Exemple de couleurs
+                            backgroundColor: backgroundColors, // Utilisation des couleurs basées sur la sévérité
                         }]
                     },
                     options: {

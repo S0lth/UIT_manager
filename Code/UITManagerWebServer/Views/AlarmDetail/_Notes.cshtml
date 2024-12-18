@@ -1,33 +1,6 @@
+@using UITManagerWebServer.Helpers
 @model List<Note>
 
-@functions {
-
-    string GetHeaderClass(string currentSortOrder, string column)
-    {
-        return (currentSortOrder == column || currentSortOrder == $"{column}_desc") ? "bg-selected-header" : string.Empty;
-    }
-
-    string GetSortIcon(string currentSortOrder, string column)
-    {
-        return currentSortOrder switch
-        {
-            _ when currentSortOrder == column => "bi bi-sort-down",
-            _ when currentSortOrder == $"{column}_desc" => "bi bi-sort-up",
-            _ => "bi bi-arrow-down-up",
-        };
-    }
-
-    string GetIsSolutionIcon(bool sol)
-    {
-        return sol ? "badge bg-success" : "badge bg-secondary";
-    }
-
-    string GetIsSolutionText(bool sol)
-    {
-        return sol ? "Solution" : "Follow-Up Note";
-    }
-
-}
 <div class="card border-0 rounded mb-0 p-1">
     <div class="card-header fw-bold d-flex justify-content-between align-items-center mb-1" style="height: 50px;">
         <span>Notes</span>
@@ -84,28 +57,28 @@
             <table class="table table-hover table-striped align-middle" id="notes-table">
                 <thead class="table-lightfix sticky-top bg-white">
                     <tr>
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "note")">
+                        <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "note")">
                             <a asp-action="Index" asp-route-sortOrder="@ViewData["NoteSortParm"]"
                                class="text-decoration-none text-dark">
-                                Note <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "note")"></i>
+                                Note <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "note")"></i>
                             </a>
                         </th>
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
+                        <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
                             <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
                                class="text-decoration-none text-dark">
-                                Date <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
+                                Date <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
                             </a>
                         </th>
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "type")">
+                        <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "type")">
                             <a asp-action="Index" asp-route-sortOrder="@ViewData["TypeSortParm"]"
                                class="text-decoration-none text-dark">
-                                Type <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "type")"></i>
+                                Type <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "type")"></i>
                             </a>
                         </th>
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "author")">
+                        <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "author")">
                             <a asp-action="Index" asp-route-sortOrder="@ViewData["AuthorSortParm"]"
                                class="text-decoration-none text-dark">
-                                Author <i class="@GetSortIcon(ViewData["SortOrder"]?.ToString(), "author")"></i>
+                                Author <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "author")"></i>
                             </a>
                         </th>
                     </tr>
@@ -122,7 +95,7 @@
                                 <td>@note.CreatedAt.ToString("dd-MM-yyyy HH:mm")</td>
                                 <td>
                                     <span
-                                        class="@GetIsSolutionIcon(@note.IsSolution)">@GetIsSolutionText(@note.IsSolution)</span>
+                                        class="@ViewHelpers.GetIsSolutionIcon(@note.IsSolution)">@ViewHelpers.GetIsSolutionText(@note.IsSolution)</span>
                                 </td>
                                 <td>@note.Author.LastName @note.Author.FirstName</td>
                             </tr>

@@ -18,8 +18,40 @@ namespace UITManagerWebServer.Controllers {
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Raised Alarms", Url = Url.Action("Index", "Alarm"), IsActive = false
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+
+            switch (currentAction) {
+                case "Index":
+                    breadcrumbs.Last().IsActive = true; 
+                    break;
+
+                case "Details":
+                    breadcrumbs.Add(new BreadcrumbItem { Title = "Details", Url = string.Empty, IsActive = true });
+                    break;
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
 
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
@@ -42,14 +74,16 @@ namespace UITManagerWebServer.Controllers {
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmHistories)
-                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))                .ThenInclude(aStatus => aStatus.StatusType)
+                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))
+                .ThenInclude(aStatus => aStatus.StatusType)
                 .Include(a => a.NormGroup.SeverityHistories)
                 .ThenInclude(sh => sh.Severity)
                 .Include(a => a.User)
                 .AsQueryable()
                 .Where(a => a.AlarmHistories
-                    .Select(h => h.StatusType.Name)
-                    .FirstOrDefault() != "Resolved");
+                    .OrderByDescending(h => h.ModificationDate)
+                    .FirstOrDefault()!
+                    .StatusType.Name != "Resolved");
 
             if (!string.IsNullOrEmpty(search)) {
                 string[] searchTerms = search.ToLower().Split(',');
@@ -139,7 +173,6 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [Authorize]
-        [ValidateAntiForgeryToken]
         [Route("Alarm/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Status)) {
@@ -171,21 +204,16 @@ namespace UITManagerWebServer.Controllers {
             try {
                 await _context.SaveChangesAsync();
 
-                return Ok(new { success = true, message = "Status updated successfully." });
+                return PartialView("_AlertMessage", new { success = true, message = "Status updated successfully." });
             }
-
             catch (Exception ex) {
-                return StatusCode(500, new {
-                    success = false,
-                    message = "An error occurred while updating status.",
-                    error = ex.Message, 
-                    stackTrace = ex.StackTrace
-                });
+                return StatusCode(500,
+                    new { success = false, message = "An error occurred while updating status.", error = ex.Message });
             }
         }
 
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
         [Route("Alarm/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
@@ -223,7 +251,8 @@ namespace UITManagerWebServer.Controllers {
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { success = true, message = "Alarm attribution updated successfully." });
+                return PartialView("_AlertMessage",
+                    new { success = true, message = "Attribution updated successfully." });
             }
             catch (Exception ex) {
                 return StatusCode(500,
