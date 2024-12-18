@@ -8,7 +8,7 @@ public class TagInformation : Information {
     /// <summary>
     /// The service tag field as an InnerValue object
     /// </summary>
-    public InnerValue TagService { get; set; } = new("TagService", "TEXT");
+    public InnerValue TagService { get; set; } = new("Tag Service", "TEXT");
     
     /// <summary>
     /// Returns a Json string representation of the service tag.

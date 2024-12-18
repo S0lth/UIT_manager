@@ -47,8 +47,6 @@ namespace UITManagerApi.Tests {
         [TestMethod]
         public async Task PostMachine_ShouldUpdateMachineAndSendMessage()
         {
-            // Arrange
-           
 
             var machineAgent = new MachineAgent
             {
@@ -68,22 +66,18 @@ namespace UITManagerApi.Tests {
             MachineAgent result = new MachineAgent();
             result = await agentController.PostMachine(machineAgent);
 
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual("Test Machine", result.Name);
             Assert.AreEqual("Test Model", result.Model);
 
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual("Test Machine", result.Name);
             Assert.AreEqual("Test Model", result.Model);
 
-            // Vérifiez que la machine a été ajoutée à la base de données
             var machineInDb = await _dbContext.Machines.FirstOrDefaultAsync();
             Assert.IsNotNull(machineInDb);
             Assert.AreEqual("Test Machine", machineInDb.Name);
 
-            // Vérifiez que le SignalR a été appelé
             _clientProxyMock.Verify(client =>
                     client.SendCoreAsync(
                         "ReceiveMessage",

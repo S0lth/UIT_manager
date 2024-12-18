@@ -20,7 +20,6 @@ public class UsersInformation : Information {
     /// </summary>
     /// <returns>A Json string that represents the UserInformation.</returns>
     public override string ToJson() {
-        //string agentsJson = string.Join(",", InformationAgents.Select(agent => $@"{{""Name"":""{agent.Name}"",""Value"":""{agent.Value}"",""Format"":""{agent.Format}""}}"));
         string agentsJson = string.Join(",", InformationAgents.Select(agent => $@"{{""Name"":""{agent.Name}"",""Value"":""{agent.Value}"",""Format"":""{agent.Format}"",""InformationAgents"":[{string.Join(",", agent.InformationAgents!.Select(innerAgent => $@"{{""Name"":""{innerAgent.Name}"",""Value"":""{innerAgent.Value}"",""Format"":""{innerAgent.Format}""}}"))}]}}"));
 
         return $@"{{""Name"": ""{Users.Name}"",""Value"": ""{Users.Value}"",""Format"": ""{Users.Format}"",""InformationAgents"": [{agentsJson}]}}";
