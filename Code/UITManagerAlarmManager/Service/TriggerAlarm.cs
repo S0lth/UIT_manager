@@ -11,7 +11,13 @@ public class TriggerAlarm {
         _context = context;
     }
 
-
+    /// <summary>
+    /// This method is responsible for triggering alarms based on the machine's components and norm groups.
+    /// It checks if the machine's components satisfy the conditions defined in the associated norm groups.
+    /// If all norms are valid, it creates a new alarm for the machine.
+    /// </summary>
+    /// <param name="machineId">The ID of the machine to check for alarms.</param>
+    /// <returns>A Task representing the asynchronous operation.</returns>
     public async Task Triggered(int machineId) {
         Console.WriteLine("Hello");
 
@@ -99,7 +105,13 @@ public class TriggerAlarm {
         _context.SaveChanges();
     }
 
-    private bool CreateAlarm(int machineId, int normGroupId, List<AlarmStatusType> listStatus) {
+    /// <summary>
+    /// Creates a new alarm for the specified machine and norm group, and logs the alarm status as "New".
+    /// </summary>
+    /// <param name="machineId">The ID of the machine for which the alarm is created.</param>
+    /// <param name="normGroupId">The ID of the norm group associated with the alarm.</param>
+    /// <param name="listStatus">A list of available alarm status types used to set the initial status of the alarm.</param>
+    private void CreateAlarm(int machineId, int normGroupId, List<AlarmStatusType> listStatus) {
         Console.WriteLine("Trigger : " + normGroupId);
         Alarm alarm = new Alarm { MachineId = machineId, NormGroupId = normGroupId, TriggeredAt = DateTime.UtcNow };
         AlarmStatusHistory alarmStatusHistory = new AlarmStatusHistory {
@@ -107,7 +119,5 @@ public class TriggerAlarm {
         };
         _context.AlarmHistories.Add(alarmStatusHistory);
         _context.Alarms.Add(alarm);
-
-        return true;
     }
 }
