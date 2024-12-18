@@ -16,8 +16,46 @@ namespace UITManagerWebServer.Controllers {
             _context = context;
         }
 
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
+
+            if (context.ActionArguments.ContainsKey("tab")) {
+                string tab = context.ActionArguments["tab"].ToString();
+                switch (tab)
+                {
+                    case "unprocessed":
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = "Unprocessed Alarms", Url = string.Empty, IsActive = true
+                        });
+                        break;
+                    case "newest":
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = "Newest Alarms", Url = string.Empty, IsActive = true
+                        });
+                        break;
+                    case "overdue":
+                        breadcrumbs.Add(
+                            new BreadcrumbItem { Title = "Overdue Alarms", Url = string.Empty, IsActive = true });
+                        break;
+                }
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+
+
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
 
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
@@ -47,7 +85,7 @@ namespace UITManagerWebServer.Controllers {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
             else if (tab == "newest") {
-                selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true, newest: true);
             }
             else if (tab == "overdue") {
                 selectedAlarms = await GetAlarmsWithDetails(sortOrder, overdue: true, orderByDate: true);
@@ -55,7 +93,7 @@ namespace UITManagerWebServer.Controllers {
             else {
                 selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
             }
-            
+
 
             var viewModel = new HomePageViewModel {
                 Notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote),
@@ -132,6 +170,7 @@ namespace UITManagerWebServer.Controllers {
             string sortOrder = null,
             bool overdue = false,
             bool orderByDate = false,
+            bool newest = false,
             int? takeTop = null) {
             var alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
@@ -146,6 +185,12 @@ namespace UITManagerWebServer.Controllers {
                 alarmsQuery = alarmsQuery.Where(a => a.AlarmHistories
                     .OrderByDescending(h => h.ModificationDate)
                     .FirstOrDefault().StatusType.Name == "New");
+            }
+
+            if (newest) {
+                DateTime tenDaysAgo = DateTime.UtcNow.AddDays(-10);
+
+                alarmsQuery = alarmsQuery.Where(a => a.TriggeredAt >= tenDaysAgo);
             }
 
             if (overdue) {
@@ -250,7 +295,7 @@ namespace UITManagerWebServer.Controllers {
             var severityCounts = await _context.Alarms
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
-                    .FirstOrDefault().StatusType.Name != "Resolved") 
+                    .FirstOrDefault().StatusType.Name != "Resolved")
                 .Select(a => new {
                     Severity = a.NormGroup.SeverityHistories
                         .OrderByDescending(sh => sh.UpdateDate)
@@ -259,10 +304,9 @@ namespace UITManagerWebServer.Controllers {
                 .GroupBy(a => a.Severity)
                 .Select(g => new { Severity = g.Key, AlarmCount = g.Count() })
                 .ToListAsync();
-        
+
             return severityCounts.ToDictionary(g => g.Severity, g => g.AlarmCount);
         }
-
 
 
         private async Task<Dictionary<string, int>> GetAssignedOrNotAlarmCount() {
@@ -341,11 +385,11 @@ namespace UITManagerWebServer.Controllers {
                     selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
                     break;
                 case "newest":
-                    selectedAlarms = await GetAlarmsWithDetails("Resolved", sortOrder, orderByDate: true);
+                    selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true, newest: true);
                     break;
                 case "overdue":
                     selectedAlarms =
-                        await GetAlarmsWithDetails("Resolved", sortOrder, overdue: true, orderByDate: true);
+                        await GetAlarmsWithDetails(sortOrder, overdue: true, orderByDate: true);
                     break;
                 default:
                     selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
@@ -354,7 +398,7 @@ namespace UITManagerWebServer.Controllers {
 
             return PartialView("_AlarmsList", selectedAlarms);
         }
-        
+
         private async Task<int> GetAlarmsNotResolvedCount() {
             var alarmsNotResolvedCount = await _context.Alarms
                 .Where(a => a.AlarmHistories
@@ -364,10 +408,10 @@ namespace UITManagerWebServer.Controllers {
 
             return alarmsNotResolvedCount;
         }
-        
+
         private async Task<int> GetAlarmsTriggeredTodayCount() {
             var today = DateTime.UtcNow.Date;
-    
+
             var alarmsTriggeredTodayCount = await _context.Alarms
                 .Where(a => a.TriggeredAt.Date == today)
                 .CountAsync();

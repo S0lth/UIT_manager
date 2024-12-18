@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System.Security.Claims;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
@@ -10,6 +11,46 @@ namespace UITManagerWebServer.Controllers {
 
         public UserController(ApplicationDbContext context) {
             _context = context;
+        }
+        
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem { 
+                Title = "Home", 
+                Url = Url.Action("Index", "Home"), 
+                IsActive = false 
+            });
+
+            breadcrumbs.Add(new BreadcrumbItem { 
+                Title = "Users", 
+                Url = Url.Action("Index", "User"), 
+                IsActive = false 
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+
+            switch (currentAction) {
+                case "Index":
+                    breadcrumbs.Last().IsActive = true; 
+                    break;
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+        
+        public override void OnActionExecuting(ActionExecutingContext context) {
+            base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
+
+            TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
         [Authorize(Roles = "ITDirector")]
