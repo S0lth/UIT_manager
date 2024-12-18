@@ -71,6 +71,12 @@ namespace UITManagerWebServer {
                         Title = "Delete alarm", Url = string.Empty, IsActive = true
                     });
                     break;
+                case "Create":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Create an alarm", Url = string.Empty, IsActive = true
+                    });
+                    
+                    break;
             }
 
             ViewData["Breadcrumbs"] = breadcrumbs;

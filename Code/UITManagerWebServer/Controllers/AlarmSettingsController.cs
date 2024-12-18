@@ -54,6 +54,20 @@ namespace UITManagerWebServer.Controllers {
                     }
 
                     break;
+                
+                // case "Edit":
+                //     normGroupId = Convert.ToInt32(context.ActionArguments["id"]);
+                //     normGroup = _context.NormGroups.FirstOrDefault(a => a.Id == normGroupId);
+                //     
+                //     if (normGroup != null) {
+                //         breadcrumbs.Add(new BreadcrumbItem {
+                //             Title = normGroup.Name,
+                //             Url = string.Empty,
+                //             IsActive = true
+                //         });
+                //     }
+                //
+                //     break;
 
                 case "Create":
                     breadcrumbs.Add(new BreadcrumbItem {
