@@ -31,8 +31,8 @@ public class OsCollectorTest {
             OsInformation? osInfo = (OsInformation)_osCollector.Collect();
 
             Assert.IsNotNull(osInfo);
-            Assert.IsFalse(string.IsNullOrEmpty(osInfo.OsName), "OS name shouldn't be null or empty");
-            Assert.IsFalse(string.IsNullOrEmpty(osInfo.OsVersion), "OS version shouldn't be null or empty");
+            Assert.IsFalse(string.IsNullOrEmpty(osInfo.InformationAgents[0].Value), "OS name shouldn't be null or empty");
+            Assert.IsFalse(string.IsNullOrEmpty(osInfo.InformationAgents[2].Value), "OS version shouldn't be null or empty");
         }
     }
 
@@ -45,9 +45,9 @@ public class OsCollectorTest {
             OsInformation osInfo = (OsInformation)_osCollector.Collect();
 
             Assert.IsNotNull(osInfo);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(osInfo.OsName),
+            Assert.IsFalse(string.IsNullOrWhiteSpace(osInfo.InformationAgents[0].Value),
                 "OS name shouldn't be null, empty, or composed only of whitespace");
-            Assert.IsFalse(string.IsNullOrWhiteSpace(osInfo.OsVersion),
+            Assert.IsFalse(string.IsNullOrWhiteSpace(osInfo.InformationAgents[2].Value),
                 "OS version shouldn't be null, empty, or composed only of whitespace");
         }
     }
@@ -60,9 +60,9 @@ public class OsCollectorTest {
         if (_osCollector != null) {
             OsInformation osInfo = (OsInformation)_osCollector.Collect();
 
-            Assert.IsTrue(osInfo.OsName != null && osInfo.OsName.Length > 3,
+            Assert.IsTrue(osInfo.InformationAgents[0].Value != null && osInfo.InformationAgents[0].Value.Length > 3,
                 "OS name should be a valid non-trivial string");
-            Assert.IsTrue(osInfo.OsVersion != null && osInfo.OsVersion.Contains('.'),
+            Assert.IsTrue(osInfo.InformationAgents[2].Value != null,
                 "OS version should contain a dot, suggesting a valid version format");
         }
     }

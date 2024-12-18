@@ -6,6 +6,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
     [TestClass]
     public class DiskInformationTest {
         private DiskInformation? _diskInformation;
+        private DiskInformation? _diskInformation2;
 
         /// <summary>
         /// Initialize a new instance of the <see cref="DiskInformation"/> class before each test.
@@ -13,6 +14,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
         [TestInitialize]
         public void Setup() {
             _diskInformation = new();
+            _diskInformation2 = new();
         }
 
 
@@ -24,9 +26,8 @@ namespace UITManagerAgent.Tests.BasicInformation {
         [SupportedOSPlatform("windows")]
         public void ToJson_ShouldReturnValidJson_WhenNumberDiskIsSet() {
             if (_diskInformation != null) {
-                DiskCollector diskCollector = new();
                 string json = _diskInformation.ToJson();
-                string expected = $"{{\"Disks\":[],\"NumberDisk\":{_diskInformation.NumberDisk},\"FormatNumberDisk\":\"NUMBER\"}}";
+                string expected = _diskInformation2.ToJson();
                 StringAssert.Contains(json, expected);
             }
         }

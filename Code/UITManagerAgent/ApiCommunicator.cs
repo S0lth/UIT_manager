@@ -16,6 +16,9 @@ public class ApiCommunicator {
     public ApiCommunicator(string apiUrl, HttpClient? httpClient = null) {
         _apiUrl = apiUrl;
         _httpClient = httpClient ?? new HttpClient();
+        _httpClient.BaseAddress = new Uri("http://localhost:5014");
+        _httpClient.DefaultRequestHeaders.Accept.Clear();
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
     /// <summary>
@@ -28,12 +31,8 @@ public class ApiCommunicator {
     /// </returns>
     public async Task<bool> SendMachineInformationAsync(MachineInformation machineInformation) {
         try {
-            _httpClient.BaseAddress = new Uri("http://localhost:5014/");
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            StringContent jsonContent = new StringContent(machineInformation.ToJson(), Encoding.UTF8);
-
+            StringContent jsonContent = new StringContent(machineInformation.ToJson(), Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _httpClient.PostAsync(_apiUrl,jsonContent);
 
             if (response.IsSuccessStatusCode) {

@@ -26,9 +26,9 @@ namespace UITManagerAgent.Tests.BasicInformation {
         [SupportedOSPlatform("windows")]
         public void ToJson_ShouldReturnValidJson_WhenMillisecondsIsSet() {
             if (_upTimeInformation != null) {
-                _upTimeInformation.Milliseconds = 1000;
+                _upTimeInformation.UpTime.Value = "1000";
                 string json = _upTimeInformation.ToJson();
-                string expected = $"{{\"Days\":0,\"Hours\":00,\"Minutes\":00,\"Seconds\":01,\"Format\":\"TEXT\"}}";
+                string expected = $"{{\"Name\":\"{ _upTimeInformation.UpTime.Name}\",\"Value\":\"1000\",\"Format\":\"{ _upTimeInformation.UpTime.Format}\"}}";
                 StringAssert.Contains(json, expected);
             }
         }

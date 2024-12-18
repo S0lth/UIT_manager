@@ -21,10 +21,10 @@ public class CpuCollectors : DataCollector {
     public Information Collect() {
         CpuInformation cpu = new CpuInformation();
         try {
-            cpu.LogicalCore = GetProcessorCount();
-            cpu.CoreCount = GetNumberOfCores();
-            cpu.ClockSpeed = GetCurrentClockSpeed();
-            cpu.Model = GetModelCPU();
+            cpu.InformationAgents[0].Value = GetProcessorCount().ToString();
+            cpu.InformationAgents[1].Value = GetNumberOfCores().ToString();
+            cpu.InformationAgents[2].Value = GetCurrentClockSpeed().ToString();
+            cpu.InformationAgents[3].Value = GetModelCPU();
         }
         catch (Exception ex) {
             Console.WriteLine($"Erreur : {ex.Message}");
@@ -52,7 +52,7 @@ public class CpuCollectors : DataCollector {
     public int GetNumberOfCores() {
         int res = 0;
         foreach (ManagementObject obj in _searcher.Get()) {
-            res = (Convert.ToInt32(obj["NumberOfCores"]));
+            res = Convert.ToInt32(obj["NumberOfCores"]);
         }
 
         return res;

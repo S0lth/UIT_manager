@@ -41,9 +41,9 @@ public class MachineNameCollectorTest {
     public void Test_MachineName_ReturnsExpectedValue() {
         string expectedMachineName = Environment.MachineName;
 
-        string? actualMachineName = _machineNameCollector?.Collect().ToString();
+        MachineNameInformation actualMachineName = (MachineNameInformation)_machineNameCollector?.Collect();
 
-        Assert.AreEqual(expectedMachineName, actualMachineName,
+        Assert.AreEqual(expectedMachineName, actualMachineName.MachineName.Value,
             $"{actualMachineName} does not match expected machine name.");
     }
 

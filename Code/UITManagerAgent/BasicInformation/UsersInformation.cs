@@ -1,4 +1,3 @@
-using System.Text.Json;
 namespace UITManagerAgent.BasicInformation;
 
 /// <summary>
@@ -7,95 +6,42 @@ namespace UITManagerAgent.BasicInformation;
 /// </summary>
 public class UsersInformation : Information {
     /// <summary>
-    ///     List of collected usernames.
+    /// Users main fields.
     /// </summary>
-    private List<User> _usersList = new();
-
-    public class User {
-        private string? _userName;
-        private string? _formatName = "TEXT";
-        private string? _userScope;
-        private string? _formatScope = "TEXT";
-        
-        public User() {
-        }
-        
-        public User(string? name, string? scope) {
-            _userName = name;   
-            _userScope = scope;
-        }
-
-        /// <summary>
-        /// accessors of th Name field
-        /// </summary>
-        public string? UserName {
-            get => _userName;
-            set => _userName = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the format of the username information
-        /// </summary>
-        /// <value>
-        /// A string representing the format of username.
-        /// </value>
-        public string? FormatName {
-            get => _formatName;
-            set => _formatName = value;
-        }
-
-        /// <summary>
-        /// accessors of th Scope field
-        /// </summary>
-        public string? UserScope {
-            get => _userScope;
-            set => _userScope = value;
-        }
-        
-        
-        /// <summary>
-        /// Gets or sets the format of the user scope information
-        /// </summary>
-        /// <value>
-        /// A string representing the format of user scope.
-        /// </value>
-        public string? FormatScope {
-            get => _formatScope;
-            set => _formatScope = value;
-        }
-        
-        /// <summary>
-        /// Returns a Json string representation of the user information
-        /// </summary>
-        /// <returns>A Json string that represents the user information .</returns>
-        public string ToJson() {
-            return JsonSerializer.Serialize(this);
-        }
-    }
-    
-    /// <summary>
-    /// accessors of th usersList field
-    /// </summary>
-    public List<User> UsersList {
-        get => _usersList;
-        set => _usersList = value;
-    }
+    public InnerValue Users { get; set; } = new("Users List", "null");
 
     /// <summary>
-    ///     Returns a string representation of the list of usernames.
+    /// Detailed Users information agents.
     /// </summary>
-    /// <returns>
-    ///     A comma-separated string of usernames.
-    /// </returns>
-    public override string ToString() {
-        return $"{string.Join(", ", UsersList)}";
-    }
+    public List<InnerValue> InformationAgents { get; set; } = new();
 
     /// <summary>
-    /// Returns a Json string representation of the users
+    /// Returns a Json string representation of the UserInformation.
     /// </summary>
-    /// <returns>A Json string that represents the users.</returns>
+    /// <returns>A Json string that represents the UserInformation.</returns>
     public override string ToJson() {
-        return JsonSerializer.Serialize(this);
+        string agentsJson = string.Join(",", InformationAgents.Select(agent => $@"{{""Name"":""{agent.Name}"",""Value"":""{agent.Value}"",""Format"":""{agent.Format}"",""InformationAgents"":[{string.Join(",", agent.InformationAgents!.Select(innerAgent => $@"{{""Name"":""{innerAgent.Name}"",""Value"":""{innerAgent.Value}"",""Format"":""{innerAgent.Format}""}}"))}]}}"));
+
+        return $@"{{""Name"": ""{Users.Name}"",""Value"": ""{Users.Value}"",""Format"": ""{Users.Format}"",""InformationAgents"": [{agentsJson}]}}";
+    }
+    public class User{
+        
+        /// <summary>
+        /// accessors of the User field
+        /// </summary>
+        public InnerValue UserName { get; set; } = new("User Name","TEXT");
+        public InnerValue UserScope { get; set; } = new("User Scope","TEXT");
+
+        /// <summary>
+        /// Return a List that represents information of a User.
+        /// </summary>
+        /// <returns>A List that represents information of a User.</returns>
+        public List<InnerValue> GetList() {
+            List<InnerValue> innerValues = new();
+            innerValues.Add(UserName);
+            innerValues.Add(UserScope);
+            return innerValues;
+        }
     }
 }
+

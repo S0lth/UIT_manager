@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
+using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.Tests.DataCollectors;
 
@@ -60,8 +61,8 @@ public class UserCollectorTests {
         if (_userCollector != null) {
             UsersInformation result = (UsersInformation)_userCollector.Collect();
 
-            Assert.IsNotNull(result.UsersList, "User list should not be null.");
-            Assert.IsTrue(result.UsersList.Count >= 1, "User list should contain at least one item.");
+            Assert.IsNotNull(result.InformationAgents, "User list should not be null.");
+            Assert.IsTrue(result.InformationAgents.Count >= 1, "User list should contain at least one item.");
         }
     }
 
