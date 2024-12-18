@@ -9,8 +9,9 @@ using UITManagerAlarmManager.Service;
 
 class Program
 {
-    static async Task Main(string[] args)
-    {
+    static async Task Main(string[] args) {
+        
+        
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -25,16 +26,20 @@ class Program
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
+        
+        
         using (var context = serviceProvider.GetRequiredService<ApplicationDbContext>())
         {
+            Email email = new Email(context);
             var connection = new HubConnectionBuilder().WithUrl( "http://localhost:5014/ApiHub").Build();
-
+            email.Send("pomme");
+            
             connection.On<int>("ReceiveMessage", message => {
                 Console.WriteLine(message);
                 var trigger = new TriggerAlarm(context);
                 trigger.Triggered(message);
             });
-
+            
             try {
                 await connection.StartAsync();
                 Console.WriteLine("Connection established");
