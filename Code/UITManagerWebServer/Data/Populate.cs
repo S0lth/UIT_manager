@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using UITManagerWebServer.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using System.Text.RegularExpressions;
-using UITManagerWebServer.Data;
 using Information = UITManagerWebServer.Models.Information;
 
+namespace UITManagerWebServer.Data;
+
 public static class Populate {
-    public static async Task Initialize(IServiceProvider serviceProvider) {
+    public static async Task Initialize(IServiceProvider serviceProvider, bool noAlarm) {
         using var context = new ApplicationDbContext(
             serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -21,7 +21,7 @@ public static class Populate {
 
         var machines = SeedMachines(context);
 
-        await SeedAlarms(context, machines, normGroups, userManager);
+        await SeedAlarms(context, machines, normGroups, userManager, noAlarm);
 
         SeedNotes(context, machines);
 
@@ -31,6 +31,7 @@ public static class Populate {
     private static void DeleteDb(ApplicationDbContext context) {
         if (context.Machines.Any() || context.NormGroups.Any()) {
             context.Alarms.RemoveRange(context.Alarms);
+            context.Files.RemoveRange(context.Files);
             context.Notes.RemoveRange(context.Notes);
             context.Norms.RemoveRange(context.Norms);
             context.NormGroups.RemoveRange(context.NormGroups);
@@ -66,16 +67,16 @@ public static class Populate {
 
         var users = new List<ApplicationUser> {
             new ApplicationUser {
-                UserName = "roger",
-                Email = "roger@example.com",
+                UserName = "oroger",
+                Email = "o.roger@uit.be",
                 FirstName = "Roger",
                 LastName = "Ô",
                 StartDate = DateTime.SpecifyKind(new DateTime(2013, 1, 1), DateTimeKind.Utc),
                 IsActivate = true
             },
             new ApplicationUser {
-                UserName = "pierre",
-                Email = "pierre@example.com",
+                UserName = "barbepierre",
+                Email = "barbe.pierre@uit.be",
                 FirstName = "Pierre",
                 LastName = "BARBE",
                 StartDate = DateTime.SpecifyKind(new DateTime(2008, 1, 1), DateTimeKind.Utc),
@@ -83,16 +84,16 @@ public static class Populate {
                 IsActivate = false
             },
             new ApplicationUser {
-                UserName = "camille",
-                Email = "camille@example.com",
+                UserName = "milletcamille",
+                Email = "millet.camille@uit.be",
                 FirstName = "Camille",
                 LastName = "MILLET",
                 StartDate = DateTime.SpecifyKind(new DateTime(1998, 8, 8), DateTimeKind.Utc),
                 IsActivate = true
             },
             new ApplicationUser {
-                UserName = "bernadette",
-                Email = "bernadette@example.com",
+                UserName = "hardybernadette",
+                Email = "hardy.bernadette@uit.be",
                 FirstName = "Bernadette",
                 LastName = "HARDY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2000, 1, 1), DateTimeKind.Utc),
@@ -100,34 +101,16 @@ public static class Populate {
                 IsActivate = false
             },
             new ApplicationUser {
-                UserName = "isaac",
-                Email = "isaac@example.com",
+                UserName = "devauxisaac",
+                Email = "devaux.isaac@uit.be",
                 FirstName = "Isaac",
                 LastName = "DEVAUX",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc),
                 IsActivate = true
             },
             new ApplicationUser {
-                UserName = "aime_boulay_1",
-                Email = "aime_boulay_1@example.com",
-                FirstName = "Aimé",
-                LastName = "BOULAY",
-                StartDate = DateTime.SpecifyKind(new DateTime(2022, 7, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2022, 8, 30), DateTimeKind.Utc),
-                IsActivate = false
-            },
-            new ApplicationUser {
-                UserName = "paul_de_bergerac_1",
-                Email = "paul_de_bergerac_1@example.com",
-                FirstName = "Paul",
-                LastName = "DE BERGERAC",
-                StartDate = DateTime.SpecifyKind(new DateTime(2023, 3, 1), DateTimeKind.Utc),
-                EndDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
-                IsActivate = false
-            },
-            new ApplicationUser {
-                UserName = "aime_boulay_2",
-                Email = "aime_boulay_2@example.com",
+                UserName = "boulayaime",
+                Email = "boulay.aime@uit.be",
                 FirstName = "Aimé",
                 LastName = "BOULAY",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
@@ -135,24 +118,33 @@ public static class Populate {
                 IsActivate = false
             },
             new ApplicationUser {
-                UserName = "alfred_emmanuel",
-                Email = "alfred_emmanuel@example.com",
+                UserName = "debergeracpaul",
+                Email = "debergerac.paul@uit.com",
+                FirstName = "Paul",
+                LastName = "DE BERGERAC",
+                StartDate = DateTime.SpecifyKind(new DateTime(2023, 3, 1), DateTimeKind.Utc),
+                EndDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
+                IsActivate = false
+            },
+            new ApplicationUser {
+                UserName = "seguinalfredemmanuel",
+                Email = "seguin.alfredemmanuel@uit.be",
                 FirstName = "Alfred-Emmanuel",
                 LastName = "SEGUIN",
                 StartDate = DateTime.SpecifyKind(new DateTime(2000, 3, 15), DateTimeKind.Utc),
                 IsActivate = true
             },
             new ApplicationUser {
-                UserName = "martin_etienne",
-                Email = "martin_etienne@example.com",
+                UserName = "lefortmartinetienne",
+                Email = "lefort.martinetienne_@uit.be",
                 FirstName = "Martin-Étienne",
                 LastName = "LEFORT",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 1, 1), DateTimeKind.Utc),
                 IsActivate = true
             },
             new ApplicationUser {
-                UserName = "paul_guilbert",
-                Email = "paul_guilbert@example.com",
+                UserName = "guilbertpaul",
+                Email = "guilbert.paul@uit.be",
                 FirstName = "Paul",
                 LastName = "GUILBERT",
                 StartDate = DateTime.SpecifyKind(new DateTime(2023, 7, 1), DateTimeKind.Utc),
@@ -163,31 +155,33 @@ public static class Populate {
 
         foreach (var user in users) {
             try {
-                var existingUser = await userManager.FindByEmailAsync(user.Email);
-                if (existingUser == null) {
-                    var result = await userManager.CreateAsync(user, "StrongerPassword!1");
-                    if (result.Succeeded) {
+                if (user.Email != null) {
+                    var existingUser = await userManager.FindByEmailAsync(user.Email);
+                    if (existingUser == null) {
+                        var result = await userManager.CreateAsync(user, "StrongerPassword!1");
                         if (result.Succeeded) {
-                            if (user.LastName == "Ô" || user.LastName == "BARBE") {
-                                await userManager.AddToRoleAsync(user, "ITDirector");
+                            if (result.Succeeded) {
+                                if (user.LastName == "Ô" || user.LastName == "BARBE") {
+                                    await userManager.AddToRoleAsync(user, "ITDirector");
+                                }
+                                else if (user.LastName == "MILLET" || user.LastName == "SEGUIN") {
+                                    await userManager.AddToRoleAsync(user, "MaintenanceManager");
+                                }
+                                else {
+                                    await userManager.AddToRoleAsync(user, "Technician");
+                                }
                             }
-                            else if (user.LastName == "MILLET" || user.LastName == "SEGUIN") {
-                                await userManager.AddToRoleAsync(user, "MaintenanceManager");
-                            }
-                            else {
-                                await userManager.AddToRoleAsync(user, "Technician");
-                            }
-                        }
 
-                        Console.WriteLine($"User {user.UserName} created successfully.");
+                            Console.WriteLine($"User {user.UserName} created successfully.");
+                        }
+                        else {
+                            Console.WriteLine(
+                                $"Error creating user {user.UserName}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                        }
                     }
                     else {
-                        Console.WriteLine(
-                            $"Error creating user {user.UserName}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                        Console.WriteLine($"User {user.UserName} already exists.");
                     }
-                }
-                else {
-                    Console.WriteLine($"User {user.UserName} already exists.");
                 }
             }
             catch (Exception ex) {
@@ -267,7 +261,7 @@ public static class Populate {
 
         context.InformationNames.AddRange(
             directXName, domainNameName, tagServiceName, uptimeName,
-            cpuName, ramName, osName, disksName
+            cpuName, ramName, osName, disksName, ipName, userName
         );
         context.SaveChanges();
 
@@ -301,7 +295,7 @@ public static class Populate {
                             InformationName = osName.SubInformationNames[0],
                             Condition = "IN",
                             Format = "TEXT",
-                            Value = "WINDOWS 10"
+                            Value = "10"
                         }
                     }
             },
@@ -354,7 +348,7 @@ public static class Populate {
                     }
             },
             new NormGroup {
-                Name = "Not enough Ram (less than 8GO)",
+                Name = "Not enough Ram (less than 8 GB)",
                 Priority = 1,
                 MaxExpectedProcessingTime = TimeSpan.FromDays(5),
                 IsEnable = true,
@@ -498,12 +492,12 @@ public static class Populate {
         };
 
         // DirectX
-        var directX = new[] { "Direct X 12", "Direct X 11", "Direct X 10" };
+        var directX = new[] { "DirectX 12", "DirectX 11", "DirectX 10" };
 
         // OS
         var Os = new[] { "Microsoft Windows 10 Enterprise", "Microsoft Windows 11 Enterprise" };
-        var OsV = new[] { "23H2", "24H2", "22H2", };
-        var OsB = new[] { "22631", "26100", "19045" };
+        var OsV = new[] { "21H2", "22H2", "23H2", "24H2", };
+        var OsB = new[] { "19044", "19045", "22631", "26100" };
 
         // CPU
         var modeltype = new[] {
@@ -534,7 +528,7 @@ public static class Populate {
         };
 
         // Disk
-        var diskNames = new string[] {
+        var diskNames = new[] {
             "C:System_Disk", "D:Data_Drive", "E:Backup_Disk", "F:Media_Storage", "G:Games_Drive", "H:VM_Storage",
             "I:Archive_1", "J:Personal_Files", "K:Shared_Drive", "L:Encrypted_Vault"
         };
@@ -542,113 +536,155 @@ public static class Populate {
 
         // User
         var scoop = new[] { "local", "domain" };
-        var name = new[] { 
-            "Alice Johnson", 
-            "Bob Smith", 
-            "Charlie Davis", 
-            "Emma Brown", 
-            "John Taylor", 
-            "Sophia Wilson", 
-            "Michael Green", 
-            "Olivia Martinez", 
-            "Ethan Miller", 
-            "Isabella Clark", 
-            "James Carter", 
-            "Ava Harris", 
-            "Liam Walker", 
-            "Mia Thompson", 
-            "Noah Lewis", 
-            "Charlotte Robinson", 
-            "Lucas Young", 
-            "Amelia Hall", 
-            "Elijah Wright", 
-            "Harper King" 
+        var name = new[] {
+            "Alice Johnson", "Bob Smith", "Charlie Davis", "Emma Brown", "John Taylor", "Sophia Wilson",
+            "Michael Green", "Olivia Martinez", "Ethan Miller", "Isabella Clark", "James Carter", "Ava Harris",
+            "Liam Walker", "Mia Thompson", "Noah Lewis", "Charlotte Robinson", "Lucas Young", "Amelia Hall",
+            "Elijah Wright", "Harper King"
         };
 
         var machines = new List<Machine>();
-
-        for (int i = 1; i <= 50; i++) {
+        int nbMachines = 10;
+        for (int i = 1; i <= nbMachines; i++) {
             // Model
             var brandAndModel = brandsAndModels[random.Next(brandsAndModels.Length)];
-            var brand = brandAndModel.Brand;
-            var model = brandAndModel.Models[random.Next(brandAndModel.Models.Length)];
-            var seen = random.Next(1, 101) <= 30 ? DateTime.UtcNow.AddDays(-3) : DateTime.UtcNow;
+            string brand = brandAndModel.Brand;
+            string model = brandAndModel.Models[random.Next(brandAndModel.Models.Length)];
+            DateTime seen = random.Next(1, 101) <= 30 ? DateTime.UtcNow.AddDays(-3) : DateTime.UtcNow;
 
             // Nom de Machine
-            var machineId = GenerateRandomWindowsMachineName();
+            string machineId = GenerateRandomWindowsMachineName();
 
-            var machineName = $"{machineId}";
-            var Model = $"{brand} {model}";
-            var Machine = new Machine {
-                Name = machineName, Model = Model, IsWorking = random.Next(1, 101) <= 90, LastSeen = seen,
+            string machineName = $"{machineId}";
+            string machineModel = $"{brand} {model}";
+            Machine machine = new Machine {
+                Name = machineName, Model = machineModel, IsWorking = random.Next(1, 101) <= 90, LastSeen = seen,
             };
 
-            // DirectX
-            Machine.Informations.Add(
-                new Value { Machine = Machine, Name = "Direct X", Value = directX[random.Next(directX.Length)],Format = "TEXT"});
+            // OS et DirectX
+            int iOs;
+            if (i < nbMachines * 0.76) {
+                iOs = random.Next(0, 2);
+                machine.Informations.Add(
+                    new Component {
+                        Name = "OS",
+                        Machine = machine,
+                        Value = "Null",
+                        Format = "Null",
+                        Children = new List<Information> {
+                            new Value { Name = "OS Name", Machine = machine, Value = Os[0], Format = "TEXT" },
+                            new Value { Name = "OS Version", Machine = machine, Value = OsV[iOs], Format = "TEXT" },
+                            new Value { Name = "OS Build", Machine = machine, Value = OsB[iOs], Format = "TEXT" },
+                        }
+                    });
+
+                machine.Informations.Add(
+                    new Value {
+                        Machine = machine,
+                        Name = "Direct X",
+                        Value = directX[random.Next(0, directX.Length)],
+                        Format = "TEXT"
+                    }
+                );
+            }
+            else {
+                iOs = random.Next(2, 4);
+                machine.Informations.Add(
+                    new Component {
+                        Name = "OS",
+                        Machine = machine,
+                        Value = "Null",
+                        Format = "Null",
+                        Children = new List<Information> {
+                            new Value { Name = "OS Name", Machine = machine, Value = Os[1], Format = "TEXT" },
+                            new Value { Name = "OS Version", Machine = machine, Value = OsV[iOs], Format = "TEXT" },
+                            new Value { Name = "OS Build", Machine = machine, Value = OsB[iOs], Format = "TEXT" },
+                        }
+                    });
+                machine.Informations.Add(
+                    new Value { Machine = machine, Name = "Direct X", Value = directX[0], Format = "TEXT" }
+                );
+            }
 
             // Domaine
-            Machine.Informations.Add(
-                new Value { Machine = Machine, Name = "Domain name", Value = "WORKGROUP",Format = "TEXT" });
+            machine.Informations.Add(
+                new Value { Machine = machine, Name = "Domain name", Value = "WORKGROUP", Format = "TEXT" });
 
             // Tag service
-            Machine.Informations.Add(
-                new Value { Machine = Machine, Name = "Tag Service", Value = "AB45CD78",Format = "TEXT" });
+            machine.Informations.Add(
+                new Value { Machine = machine, Name = "Tag Service", Value = "AB45CD78", Format = "TEXT" });
 
             // Uptime
-            var date = new TimeSpan(random.Next(0, 151), random.Next(0, 24), random.Next(0, 60), random.Next(0, 60));
-            Machine.Informations.Add(
-                new Value { Machine = Machine, Name = "UpTimes", Value = date.ToString(),Format = "TEXT" });
+            TimeSpan date;
+            if (i > nbMachines * 0.15 && i < nbMachines * 0.21) {
+                date = new TimeSpan(random.Next(1, 11), random.Next(0, 24), random.Next(0, 60), random.Next(0, 60));
+            }
+            else {
+                date = new TimeSpan(random.Next(0, 24), random.Next(0, 60), random.Next(0, 60));
+            }
+
+            machine.Informations.Add(
+                new Value { Machine = machine, Name = "UpTime", Value = date.ToString(), Format = "TEXT" });
 
             // Cpu
             int nbCore = random.Next(locgical.Length);
-            Machine.Informations.Add(
+            machine.Informations.Add(
                 new Component {
                     Name = "CPU",
-                    Machine = Machine,
+                    Machine = machine,
                     Value = "Null",
                     Format = "Null",
                     Children = new List<Information> {
-                        new Value { Name = "Logical core", Machine = Machine, Value = locgical[nbCore],Format = "TEXT" },
-                        new Value { Name = "Core count", Machine = Machine, Value = coreCount[nbCore],Format = "TEXT" },
                         new Value {
-                            Name = "Clockspeed", Machine = Machine, Value = clock[random.Next(clock.Length)],Format = "TEXT",
+                            Name = "Logical core", Machine = machine, Value = locgical[nbCore], Format = "TEXT"
                         },
                         new Value {
-                            Name = "Model", Machine = Machine, Value = modeltype[random.Next(modeltype.Length)],Format = "TEXT",
+                            Name = "Core count", Machine = machine, Value = coreCount[nbCore], Format = "TEXT"
+                        },
+                        new Value {
+                            Name = "Clockspeed",
+                            Machine = machine,
+                            Value = clock[random.Next(clock.Length)],
+                            Format = "TEXT",
+                        },
+                        new Value {
+                            Name = "Model",
+                            Machine = machine,
+                            Value = modeltype[random.Next(modeltype.Length)],
+                            Format = "TEXT",
                         }
                     }
                 });
 
             // Ram
-            int ramTotal = ramTotals[random.Next(ramTotals.Length)];
-            double ramUsed = GetRandomNumber(0, ramTotal);
+            int ramTotal;
+            if (i > nbMachines * 0.6 && i < nbMachines * 0.76) {
+                ramTotal = ramTotals[0];
+            }
+            else {
+                ramTotal = ramTotals[random.Next(1, ramTotals.Length)];
+            }
+
+            double ramUsed;
+            if (i > nbMachines * 0.4 && i < nbMachines * 0.56) {
+                ramUsed = GetRandomNumber(ramTotal * 0.8, ramTotal);
+            }
+            else {
+                ramUsed = GetRandomNumber(0, ramTotal * 0.81);
+            }
+
             double ramFree = ramTotal - ramUsed;
 
-            Machine.Informations.Add(
+            machine.Informations.Add(
                 new Component {
                     Name = "Ram",
-                    Machine = Machine,
+                    Machine = machine,
                     Value = "Null",
                     Format = "Null",
                     Children = new List<Information> {
-                        new Value { Name = "Total RAM", Machine = Machine, Value = ramTotal.ToString(),Format = "Go" },
-                        new Value { Name = "Used RAM", Machine = Machine, Value = ramUsed.ToString(),Format = "Go" },
-                        new Value { Name = "Free RAM", Machine = Machine, Value = ramFree.ToString(),Format = "Go" }
-                    }
-                });
-
-            // OS
-            Machine.Informations.Add(
-                new Component {
-                    Name = "OS",
-                    Machine = Machine,
-                    Value = "Null",
-                    Format = "Null",
-                    Children = new List<Information> {
-                        new Value { Name = "OS Name", Machine = Machine, Value = Os[random.Next(Os.Length)],Format = "TEXT" },
-                        new Value { Name = "OS Version", Machine = Machine, Value = OsV[random.Next(OsV.Length)],Format = "TEXT" },
-                        new Value { Name = "OS Build", Machine = Machine, Value = OsB[random.Next(OsB.Length)],Format = "TEXT" },
+                        new Value { Name = "Total RAM", Machine = machine, Value = ramTotal.ToString(), Format = "GB" },
+                        new Value { Name = "Used RAM", Machine = machine, Value = ramUsed.ToString(), Format = "GB" },
+                        new Value { Name = "Free RAM", Machine = machine, Value = ramFree.ToString(), Format = "GB" }
                     }
                 });
 
@@ -656,54 +692,170 @@ public static class Populate {
             List<Information> ip = new List<Information>();
             for (int j = 0; j < random.Next(1, 3); j++) {
                 var val = new Value {
-                    Name = "Ip Address", Machine = Machine, Value = ipAddresses[random.Next(ipAddresses.Length)],Format = "TEXT"
+                    Name = "Ip Address",
+                    Machine = machine,
+                    Value = ipAddresses[random.Next(ipAddresses.Length)],
+                    Format = "TEXT"
                 };
                 ip.Add(val);
             }
 
-            Machine.Informations.Add(
+            machine.Informations.Add(
                 new Component {
-                    Name = "IPs", Machine = Machine, Value = "Null",Format = "Null", Children = ip,
+                    Name = "IPs",
+                    Machine = machine,
+                    Value = "Null",
+                    Format = "Null",
+                    Children = ip,
                 });
 
             // Disk
-            List<Information> Disks = new List<Information>();
-            for (int j = 0; j < random.Next(1, 3); j++) {
-                int diskTotal = diskTotals[random.Next(diskTotals.Length)];
-                double diskUsed = GetRandomNumber(0, diskTotal);
+            List<Information> disks = new List<Information>();
 
-                var val = new Component {
-                    Name = diskNames[random.Next(diskNames.Length)],
-                    Machine = Machine,
-                    Value = "Null",
-                    Format = "Null",
-                    Children = new List<Information> {
-                        new Value { Name = "Disk Total Size", Value = diskTotal.ToString(),Format = "Go", Machine = Machine },
-                        new Value { Name = "Disk Free Size", Value = diskUsed.ToString(),Format = "Go", Machine = Machine }
+            for (int j = 0; j < random.Next(1, 3); j++) {
+                if (j == 0) {
+                    if (i < nbMachines * 0.1) {
+                        int diskTotal = diskTotals[random.Next(diskTotals.Length)];
+                        double diskUsed = GetRandomNumber(diskTotal * 0.99, diskTotal);
+                        double diskFree = diskTotal - diskUsed;
+
+                        var val = new Component {
+                            Name = diskNames[random.Next(diskNames.Length)],
+                            Machine = machine,
+                            Value = "Null",
+                            Format = "Null",
+                            Children = new List<Information> {
+                                new Value {
+                                    Name = "Disk Total Size",
+                                    Value = diskTotal.ToString(),
+                                    Format = "GB",
+                                    Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Free Size",
+                                    Value = diskFree.ToString(),
+                                    Format = "GB",
+                                    Machine = machine
+                                }
+                            }
+                        };
+                        disks.Add(val);
                     }
-                };
-                Disks.Add(val);
+                    else if (i < nbMachines * 0.5) {
+                        int diskTotal = diskTotals[random.Next(diskTotals.Length)];
+                        double diskUsed = GetRandomNumber(diskTotal * 0.8, diskTotal * 0.95);
+                        double diskFree = diskTotal - diskUsed;
+
+                        var val = new Component {
+                            Name = diskNames[random.Next(diskNames.Length)],
+                            Machine = machine,
+                            Value = "Null",
+                            Format = "Null",
+                            Children = new List<Information> {
+                                new Value {
+                                    Name = "Disk Total Size",
+                                    Value = diskTotal.ToString(),
+                                    Format = "GB",
+                                    Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Free Size",
+                                    Value = diskFree.ToString(),
+                                    Format = "GB",
+                                    Machine = machine
+                                }
+                            }
+                        };
+                        disks.Add(val);
+                    }
+                    else {
+                        int diskTotal = diskTotals[random.Next(diskTotals.Length)];
+                        double diskUsed = GetRandomNumber(0, diskTotal * 0.8);
+                        double diskFree = diskTotal - diskUsed;
+
+                        var val = new Component {
+                            Name = diskNames[random.Next(diskNames.Length)],
+                            Machine = machine,
+                            Value = "Null",
+                            Format = "Null",
+                            Children = new List<Information> {
+                                new Value {
+                                    Name = "Disk Total Size",
+                                    Value = diskTotal.ToString(),
+                                    Format = "GB",
+                                    Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Free Size",
+                                    Value = diskFree.ToString(),
+                                    Format = "GB",
+                                    Machine = machine
+                                }
+                            }
+                        };
+                        disks.Add(val);
+                    }
+                }
+                else {
+                    int diskTotal = diskTotals[random.Next(diskTotals.Length)];
+                    double diskUsed = GetRandomNumber(0, diskTotal * 0.8);
+                    double diskFree = diskTotal - diskUsed;
+
+                    var val = new Component {
+                        Name = diskNames[random.Next(diskNames.Length)],
+                        Machine = machine,
+                        Value = "Null",
+                        Format = "Null",
+                        Children = new List<Information> {
+                            new Value {
+                                Name = "Disk Total Size", Value = diskTotal.ToString(), Format = "GB", Machine = machine
+                            },
+                            new Value {
+                                Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
+                            },
+                            new Value {
+                                Name = "Disk Free Size", Value = diskFree.ToString(), Format = "GB", Machine = machine
+                            }
+                        }
+                    };
+                    disks.Add(val);
+                }
             }
 
-            Machine.Informations.Add(
+            machine.Informations.Add(
                 new Component {
                     Name = "List Disk",
-                    Machine = Machine,
+                    Machine = machine,
                     Value = "Null",
                     Format = "Null",
                     Children = new List<Information> {
                         new Component {
-                            Name = "Disks", Machine = Machine, Value = "Null",Format = "Null", Children = Disks,
+                            Name = "Disks",
+                            Machine = machine,
+                            Value = "Null",
+                            Format = "Null",
+                            Children = disks,
                         },
-                        new Value { Name = "Number disks", Machine = Machine, Value = Disks.Count.ToString(),Format = "TEXT" },
+                        new Value {
+                            Name = "Number disks", Machine = machine, Value = disks.Count.ToString(), Format = "TEXT"
+                        },
                     }
                 });
 
             // User
-            Machine.Informations.Add(
+            machine.Informations.Add(
                 new Component {
                     Name = "Users List",
-                    Machine = Machine,
+                    Machine = machine,
                     Value = "Null",
                     Format = "Null",
                     Children = new List<Information> {
@@ -711,41 +863,53 @@ public static class Populate {
                             Name = "User",
                             Value = "Null",
                             Format = "Null",
-                            Machine = Machine,
+                            Machine = machine,
                             Children =
                                 new List<Information> {
-                                    new Value { Name = "User Name", Machine = Machine, Value = "Admin",Format = "TEXT" },
-                                    new Value { Name = "User Scope", Machine = Machine, Value = "Local",Format = "TEXT" }
+                                    new Value {
+                                        Name = "User Name", Machine = machine, Value = "Admin", Format = "TEXT"
+                                    },
+                                    new Value {
+                                        Name = "User Scope", Machine = machine, Value = "Local", Format = "TEXT"
+                                    }
                                 }
                         },
                         new Component {
                             Name = "User",
                             Value = "Null",
                             Format = "Null",
-                            Machine = Machine,
+                            Machine = machine,
                             Children = new List<Information> {
-                                new Value { Name = "User Name", Machine = Machine, Value = "DefaultAccount",Format = "TEXT" },
-                                new Value { Name = "User Scope", Machine = Machine, Value = "Local",Format = "TEXT" }
+                                new Value {
+                                    Name = "User Name", Machine = machine, Value = "DefaultAccount", Format = "TEXT"
+                                },
+                                new Value { Name = "User Scope", Machine = machine, Value = "Local", Format = "TEXT" }
                             }
                         },
                         new Component {
                             Name = "User",
-                            Machine = Machine,
+                            Machine = machine,
                             Value = "Null",
                             Format = "Null",
                             Children = new List<Information> {
                                 new Value {
-                                    Name = "User Name", Machine = Machine, Value = name[random.Next(name.Length)],Format = "TEXT"
+                                    Name = "User Name",
+                                    Machine = machine,
+                                    Value = name[random.Next(name.Length)],
+                                    Format = "TEXT"
                                 },
                                 new Value {
-                                    Name = "User Scope", Machine = Machine, Value = scoop[random.Next(scoop.Length)],Format = "TEXT"
+                                    Name = "User Scope",
+                                    Machine = machine,
+                                    Value = scoop[random.Next(scoop.Length)],
+                                    Format = "TEXT"
                                 }
                             }
                         },
                     }
                 });
 
-            machines.Add(Machine);
+            machines.Add(machine);
         }
 
         context.Machines.AddRange(machines);
@@ -755,10 +919,10 @@ public static class Populate {
     }
 
     private static async Task SeedAlarms(ApplicationDbContext context, List<Machine> machines,
-        List<NormGroup> normGroups, UserManager<ApplicationUser> userManager) {
+        List<NormGroup> normGroups, UserManager<ApplicationUser> userManager, bool noAlarm) {
         var random = new Random();
 
-        var rolesToFind = new List<string> { "MaintenanceManager", "ITDirector" };
+        var rolesToFind = new List<string> { "Technician" };
 
         var usersInRoles = new List<ApplicationUser>();
 
@@ -801,198 +965,252 @@ public static class Populate {
         var alarmStatusHistories = new List<AlarmStatusHistory>();
 
         foreach (var machine in machines) {
-            int test = 0;
-            test++;
             // Get Ram
             Information infoRam = machine.Informations.Find(i => i.Name == "Ram");
 
             int ramTot = int.Parse(infoRam.Children.Find(i => i.Name == "Total RAM").Value);
-
             double ramUsed = Double.Parse(infoRam.Children.Find(i => i.Name == "Used RAM").Value);
 
+            Console.WriteLine(("-----------------------Ram-----------------------------------"));
+
+            //if(ramUsed / ramTot > Double.Parse(normGroups[2].Norms.Find(n => n.Name.Equals("Ram usage > 80%")).Value)/100){
             if (ramUsed / ramTot > 0.8) {
-                int nbStatus = random.Next(1, alarmStatusTypes.Count);
+                Console.WriteLine(("-----------------------Ram 80-----------------------------------"));
+                int nbStatus;
+                if (!noAlarm) {
+                    nbStatus = random.Next(1, 3);
 
-                var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                    Machine = machine,
-                    NormGroup = normGroups[2],
-                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                };
+                    var alarm = new Alarm {
+                        TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                        Machine = machine,
+                        NormGroup = normGroups[2],
+                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                    };
 
-                for (int i = 0; i < nbStatus; i++) {
-                    alarmStatusHistories.Add(
-                        new AlarmStatusHistory {
-                            Alarm = alarm,
-                            StatusType = alarmStatusTypes[i],
-                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                        });
+                    alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                        random));
+                }
+
+                // Closed Alarm
+                for (int j = 0; j < 3; j++) {
+                    nbStatus = 3;
+                    var oldAlarm = new Alarm {
+                        TriggeredAt =
+                            DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
+                                .AddMinutes(-random.Next(0, 60)),
+                        Machine = machine,
+                        NormGroup = normGroups[2],
+                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                    };
+
+                    alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes, usersInRoles,
+                        random));
+                    alarms.Add(oldAlarm);
                 }
             }
 
-            if (ramTot < 8) {
-                int nbStatus = random.Next(1, alarmStatusTypes.Count);
+            Console.WriteLine(("-----------------------Ram 2-----------------------------------"));
+
+            //if (ramTot < int.Parse(normGroups[4].Norms.Find(n => n.Name.Equals("Ram < 8GB")).Value)*100) {
+            if (ramTot < 8 && !noAlarm) {
+                Console.WriteLine(("-----------------------Ram 8GB-----------------------------------"));
+                int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    Machine = machine,
+                    NormGroup = normGroups[5],
+                    UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
+                };
+
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                    random));
+
+                alarms.Add(alarm);
+            }
+            else {
+                // Closed alarm
+                int nbStatus = 3;
+                var alarm = new Alarm {
+                    TriggeredAt =
+                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
+                            .AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[5],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                 };
 
-                for (int i = 0; i < nbStatus; i++) {
-                    alarmStatusHistories.Add(
-                        new AlarmStatusHistory {
-                            Alarm = alarm,
-                            StatusType = alarmStatusTypes[i],
-                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                        });
-                }
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                    random));
 
                 alarms.Add(alarm);
             }
 
             // Get Storage
             Information infoDisk = machine.Informations.Find(i => i.Name == "List Disk");
-
-
+            Console.WriteLine(("-----------------------Storage-----------------------------------"));
             foreach (Information info in infoDisk.Children.Find(i => i.Name == "Disks").Children) {
                 int diskTot = int.Parse(info.Children.Find(i => i.Name == "Disk Total Size").Value);
 
-                double diskFree = Double.Parse(info.Children.Find(i => i.Name == "Disk Free Size").Value);
+                double diskUsed = Double.Parse(info.Children.Find(i => i.Name == "Disk Used").Value);
+                Console.WriteLine(("-----------------------Storage Boucle-----------------------------------"));
+                //if (diskUsed / diskTot > Double.Parse(normGroups[0].Norms.Find(n => n.Name.Equals("Storage full")).Value)/100) {
+                if (diskUsed / diskTot > 0.99) {
+                    Console.WriteLine(("-----------------------Storage Full-----------------------------------"));
+                    int nbStatus;
 
-                if (diskFree / diskTot < 0.1) {
-                    int nbStatus = random.Next(1, alarmStatusTypes.Count);
+                    if (!noAlarm) {
+                        nbStatus = random.Next(1, 3);
+                        var alarm = new Alarm {
+                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                            Machine = machine,
+                            NormGroup = normGroups[0],
+                            UserId = random.Next(0, 101) < 80
+                                ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                                : null
+                        };
 
-                    var alarm = new Alarm {
-                        TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                        Machine = machine,
-                        NormGroup = normGroups[0],
-                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                    };
+                        alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                            random));
 
-                    for (int i = 0; i < nbStatus; i++) {
-                        alarmStatusHistories.Add(
-                            new AlarmStatusHistory {
-                                Alarm = alarm,
-                                StatusType = alarmStatusTypes[i],
-                                ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                                UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                            });
+                        alarms.Add(alarm);
                     }
 
-                    alarms.Add(alarm);
+                    // Closed alarm
+                    for (int j = 0; j < 20; j++) {
+                        nbStatus = 3;
+                        var oldAlarm = new Alarm {
+                            TriggeredAt =
+                                DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
+                                    .AddMinutes(-random.Next(0, 60)),
+                            Machine = machine,
+                            NormGroup = normGroups[0],
+                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                        };
+
+                        alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes,
+                            usersInRoles, random));
+                        alarms.Add(oldAlarm);
+                    }
                 }
-                else if (diskFree / diskTot < 0.2) {
-                    int nbStatus = random.Next(1, alarmStatusTypes.Count);
+                //else if (diskUsed / diskTot > Double.Parse(normGroups[3].Norms.Find(n => n.Name.Equals("Storage over 80%")).Value)/100) {
+                else if (diskUsed / diskTot > 0.8) {
+                    Console.WriteLine(("-----------------------Storage 80-----------------------------------"));
+                    int nbStatus;
 
-                    var alarm = new Alarm {
-                        TriggeredAt = DateTime.UtcNow.AddHours(-15),
-                        Machine = machine,
-                        NormGroup = normGroups[3],
-                        UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                    };
+                    if (!noAlarm) {
+                        nbStatus = random.Next(1, 3);
+                        var alarm = new Alarm {
+                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                            Machine = machine,
+                            NormGroup = normGroups[3],
+                            UserId = random.Next(0, 101) < 80
+                                ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                                : null
+                        };
 
-                    for (int i = 0; i < nbStatus; i++) {
-                        alarmStatusHistories.Add(
-                            new AlarmStatusHistory {
-                                Alarm = alarm,
-                                StatusType = alarmStatusTypes[i],
-                                ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                                UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                            });
+                        alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                            random));
+
+                        alarms.Add(alarm);
                     }
 
-                    alarms.Add(alarm);
+                    // Closed Alarm
+                    for (int j = 0; j < 20; j++) {
+                        nbStatus = 3;
+                        var oldAlarm = new Alarm {
+                            TriggeredAt =
+                                DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
+                                    .AddMinutes(-random.Next(0, 60)),
+                            Machine = machine,
+                            NormGroup = normGroups[3],
+                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                        };
+
+                        alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes,
+                            usersInRoles, random));
+                        alarms.Add(oldAlarm);
+                    }
                 }
             }
 
             // Get DirectX
             Information infoDirectX = machine.Informations.Find(i => i.Name == "Direct X");
 
-            if (!infoDirectX.Value.Contains("12")) {
-                int nbStatus = random.Next(1, alarmStatusTypes.Count);
+            Console.WriteLine(("-----------------------DirectX-----------------------------------"));
+            //if (!infoDirectX.Value.Equals(normGroups[4].Norms.Find(n => n.Name.Equals("Old Direct")).Value)) {
+            if (!infoDirectX.Value.Equals("DirectX 12") && !noAlarm) {
+                Console.WriteLine(("-----------------------Wrong DirectX-----------------------------------"));
+                int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    Machine = machine,
+                    NormGroup = normGroups[4],
+                    UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
+                };
+
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                    random));
+
+                alarms.Add(alarm);
+            }
+            else {
+                // Closed alarm
+                int nbStatus = 3;
+                var alarm = new Alarm {
+                    TriggeredAt =
+                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
+                            .AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[4],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                 };
 
-                for (int i = 0; i < nbStatus; i++) {
-                    alarmStatusHistories.Add(
-                        new AlarmStatusHistory {
-                            Alarm = alarm,
-                            StatusType = alarmStatusTypes[i],
-                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                        });
-                }
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                    random));
 
                 alarms.Add(alarm);
             }
 
             // Get Windows
             Information infoOs = machine.Informations.Find(i => i.Name == "OS");
-
-            if (infoOs.Children.Find(i => i.Name == "OS Name").Value.Contains("10")) {
-                int nbStatus = random.Next(1, alarmStatusTypes.Count);
+            Console.WriteLine(("-----------------------OS-----------------------------------"));
+            Console.WriteLine(infoOs.Children.Find(i => i.Name == "OS Name").Value);
+            //if (infoOs.Children.Find(i => i.Name == "OS Name").Value.Contains(normGroups[1].Norms.Find(n => n.Name.Equals("Windows 10 detected")).Value)) {
+            if (infoOs.Children.Find(i => i.Name == "OS Name").Value.Contains("10") && !noAlarm) {
+                Console.WriteLine(("-----------------------Wrong OS-----------------------------------"));
+                int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-15),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    Machine = machine,
+                    NormGroup = normGroups[1],
+                    UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
+                };
+
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                    random));
+
+                alarms.Add(alarm);
+            }
+            else {
+                //Closed alarm
+                int nbStatus = 3;
+                var alarm = new Alarm {
+                    TriggeredAt =
+                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
+                            .AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[1],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
                 };
 
-                for (int i = 0; i < nbStatus; i++) {
-                    alarmStatusHistories.Add(
-                        new AlarmStatusHistory {
-                            Alarm = alarm,
-                            StatusType = alarmStatusTypes[i],
-                            ModificationDate = DateTime.UtcNow.AddHours(-10 + i),
-                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                        });
-                }
+                alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
+                    random));
 
                 alarms.Add(alarm);
             }
-
-            // Alarm Closed
-            int alarmCount = random.Next(1, 3);
-            for (int i = 0; i < alarmCount; i++) {
-                int nbDays = random.Next(20, 144);
-                var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddDays(-nbDays),
-                    Machine = machine,
-                    NormGroup = normGroups[random.Next(normGroups.Count)],
-                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                };
-
-                int historyCount = random.Next(1, 3);
-
-                for (i = 0; i < historyCount; i++) {
-                    alarmStatusHistories.Add(
-                        new AlarmStatusHistory {
-                            Alarm = alarm,
-                            StatusType = alarmStatusTypes[i],
-                            ModificationDate = DateTime.UtcNow.AddDays(nbDays).AddHours(-10 + i),
-                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                        });
-                }
-
-                alarms.Add(alarm);
-            }
-
-            var alarme = new Alarm {
-                TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(1, 72)),
-                Machine = machines[0],
-                NormGroup = normGroups[random.Next(normGroups.Count)],
-            };
-            alarms.Add(alarme);
         }
 
         context.AlarmHistories.AddRange(alarmStatusHistories);
@@ -1008,20 +1226,17 @@ public static class Populate {
 
         var solutionContents = new[] {
             "### Resolved issue with outdated drivers\n- **Issue**: The outdated drivers were causing frequent system crashes and slow performance, especially with peripheral devices.\n- **Actions Taken**:\n   1. Identified that several drivers were not up to date.\n   2. Updated drivers for network adapter, sound card, and graphics card.\n   3. Restarted the system after the updates were completed to ensure stability.\n- **Outcome**: After the update, the system was much more stable, and there were no crashes during the stress tests.\n![Driver Image](image1.png)\n\n",
-    
             "### Patched system vulnerabilities\n- **Issue**: A security vulnerability was discovered in the system related to outdated security patches and missing updates.\n- **Actions Taken**:\n   1. Applied critical patches to address known vulnerabilities in the system.\n   2. Updated the operating system and security-related software to the latest versions.\n   3. Ran a vulnerability scan to ensure all security patches were correctly installed and no residual threats remained.\n- **Outcome**: The vulnerability has been successfully patched, and a follow-up scan confirmed no remaining issues. The system is now fully up-to-date with current security standards.\n",
-    
             "### Updated operating system\n- **Issue**: The operating system was outdated, with multiple patches missing, exposing the system to potential malware and instability.\n- **Actions Taken**:\n   1. Backed up all critical data and created restore points for the system.\n   2. Installed the latest operating system version along with all pending security updates.\n   3. Checked for application compatibility with the new version.\n- **Outcome**: The upgrade was successful, and performance has improved significantly. All applications are running smoothly, and the system is now more secure.\n"
         };
 
         var nonSolutionTitles = new[] { "Investigating CPU Usage", "Storage Monitoring" };
         var nonSolutionContents = new[] {
             "### Investigating high CPU usage\n- **Issue**: Users reported performance lag due to excessive CPU usage when running high-demand applications.\n- **Actions Taken**:\n   1. Analyzed running processes and identified a few applications that were consuming excessive CPU resources.\n   2. Disabled unnecessary background tasks and services that were consuming CPU.\n   3. Monitored CPU performance over a 24-hour period after making adjustments.\n   4. Further investigation revealed a potential memory leak in one of the installed applications.\n- **Current Status**: The issue is still being investigated. The next step is to contact the application vendor for a patch related to the memory leak.\n- ![CPU](image4.png)\n\n",
-    
             "### Monitoring storage capacity\n- **Issue**: The system's storage reached 95% capacity, triggering warnings of potential performance degradation.\n- **Actions Taken**:\n   1. Checked current disk usage and identified large files and temporary data causing the storage overflow.\n   2. Moved several non-essential files to an external drive to free up space.\n   3. Implemented disk clean-up tasks to remove redundant files and logs that were not required.\n   4. Reconfigured disk quotas to ensure that future storage usage remains manageable.\n- **Current Status**: The system is stable, and storage usage is now below 70%. However, I’m continuing to monitor disk usage to prevent further issues. A long-term solution will involve upgrading the storage device.\n- ![Storage](image5.png)\n\n"
         };
 
-        var usersInRolesNote = context.Users.ToList(); 
+        var usersInRolesNote = context.Users.ToList();
 
         List<string> ExtractImageFileNames(string content) {
             var fileNames = new List<string>();
@@ -1036,24 +1251,17 @@ public static class Populate {
             return fileNames;
         }
 
-        void AddFilesToNote(Note note, List<string> imageFileNames)
-        {
+        void AddFilesToNote(Note note, List<string> imageFileNames) {
             var files = new List<UITManagerWebServer.Models.File>();
 
-            foreach (var fileName in imageFileNames)
-            {
+            foreach (var fileName in imageFileNames) {
                 var filePath = Path.Combine("Images", fileName);
-                if (System.IO.File.Exists(filePath))
-                {
+                if (System.IO.File.Exists(filePath)) {
                     var fileContent = System.IO.File.ReadAllBytes(filePath);
-                    var mimeType = "image/jpg"; 
+                    var mimeType = "image/jpg";
 
-                    var file = new UITManagerWebServer.Models.File 
-                    {
-                        FileName = fileName,
-                        FileContent = fileContent,
-                        MimeType = mimeType,
-                        NoteId = note.Id
+                    var file = new UITManagerWebServer.Models.File {
+                        FileName = fileName, FileContent = fileContent, MimeType = mimeType, NoteId = note.Id
                     };
 
                     files.Add(file);
@@ -1062,8 +1270,6 @@ public static class Populate {
 
             note.Files = files;
         }
-
-
 
 
         for (int i = 0; i < 3; i++) {
@@ -1102,12 +1308,12 @@ public static class Populate {
                 var imageFileNames = ExtractImageFileNames(note.Content);
                 AddFilesToNote(note, imageFileNames);
             }
+
             context.SaveChanges();
         }
         catch (Exception ex) {
             Console.WriteLine($"Error saving notes: {ex.Message}");
         }
-
     }
 
     private static string GenerateRandomWindowsMachineName() {
@@ -1126,4 +1332,30 @@ public static class Populate {
         Random random = new Random();
         return random.NextDouble() * (maximum - minimum) + minimum;
     }
+
+    private static List<AlarmStatusHistory> AddStatusHistory(int nbStatus, Alarm alarm,
+        List<AlarmStatusType> alarmStatusTypes, List<ApplicationUser> usersInRoles, Random random) {
+        List<AlarmStatusHistory> alarmStatusHistories = new List<AlarmStatusHistory>();
+
+        if (alarm.UserId == null) {
+            nbStatus = 1;
+        }
+
+        DateTime tempModificationDate = default;
+        for (int i = 0; i < nbStatus; i++) {
+            DateTime earliestDate = (DateTime.Now < alarm.TriggeredAt) ? DateTime.Now : alarm.TriggeredAt;
+            if (i == 0) tempModificationDate = earliestDate.AddHours(-random.Next(120, 240));
+            else tempModificationDate = earliestDate.AddHours(-random.Next(1, 120));
+            alarmStatusHistories.Add(
+                new AlarmStatusHistory {
+                    Alarm = alarm,
+                    StatusType = alarmStatusTypes[i],
+                    ModificationDate = tempModificationDate,
+                    UserId = (i == 0) ? null : usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                });
+        }
+
+        return alarmStatusHistories;
+    }
+
 }

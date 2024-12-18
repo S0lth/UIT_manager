@@ -1,4 +1,5 @@
 ﻿@using UITManagerWebServer.Controllers
+@using UITManagerWebServer.Helpers
 @model MachineController.DetailsViewModel
 @functions{
      private void GetSavedSortingAndFilterInfoExcept(string? name)
@@ -124,7 +125,7 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div>
                                             <p class="mb-1">
-                                                <a asp-controller="Notes" asp-action="Details" asp-route-id="@note.Id"
+                                                <a asp-controller="Note" asp-action="Details" asp-route-id="@note.Id"
                                                    class="text-primary text-decoration-none text-truncate"
                                                    style="display: block; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                                     @note.Title
@@ -132,7 +133,7 @@
                                             </p>
                                             <small class="text-muted">Author: @note.Author on @note.Date.ToString("dd-MM-yyyy HH:mm")</small>
                                         </div>
-                                        <span class="@GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
+                                        <span class="@ViewHelpers.GetIsSolutionIcon(note.IsSolution)">@GetIsSolutionText(note.IsSolution)</span>
                                     </div>
                                 </td>
                             </tr>

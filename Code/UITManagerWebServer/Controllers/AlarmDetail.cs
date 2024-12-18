@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
-using UITManagerWebServer.Models.ModelsView;
 
 namespace UITManagerWebServer {
     public class AlarmDetail : Controller {
@@ -19,12 +18,74 @@ namespace UITManagerWebServer {
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+
+            switch (currentAction) {
+                case "Index":
+                    int alarmId = Convert.ToInt32(context.ActionArguments["id"]);
+                    var alarm = _context.Alarms.FirstOrDefault(a => a.Id == alarmId);
+                    if (alarm != null) {
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = "Machine's Alarm Details",
+                            Url = string.Empty,
+                            IsActive = true
+                        });
+                    }
+                    break;
+
+                case "Details":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Alarm's details", Url = string.Empty, IsActive = true
+                    });
+                    
+                    break;
+                
+                case "Edit":
+                    alarmId = Convert.ToInt32(context.ActionArguments["id"]);
+                    alarm = _context.Alarms.FirstOrDefault(a => a.Id == alarmId);
+                    
+                    if (alarm != null) {
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = "Edit machine's Alarm",
+                            Url = string.Empty,
+                            IsActive = true
+                        });
+                    }
+                    break;
+
+                case "Delete":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Delete alarm", Url = string.Empty, IsActive = true
+                    });
+                    break;
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+
+
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
 
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string sortOrder, int id, string solutionFilter, string authorFilter,
             string sortOrderNote) {
             if (string.IsNullOrEmpty(sortOrder)) {
@@ -41,16 +102,17 @@ namespace UITManagerWebServer {
             ViewData["TypeSortParm"] = sortOrder.Contains("type_desc") ? "type" : "type_desc";
             ViewData["AuthorSortParm"] = sortOrder.Contains("author_desc") ? "author" : "author_desc";
 
-            var alarm = await getAlarm(id);
+            Alarm? alarm = await getAlarm(id);
+
             if (alarm == null) {
                 return NotFound();
             }
 
-            var alarmCount = await _context.Alarms
+            int alarmCount = await _context.Alarms
                 .Where(a => a.MachineId == alarm.MachineId && a.NormGroupId == alarm.MachineId)
                 .CountAsync();
 
-            var alarmCountAll = await _context.Alarms
+            int alarmCountAll = await _context.Alarms
                 .Where(a => a.NormGroupId == alarm.NormGroupId)
                 .CountAsync();
 
@@ -61,7 +123,7 @@ namespace UITManagerWebServer {
             ViewData["AlarmCountAll"] = alarmCountAll;
 
 
-            var notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
+            List<Note> notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
 
             notes = ApplySorting(notes.AsQueryable(), sortOrder).ToList();
             ViewData["Notes"] = notes;
@@ -69,11 +131,11 @@ namespace UITManagerWebServer {
 
             ViewData["Authors"] = ViewBag.Authors = await _context.Users.ToListAsync();
 
-            var triggeredInfoList = new List<dynamic>();
-            foreach (var norm in alarm.NormGroup.Norms) {
+            List<dynamic> triggeredInfoList = new List<dynamic>();
+            foreach (Norm norm in alarm.NormGroup.Norms) {
                 if (norm.InformationName != null) {
-                    var infoName = norm.InformationName.Name;
-                    var machineValue = alarm.Machine.GetInformationValueByName(infoName);
+                    string infoName = norm.InformationName.Name;
+                    string machineValue = alarm.Machine.GetInformationValueByName(infoName);
 
                     if (!string.IsNullOrEmpty(machineValue)) {
                         var triggeredInfo = new {
@@ -118,37 +180,34 @@ namespace UITManagerWebServer {
             }
         }
 
-
+        [Authorize]
         public List<Information> FindMatchingInformations(int machineId, string informationName) {
-            var machine = _context.Machines
-                .Include(m => m.Informations) // Charger les informations de la machine
+            Machine? machine = _context.Machines
+                .Include(m => m.Informations)
                 .FirstOrDefault(m => m.Id == machineId);
 
             if (machine == null) {
                 return new List<Information>();
             }
 
-            var matchingInformations = machine.Informations
+            List<Information> matchingInformations = machine.Informations
                 .SelectMany(info => info.Children)
                 .Where(child =>
-                    child.Name.Equals(informationName, StringComparison.OrdinalIgnoreCase)) // Filtrer par nom
+                    child.Name.Equals(informationName, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
             return matchingInformations;
         }
 
-
         private async Task<List<Note>> FetchFilteredNotes(string solutionFilter, string authorFilter,
             string sortOrderNote) {
-            var notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
+            IQueryable<Note> notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
 
-            // Filtrer par type de solution si nécessaire
             if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
                 bool isSolution = solutionFilter.ToLower() == "true";
                 notesQuery = notesQuery.Where(n => n.IsSolution == isSolution);
             }
 
-            // Appliquer le tri des notes selon l'ordre spécifié
             if (sortOrderNote == "ndate_desc") {
                 notesQuery = notesQuery.OrderByDescending(n => n.CreatedAt);
             }
@@ -156,9 +215,8 @@ namespace UITManagerWebServer {
                 notesQuery = notesQuery.OrderBy(n => n.CreatedAt);
             }
 
-            var notes = await notesQuery.ToListAsync();
+            List<Note> notes = await notesQuery.ToListAsync();
 
-            // Filtrer par auteur si nécessaire
             if (!string.IsNullOrEmpty(authorFilter)) {
                 notes = notes.Where(n => n.AuthorId == authorFilter).ToList();
             }
@@ -167,7 +225,7 @@ namespace UITManagerWebServer {
         }
 
         private async Task<Alarm> getAlarm(int id) {
-            var alarm = await _context.Alarms
+            Alarm? alarm = await _context.Alarms
                 .Include(a => a.Machine)
                 .ThenInclude(aa => aa.Informations)
                 .ThenInclude(i => i.Children)
@@ -186,16 +244,16 @@ namespace UITManagerWebServer {
             return alarm;
         }
 
-
         [HttpPost]
-        [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
+        [ValidateAntiForgeryToken]
+        [Authorize]
         [Route("AlarmDetail/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Status)) {
                 return BadRequest(new { success = false, message = "Invalid data." });
             }
 
-            var alarm = await _context.Alarms
+            Alarm? alarm = await _context.Alarms
                 .Include(a => a.AlarmHistories)
                 .FirstOrDefaultAsync(a => a.Id == request.Id);
 
@@ -203,17 +261,16 @@ namespace UITManagerWebServer {
                 return NotFound(new { success = false, message = "Alarm not found." });
             }
 
-            var statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
+            AlarmStatusType? statusType =
+                await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
             if (statusType == null) {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
 
-            // Obtenir l'ID utilisateur
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            // Créer un nouvel historique d'alarme
-            var newAlarmHistory = new AlarmStatusHistory {
-                StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, UserId = userId // Peut être null
+            AlarmStatusHistory newAlarmHistory = new AlarmStatusHistory {
+                StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, UserId = userId
             };
 
             alarm.AlarmHistories.Add(newAlarmHistory);
@@ -224,14 +281,12 @@ namespace UITManagerWebServer {
                 return Ok(new { success = true, message = "Status updated successfully." });
             }
             catch (Exception ex) {
-                // Log en cas d'exception
-                // Exemple : _logger.LogError(ex, "Error updating alarm status.");
                 return StatusCode(500, new { success = false, message = "An error occurred while updating status." });
             }
         }
 
-
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
         [Route("AlarmDetail/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
@@ -240,8 +295,7 @@ namespace UITManagerWebServer {
             }
 
             try {
-                // Récupérer l'alarme correspondant à l'ID
-                var alarm = await _context.Alarms
+                Alarm? alarm = await _context.Alarms
                     .Include(a => a.Machine)
                     .Include(a => a.NormGroup)
                     .FirstOrDefaultAsync(a => a.Id.ToString() == request.Id);
@@ -250,34 +304,29 @@ namespace UITManagerWebServer {
                     return NotFound(new { success = false, message = "Alarm not found." });
                 }
 
-                // Vérifier si l'utilisateur existe
-                var user = await _userManager.FindByIdAsync(request.UserId);
+                ApplicationUser? user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null) {
                     return NotFound(new { success = false, message = "User not found." });
                 }
 
-                // Mettre à jour l'utilisateur associé à l'alarme
                 alarm.UserId = request.UserId;
 
-                // Ajouter un historique de statut pour refléter le changement d'attribution
-                var alarmStatusHistory = new AlarmStatusHistory {
+                AlarmStatusHistory alarmStatusHistory = new AlarmStatusHistory {
                     AlarmId = alarm.Id,
                     StatusType =
                         await _context.AlarmStatusTypes.FirstOrDefaultAsync(s =>
-                            s.Name == "In Progress"), // Exemple de statut
+                            s.Name == "In Progress"),
                     ModificationDate = DateTime.UtcNow,
                     UserId = request.UserId
                 };
 
                 _context.AlarmHistories.Add(alarmStatusHistory);
 
-                // Enregistrer les modifications
                 await _context.SaveChangesAsync();
 
                 return Ok(new { success = true, message = "Alarm attribution updated successfully." });
             }
             catch (Exception ex) {
-                // Gestion des erreurs
                 return StatusCode(500,
                     new {
                         success = false, message = "An error occurred while updating attribution.", error = ex.Message
@@ -285,13 +334,13 @@ namespace UITManagerWebServer {
             }
         }
 
-
+        [Authorize]
         public async Task<IActionResult> Details(int? id) {
             if (id == null) {
                 return NotFound();
             }
 
-            var alarm = await _context.Alarms
+            Alarm? alarm = await _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.User)
@@ -304,6 +353,8 @@ namespace UITManagerWebServer {
         }
 
         // GET: AlarmDetail/Create
+        [HttpGet]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public IActionResult Create() {
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id");
             ViewData["NormGroupId"] = new SelectList(_context.NormGroups, "Id", "Id");
@@ -316,6 +367,7 @@ namespace UITManagerWebServer {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public async Task<IActionResult> Create([Bind("Id,TriggeredAt,MachineId,NormGroupId,UserId")] Alarm alarm) {
             if (ModelState.IsValid) {
                 _context.Add(alarm);
@@ -331,12 +383,14 @@ namespace UITManagerWebServer {
 
 
         // GET: AlarmDetail/Edit/5
+        [HttpGet]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
             }
 
-            var alarm = await _context.Alarms.FindAsync(id);
+            Alarm? alarm = await _context.Alarms.FindAsync(id);
             if (alarm == null) {
                 return NotFound();
             }
@@ -351,6 +405,7 @@ namespace UITManagerWebServer {
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
             [Bind("Id,TriggeredAt,MachineId,NormGroupId,UserId")]
@@ -383,12 +438,15 @@ namespace UITManagerWebServer {
         }
 
         // GET: AlarmDetail/Delete/5
+        [HttpGet, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public async Task<IActionResult> Delete(int? id) {
             if (id == null) {
                 return NotFound();
             }
 
-            var alarm = await _context.Alarms
+            Alarm? alarm = await _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.User)
@@ -403,8 +461,9 @@ namespace UITManagerWebServer {
         // POST: AlarmDetail/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ITDirector, MaintenanceManager")]
         public async Task<IActionResult> DeleteConfirmed(int id) {
-            var alarm = await _context.Alarms.FindAsync(id);
+            Alarm? alarm = await _context.Alarms.FindAsync(id);
             if (alarm != null) {
                 _context.Alarms.Remove(alarm);
             }
@@ -416,7 +475,6 @@ namespace UITManagerWebServer {
         private bool AlarmExists(int id) {
             return _context.Alarms.Any(e => e.Id == id);
         }
-
 
         private IQueryable<Alarm> ApplySorting(IQueryable<Alarm> query, string sortOrder) {
             if (string.IsNullOrEmpty(sortOrder)) {
@@ -468,7 +526,7 @@ namespace UITManagerWebServer {
     }
 
     public class UpdateAssignedUserRequest {
-        public string Id { get; set; } // ID de l'alarme
-        public string UserId { get; set; } // ID de l'utilisateurD du nouvel utilisateur attribué
+        public string Id { get; set; }
+        public string UserId { get; set; }
     }
 }

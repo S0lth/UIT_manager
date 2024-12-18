@@ -17,7 +17,8 @@
         public string FileName { get; set; }
         public byte[] FileContent { get; set; }
         public string MimeType { get; set; }
-        public int NoteId { get; set; }
+        public bool IsTemporary { get; set; } = false;
+        public int? NoteId { get; set; }
         public Note? Note { get; set; }
     }
 }

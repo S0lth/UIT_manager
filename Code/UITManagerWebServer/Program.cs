@@ -51,7 +51,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         Console.WriteLine("i'm in");
-        await Populate.Initialize(services);
+        // Populate without alarm trigger today
+        //await Populate.Initialize(services,true);
+        // Populate with alarm trigger today
+        await Populate.Initialize(services,false);
         Console.WriteLine("Database populated successfully.");
     }
     catch (Exception ex)

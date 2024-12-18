@@ -4,7 +4,7 @@
     var alarm = (UITManagerWebServer.Models.Alarm)ViewData["Alarm"];
     ViewData["Title"] = "Alarm Details";
 }
-
+<div id="alert-container" class="p-0 m-0"></div>
 <div class="container-fluid py-3" style="max-width: 1700px;">
     <div class="row">
         <div class="col-12 mb-2">
@@ -72,7 +72,7 @@
                     Alarm status history
                 </button>
 
-                <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Alarms">
+                <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Alarm">
                     View all alarms
                 </a>
                 <a class="btn btn-outline-primary" asp-controller="Machine" asp-action="Details"
@@ -84,61 +84,3 @@
     </div>
     @Html.Partial("_AlarmStatusHistoryModal", ViewData["Alarm"])
 </div>
-<script>
-    function updateAlarmStatus(alarmId, status) {
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-        if (!token) {
-            alert('CSRF token is missing.');
-            return;
-        }
-        fetch(`/AlarmDetail/UpdateStatus`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': token
-            },
-            body: JSON.stringify({id: alarmId, status: status})
-        }).then(response => {
-            if (!response.ok) {
-                alert('Error updating status.');
-            }
-        }).catch(error => {
-            alert('Network error updating status.');
-        });
-    }
-
-    async function updateAlarmAttribution(alarmId, userId) {
-        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-
-        if (!token) {
-            alert('CSRF token is missing.');
-            return;
-        }
-
-        if (!alarmId || !userId) {
-            alert('Invalid alarm or user ID.');
-            return;
-        }
-        try {
-            const response = await fetch('/AlarmDetail/Attribution', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token
-                },
-                body: JSON.stringify({
-                    id: alarmId,
-                    userId: userId
-                })
-            });
-            if (response.ok) {
-                const result = await response.json();
-            } else {
-                alert('Error: Failed to update attribution. Status code: ' + response.status);
-            }
-        } catch (error) {
-            console.error('Network or server error:', error);
-            alert('An error occurred while updating the attribution.');
-        }
-    }
-</script>

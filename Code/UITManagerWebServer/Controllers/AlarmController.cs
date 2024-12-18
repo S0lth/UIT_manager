@@ -1,9 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -13,41 +9,72 @@ using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Controllers {
-    public class AlarmsController : Controller {
+    public class AlarmController : Controller {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-
-        public AlarmsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
+        public AlarmController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
             _userManager = userManager;
+        }
+
+        /// <summary>
+        /// Configures the breadcrumb trail for the current action in the controller.
+        /// </summary>
+        /// <param name="context">
+        /// The <see cref="ActionExecutingContext"/> object that provides context for the action being executed.
+        /// </param>
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Raised Alarms", Url = Url.Action("Index", "Alarm"), IsActive = false
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+
+            switch (currentAction) {
+                case "Index":
+                    breadcrumbs.Last().IsActive = true; 
+                    break;
+
+                case "Details":
+                    breadcrumbs.Add(new BreadcrumbItem { Title = "Details", Url = string.Empty, IsActive = true });
+                    break;
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
 
+            SetBreadcrumb(context);
+
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
         [Authorize]
-        [Authorize]
         public async Task<IActionResult> Index(string sortOrder, string search) {
             ViewData["SortOrder"] = sortOrder;
-            ViewData["MachineSortParm"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
-            ViewData["StatusSortParm"] = sortOrder == "Status" ? "Status_desc" : "Status";
-            ViewData["SeveritySortParm"] = sortOrder == "Severity" ? "Severity_desc" : "Severity";
-            ViewData["AlarmGroupSortParm"] = sortOrder == "AlarmGroup" ? "AlarmGroup_desc" : "AlarmGroup";
-            ViewData["DateSortParm"] = sortOrder == "Date" ? "Date_desc" : "Date";
+            ViewData["MachineSortParam"] = sortOrder == "Machine" ? "Machine_desc" : "Machine";
+            ViewData["StatusSortParam"] = sortOrder == "Status" ? "Status_desc" : "Status";
+            ViewData["SeveritySortParam"] = sortOrder == "Severity" ? "Severity_desc" : "Severity";
+            ViewData["AlarmGroupSortParam"] = sortOrder == "AlarmGroup" ? "AlarmGroup_desc" : "AlarmGroup";
+            ViewData["DateSortParam"] = sortOrder == "Date" ? "Date_desc" : "Date";
             ViewData["ModelSortParam"] = sortOrder == "Model" ? "Model_desc" : "Model";
             ViewData["AttributionSortParam"] = sortOrder == "Attribution" ? "Attribution_desc" : "Attribution";
 
-            var users = _context.Users.ToList();
-            var user = await _userManager.GetUserAsync(User);
+            List<ApplicationUser> users = _context.Users.ToList();
+            ApplicationUser? user = await _userManager.GetUserAsync(User);
 
-            var alarms = _context.Alarms
+            IQueryable<Alarm> alarms = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
                 .Include(a => a.AlarmHistories)
+                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))
                 .ThenInclude(aStatus => aStatus.StatusType)
                 .Include(a => a.NormGroup.SeverityHistories)
                 .ThenInclude(sh => sh.Severity)
@@ -55,14 +82,14 @@ namespace UITManagerWebServer.Controllers {
                 .AsQueryable()
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(h => h.ModificationDate)
-                    .Select(h => h.StatusType.Name)
-                    .FirstOrDefault() != "Resolved");
+                    .FirstOrDefault()!
+                    .StatusType.Name != "Resolved");
 
-            if (!String.IsNullOrEmpty(search)) {
+            if (!string.IsNullOrEmpty(search)) {
                 string[] searchTerms = search.ToLower().Split(',');
 
                 alarms = alarms.Where(a =>
-                    searchTerms.All(term => 
+                    searchTerms.All(term =>
                         a.Machine.Name.ToLower().Contains(term) ||
                         a.Machine.Model.ToLower().Contains(term) ||
                         a.NormGroup.Name.ToLower().Contains(term) ||
@@ -144,16 +171,15 @@ namespace UITManagerWebServer.Controllers {
             return View(await alarms.ToListAsync());
         }
 
-
         [HttpPost]
-        [Authorize(Roles = "Technician , ITDirector, MaintenanceManager")]
-        [Route("Alarms/UpdateStatus")]
+        [Authorize]
+        [Route("Alarm/UpdateStatus")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request) {
             if (request == null || request.Id == 0 || string.IsNullOrEmpty(request.Status)) {
                 return BadRequest(new { success = false, message = "Invalid data." });
             }
 
-            var alarm = await _context.Alarms
+            Alarm? alarm = await _context.Alarms
                 .Include(a => a.AlarmHistories)
                 .FirstOrDefaultAsync(a => a.Id == request.Id);
 
@@ -161,14 +187,15 @@ namespace UITManagerWebServer.Controllers {
                 return NotFound(new { success = false, message = "Alarm not found." });
             }
 
-            var statusType = await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
+            AlarmStatusType? statusType =
+                await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
             if (statusType == null) {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
 
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var newAlarmHistory = new AlarmStatusHistory {
+            AlarmStatusHistory newAlarmHistory = new AlarmStatusHistory {
                 StatusTypeId = statusType.Id, ModificationDate = DateTime.UtcNow, UserId = userId
             };
 
@@ -177,25 +204,25 @@ namespace UITManagerWebServer.Controllers {
             try {
                 await _context.SaveChangesAsync();
 
-                return Ok(new { success = true, message = "Status updated successfully." });
+                return PartialView("_AlertMessage", new { success = true, message = "Status updated successfully." });
             }
-
             catch (Exception ex) {
-                return StatusCode(500, new { success = false, message = "An error occurred while updating status." });
+                return StatusCode(500,
+                    new { success = false, message = "An error occurred while updating status.", error = ex.Message });
             }
         }
 
 
         [HttpPost]
         [Authorize(Roles = "ITDirector, MaintenanceManager")]
-        [Route("Alarms/Attribution")]
+        [Route("Alarm/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
             if (request == null || string.IsNullOrEmpty(request.Id) || string.IsNullOrEmpty(request.UserId)) {
                 return BadRequest(new { success = false, message = "Invalid request data." });
             }
 
             try {
-                var alarm = await _context.Alarms
+                Alarm? alarm = await _context.Alarms
                     .Include(a => a.Machine)
                     .Include(a => a.NormGroup)
                     .FirstOrDefaultAsync(a => a.Id.ToString() == request.Id);
@@ -204,14 +231,14 @@ namespace UITManagerWebServer.Controllers {
                     return NotFound(new { success = false, message = "Alarm not found." });
                 }
 
-                var user = await _userManager.FindByIdAsync(request.UserId);
+                ApplicationUser? user = await _userManager.FindByIdAsync(request.UserId);
                 if (user == null) {
                     return NotFound(new { success = false, message = "User not found." });
                 }
 
                 alarm.UserId = request.UserId;
 
-                var alarmStatusHistory = new AlarmStatusHistory {
+                AlarmStatusHistory alarmStatusHistory = new AlarmStatusHistory {
                     AlarmId = alarm.Id,
                     StatusType =
                         await _context.AlarmStatusTypes.FirstOrDefaultAsync(s =>
@@ -224,7 +251,8 @@ namespace UITManagerWebServer.Controllers {
 
                 await _context.SaveChangesAsync();
 
-                return Ok(new { success = true, message = "Alarm attribution updated successfully." });
+                return PartialView("_AlertMessage",
+                    new { success = true, message = "Attribution updated successfully." });
             }
             catch (Exception ex) {
                 return StatusCode(500,
@@ -234,12 +262,12 @@ namespace UITManagerWebServer.Controllers {
             }
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult Create(Alarm alarm) {
             if (ModelState.IsValid) {
-                var newStatusType = _context.AlarmStatusTypes
+                AlarmStatusType? newStatusType = _context.AlarmStatusTypes
                     .FirstOrDefault(s => s.Name == "New");
 
                 if (newStatusType == null) {
@@ -247,9 +275,8 @@ namespace UITManagerWebServer.Controllers {
                     return View(alarm);
                 }
 
-                var alarmHistory = new AlarmStatusHistory {
+                AlarmStatusHistory alarmHistory = new AlarmStatusHistory {
                     StatusTypeId = newStatusType.Id, ModificationDate = DateTime.Now,
-                    // UserId = null              
                 };
                 alarm.AddAlarmHistory(alarmHistory);
 
@@ -264,11 +291,11 @@ namespace UITManagerWebServer.Controllers {
             return View(alarm);
         }
 
+        [Authorize]
         public IActionResult Details(string id) {
             return Redirect($"/AlarmDetail/Index/{id}");
         }
     }
-
 
     public class UpdateStatusRequest {
         public int Id { get; set; }

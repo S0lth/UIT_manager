@@ -13,9 +13,9 @@
             <thead>
             <tr>
                 <th scope="col">
-                    <a href="@Url.Action("Index", "Alarms", new { search = "" })">Site</a>
+                    <a href="@Url.Action("Index", "Alarm", new { search = "" })">Site</a>
                 </th>
-                @if (Model != null && Model.Count > 0)
+                @if (Model != null && @Model.Count > 0)
                 {
                     var severityList = Model.Values
                         .SelectMany(d => d.Keys)
@@ -25,7 +25,7 @@
                     foreach (var severity in severityList)
                     {
                         <th scope="col">
-                            <a href="@Url.Action("Index", "Alarms", new { search = severity })">@severity</a>
+                            <a href="@Url.Action("Index", "Alarm", new { search = severity })">@severity</a>
                         </th>
                     }
                 }
@@ -44,7 +44,7 @@
                 {
                     <tr>
                         <td>
-                            <a href="@Url.Action("Index", "Alarms", new { search = siteEntry.Key + "-" })">@siteEntry.Key</a>
+                            <a href="@Url.Action("Index", "Alarm", new { search = siteEntry.Key + "-" })">@siteEntry.Key</a>
                         </td>
                         @foreach (var severity in severityList)
                         {
@@ -55,7 +55,7 @@
                                 }
                                 else
                                 {
-                                    <a href="@Url.Action("Index", "Alarms", new { search = siteEntry.Key + "-" + "," + severity })">
+                                    <a href="@Url.Action("Index", "Alarm", new { search = siteEntry.Key + "-" + "," + severity })">
                                         @string.Format("{0:0.00} %", siteEntry.Value[severity])
                                     </a>
                                 }

@@ -18,7 +18,7 @@
                                 <p class="fs-5">
                                     <a asp-action="Index"
                                        asp-controller="Machine"
-                                       class="badge bg-@((Model.MachinesWithActiveAlarms == 0) ? "success" : "primary")"
+                                       class="badge bg-@(Model.MachinesWithActiveAlarms == 0 ? "success" : "primary")"
                                        asp-route-Filter="alarm_triggered">
                                         @Model.MachinesWithActiveAlarms / @Model.TotalMachines
                                     </a>
@@ -31,7 +31,7 @@
                             <div class="card-body p-2">
                                 <h6 class="card-title mb-2">Unresolved Alarms</h6>
                                 <p class="fs-5">
-                                    <a asp-action="Index" asp-controller="Alarms"
+                                    <a asp-action="Index" asp-controller="Alarm"
                                        class="badge bg-@((Model.AlarmsNotResolvedCount == 0) ? "success" : "primary")">
                                         @Model.AlarmsNotResolvedCount
                                     </a>
@@ -45,7 +45,7 @@
                                 <h6 class="card-title mb-2">Alarms Triggered Today</h6>
                                 <p class="fs-5">
                                     <a asp-action="Index"
-                                       asp-controller="Alarms"
+                                       asp-controller="Alarm"
                                        class="badge bg-@((Model.AlarmsTriggeredTodayCount == 0) ? "success" : "primary")"
                                        asp-route-sortOrder="triggered_today">
                                         @Model.AlarmsTriggeredTodayCount

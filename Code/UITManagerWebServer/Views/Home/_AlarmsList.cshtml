@@ -1,48 +1,21 @@
+@using UITManagerWebServer.Helpers
 @model List<UITManagerWebServer.Models.ModelsView.AlarmViewModel>
 
 @{
-    string pageTitle = "Alarms"; 
+    string pageTitle = "Alarm"; 
 
     if (Context.Request.Query["tab"] == "unprocessed")
     {
-        pageTitle = "Unprocessed Alarms";
+        pageTitle = "Unprocessed Alarm";
     }
     else if (Context.Request.Query["tab"] == "newest")
     {
-        pageTitle = "Newest Alarms";
+        pageTitle = "Newest Alarm";
     }
     else if (Context.Request.Query["tab"] == "overdue")
     {
-        pageTitle = "Alarms Exceeding Estimated Processing Time";
+        pageTitle = "Alarm Exceeding Estimated Processing Time";
     }
-}
-
-@functions {
-
-    string GetHeaderClass(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
-        {
-            return "bg-selected-header";
-        }
-
-        return string.Empty;
-    }
-
-    string GetSortIcon(string currentSortOrder, string column)
-    {
-        if (currentSortOrder == column)
-        {
-            return "bi bi-sort-down";
-        }
-        else if (currentSortOrder == $"{column}_desc")
-        {
-            return "bi bi-sort-up";
-        }
-
-        return "bi bi-arrow-down-up";
-    }
-
 }
 
 <div class="card mb-4">
@@ -70,75 +43,75 @@
                 <table class="table table-hover table-striped table-bordered rounded">
                     <thead class="table-light sticky-top">
                     <tr>
-                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
+                        <th class="text-nowrap @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "machine")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["MachineSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["MachineSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
-                                Host <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
+                                Host <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "machine")"></i>
                             </a>
                         </th>
 
-                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "model")">
+                        <th class="text-nowrap @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "model")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["ModelSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["ModelSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
-                                Model <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "model")"></i>
+                                Model <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "model")"></i>
                             </a>
                         </th>
 
-                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
+                        <th class="text-nowrap @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["StatusSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["StatusSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
-                                Status <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
+                                Status <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
                             </a>
                         </th>
 
-                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
+                        <th class="text-nowrap @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["SeveritySortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["SeveritySortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
-                                Severity <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
+                                Severity <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
                             </a>
                         </th>
 
-                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
+                        <th class="text-nowrap @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["AlarmGroupSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
-                                Alarm <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
+                                Alarm <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
                             </a>
                         </th>
 
-                        <th class="text-nowrap @GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
+                        <th class="text-nowrap @ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
                             <a asp-action="Index"
                                asp-route-tab="@Context.Request.Query["tab"]"
-                               asp-route-sortOrder="@ViewData["DateSortParm"]?.ToString()"
+                               asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
                                asp-route-solutionFilter="@Context.Request.Query["SolutionFilter"]"
                                asp-route-authorFilter="@Context.Request.Query["AuthorFilter"]"
                                asp-route-sortOrderNote="@Context.Request.Query["SortOrderNote"]"
                                class="text-decoration-none text-dark">
-                                Date <i class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
+                                Date <i class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
                             </a>
                         </th>
                     </tr>

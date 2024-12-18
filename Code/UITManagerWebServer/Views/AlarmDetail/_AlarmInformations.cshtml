@@ -1,32 +1,17 @@
+@using UITManagerWebServer.Helpers
+@using UITManagerWebServer.Models
 @model UITManagerWebServer.Models.Alarm
 @{
     var userIsAuthorized = User.IsInRole("ITDirector") || User.IsInRole("MaintenanceManager");
     var latestSeverityHistory = Model.NormGroup.SeverityHistories
         .OrderByDescending(sh => sh.UpdateDate)
         .FirstOrDefault();
-    
+
     var latestSeverityName = latestSeverityHistory?.Severity?.Name;
-    
+
     var latestStatusHistory = Model.AlarmHistories
         .OrderByDescending(sh => sh.ModificationDate)
         .FirstOrDefault();
-}
-
-@functions {
-
-    string GetSeveryticolor(string currentSeverity)
-    {
-        return currentSeverity switch
-        {
-            "Critical" => "text-danger",
-            "High" => "text-High",
-            "Medium" => "text-warning",
-            "Low" => "text-low",
-            "Warning" => "text-secondary",
-            _ => "text-secondary",
-        };
-    }
-
 }
 
 <div class="card rounded mb-0 p-1">
@@ -53,7 +38,7 @@
                             <div class="d-flex flex-column">
                                 <p class="mb-0 fw-bold">Alarm severity</p>
                                 <div class="text-muted">
-                                    <div class="@GetSeveryticolor(@latestSeverityName)">
+                                    <div class="@ViewHelpers.GetSeveryticolor(@latestSeverityName)">
                                         @latestSeverityName
                                     </div>
                                 </div>
@@ -71,35 +56,23 @@
                         <div class="col-md-6">
                             <div class="d-flex flex-column">
                                 <label for="AlarmStatus"><strong>Status</strong></label>
-                                @if (userIsAuthorized)
-                                {
-                                    <select id="AlarmStatus" name="AlarmStatus" style="max-width: 300px"
-                                            class="form-select form-select-sm"
-                                            onchange="updateAlarmStatus(@Model.Id, this.value)">
+                                <div class="dropdown">
+                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" data-alarm-id="@Model.Id" style="max-width: 300px;">
+                                        <span>@Model.AlarmHistories.OrderByDescending(a => a.ModificationDate).FirstOrDefault().StatusType.Name</span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="background-color: white;">
                                         @foreach (var status in ViewData["AlarmStatusTypes"] as List<AlarmStatusType>)
                                         {
-                                            if (latestStatusHistory.StatusType != null && status.Id == latestStatusHistory.StatusType.Id)
-                                            {
-                                                <option selected value="@status.Name">
-                                                    @status.Name
-                                                </option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@status.Name">
-                                                    @status.Name
-                                                </option>
-                                            }
-
-                                            <option disabled class="text-secondary fst-italic fw-light"
-                                                    label="">@status.Description</option>
+                                            <li>
+                                                <a class="dropdown-item" onclick="updateAlarmStatus(@Model.Id, '@status.Name')">
+                                                    <strong>@status.Name</strong>
+                                                    <div class="text-muted ms-2">@status.Description</div>
+                                                </a>
+                                            </li>
                                         }
-                                    </select>
-                                }
-                                else
-                                {
-                                    <div class="fw-bold text-muted">@latestStatusHistory.StatusType.Name</div>
-                                }
+                                    </ul>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -137,17 +110,18 @@
                         </div>
                         <div class="d-flex mb-1 align-items-center">
                             <p class="mb-0 fw-bold me-2">Machine State</p>
-                            <div class="mt-1">
+                            <div class="d-flex align-items-center">
                                 @if (Model.Machine.IsWorking)
                                 {
-                                    <span class="text-success">Working</span>
+                                    <span class="text-success" style="line-height: 1.25;">Working</span>
                                 }
                                 else
                                 {
-                                    <span class="text-danger">Not working</span>
+                                    <span class="text-danger" style="line-height: 1.25;">Not working</span>
                                 }
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -162,7 +136,7 @@
                 <div class="card-body">
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-column">
-                            <p class="mb-0 fw-bold">Concerned Alarm</p>
+                            <p class="mb-0 fw-bold">Concerned Alarms</p>
                             <div class="text-muted mt-1">
                                 @Model.NormGroup.Name
                             </div>
@@ -207,3 +181,41 @@
         </div>
     </div>
 </div>
+<script>
+    async function updateAlarmStatus(alarmId, status) {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        if (!token) {
+            showAlert('CSRF token is missing.', 'danger');
+            return;
+        }
+
+        await fetch(`/Alarm/UpdateStatus`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token
+            },
+            body: JSON.stringify({id: alarmId, status: status})
+        }).then(async response => {
+            if (response.ok) {
+                document.getElementById('alert-container').innerHTML = await response.text();
+                setTimeout(() => document.getElementById('alert-container').innerHTML = '', 5000);
+
+                const dropdownButton = document.querySelector(`#dropdownMenuButton[data-alarm-id="${alarmId}"]`);
+                if (dropdownButton) {
+                    dropdownButton.textContent = status;
+                }
+
+                const dropdownItems = dropdownButton?.nextElementSibling.querySelectorAll('.dropdown-item');
+                dropdownItems.forEach(item => {
+                    if (item.textContent.trim() === status) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+        }).catch(error => {
+        });
+    }
+</script>

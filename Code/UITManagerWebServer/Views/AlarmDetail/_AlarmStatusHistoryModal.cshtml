@@ -1,5 +1,9 @@
 @model Alarm
 
+<form method="post" id="alarm-status-update">
+    @Html.AntiForgeryToken()
+</form>
+
 <div class="modal fade" id="alarmHistoryModal" tabindex="-1" aria-labelledby="alarmHistoryModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-lg">

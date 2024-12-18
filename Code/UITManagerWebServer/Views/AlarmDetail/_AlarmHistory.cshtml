@@ -22,7 +22,7 @@
                         <tr>
                             <td>@history.ModificationDate</td>
                             <td>@history.StatusType.Name</td>
-                            <td>@history.User.LastName @history.User.FirstName</td>
+                            <td>@history.User?.LastName @history.User?.FirstName</td>
                         </tr>
                     }
                 }

@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using UITManagerWebServer.Data;
+using UITManagerWebServer.Models;
+using File = UITManagerWebServer.Models.File;
 
-public class FilesController : Controller {
+public class FileController : Controller {
     private readonly ApplicationDbContext _context;
 
-    public FilesController(ApplicationDbContext context) {
+    public FileController(ApplicationDbContext context) {
         _context = context;
     }
 
@@ -17,7 +20,7 @@ public class FilesController : Controller {
 
     [HttpGet("/files/{fileId}")]
     public IActionResult GetFile(int fileId) {
-        var file = _context.Files.FirstOrDefault(f => f.Id == fileId);
+        File? file = _context.Files.FirstOrDefault(f => f.Id == fileId);
 
         if (file == null) {
             return NotFound();
