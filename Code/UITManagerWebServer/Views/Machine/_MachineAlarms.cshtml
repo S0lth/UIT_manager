@@ -1,4 +1,5 @@
 ﻿@using UITManagerWebServer.Controllers
+@using UITManagerWebServer.Helpers
 @model MachineController.DetailsViewModel
 @functions
 {
@@ -31,28 +32,6 @@
         
         <input type="hidden" name="id" value="@Model.Id"/>
         
-    }
-    
-    string GetHeaderClass(string? currentSortOrder, string column)
-    {
-        if (currentSortOrder == column || currentSortOrder == $"{column}_desc")
-            return "bg-selected-header";
-        return string.Empty;
-    }
-
-
-    string GetSortIcon(string? currentSortOrder, string column)
-    {
-        if (currentSortOrder == column)
-        {
-            return "bi bi-sort-down";
-        }
-        else if (currentSortOrder == $"{column}_desc")
-        {
-            return "bi bi-sort-up";
-        }
-
-        return "bi bi-arrow-down-up";
     }
 }
 <div class="card">
@@ -119,7 +98,7 @@
                 {
                     <tr>
                         <!-- Status Column -->
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
+                        <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "alarmgroup")">
                             <a asp-action="Details"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["AlarmGroupSortParam"]?.ToString()"
@@ -130,12 +109,12 @@
                                class="text-decoration-none text-dark">
                                 Alarm
                                 <i
-                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
+                                    class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "alarmgroup")"></i>
                             </a>
                         </th>
 
                         <!-- Severity Column -->
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
+                        <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "severity")">
                             <a asp-action="Details"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["SeveritySortParam"]?.ToString()"
@@ -147,12 +126,12 @@
                                class="text-decoration-none text-dark">
                                 Severity
                                 <i
-                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
+                                    class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "severity")"></i>
                             </a>
                         </th>
 
                         <!-- AlarmGroup Column -->
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
+                        <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "status")">
                             <a asp-action="Details"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["StatusSortParam"]?.ToString()"
@@ -163,12 +142,12 @@
                                class="text-decoration-none text-dark">
                                 Status
                                 <i
-                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
+                                    class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "status")"></i>
                             </a>
                         </th>
 
                         <!-- Date Column -->
-                        <th class="@GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
+                        <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
                             <a asp-action="Details"
                                asp-route-tab="@Context.Request.Query["tab"]"
                                asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
@@ -179,7 +158,7 @@
                                class="text-decoration-none text-dark">
                                 Date
                                 <i
-                                    class="bi @GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
+                                    class="bi @ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
                             </a>
                         </th>
 
