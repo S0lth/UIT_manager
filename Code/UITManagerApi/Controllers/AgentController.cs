@@ -102,7 +102,7 @@ namespace UITManagerApi.Controllers
         // POST: api/Agent
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<MachineAgent>> PostMachine(MachineAgent machineAgent) {
+        public async Task<MachineAgent> PostMachine(MachineAgent machineAgent) {
             
             //todo : isworking garder info bd
             Machine machine = new Machine {
@@ -117,7 +117,7 @@ namespace UITManagerApi.Controllers
             await _context.SaveChangesAsync();
 
             await _hubContext.Clients.All.SendAsync("ReceiveMessage", machine.Id);
-            return CreatedAtAction("GetMachine", new { id = machine.Id }, machine);
+            return machineAgent;
         }
         
         private void ProcessInformationAgent(InformationAgent info, Machine machine, ICollection<Information> parentCollection) {
