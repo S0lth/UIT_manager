@@ -67,12 +67,12 @@ namespace UITManagerApi.Controllers {
                     ProcessInformationAgent(info, machineDb, machineDb.Informations);
                 }
 
-                await _context.Machines.AddAsync(machineDb);
+                _context.Machines.Add(machineDb);
             }
 
             await _context.SaveChangesAsync();
 
-            await _hubContext.Clients.All.SendAsync("ReceiveMessage", machine.Id);
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", machineDb.Id);
             return machineAgent;
         }
         

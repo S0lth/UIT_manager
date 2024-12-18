@@ -14,7 +14,7 @@ namespace UITManagerApi.Tests {
     [TestClass]
     public class AgentControllerTest {
         private Mock<IHubContext<ApiHub>> _mockhub;
-            
+        private Mock<IClientProxy> _clientProxyMock; 
         private ApplicationDbContext _dbContext;
         AgentController agentController;
 
@@ -25,6 +25,13 @@ namespace UITManagerApi.Tests {
                 .Options;
             _dbContext = new ApplicationDbContext(options);
             _mockhub = new Mock<IHubContext<ApiHub>>();
+            _clientProxyMock = new Mock<IClientProxy>();
+            
+            
+            var clientsMock = new Mock<IHubClients>();
+            clientsMock.Setup(clients => clients.All).Returns(_clientProxyMock.Object);
+            _mockhub.Setup(hub => hub.Clients).Returns(clientsMock.Object);
+            
             agentController = new AgentController(_dbContext, _mockhub.Object);
         }
 
@@ -50,7 +57,7 @@ namespace UITManagerApi.Tests {
 
             
             MachineAgent result = new MachineAgent();
-            result= await agentController.PostMachine(machineAgent);
+            result = await agentController.PostMachine(machineAgent);
 
             // Assert
             Assert.IsNotNull(result);
@@ -68,8 +75,12 @@ namespace UITManagerApi.Tests {
             Assert.AreEqual("Test Machine", machineInDb.Name);
 
             // Vérifiez que le SignalR a été appelé
-            _mockhub.Verify(hub =>
-               hub.Clients.All.SendAsync("ReceiveMessage", machineInDb.Id, default), Times.Once);
+            _clientProxyMock.Verify(client =>
+                    client.SendCoreAsync(
+                        "ReceiveMessage",
+                        It.Is<object[]>(args => args[0].Equals(machineInDb.Id)),
+                        default),
+                Times.Once);
         }
     }
 }
