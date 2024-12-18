@@ -70,6 +70,10 @@ namespace UITManagerAlarmManager.Data {
                 .WithOne(c => c.Machine)
                 .HasForeignKey(c => c.MachinesId)
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            builder.Entity<Machine>()
+                .HasIndex(m => m.Name)
+                .IsUnique();
 
             builder.Entity<InformationName>()
                 .HasMany(m => m.SubInformationNames)

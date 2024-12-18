@@ -30,5 +30,9 @@ public class ApplicationDbContext : DbContext {
             .WithOne(c => c.Machine)
             .HasForeignKey(c => c.MachinesId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.Entity<Machine>()
+            .HasIndex(m => m.Name)
+            .IsUnique();
     }
 }

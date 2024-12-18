@@ -19,7 +19,7 @@ public static class Populate {
 
         var normGroups = await SeedNormGroup(userManager, context);
 
-        var machines = SeedMachines(context);
+        var machines = await SeedMachines(context);
 
         await SeedAlarms(context, machines, normGroups, userManager, noAlarm);
 
@@ -478,7 +478,7 @@ public static class Populate {
         return normGroups;
     }
 
-    private static List<Machine> SeedMachines(ApplicationDbContext context) {
+    private static async Task<List<Machine>> SeedMachines(ApplicationDbContext context) {
         var random = new Random();
 
         // Model
@@ -553,7 +553,7 @@ public static class Populate {
             DateTime seen = random.Next(1, 101) <= 30 ? DateTime.UtcNow.AddDays(-3) : DateTime.UtcNow;
 
             // Nom de Machine
-            string machineId = GenerateRandomWindowsMachineName();
+            string machineId = await GenerateUniqueWindowsMachineName(context);
 
             string machineName = $"{machineId}";
             string machineModel = $"{brand} {model}";
@@ -1316,17 +1316,23 @@ public static class Populate {
         }
     }
 
-    private static string GenerateRandomWindowsMachineName() {
+     private static async Task<string> GenerateUniqueWindowsMachineName(ApplicationDbContext context) {
         var random = new Random();
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         const string charsForSite = "ABC";
 
-        var randomId = new string(Enumerable.Repeat(chars, 7).Select(s => s[random.Next(s.Length)]).ToArray());
-        var site = "" +
-                   new string(Enumerable.Repeat(charsForSite, 1).Select(s => s[random.Next(s.Length)]).ToArray());
+        while (true) {
+            var randomId = new string(Enumerable.Repeat(chars, 7).Select(s => s[random.Next(s.Length)]).ToArray());
+            var site = new string(Enumerable.Repeat(charsForSite, 1).Select(s => s[random.Next(s.Length)]).ToArray());
+            var generatedName = $"{site}-DESKTOP-{randomId}";
 
-        return $"{site}-DESKTOP-{randomId}";
+            var nameExists = await  context.Machines.AnyAsync(m => m.Name == generatedName);
+            if (!nameExists) {
+                return generatedName; 
+            }
+        }
     }
+
 
     private static double GetRandomNumber(double minimum, double maximum) {
         Random random = new Random();

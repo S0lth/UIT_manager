@@ -1,11 +1,14 @@
-﻿﻿namespace UITManagerAlarmManager.Models {
+﻿using System.ComponentModel.DataAnnotations;
+
+ namespace UITManagerAlarmManager.Models {
     /// <summary>
     /// Represents a machine, which can be associated with alarms and notes.
     /// </summary>
     public class Machine {
         public int Id { get; set; }
 
-        public string? Name { get; set; }
+        [Required]
+        public string Name { get; set; }
 
         public List<Alarm> Alarms { get; set; }
         
