@@ -15,7 +15,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
         public void Setup() {
             _cpuInformation = new();
             _cpuInformation2 = new CpuInformation();
-            _cpuInformation.CoreCount = 1;
+            _cpuInformation.InformationAgents[1].Value = "1";
         }
 
 
@@ -27,7 +27,7 @@ namespace UITManagerAgent.Tests.BasicInformation {
         public void ToJson_ShouldReturnValidJson_WhenCoreCountIsSet() {
             if (_cpuInformation != null) {
                 string json = _cpuInformation.ToJson();
-                _cpuInformation2.CoreCount = 1;
+                _cpuInformation2.InformationAgents[1].Value = "1";
                 string expected =_cpuInformation2.ToJson();
                 StringAssert.Contains(json, expected);
             }

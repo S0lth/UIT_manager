@@ -28,9 +28,9 @@ public class MachineNameTest {
     [TestMethod]
     public void ToJson_ShouldReturnValidJson_WhenMachineNameIsManuallySet() {
         if (_machineNameInformation != null) {
-            _machineNameInformation.MachineName = "DESKTOP_AAAAAA";
+            _machineNameInformation.MachineName.Value = "DESKTOP_AAAAAA";
             string json = _machineNameInformation.ToJson();
-            string expected = "{\"MachineName\":\"DESKTOP_AAAAAA\",\"Format\":\"TEXT\"}";
+            string expected = $"{{\"Name\":\"{_machineNameInformation.MachineName.Name}\",\"Value\":\"DESKTOP_AAAAAA\",\"Format\":\"{_machineNameInformation.MachineName.Format}\"}}";
             StringAssert.Contains(expected, json);
         }
         else {
@@ -49,7 +49,7 @@ public class MachineNameTest {
             MachineNameCollector machineNameCollector = new();
             _machineNameInformation = (MachineNameInformation)machineNameCollector.Collect();
             string json = _machineNameInformation.ToJson();
-            string expected = $"{{\"MachineName\":\"{_machineNameInformation.MachineName}\",\"Format\":\"TEXT\"}}";
+            string expected = $"{{\"Name\":\"{_machineNameInformation.MachineName.Name}\",\"Value\":\"{_machineNameInformation.MachineName.Value}\",\"Format\":\"{_machineNameInformation.MachineName.Format}\"}}";
             StringAssert.Contains(json, expected);
         }
     }

@@ -20,7 +20,7 @@ namespace UITManagerAgent.DataCollectors;
             ManagementObjectCollection collection = _searcher.Get();
             ManagementObject? managementObject = collection.OfType<ManagementObject>().FirstOrDefault();
             if (managementObject != null){
-                tagInformation.TagService = managementObject["SerialNumber"]?.ToString() ?? "Unknown Service Tag";
+                tagInformation.TagService.Value = managementObject["SerialNumber"]?.ToString() ?? "Unknown Service Tag";
             }
             
             return tagInformation;

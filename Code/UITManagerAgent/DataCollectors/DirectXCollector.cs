@@ -18,7 +18,7 @@ public class DirectXCollector : DataCollector {
     /// </returns>
     [SupportedOSPlatform("windows")]
     public Information Collect() {
-        DirectXInformation directXInformation = new DirectXInformation();
+        DirectXInformation directXInformation = new ();
 
         try {
             ProcessStartInfo startInfo = new ProcessStartInfo("dxdiag.exe") {
@@ -37,7 +37,7 @@ public class DirectXCollector : DataCollector {
 
             Match match = Regex.Match(dxDiagOutput, @"DirectX Version:\s*DirectX\s*(\d+)");
             if (match.Success) {
-                directXInformation.DirectX = "DirectX " + match.Groups[1].Value;
+                directXInformation.DirectX!.Value = "DirectX " + match.Groups[1].Value;
             }
         }
         catch (Exception ex) {

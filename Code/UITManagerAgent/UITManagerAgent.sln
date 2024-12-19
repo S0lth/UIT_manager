@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITManagerWebServer", "..\U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITManagerApi", "..\UITManagerApi\UITManagerApi.csproj", "{2B26AD8A-E64A-4D08-A92F-3D4916C9D1AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITManagerAlarmManager", "..\UITManagerAlarmManager\UITManagerAlarmManager.csproj", "{6B535958-AD71-4BBC-B4DD-A8F27D910983}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITManagerApi.Tests", "..\UITManagerApi.Tests\UITManagerApi.Tests.csproj", "{E4876C0A-F375-491D-A763-4E160CCBB61D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{2B26AD8A-E64A-4D08-A92F-3D4916C9D1AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B26AD8A-E64A-4D08-A92F-3D4916C9D1AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B26AD8A-E64A-4D08-A92F-3D4916C9D1AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B535958-AD71-4BBC-B4DD-A8F27D910983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B535958-AD71-4BBC-B4DD-A8F27D910983}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B535958-AD71-4BBC-B4DD-A8F27D910983}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B535958-AD71-4BBC-B4DD-A8F27D910983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4876C0A-F375-491D-A763-4E160CCBB61D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4876C0A-F375-491D-A763-4E160CCBB61D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4876C0A-F375-491D-A763-4E160CCBB61D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4876C0A-F375-491D-A763-4E160CCBB61D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

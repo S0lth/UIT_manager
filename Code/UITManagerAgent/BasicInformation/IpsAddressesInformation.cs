@@ -1,44 +1,26 @@
-using System.Text.Json;
 namespace UITManagerAgent.BasicInformation;
+
 /// <summary>
 /// Represents a collection of IP addresses.
 /// </summary>
 public class IpsAddressesInformation : Information {
-    private List<string> _ips = new();
-    private string? _formatIp = "TEXT";
+    /// <summary>
+    /// Ip main fields.
+    /// </summary>
+    public InnerValue Ip { get; set; } = new("IP", "null");
     
     /// <summary>
-    /// accessors of IpsAddresses List
+    /// Accessor for the list of IP address information agents.
     /// </summary>
-    public List<string> Ips{
-        get => _ips;
-        set => _ips = value;
-    }
+    public List<InnerValue> InformationAgents { get; set; } = new();
 
     /// <summary>
-    /// Gets or sets the format of the ip information
+    /// Returns a Json string representation of the IP addresses in the information agents list.
     /// </summary>
-    /// <value>
-    /// A string representing the format of ip.
-    /// </value>
-    public string? FormatIp {
-        get => _formatIp;
-        set => _formatIp = value;
-    }
-
-    /// <summary>
-    ///     Returns a string representation of all IP addresses in the list.
-    /// </summary>
-    /// <returns>A string containing all IP addresses separated by comas.</returns>
-    public override string ToString() {
-        return $"{string.Join(", ", _ips)}";
-    }
-    
-    /// <summary>
-    /// Get a string JSON format of IPS
-    /// </summary>
-    /// <returns>A Json string that represents IPS List</returns>
+    /// <returns>A Json string that represents the IpsAddresses information.</returns>
     public override string ToJson() {
-        return JsonSerializer.Serialize(this);
+        string agentsJson = string.Join(",", InformationAgents.Select(agent => $@"{{""Name"":""{agent.Name}"",""Value"":""{agent.Value}"",""Format"":""{agent.Format}""}}"));
+
+        return $@"{{""Name"": ""{Ip.Name}"",""Value"": ""{Ip.Value}"",""Format"": ""{Ip.Format}"",""InformationAgents"": [{agentsJson}]}}";
     }
 }
