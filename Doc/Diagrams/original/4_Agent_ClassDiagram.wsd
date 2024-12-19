@@ -1,0 +1,79 @@
+@startuml
+title "Agent: Class Diagram"
+footer UIT Manager
+skinparam monochrome true
+skinparam roundcorner 10
+
+left to right direction
+
+package "DataCollectors" {
+    interface "DataCollector" as idc {
+        + Collect: Information
+    }
+    class CpuCollector 
+    class DirectX 
+    class DiskCollector 
+    class DomainNameCollector 
+    class IpsAddressesCollector 
+    class MachineNameCollector 
+    class ModelCollector 
+    class OsCollector 
+    class RamCollector 
+    class TagCollector 
+    class UpTimeCollector 
+    class UsersCollector 
+}
+
+class MachineInformation
+class ApiCommunicator
+
+package "BasicInformation" {
+    abstract class Information {
+        + ToJson(): string
+    }
+    class CpuInformation
+    class DirectXInformation 
+    class DiskInformation 
+    class DomainNameInformation 
+    class IpsAddressesInformation 
+    class MachineNameInformation 
+    class ModelInformation 
+    class OsInformation 
+    class RamInformation 
+    class TagInformation 
+    class UpTimeInformation 
+    class UsersInformation 
+}
+
+
+
+MachineInformation .do.> DataCollectors: uses
+MachineInformation .up.> BasicInformation: uses
+ApiCommunicator .le.> MachineInformation: uses
+
+DiskCollector           --|> idc
+IpsAddressesCollector   --|> idc
+RamCollector            --|> idc
+DomainNameCollector     --|> idc
+OsCollector             --|> idc
+UsersCollector          --|> idc
+DirectX                 --|> idc
+ModelCollector          --|> idc
+UpTimeCollector         --|> idc
+CpuCollector            --|> idc
+MachineNameCollector    --|> idc
+TagCollector            --|> idc
+
+DiskInformation ..|> Information
+IpsAddressesInformation ..|> Information
+RamInformation ..|> Information
+DomainNameInformation ..|> Information
+OsInformation ..|> Information
+UsersInformation ..|> Information
+DirectXInformation ..|> Information
+ModelInformation ..|> Information
+UpTimeInformation ..|> Information
+CpuInformation ..|> Information
+MachineNameInformation ..|> Information
+TagInformation ..|> Information
+@enduml

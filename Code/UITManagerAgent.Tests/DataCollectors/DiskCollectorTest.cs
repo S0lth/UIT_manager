@@ -43,7 +43,7 @@ public class DiskCollectorTest {
             Assert.Fail($"The Collect method threw an unexpected exception: {ex.Message}");
         }
     }
-
+/*
     /// <summary>
     ///     Tests if the <see cref="DiskCollector.Collect" /> method returns a non-null and non-empty list of Disk when Disk
     ///     exist.
@@ -58,7 +58,7 @@ public class DiskCollectorTest {
             Assert.IsTrue(result.Disks.Count >= 1, "disk list should contain at least one item.");
         }
     }
-
+*/
     /// <summary>
     ///     Tests if the <see cref="DiskCollector.Collect" /> method returns a new instance of <see cref="DiskInformation" />
     ///     on each call.

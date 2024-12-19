@@ -30,7 +30,7 @@ public class IpsAddressesCollector : DataCollector {
             IPHostEntry ipEntry = Dns.GetHostEntry(hostname);
             foreach (IPAddress ip in ipEntry.AddressList) {
                 if (ip.AddressFamily == AddressFamily.InterNetwork) {
-                    ipsAddressesInformation.Ips.Add(ip.ToString());
+                    ipsAddressesInformation.InformationAgents.Add(new InnerValue("Ip Address","TEXT",ip.ToString()));
                 }
             }
         }

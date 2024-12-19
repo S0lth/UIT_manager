@@ -16,29 +16,37 @@ public class DiskCollector : DataCollector {
     /// </returns>
     [SupportedOSPlatform("windows")]
     public Information Collect() {
-        DiskInformation.Disk disk = new DiskInformation.Disk();
-        DiskInformation diskInformation = new DiskInformation();
+        DiskInformation.Disk disk = new ();
+        DiskInformation diskInformation = new ();
+        List<InnerValue> innerValues = new();
 
         int diskCount = 0;
         try {
             foreach (DriveInfo drive in DriveInfo.GetDrives()) {
                 if (drive.IsReady) {
+                    
                     diskCount++;
-                    disk.DiskName = drive.Name;
-                    disk.DiskTotalSize = (drive.TotalSize / (1024 * 1024 * 1024));
-                    disk.DiskFreeSize = (drive.TotalFreeSpace / (1024 * 1024 * 1024));
-                    diskInformation.Disks.Add(disk);
+                    
+                    long diskTot = drive.TotalSize / (1024 * 1024 * 1024);
+                    long diskFree = drive.TotalFreeSpace / (1024 * 1024 * 1024);
+                    long diskUsed = diskTot - diskFree;
+                    disk.DiskTot.Value = diskTot.ToString("F2");
+                    disk.DiskFree.Value = diskFree.ToString("F2");
+                    disk.DiskUsed.Value = diskUsed.ToString("F2");
+                    double diskUsedPercent = Double.Parse(disk.DiskUsed.Value)/Double.Parse(disk.DiskTot.Value)*100;
+                    disk.DiskUsedPercent.Value = diskUsedPercent.ToString("F2");
+                    innerValues.Add(new InnerValue(drive.Name + "\\","null","null",disk.GetList()));
+                    
                 }
             }
+            diskInformation.InformationAgents.Add(new InnerValue("Disks","null","null",innerValues));
 
-            diskInformation.NumberDisk = diskCount;
+            diskInformation.InformationAgents.Add(new InnerValue("Number disks","TEXT",diskCount.ToString()));
         }
         catch (Exception ex) {
             Console.WriteLine("Error while retrieving users: " + ex.Message);
         }
-
-        diskInformation.NumberDisk = diskCount;
-
+        
         return diskInformation;
     }
 }

@@ -27,9 +27,9 @@ public class DirectXInformationTest {
     [TestMethod]
     public void ToJson_ShouldReturnValidJson_WhenDirectXIsManuallySet() {
         if (_directXInformation != null) {
-            _directXInformation.DirectX = "DirectX 12";
+            _directXInformation.DirectX.Value = "DirectX 12";
             string json = _directXInformation.ToJson();
-            string expected = "{\"DirectX\":\"DirectX 12\",\"FormatdirectX\":\"TEXT\"}";
+            string expected = $"{{\"Name\":\"{_directXInformation.DirectX.Name}\",\"Value\":\"DirectX 12\",\"Format\":\"{_directXInformation.DirectX.Format}\"}}";
             StringAssert.Contains(expected, json);
         }
         else {

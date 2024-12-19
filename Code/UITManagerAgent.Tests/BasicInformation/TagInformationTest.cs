@@ -25,9 +25,9 @@ namespace UITManagerAgent.Tests.BasicInformation {
         [SupportedOSPlatform("windows")]
         public void ToJson_ShouldReturnValidJson_WhenTagServiceIsSet() {
             if (_tagInformation != null) {
-                _tagInformation.TagService = "Test";
+                _tagInformation.TagService.Value = "Test";
                 string json = _tagInformation.ToJson();
-                string expected = $"{{\"TagService\":\"Test\",\"Format\":\"TEXT\"}}";
+                string expected =$"{{\"Name\":\"{_tagInformation.TagService.Name}\",\"Value\":\"Test\",\"Format\":\"{_tagInformation.TagService.Format}\"}}";
                 StringAssert.Contains(json, expected);
             }
         }

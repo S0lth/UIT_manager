@@ -24,9 +24,9 @@ namespace UITManagerAgent.Tests.BasicInformation {
         [SupportedOSPlatform("windows")]
         public void ToJson_ShouldReturnValidJson_WhenTagServiceIsSet() {
             if (_modelInformation != null) {
-                _modelInformation.Model = "82WM";
+                _modelInformation.Model.Value = "82WM";
                 string json = _modelInformation.ToJson();
-                string expected = $"{{\"Model\":\"82WM\",\"Format\":\"TEXT\"}}";
+                string expected = $"{{\"Name\":\"{_modelInformation.Model.Name}\",\"Value\":\"82WM\",\"Format\":\"{_modelInformation.Model.Format}\"}}";
                 StringAssert.Contains(json, expected);
             }
         }

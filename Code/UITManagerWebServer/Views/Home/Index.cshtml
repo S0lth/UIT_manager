@@ -9,53 +9,51 @@
 <div class="container-fluid py-1">
     <div class="row mt-4">
         <div class="col-md-6">
-            <div class="container mt-0">
-                <div class="row text-center">
-                    <div class="col-md-4 mb-2">
-                        <div class="card shadow-sm border-0 rounded">
-                            <div class="card-body p-2">
-                                <h6 class="card-title mb-2">Machines with Alarms Triggered</h6>
-                                <p class="fs-5">
-                                    <a asp-action="Index"
-                                       asp-controller="Machine"
-                                       class="badge bg-@(Model.MachinesWithActiveAlarms == 0 ? "success" : "primary")"
-                                       asp-route-Filter="alarm_triggered">
-                                        @Model.MachinesWithActiveAlarms / @Model.TotalMachines
-                                    </a>
-                                </p>
-                            </div>
+            <div class="row text-center">
+                <div class="col-md-4 mb-2">
+                    <div class="card shadow-sm border-0 rounded">
+                        <div class="card-body p-2">
+                            <p class="card-title mb-2">Machines with Alarms Triggered</p>
+                            <p class="fs-4">
+                                <a asp-action="Index"
+                                   asp-controller="Machine"
+                                   class="badge bg-@(Model.MachinesWithActiveAlarms == 0 ? "success" : "primary")"
+                                   asp-route-Filter="alarm_triggered">
+                                    @Model.MachinesWithActiveAlarms / @Model.TotalMachines
+                                </a>
+                            </p>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <div class="card shadow-sm border-0 rounded">
-                            <div class="card-body p-2">
-                                <h6 class="card-title mb-2">Unresolved Alarms</h6>
-                                <p class="fs-5">
-                                    <a asp-action="Index" asp-controller="Alarm"
-                                       class="badge bg-@((Model.AlarmsNotResolvedCount == 0) ? "success" : "primary")">
-                                        @Model.AlarmsNotResolvedCount
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <div class="card shadow-sm border-0 rounded">
-                            <div class="card-body p-2">
-                                <h6 class="card-title mb-2">Alarms Triggered Today</h6>
-                                <p class="fs-5">
-                                    <a asp-action="Index"
-                                       asp-controller="Alarm"
-                                       class="badge bg-@((Model.AlarmsTriggeredTodayCount == 0) ? "success" : "primary")"
-                                       asp-route-sortOrder="triggered_today">
-                                        @Model.AlarmsTriggeredTodayCount
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+                <div class="col-md-4 mb-2">
+                    <div class="card shadow-sm border-0 rounded">
+                        <div class="card-body p-2">
+                            <p class="card-title mb-2">Unresolved Alarms</p>
+                            <p class="fs-4">
+                                <a asp-action="Index" asp-controller="Alarm"
+                                   class="badge bg-@((Model.AlarmsNotResolvedCount == 0) ? "success" : "primary")">
+                                    @Model.AlarmsNotResolvedCount
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <div class="card shadow-sm border-0 rounded">
+                        <div class="card-body p-2">
+                            <p class="card-title mb-2">Alarms Triggered Today</p>
+                            <p class="fs-4">
+                                <a asp-action="Index"
+                                   asp-controller="Alarm"
+                                   class="badge bg-@((Model.AlarmsTriggeredTodayCount == 0) ? "success" : "primary")"
+                                   asp-route-sortOrder="triggered_today">
+                                    @Model.AlarmsTriggeredTodayCount
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <ul class="nav nav-tabs" id="alarmTabs" role="tablist">
@@ -179,12 +177,12 @@
                                     <div class="d-flex gap-2">
                                         <button type="submit" class="btn btn-primary btn-sm">Filter</button>
                                         <a asp-action="Index"
-                                                asp-route-sortOrder="@ViewData["SortOrder"]"
-                                                asp-route-tab="@ViewData["ActiveTab"]"
-                                                asp-route-solutionFilter=""
-                                                asp-route-authorFilter=""
-                                                asp-route-sortOrderNote=""
-                                                class="btn btn-secondary btn-sm text-center">Reset</a>
+                                           asp-route-sortOrder="@ViewData["SortOrder"]"
+                                           asp-route-tab="@ViewData["ActiveTab"]"
+                                           asp-route-solutionFilter=""
+                                           asp-route-authorFilter=""
+                                           asp-route-sortOrderNote=""
+                                           class="btn btn-secondary btn-sm text-center">Reset</a>
                                     </div>
                                 </div>
                             </form>

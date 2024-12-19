@@ -60,7 +60,7 @@ public class DomainNameCollectorTests {
         if (_domainNameCollector != null) {
             DomainNameInformation result = (DomainNameInformation)_domainNameCollector.Collect();
 
-            Assert.IsFalse(string.IsNullOrEmpty(result.DomainName),
+            Assert.IsFalse(string.IsNullOrEmpty(result.DomaineName.Value),
                 "Domain name should not be null when the machine is part of a domain.");
 
         }
