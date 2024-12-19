@@ -17,7 +17,8 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm py-3">
         <div class="container-fluid">
             <a class="navbar-brand text-xl" asp-area="" asp-controller="Home" asp-action="Index">UITManager</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -38,7 +39,7 @@
                                 Inventory
                             </a>
                         </li>
-                        
+
                         <li class="nav-item me-3">
                             <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Notes" ? "active-link" : "") text-fs-1"
                                asp-area="" asp-controller="Note" asp-action="Index">
@@ -46,7 +47,8 @@
                             </a>
                         </li>
                         <li class="nav-item me-3">
-                            @if (User.IsInRole("ITDirector") || User.IsInRole("MaintenanceManager")){
+                            @if (User.IsInRole("ITDirector") || User.IsInRole("MaintenanceManager"))
+                            {
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AlarmSettings" ? "active-link" : "") text-fs-1"
                                    asp-area="" asp-controller="AlarmSettings" asp-action="Index">
                                     Alarms
@@ -54,7 +56,8 @@
                             }
                         </li>
                         <li class="nav-item me-3">
-                            @if (User.IsInRole("ITDirector")){
+                            @if (User.IsInRole("ITDirector"))
+                            {
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" ? "active-link" : "") text-fs-1"
                                    asp-area="" asp-controller="User" asp-action="Index">
                                     Users
@@ -69,8 +72,9 @@
     </nav>
 </header>
 
-<div class="container mt-2">
-    @if (ViewData["Breadcrumbs"] != null) {
+<div class="container-fluid py-3 px-4" style="max-width: 1700px;">
+    @if (ViewData["Breadcrumbs"] != null)
+    {
         var breadcrumbs = ViewData["Breadcrumbs"] as List<BreadcrumbItem>;
         @Html.Partial("_Breadcrumb", breadcrumbs)
     }

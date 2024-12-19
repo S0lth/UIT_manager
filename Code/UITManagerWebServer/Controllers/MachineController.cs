@@ -21,14 +21,18 @@ namespace UITManagerWebServer.Controllers {
 
             breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
 
-            breadcrumbs.Add(new BreadcrumbItem {
-                Title = "Inventory", Url = Url.Action("Index", "Machine"), IsActive = false
-            });
-
             string currentAction = context.ActionDescriptor.RouteValues["action"];
 
             switch (currentAction) {
+                case "Index":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Inventory", Url = Url.Action("Index", "Machine"), IsActive = true
+                    });
+                    break;
                 case "Details":
+                    breadcrumbs.Add(new BreadcrumbItem {
+                        Title = "Inventory", Url = Url.Action("Index", "Machine"), IsActive = false
+                    });
                     int machineId = Convert.ToInt32(context.ActionArguments["id"]);
                     var machine = _context.Machines.FirstOrDefault(a => a.Id == machineId);
                     if (machine != null) {

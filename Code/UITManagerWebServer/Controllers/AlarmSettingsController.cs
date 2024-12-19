@@ -42,17 +42,20 @@ namespace UITManagerWebServer.Controllers {
                     break;
                 
                 case "Details":
-                    int normGroupId = Convert.ToInt32(context.ActionArguments["id"]);
-                    var normGroup = _context.NormGroups.FirstOrDefault(a => a.Id == normGroupId);
-                    
-                    if (normGroup != null) {
-                        breadcrumbs.Add(new BreadcrumbItem {
-                            Title = normGroup.Name,
-                            Url = string.Empty,
-                            IsActive = true
-                        });
-                    }
+                case "Edit":
+                    if (context.ActionArguments.ContainsKey("id") && 
+                        int.TryParse(context.ActionArguments["id"]?.ToString(), out int normGroupId)) {
 
+                        var normGroup = _context.NormGroups.FirstOrDefault(a => a.Id == normGroupId);
+
+                        if (normGroup != null) {
+                            breadcrumbs.Add(new BreadcrumbItem {
+                                Title = normGroup.Name,
+                                Url = string.Empty,
+                                IsActive = true
+                            });
+                        }
+                    }
                     break;
 
                 case "Create":
@@ -64,8 +67,7 @@ namespace UITManagerWebServer.Controllers {
             }
 
             if (controllerName == "AlarmSettings" && context.ActionDescriptor.RouteValues.ContainsKey("id")) {
-                string id = context.ActionDescriptor.RouteValues["id"];
-                if (int.TryParse(id, out int normGroupId2)) {
+                if (int.TryParse(context.ActionDescriptor.RouteValues["id"], out int normGroupId2)) {
                     breadcrumbs.Add(new BreadcrumbItem {
                         Title = $"Criteria Group {normGroupId2}", Url = string.Empty, IsActive = true
                     });
