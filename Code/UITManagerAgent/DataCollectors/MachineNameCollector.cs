@@ -15,10 +15,10 @@ public class MachineNameCollector : DataCollector {
     /// </returns>
     [SupportedOSPlatform("windows")]
     public Information Collect() {
-        MachineNameInformation machineNameInformation = new();
+        MachineNameInformation machineNameInformation = new ();
 
-        string machineName = Environment.MachineName;
-        machineNameInformation.MachineName = machineName;
+        machineNameInformation.MachineName.Value = Environment.MachineName;
+
         return machineNameInformation;
     }
 }
