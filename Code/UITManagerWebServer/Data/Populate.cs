@@ -50,7 +50,7 @@ public static class Populate {
 
     private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager, ApplicationDbContext context) {
-        var roles = new List<string> { "MaintenanceManager", "Technician", "ITDirector" };
+        var roles = new List<string> { "Maintenance Manager", "Technician", "IT Director" };
         foreach (var role in roles) {
             if (!await roleManager.RoleExistsAsync(role)) {
                 var roleResult = await roleManager.CreateAsync(new IdentityRole(role));
@@ -163,10 +163,10 @@ public static class Populate {
                         if (result.Succeeded) {
                             if (result.Succeeded) {
                                 if (user.LastName == "Ô" || user.LastName == "BARBE") {
-                                    await userManager.AddToRoleAsync(user, "ITDirector");
+                                    await userManager.AddToRoleAsync(user, "IT Director");
                                 }
                                 else if (user.LastName == "MILLET" || user.LastName == "SEGUIN") {
-                                    await userManager.AddToRoleAsync(user, "MaintenanceManager");
+                                    await userManager.AddToRoleAsync(user, "Maintenance Manager");
                                 }
                                 else {
                                     await userManager.AddToRoleAsync(user, "Technician");
@@ -365,7 +365,7 @@ public static class Populate {
             }
         };
 
-        var rolesToFind = new List<string> { "MaintenanceManager", "ITDirector" };
+        var rolesToFind = new List<string> { "Maintenance Manager", "IT Director" };
 
         var usersInRoles = new List<ApplicationUser>();
 

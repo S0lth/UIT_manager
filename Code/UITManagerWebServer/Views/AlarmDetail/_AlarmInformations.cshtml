@@ -2,7 +2,7 @@
 @using UITManagerWebServer.Models
 @model UITManagerWebServer.Models.Alarm
 @{
-    var userIsAuthorized = User.IsInRole("ITDirector") || User.IsInRole("MaintenanceManager");
+    var userIsAuthorized = User.IsInRole("IT Director") || User.IsInRole("Maintenance Manager");
     var latestSeverityHistory = Model.NormGroup.SeverityHistories
         .OrderByDescending(sh => sh.UpdateDate)
         .FirstOrDefault();
