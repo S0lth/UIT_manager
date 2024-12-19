@@ -1,4 +1,5 @@
-﻿@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
+﻿@using Microsoft.IdentityModel.Tokens
+@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
 
 
 @{
@@ -178,6 +179,12 @@
                                                 }
                                             </optgroup>
                                                 
+                                        } else
+                                        {
+                                            if ((information.SubInformationNames.IsNullOrEmpty() && information.ParentId == null))
+                                            {
+                                                <option value="@information.Id">@information.Name</option>
+                                            }
                                         }
                                     }
                                 </select>
