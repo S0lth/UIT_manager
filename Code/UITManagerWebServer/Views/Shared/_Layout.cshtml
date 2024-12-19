@@ -69,6 +69,12 @@
     </nav>
 </header>
 
+<div class="container mt-2">
+    @if (ViewData["Breadcrumbs"] != null) {
+        var breadcrumbs = ViewData["Breadcrumbs"] as List<BreadcrumbItem>;
+        @Html.Partial("_Breadcrumb", breadcrumbs)
+    }
+</div>
 
 <main role="main" class="pb-3">
     @RenderBody()
@@ -76,7 +82,7 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2024 - UITManagerWebServer - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        &copy; 2024 - UITManager
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

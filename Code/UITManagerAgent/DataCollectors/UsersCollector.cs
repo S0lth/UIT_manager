@@ -1,6 +1,7 @@
 using System.DirectoryServices;
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
+namespace UITManagerAgent.DataCollectors;
 
 /// <summary>
 ///     Collects user information from the system and returns it as a <see cref="UsersInformation" /> instance.
@@ -20,10 +21,11 @@ public class UserCollector : DataCollector {
             using DirectoryEntry localMachine = new("WinNT://" + Environment.MachineName);
             foreach (DirectoryEntry child in localMachine.Children) {
                 if (child.SchemaClassName == "User") {
-                    UsersInformation.User user= new ();
-                    user.UserName = child.Name;
-                    user.UserScope = IsDomainUser() ? "Domaine" : "Local";
-                    users.UsersList.Add(user);
+                    
+                    UsersInformation.User user = new ();
+                    user.UserName.Value = child.Name;
+                    user.UserScope.Value = IsDomainUser() ? "Domaine" : "Local";
+                    users.InformationAgents.Add(new InnerValue("User","null","null",user.GetList()));
                 }
             }
         }

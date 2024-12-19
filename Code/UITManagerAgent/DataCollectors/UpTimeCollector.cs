@@ -18,7 +18,7 @@ public class UpTimeCollector : DataCollector {
     public Information Collect() {
         UpTimeInformation upTimeInformation = new();
 
-        upTimeInformation.Milliseconds = Environment.TickCount;
+        upTimeInformation.UpTime.Value = TimeSpan.FromMilliseconds(Environment.TickCount).ToString();
 
         return upTimeInformation;
     }

@@ -31,9 +31,9 @@ public class RamCollectorTest {
         if (_ramCollector != null) {
             _ramInformation = (RamInformation)_ramCollector.Collect()!;
             Assert.IsNotNull(_ramInformation);
-            Assert.IsTrue(_ramInformation.TotalRam > 0, "Total memory should be greater than 0");
-            Assert.IsTrue(_ramInformation.FreeRam >= 0, "Free memory should be non-negative");
-            Assert.IsTrue(_ramInformation.UsedRam >= 0, "Used memory should be non-negative");
+            Assert.IsTrue(Double.Parse(_ramInformation.InformationAgents[0].Value) > 0, "Total memory should be greater than 0");
+            Assert.IsTrue(Double.Parse(_ramInformation.InformationAgents[1].Value) >= 0, "Free memory should be non-negative");
+            Assert.IsTrue(Double.Parse(_ramInformation.InformationAgents[2].Value) >= 0, "Used memory should be non-negative");
         }
     }
 
@@ -46,9 +46,9 @@ public class RamCollectorTest {
         if (_ramCollector != null) {
             _ramInformation = (RamInformation)_ramCollector.Collect();
 
-            Assert.IsTrue(_ramInformation.UsedRam <= _ramInformation.TotalRam,
+            Assert.IsTrue(Double.Parse(_ramInformation.InformationAgents[2].Value) <= Double.Parse(_ramInformation.InformationAgents[0].Value),
                 "Used memory cannot exceed total memory");
-            Assert.IsTrue(_ramInformation.FreeRam + _ramInformation.UsedRam <= _ramInformation.TotalRam,
+            Assert.IsTrue(Double.Parse(_ramInformation.InformationAgents[1].Value) + Double.Parse(_ramInformation.InformationAgents[2].Value) <= Double.Parse(_ramInformation.InformationAgents[0].Value),
                 "Free memory + Used memory should not exceed Total memory");
         }
     }

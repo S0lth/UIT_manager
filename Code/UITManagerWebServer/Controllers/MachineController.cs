@@ -10,14 +10,44 @@ namespace UITManagerWebServer.Controllers {
     public class MachineController : Controller {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        
+
         public MachineController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
             _context = context;
             _userManager = userManager;
         }
 
+        private void SetBreadcrumb(ActionExecutingContext context) {
+            List<BreadcrumbItem> breadcrumbs = new List<BreadcrumbItem>();
+
+            breadcrumbs.Add(new BreadcrumbItem { Title = "Home", Url = Url.Action("Index", "Home"), IsActive = false });
+
+            breadcrumbs.Add(new BreadcrumbItem {
+                Title = "Inventory", Url = Url.Action("Index", "Machine"), IsActive = false
+            });
+
+            string currentAction = context.ActionDescriptor.RouteValues["action"];
+
+            switch (currentAction) {
+                case "Details":
+                    int machineId = Convert.ToInt32(context.ActionArguments["id"]);
+                    var machine = _context.Machines.FirstOrDefault(a => a.Id == machineId);
+                    if (machine != null) {
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = machine.Name,
+                            Url = string.Empty,
+                            IsActive = true
+                        });
+                    }
+                    break;
+            }
+
+            ViewData["Breadcrumbs"] = breadcrumbs;
+        }
+
         public override void OnActionExecuting(ActionExecutingContext context) {
             base.OnActionExecuting(context);
+
+            SetBreadcrumb(context);
 
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
@@ -46,21 +76,23 @@ namespace UITManagerWebServer.Controllers {
             if (filter == "working") {
                 machinesQuery = machinesQuery.Where(m => m.IsWorking == true);
             }
+
             if (filter == "not_working") {
                 machinesQuery = machinesQuery.Where(m => m.IsWorking == false);
             }
+
             if (filter == "alarm_triggered") {
                 machinesQuery = machinesQuery.Where(m => m.Alarms
                     .Any(a => a.AlarmHistories
-                        .OrderByDescending(ah => ah.ModificationDate)
-                        .FirstOrDefault() != null && 
-                        a.AlarmHistories
-                            .OrderByDescending(ah => ah.ModificationDate)
-                            .FirstOrDefault().StatusType.Name != "resolved"
+                                  .OrderByDescending(ah => ah.ModificationDate)
+                                  .FirstOrDefault() != null &&
+                              a.AlarmHistories
+                                  .OrderByDescending(ah => ah.ModificationDate)
+                                  .FirstOrDefault().StatusType.Name != "resolved"
                     )
                 );
             }
-            
+
             if (!string.IsNullOrEmpty(search)) {
                 string searchLower = search.ToLower();
                 List<Machine> machinesList = await machinesQuery.ToListAsync();
@@ -73,7 +105,7 @@ namespace UITManagerWebServer.Controllers {
                     m.GetOsVersion().ToLower().Contains(searchLower)
                 ).ToList();
             }
-            
+
             List<Machine> machines = await machinesQuery.ToListAsync();
 
             IEnumerable<MachineViewModel> machineViewModels = machines.Select(m => new MachineViewModel {
@@ -137,7 +169,7 @@ namespace UITManagerWebServer.Controllers {
                 AnyAlarms = alarms.Any(),
                 AnyNote = notes.Any(),
             };
-            
+
             if (string.IsNullOrEmpty(sortOrder)) {
                 sortOrder = "date_desc";
             }
@@ -152,28 +184,34 @@ namespace UITManagerWebServer.Controllers {
             ViewData["AuthorFilter"] = authorFilter;
             ViewData["TypeFilter"] = typeFilter;
             ViewData["SortOrderNote"] = noteDateFilter;
-            ViewData["CurrentUser"] = _userManager.GetUserId(User)??"";
+            ViewData["CurrentUser"] = _userManager.GetUserId(User) ?? "";
 
             return View(detailView);
         }
-        
+
         [Authorize]
-        public async Task<IActionResult> ChangeWorking(int id, string sortOrder, string solutionFilter, 
+        public async Task<IActionResult> ChangeWorking(int id, string sortOrder, string solutionFilter,
             string authorFilter, string typeFilter, string? noteDateFilter) {
             Machine? machine = await _context.Machines.FindAsync(id);
             if (machine != null) {
                 machine.IsWorking = !machine.IsWorking;
                 await _context.SaveChangesAsync();
             }
-            
-            return RedirectToAction("Details", new{id, sortOrder, 
-                solutionFilter, authorFilter, typeFilter, noteDateFilter});
+
+            return RedirectToAction("Details", new {
+                id,
+                sortOrder,
+                solutionFilter,
+                authorFilter,
+                typeFilter,
+                noteDateFilter
+            });
         }
 
         private async Task<List<ComponentsViewModel>> GetMachineInformation(int? id) {
             IQueryable<Information> list = _context.Components.Where(a => a.MachinesId == id).AsQueryable();
             List<ComponentsViewModel> result = new List<ComponentsViewModel>();
-            
+
             List<Information> rootElements = await list.Where(e => e.ParentId == null).ToListAsync();
             List<ComponentsViewModel> model = rootElements.Select(
                 a => new ComponentsViewModel {
@@ -241,11 +279,14 @@ namespace UITManagerWebServer.Controllers {
                 alarmsQuery = alarmsQuery.Where(a =>
                     a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name ==
                     typeFilter);
-            }else if (typeFilter == "AssignedToMe") {
+            }
+            else if (typeFilter == "AssignedToMe") {
                 alarmsQuery = alarmsQuery.Where(a => a.User.Id.Equals(user));
-            }else if (typeFilter == "Unassigned") {
-                    alarmsQuery = alarmsQuery.Where(a => string.IsNullOrEmpty(a.User.Id));
-            }else if (typeFilter != "All") {
+            }
+            else if (typeFilter == "Unassigned") {
+                alarmsQuery = alarmsQuery.Where(a => string.IsNullOrEmpty(a.User.Id));
+            }
+            else if (typeFilter != "All") {
                 alarmsQuery = alarmsQuery.Where(a =>
                     a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault().StatusType.Name !=
                     "Resolved");
@@ -315,7 +356,8 @@ namespace UITManagerWebServer.Controllers {
 
         private async Task<List<NoteViewModel>> getFilteredNotes(string sortOrder, string solutionFilter,
             string authorFilter, int? id) {
-            IQueryable<Note> notesQuery = _context.Notes.Include(n => n.Author).Where(n => n.MachineId == id).AsQueryable();
+            IQueryable<Note> notesQuery =
+                _context.Notes.Include(n => n.Author).Where(n => n.MachineId == id).AsQueryable();
 
             if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
                 bool isSolution = solutionFilter.ToLower() == "true";
@@ -450,7 +492,7 @@ namespace UITManagerWebServer.Controllers {
         private bool MachineExists(int id) {
             return _context.Machines.Any(e => e.Id == id);
         }
-        
+
         public class AlarmViewModel {
             public int MachineId { get; set; }
             public int AlarmId { get; set; }

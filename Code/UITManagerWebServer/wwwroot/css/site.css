@@ -54,4 +54,7 @@ body {
 .text-low{
   color: #6B8909;
 }
+p {
+  font-size: calc(1rem + 2px); 
+}
 

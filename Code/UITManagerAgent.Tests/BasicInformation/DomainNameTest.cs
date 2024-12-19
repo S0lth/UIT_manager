@@ -28,9 +28,10 @@ public class DomainNameTest {
     public void ToJson_ShouldReturnValidJson_WhenDomainNameIsSet() {
 
         if (_domainName != null) {
-            _domainName.DomainName = "test.com";
+            _domainName.DomaineName.Value = "test.com";
             var json = _domainName.ToJson();
-            StringAssert.Contains(json, "\"DomainName\":\"test.com\"");
+            var expectedJson = $"{{\"Name\":\"{_domainName.DomaineName.Name}\",\"Value\":\"test.com\",\"Format\":\"{_domainName.DomaineName.Format}\"}}";
+            StringAssert.Contains(json, expectedJson);
         }
     }
 

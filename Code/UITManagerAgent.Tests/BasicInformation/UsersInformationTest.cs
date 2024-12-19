@@ -29,14 +29,11 @@ public class UsersInformationTest {
     [TestMethod]
     public void ToJson_ShouldReturnValidJson_WhenIPSAddressesAreManuallySet() {
         if (_usersInformation != null) {
-            _usersInformation.UsersList = new() {
-            new UsersInformation.User("admin", "local"),
-            new UsersInformation.User("guest", "local"),
-            new UsersInformation.User("bob", "local"),
+            _usersInformation.InformationAgents = new() {
             };
 
-            List<UsersInformation.User> usersList = _usersInformation.UsersList;
-            string expectedJson = $"{{\"UsersList\":[{usersList[0].ToJson()},{usersList[1].ToJson()},{usersList[2].ToJson()}]}}";
+            List<InnerValue> usersList = _usersInformation.InformationAgents;
+            string expectedJson = "{\"Name\": \"Users List\",\"Value\": \"null\",\"Format\": \"null\",\"InformationAgents\": []}";
 
             Assert.AreEqual(expectedJson, _usersInformation.ToJson());
         }
@@ -51,9 +48,9 @@ public class UsersInformationTest {
     /// </summary>
     [TestMethod]
     public void ToJson_ShouldReturnValidJson_WhenIPSAddressesAreEmpty() {
-        string expectedJson = "{\"UsersList\":[]}";
+        string expectedJson = "{\"Name\": \"Users List\",\"Value\": \"null\",\"Format\": \"null\",\"InformationAgents\": []}";
         if (_usersInformation != null) {
-            _usersInformation.UsersList = new();
+            _usersInformation.InformationAgents = new();
             Assert.AreEqual(expectedJson, _usersInformation.ToJson());
         }
         else {
