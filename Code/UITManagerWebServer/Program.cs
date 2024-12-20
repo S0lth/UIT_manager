@@ -33,6 +33,13 @@ builder.Services.Configure<IdentityOptions>(options => {
 builder.Services.AddControllersWithViews();
 builder.Services.AddAntiforgery();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.HttpOnly = true;             
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -54,12 +61,8 @@ using (var scope = app.Services.CreateScope()) {
         bool hasData = await context.Machines.AnyAsync();
 
         if (!hasData) {
-            // Si aucune donnée n'existe, effectuer le populate
             Console.WriteLine("Database is empty. Starting population...");
 
-            // Populate without alarm trigger today
-            //await Populate.Initialize(services,true);
-            // Populate with alarm trigger today
             await Populate.Initialize(services,false);            
             Console.WriteLine("Database populated successfully.");
         }
@@ -71,6 +74,13 @@ using (var scope = app.Services.CreateScope()) {
         Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
     }
 }
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Frame-Options", "DENY");
+    context.Response.Headers.Add("Content-Security-Policy", "frame-ancestors 'self';");
+    await next();
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
