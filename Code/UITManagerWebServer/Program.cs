@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
@@ -18,8 +17,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<SignInManager<ApplicationUser>, CustomSignInManager>();
-
 builder.Services.Configure<IdentityOptions>(options => {
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8;
@@ -30,12 +27,29 @@ builder.Services.Configure<IdentityOptions>(options => {
     options.User.RequireUniqueEmail = true;
 });
 
+builder.Services.ConfigureApplicationCookie(options => {
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+});
+
+builder.Services.AddAntiforgery(options => {
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
+builder.Services.AddSession(options => {
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
 builder.Services.AddControllersWithViews();
-builder.Services.AddAntiforgery();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
     app.UseMigrationsEndPoint();
 }
@@ -44,39 +58,12 @@ else {
     app.UseHsts();
 }
 
-using (var scope = app.Services.CreateScope()) {
-    var services = scope.ServiceProvider;
-    Console.WriteLine("hello");
-    try {
-        using var context = new ApplicationDbContext(
-            services.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
-
-        bool hasData = await context.Machines.AnyAsync();
-
-        if (!hasData) {
-            // Si aucune donnée n'existe, effectuer le populate
-            Console.WriteLine("Database is empty. Starting population...");
-
-            // Populate without alarm trigger today
-            //await Populate.Initialize(services,true);
-            // Populate with alarm trigger today
-            await Populate.Initialize(services,false);            
-            Console.WriteLine("Database populated successfully.");
-        }
-        else {
-            Console.WriteLine("Database already contains data. Skipping population.");
-        }
-    }
-    catch (Exception ex) {
-        Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
-    }
-}
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
