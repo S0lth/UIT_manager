@@ -38,86 +38,89 @@
 
 }
 
-<div class="container-fluid py-3" style="max-width: 1700px;">
-    <div class="d-flex w-100 justify-content-between">
-        <h1 class="fs-2 fw-bold me-3 text-nowrap">
-            @Model.Name
-        </h1>
+<div id="alert-container" class="p-0 m-0"></div>
+<div class="container-fluid py-5 px-4" style="max-width: 1700px;">
+    <div class="row mb-2 fixed">
+        <div class="col-lg-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h2 fw-bold">@Model.Name</h1>
 
-        <form asp-action="ChangeWorking" method="post">
-            <input type="submit" class="btn-check" id="isWorking" autocomplete="off"
-                   @(Model.IsWorking ? "checked" : "")>
-            @{
-                GetSavedSortingAndFilterInfoExcept(null);
-            }
-            <label class="btn  @(Model.IsWorking ? "btn-success" : "btn-danger")" for="isWorking">
-                Current machine state: @(Model.IsWorking ? "Working" : "Not working")
-            </label>
-        </form>
-    </div>
-
-    <span
-        class="badge bg-opacity-50 bg-primary p-2 rounded-3 fs-6 text-white">Last seen @Model.LastSeen.ToString("dd/MM/yyyy HH:mm")</span>
-    <div class="row mt-2">
-        <div class="d-flex m-1 p-0 gap-2">
-            <div class="col-md-6 mb-2">
-                @(await Html.PartialAsync("_MachineInformation", Model, ViewData))
+                <form asp-action="ChangeWorking" method="post">
+                    <input type="submit" class="btn-check" id="isWorking" autocomplete="off"
+                           @(Model.IsWorking ? "checked" : "")>
+                    @{
+                        GetSavedSortingAndFilterInfoExcept(null);
+                    }
+                    <label class="btn  @(Model.IsWorking ? "btn-success" : "btn-danger")" for="isWorking">
+                        Current machine state: @(Model.IsWorking ? "Working" : "Not working")
+                    </label>
+                </form>
             </div>
-            <div class="col-md-6 mb-2">
-                <div class="d-flex flex-column gap-2">
-                    @(await Html.PartialAsync("_MachineAlarms", Model, ViewData))
-                    @(await Html.PartialAsync("_MachineNotes", Model, ViewData))
+
+            <span
+                class="badge bg-opacity-50 bg-primary p-2 rounded-3 fs-6 text-white">Last seen @Model.LastSeen.ToString("dd/MM/yyyy HH:mm")</span>
+            <div class="row mt-2">
+                <div class="d-flex m-1 p-0 gap-2">
+                    <div class="col-md-6 mb-2">
+                        @(await Html.PartialAsync("_MachineInformation", Model, ViewData))
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="d-flex flex-column gap-2">
+                            @(await Html.PartialAsync("_MachineAlarms", Model, ViewData))
+                            @(await Html.PartialAsync("_MachineNotes", Model, ViewData))
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-        </div>
-    </div>
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="d-flex justify-content-end gap-3">
+                        @{
+                            var previousUrl = TempData["PreviousUrl"]?.ToString();
+                            string previousPageName = "Previous Page";
 
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="d-flex justify-content-end gap-3">
-                @{
-                    var previousUrl = TempData["PreviousUrl"]?.ToString();
-                    string previousPageName = "Previous Page";
+                            if (!string.IsNullOrEmpty(previousUrl))
+                            {
+                                var uri = new Uri(previousUrl);
+                                var path = uri.AbsolutePath;
 
-                    if (!string.IsNullOrEmpty(previousUrl))
-                    {
-                        var uri = new Uri(previousUrl);
-                        var path = uri.AbsolutePath;
+                                if (string.IsNullOrEmpty(path) || path == "/")
+                                {
+                                    previousPageName = "Home";
+                                }
+                                else
+                                {
+                                    var segments = path.Split('/');
 
-                        if (string.IsNullOrEmpty(path) || path == "/")
-                        {
-                            previousPageName = "Home";
+                                    if (segments.Length >= 3)
+                                    {
+                                        previousPageName = string.Join(" ", segments[1], segments[2]).Replace("-", " ");
+                                    }
+                                    else if (segments.Length == 2)
+                                    {
+                                        previousPageName = segments[1].Replace("-", " ");
+                                    }
+                                    else
+                                    {
+                                        previousPageName = segments.LastOrDefault()?.Replace("-", " ") ?? "Previous Page";
+                                    }
+                                }
+                            }
                         }
-                        else
+
+                        @if (previousUrl != null)
                         {
-                            var segments = path.Split('/');
-
-                            if (segments.Length >= 3)
-                            {
-                                previousPageName = string.Join(" ", segments[1], segments[2]).Replace("-", " ");
-                            }
-                            else if (segments.Length == 2)
-                            {
-                                previousPageName = segments[1].Replace("-", " ");
-                            }
-                            else
-                            {
-                                previousPageName = segments.LastOrDefault()?.Replace("-", " ") ?? "Previous Page";
-                            }
+                            <a class="btn btn-outline-secondary" href="@previousUrl">
+                                Back to @previousPageName
+                            </a>
                         }
-                    }
-                }
-
-                @if (previousUrl != null)
-                {
-                    <a class="btn btn-outline-secondary" href="@previousUrl">
-                        Back to @previousPageName
-                    </a>
-                }
-                <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Machine">
-                    View all machines
-                </a>
+                        <a class="btn btn-outline-primary" asp-action="Index" asp-controller="Machine">
+                            View all machines
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
