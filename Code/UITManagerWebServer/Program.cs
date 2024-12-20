@@ -10,6 +10,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+builder.Services.AddScoped<SignInManager<ApplicationUser>, CustomSignInManager>();
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -71,5 +73,34 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope()) {
+    var services = scope.ServiceProvider;
+    Console.WriteLine("hello");
+    try {
+        using var context = new ApplicationDbContext(
+            services.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
+
+        bool hasData = await context.Machines.AnyAsync();
+
+        if (!hasData) {
+            // Si aucune donnée n'existe, effectuer le populate
+            Console.WriteLine("Database is empty. Starting population...");
+
+            // Populate without alarm trigger today
+            //await Populate.Initialize(services,true);
+            // Populate with alarm trigger today
+            await Populate.Initialize(services,false);            
+            Console.WriteLine("Database populated successfully.");
+        }
+        else {
+            Console.WriteLine("Database already contains data. Skipping population.");
+        }
+    }
+    catch (Exception ex) {
+        Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
+    }
+}
+
 
 app.Run();
