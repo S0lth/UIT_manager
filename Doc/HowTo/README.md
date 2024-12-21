@@ -17,13 +17,14 @@ Before you begin, ensure that the following are installed on your machine:
 ## Open in Rider/VS Studio
 1. Launch JetBrains Rider or Visual Studio.
 2. Click **Open** or navigate to **File > Open** and select the folder containing your `.sln` solution file. The path is: `~/uitmanager/Code/UITManagerAgent/UITManagerAgent.sln`.
-3. Rider/VS Studio will load the solution, which includes all the associated projects (UITManagerAgent, UITManagerAgent.Tests, UITManagerWebServer, UITManagerApi).
+3. Rider/VS Studio will load the solution, which includes all the associated projects (UITManagerAgent, UITManagerAgent.Tests, UITManagerWebServer, UITManagerApi, UITManagerAlarmManager).
 4. Open your terminal and run the following commands to restore and build the projects:
     ```bash
     $ cd ~/uitmanager/Code/UITManagerAgent; dotnet restore; dotnet build
     $ cd ~/uitmanager/Code/UITManagerAgent.Tests; dotnet restore; dotnet build
     $ cd ~/uitmanager/Code/UITManagerWebServer; dotnet restore; dotnet build
     $ cd ~/uitmanager/Code/UITManagerApi; dotnet restore; dotnet build
+    $ cd ~/uitmanager/Code/UITManagerAlarmManager; dotnet restore; dotnet build
     ```
 
 ## Database Setup
@@ -73,6 +74,7 @@ $ dotnet ef database update
 ```
 ## Running the Project
 Once you have configured the projects to start, click the **Run** button in the top-right corner of Rider/VS Studio. This will launch all selected projects simultaneously, each in its own console window.
+**You have to run the UITManagerAlarmManager at the end.**
 ## Stopping the Project
 1. To stop all running projects in Rider/VS Studio, click the Stop button in the top-right corner. This will terminate all processes related to the running projects.
 2. To stop the Docker container, run the following command in the terminal:
