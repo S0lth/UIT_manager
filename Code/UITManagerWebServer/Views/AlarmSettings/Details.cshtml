@@ -112,7 +112,7 @@
                             </button>
                         </th>
                         <th>
-                            Description
+                            Trigger condition
                         </th>
                     </tr>
                     </thead>
@@ -130,7 +130,7 @@
                                     @norm.InformationName.Name
                                 </td>
                                 <td class="text-secondary">
-                                    <span>@(norm.Condition.Equals("IN") || norm.Condition.Equals("=")?"Should be":norm.Condition.Equals("NOT IN") || norm.Condition.Equals("!=")?"Shouldn't be":"Should be " + norm.Condition) @norm.Value @(norm.Format.Equals("TEXT")?"":norm.Format)</span>
+                                    <span>@(norm.Condition.Equals("IN") || norm.Condition.Equals("=")?"When ":norm.Condition.Equals("NOT IN") || norm.Condition.Equals("!=")?"When not ":"When " + norm.Condition) @norm.Value @(norm.Format.Equals("TEXT")?"":norm.Format)</span>
                                 </td>
                             </tr>
                         }
@@ -227,7 +227,7 @@
 
                 @if (previousUrl != null)
                 {
-                <a class="btn btn-outline-secondary" href="@previousUrl">
+                <a class="btn btn-outline-dark" href="@previousUrl">
                     Back to @previousPageName
                 </a>
                 }

@@ -29,7 +29,7 @@ public class IpsAddressesCollector : DataCollector {
             string hostname = Dns.GetHostName();
             IPHostEntry ipEntry = Dns.GetHostEntry(hostname);
             foreach (IPAddress ip in ipEntry.AddressList) {
-                if (ip.AddressFamily == AddressFamily.InterNetwork) {
+                if (ip.AddressFamily == AddressFamily.InterNetwork && ip.ToString() != "127.0.0.1") {
                     ipsAddressesInformation.InformationAgents.Add(new InnerValue("Ip Address","TEXT",ip.ToString()));
                 }
             }
