@@ -14,16 +14,17 @@ Before you begin, ensure that the following are installed on your machine:
     $ git clone git@gitlab.com:infohers/2425/projet-grp1/projet.git ~/uitmanager
     ```
 
-## Open in Rider/VS Studio
+## Open in Rider/ Visual Studio 
 1. Launch JetBrains Rider or Visual Studio.
 2. Click **Open** or navigate to **File > Open** and select the folder containing your `.sln` solution file. The path is: `~/uitmanager/Code/UITManagerAgent/UITManagerAgent.sln`.
-3. Rider/VS Studio will load the solution, which includes all the associated projects (UITManagerAgent, UITManagerAgent.Tests, UITManagerWebServer, UITManagerApi, UITManagerAlarmManager).
+3. Rider/Visual Studio will load the solution, which includes all the associated projects (UITManagerAgent, UITManagerAgent.Tests, UITManagerWebServer, UITManagerApi, UITManagerApi.Tests, UITManagerAlarmManager).
 4. Open your terminal and run the following commands to restore and build the projects:
     ```bash
     $ cd ~/uitmanager/Code/UITManagerAgent; dotnet restore; dotnet build
     $ cd ~/uitmanager/Code/UITManagerAgent.Tests; dotnet restore; dotnet build
     $ cd ~/uitmanager/Code/UITManagerWebServer; dotnet restore; dotnet build
     $ cd ~/uitmanager/Code/UITManagerApi; dotnet restore; dotnet build
+    $ cd ~/uitmanager/Code/UITManagerApi.Tests; dotnet restore; dotnet build
     $ cd ~/uitmanager/Code/UITManagerAlarmManager; dotnet restore; dotnet build
     ```
 
@@ -32,7 +33,7 @@ Before you begin, ensure that the following are installed on your machine:
     ```bash
     $ touch ~/uitmanager/Database/.env
     ```
-2. Copy the contents of the `.env` file from `credentials.md` and paste it into the `.env` file you just created.
+2. Copy the contents of the `.env` part in `credentials.md` file and paste it into the `.env` file you've just created.
 3. Start the Docker container:
     ```bash
     $ cd ~/uitmanager/Database/
@@ -73,10 +74,15 @@ $ dotnet ef migrations add init
 $ dotnet ef database update
 ```
 ## Running the Project
-Once you have configured the projects to start, click the **Run** button in the top-right corner of Rider/VS Studio. This will launch all selected projects simultaneously, each in its own console window.
-**You have to run the UITManagerAlarmManager at the end.**
+Once you have configured the projects to start, launch all project in this order (click the **Run** button in the top-right corner of Rider/Visual Studio):
+1. UITManagerWebServer
+2. UITManagerApi
+3. UITManagerAlarmManager
+4. UITManagerAgent
+
+
 ## Stopping the Project
-1. To stop all running projects in Rider/VS Studio, click the Stop button in the top-right corner. This will terminate all processes related to the running projects.
+1. To stop all running projects in Rider/Visual Studio, click the Stop button in the top-right corner. This will terminate all processes related to the running projects.
 2. To stop the Docker container, run the following command in the terminal:
 migrations:
     ```bash
