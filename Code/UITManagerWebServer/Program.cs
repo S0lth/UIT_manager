@@ -49,7 +49,6 @@ builder.Services.AddSession(options => {
 });
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddAntiforgery();
 builder.Services.AddHttpsRedirection(o => o.HttpsPort = 7210);
 
 var app = builder.Build();
@@ -65,7 +64,6 @@ app.Use(async (context, next) =>
     await next();
 });
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
     app.UseMigrationsEndPoint();
 }
@@ -74,7 +72,6 @@ else {
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
