@@ -301,7 +301,7 @@ namespace UITManagerWebServer {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         [Route("AlarmDetail/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
             if (request == null || string.IsNullOrEmpty(request.Id) || string.IsNullOrEmpty(request.UserId)) {
@@ -368,7 +368,7 @@ namespace UITManagerWebServer {
 
         // GET: AlarmDetail/Create
         [HttpGet]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public IActionResult Create() {
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id");
             ViewData["NormGroupId"] = new SelectList(_context.NormGroups, "Id", "Id");
@@ -381,7 +381,7 @@ namespace UITManagerWebServer {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public async Task<IActionResult> Create([Bind("Id,TriggeredAt,MachineId,NormGroupId,UserId")] Alarm alarm) {
             if (ModelState.IsValid) {
                 _context.Add(alarm);
@@ -398,7 +398,7 @@ namespace UITManagerWebServer {
 
         // GET: AlarmDetail/Edit/5
         [HttpGet]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
@@ -454,7 +454,7 @@ namespace UITManagerWebServer {
         // GET: AlarmDetail/Delete/5
         [HttpGet, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public async Task<IActionResult> Delete(int? id) {
             if (id == null) {
                 return NotFound();
@@ -475,7 +475,7 @@ namespace UITManagerWebServer {
         // POST: AlarmDetail/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public async Task<IActionResult> DeleteConfirmed(int id) {
             Alarm? alarm = await _context.Alarms.FindAsync(id);
             if (alarm != null) {
