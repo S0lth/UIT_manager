@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
@@ -71,6 +70,13 @@ using (var scope = app.Services.CreateScope()) {
         Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
     }
 }
+
+// Ajouter l'en-tête X-Content-Type-Options: nosniff
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    await next();
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
