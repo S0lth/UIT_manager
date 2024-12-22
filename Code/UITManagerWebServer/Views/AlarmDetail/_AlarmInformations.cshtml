@@ -2,7 +2,7 @@
 @using UITManagerWebServer.Models
 @model UITManagerWebServer.Models.Alarm
 @{
-    var userIsAuthorized = User.IsInRole("ITDirector") || User.IsInRole("MaintenanceManager");
+    var userIsAuthorized = User.IsInRole("IT Director") || User.IsInRole("Maintenance Manager");
     var latestSeverityHistory = Model.NormGroup.SeverityHistories
         .OrderByDescending(sh => sh.UpdateDate)
         .FirstOrDefault();
@@ -93,7 +93,12 @@
                         <div class="d-flex mb-2 align-items-center">
                             <p class="mb-0 fw-bold me-2">Machine name</p>
                             <div class="text-muted">
-                                @Model.Machine.Name
+                                
+                                <a asp-controller="Machine" asp-action="Details"
+                                   asp-route-id="@Model.Machine.Id">
+                                    @Model.Machine.Name
+                                </a>
+                              
                             </div>
                         </div>
                         <div class="d-flex mb-2 align-items-center">

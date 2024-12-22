@@ -37,9 +37,17 @@ namespace UITManagerWebServer {
                 case "Index":
                     int alarmId = Convert.ToInt32(context.ActionArguments["id"]);
                     var alarm = _context.Alarms.FirstOrDefault(a => a.Id == alarmId);
-                    if (alarm != null) {
+                    var normGroup = _context.NormGroups.FirstOrDefault(n => n.Id == alarm.NormGroupId);
+                    var machine = _context.Machines.FirstOrDefault(m => m.Id == alarm.MachineId);
+                    if (alarm != null && normGroup != null && machine != null) {
                         breadcrumbs.Add(new BreadcrumbItem {
-                            Title = "Machine's Alarm Details",
+                            Title = "Inventory", Url = Url.Action("Index", "Machine"),
+                        });
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = $"{machine.Name}", Url = Url.Action("Details", "Machine", new { id = alarm.MachineId }),
+                        });
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = $"{normGroup.Name}",
                             Url = string.Empty,
                             IsActive = true
                         });
@@ -293,7 +301,7 @@ namespace UITManagerWebServer {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         [Route("AlarmDetail/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
             if (request == null || string.IsNullOrEmpty(request.Id) || string.IsNullOrEmpty(request.UserId)) {
@@ -360,7 +368,7 @@ namespace UITManagerWebServer {
 
         // GET: AlarmDetail/Create
         [HttpGet]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public IActionResult Create() {
             ViewData["MachineId"] = new SelectList(_context.Machines, "Id", "Id");
             ViewData["NormGroupId"] = new SelectList(_context.NormGroups, "Id", "Id");
@@ -373,7 +381,7 @@ namespace UITManagerWebServer {
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public async Task<IActionResult> Create([Bind("Id,TriggeredAt,MachineId,NormGroupId,UserId")] Alarm alarm) {
             if (ModelState.IsValid) {
                 _context.Add(alarm);
@@ -390,7 +398,7 @@ namespace UITManagerWebServer {
 
         // GET: AlarmDetail/Edit/5
         [HttpGet]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public async Task<IActionResult> Edit(int? id) {
             if (id == null) {
                 return NotFound();
@@ -446,7 +454,7 @@ namespace UITManagerWebServer {
         // GET: AlarmDetail/Delete/5
         [HttpGet, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public async Task<IActionResult> Delete(int? id) {
             if (id == null) {
                 return NotFound();
@@ -467,7 +475,7 @@ namespace UITManagerWebServer {
         // POST: AlarmDetail/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         public async Task<IActionResult> DeleteConfirmed(int id) {
             Alarm? alarm = await _context.Alarms.FindAsync(id);
             if (alarm != null) {

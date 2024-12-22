@@ -1,4 +1,5 @@
-﻿@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
+﻿@using Microsoft.IdentityModel.Tokens
+@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
 
 
 @{
@@ -23,235 +24,236 @@
         @TempData["Error"]
     </div>
 }
-<div class="container-fluid px-4" style="max-width: 1700px;">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h1 class="h2 text-start fw-bold">Create Criteria</h1>
-    </div>
-    
-    <div class="card shadow-sm border-0 rounded p-3">
-        <div class="table-responsive">
-            <form method="post" asp-action="Create">
-                <table class="table table-hover table-striped align-middle">
-                    <thead class="table-light">
-                    <tr>
-                        <th>
-                            Name
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#nameModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </th>
-                        <th>
-                            Max Expected Processing Time
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#maxProcessingModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </th>
-                        <th>
-                            Priority
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#PriorityModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </th>
-                        <th>
-                            Severity
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#severityModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </th>
-                        <th>
-                            Enable
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#enabledModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </th>
-                        <th>
+<div class="container">
+    <h1 class="">Create Criteria</h1>
+<div class="card shadow-sm border-0 rounded p-3">
+    <div class="table-responsive">
+        <form method="post" asp-action="Create">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                <tr>
+                    <th>
+                        Name
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#nameModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Max Expected Processing Time
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#maxProcessingModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Priority
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#PriorityModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Severity
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#severityModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
+                        Enable
+                        <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                data-bs-target="#enabledModal">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                    </th>
+                    <th>
 
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <input type="text" class="form-control" name="NormGroupName"
-                                   value="@(Model?.NormGroupName ?? "")" required/>
-                        </td>
-                        <td>
-                            <input
-                                class="form-control"
-                                id="timeInput"
-                                name="expected"
-                                placeholder="DD hh:mm:ss"
-                                pattern="^\d{1,3}\s\d{2}:\d{2}:\d{2}$"
-                                inputmode="numeric"
-                                required
-                                title="Format must be DD hh:mm:ss (e.g., 01 12:30:45)"
-                            /><small id="errorMsg" style="color: red; display: none;">Invalid format! Use dd
-                                hh:mm:ss.</small>
-                        </td>
-                        <td>
-                            <input type="number" class="form-control" min="1" max="9" name="Priority" value="9"/>
-                        </td>
-                        <td>
-                            <select name="IdSeverity" class="form-select">
-                                @foreach (var choice in severities)
-                                {
-                                    <option value="@choice.Id">@choice.Name</option>
-                                }
-                            </select>
-                        </td>
-                        <td>
-                            <div class="d-flex w-100 justify-content-center">
-                                <input type="checkbox" value="true" checked name="isEnable"/>
-                            </div>
-                        </td>
-                        <td>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                <td>
+                    <input type="text" class="form-control" name="NormGroupName" value="@(Model?.NormGroupName ?? "")" required/>
+                </td>
+                <td>
+                    <input
+                        class="form-control"
+                        id="timeInput"
+                        name="expected"
+                        placeholder="DD hh:mm:ss"
+                        pattern="^\d{1,3}\s\d{2}:\d{2}:\d{2}$"
+                        inputmode="numeric"
+                        required
+                        title="Format must be DD hh:mm:ss (e.g., 01 12:30:45)"
+                    /><small id="errorMsg" style="color: red; display: none;">Invalid format! Use dd hh:mm:ss.</small>
+                </td>
+                <td>
+                    <input type="number" class="form-control" min="1" max="9" name="Priority" value="9"/>
+                </td>
+                <td>
+                    <select name="IdSeverity" class="form-select">
+                        @foreach (var choice in severities)
+                        { 
+                            <option value="@choice.Id">@choice.Name</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <div class="d-flex w-100 justify-content-center">
+                        <input type="checkbox" value="true" checked name="isEnable"/>
+                    </div>
+                </td>
+                <td>
+                    
+                </td>
+                </tbody>
+            </table>
+            
+            
+            <div class="p-2">
+                <h3>Criteria group</h3>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div class="table-responsive table-sm ms-2 w-100 d-flex">
+                    <table class="table table-hover table-striped align-middle table-light">
+                        <thead>
+                        <tr>
+                            <th>
+                                Name
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#nameNormModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Concerned Information
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#typeModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Condition
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#conditionModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Value
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#valueModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
+                            <th>
+                                Format
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#formatModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </th>
 
-                        </td>
-                    </tbody>
-                </table>
+                            <th>
 
-
-                <div class="p-2">
-                    <h3>Criteria group</h3>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <div class="table-responsive table-sm ms-2 w-100 d-flex">
-                        <table class="table table-hover table-striped align-middle table-light">
-                            <thead>
-                            <tr>
-                                <th>
-                                    Name
-                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                            data-bs-target="#nameNormModal">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-                                </th>
-                                <th>
-                                    Concerned Information
-                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                            data-bs-target="#typeModal">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-                                </th>
-                                <th>
-                                    Condition
-                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                            data-bs-target="#conditionModal">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-                                </th>
-                                <th>
-                                    Value
-                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                            data-bs-target="#valueModal">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-                                </th>
-                                <th>
-                                    Format
-                                    <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                            data-bs-target="#formatModal">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-                                </th>
-
-                                <th>
-
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody id="table-norm">
-                            <tr id="rowTemplate" style="display: none">
-                                <td>
-                                    <input class="form-control" type="text" name="Norms[{{index}}].Name"/>
-                                </td>
-                                <td>
-                                    <select class="form-select" name="Norms[{{index}}].InformationNameId">
-                                        @foreach (var information in informations)
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-norm">
+                        <tr id="rowTemplate" style="display: none">
+                            <td>
+                                <input class="form-control" type="text" name="Norms[{{index}}].Name"/>
+                            </td>
+                            <td>
+                                <select class="form-select" name="Norms[{{index}}].InformationNameId">
+                                    @foreach (var information in informations)
+                                    {
+                                        if (information.SubInformationNames.Any())
                                         {
-                                            if (information.SubInformationNames.Any())
+                                            <optgroup label="@information.Name">
+                                                @foreach (var subinfo in information.SubInformationNames)
+                                                {
+                                                    <option value="@subinfo.Id">@subinfo.Name</option>
+                                                }
+                                            </optgroup>
+                                                
+                                        } else
+                                        {
+                                            if ((information.SubInformationNames.IsNullOrEmpty() && information.ParentId == null))
                                             {
-                                                <optgroup label="@information.Name">
-                                                    @foreach (var subinfo in information.SubInformationNames)
-                                                    {
-                                                        <option value="@subinfo.Id">@subinfo.Name</option>
-                                                    }
-                                                </optgroup>
+                                                <option value="@information.Id">@information.Name</option>
                                             }
                                         }
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-select" name="Norms[{{index}}].Condition">
-                                        @foreach (var condition in possibleCondition)
-                                        {
-                                            <option value="@condition">@condition</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <input class="form-control" type="text" name="Norms[{{index}}].Value"/>
-                                </td>
-                                <td>
-                                    <select class="form-select" name="Norms[{{index}}].Format">
-                                        @foreach (var format in formats)
-                                        {
-                                            <option value="@format">@format</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-link" onclick="deleteLine(this)">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select" name="Norms[{{index}}].Condition">
+                                    @foreach (var condition in possibleCondition)
+                                    {
+                                        <option value="@condition">@condition</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" name="Norms[{{index}}].Value"/>
+                            </td>
+                            <td>
+                                <select class="form-select" name="Norms[{{index}}].Format">
+                                    @foreach (var format in formats)
+                                    {
+                                        <option value="@format">@format</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-link" onclick="deleteLine(this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
 
-                            </tbody>
-                            <tfoot>
-                            <tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
 
-                                <td colspan="6" class="align-content-end">
-
-                                    <div class="d-flex w-100 justify-content-start">
-                                        <a class="link-primary" onclick="addRow()" style="cursor: pointer">
-                                            <i class="bi bi-plus-circle"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                            <td colspan="6" class="align-content-end">
+                                
+                                <div class="d-flex w-100 justify-content-start">
+                                    <a class="link-primary" onclick="addRow()" style="cursor: pointer">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
                 </div>
-                <div class="d-flex justify-content-end">
-
-                    <button type="button" class="btn btn-danger m-3"
-                            data-bs-toggle="modal"
-                            data-bs-target="#discardModal">Discard
-                    </button>
-                    <button type="submit" class="btn btn-success m-3">Save Changes</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                
+                <button type="button" class="btn btn-danger m-3"
+                        data-bs-toggle="modal"
+                        data-bs-target="#discardModal">Discard</button>
+                <button type="submit" class="btn btn-success m-3">Save Changes</button>
+            </div>
+        </form>
     </div>
 </div>
+</div>
 <script>
-
+    
     const deleteButtons = document.querySelectorAll('[data-bs-target="#deleteNormModal"]');
-
+    
     deleteButtons.forEach(button => {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-norm-id');
             document.getElementById('normIdToDelete').value = id;
         });
     });
-    let rowIndex = 0;
+    let rowIndex = 0; 
 
     function addRow() {
         let templateRow = document.getElementById("rowTemplate").innerHTML;
@@ -259,21 +261,21 @@
         document.getElementById("table-norm").insertAdjacentHTML('beforeend', newRow);
         rowIndex++;
     }
-
+    
     function deleteLine(button) {
         var row = button.closest("tr");
-
+    
         row.remove();
         updateRowIndices();
         rowIndex--;
     }
-
+    
     function updateRowIndices() {
-        let rows = document.querySelectorAll('#table-norm tr:not(#rowTemplate)');
-
+    let rows = document.querySelectorAll('#table-norm tr:not(#rowTemplate)');
+    
         rows.forEach((row, newIndex) => {
             let inputs = row.querySelectorAll('input, select');
-
+            
             inputs.forEach(input => {
                 let name = input.name;
                 if (name) {
@@ -282,10 +284,16 @@
             });
         });
     }
-
-    window.onload = function () {
+    
+    window.onload = function() {
         addRow();
     };
+
+
+
+
+
+
 
 
     const timeInput = document.getElementById("timeInput");
@@ -318,7 +326,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <form method="POST" asp-action="DeleteNorm">
-                <input type="hidden" name="normId" id="normIdToDelete"/>
+                <input type="hidden" name="normId" id="normIdToDelete" />
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteNormModalLabel">Delete Norm</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
