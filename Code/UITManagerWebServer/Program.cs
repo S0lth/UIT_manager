@@ -32,8 +32,19 @@ builder.Services.Configure<IdentityOptions>(options => {
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddAntiforgery();
-
+builder.Services.AddHttpsRedirection(o => o.HttpsPort = 7210);
 var app = builder.Build();
+app.UseHttpsRedirection();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Append("Permissions-Policy", "geolocation=(), microphone=()");
+    await next();
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
@@ -72,7 +83,6 @@ using (var scope = app.Services.CreateScope()) {
     }
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
