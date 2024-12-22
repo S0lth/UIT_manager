@@ -56,7 +56,7 @@
                             </a>
                         </li>
                         <li class="nav-item me-3">
-                            @if (User.IsInRole("ITDirector") || User.IsInRole("MaintenanceManager"))
+                            @if (User.IsInRole("IT Director") || User.IsInRole("Maintenance Manager"))
                             {
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AlarmSettings" ? "active-link" : "") text-fs-1"
                                    asp-area="" asp-controller="AlarmSettings" asp-action="Index">
@@ -65,7 +65,7 @@
                             }
                         </li>
                         <li class="nav-item me-3">
-                            @if (User.IsInRole("ITDirector"))
+                            @if (User.IsInRole("IT Director"))
                             {
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" ? "active-link" : "") text-fs-1"
                                    asp-area="" asp-controller="User" asp-action="Index">
