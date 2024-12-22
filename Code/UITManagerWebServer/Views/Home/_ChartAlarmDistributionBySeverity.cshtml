@@ -10,15 +10,15 @@
             </button>
         </h5>
 
-        <div id="chartContainer1" style="height: 300px; display: none;">
+        <div id="chartContainer1" class="hchart-alarm">
             <canvas id="ChartAlarmDistributionByNormGroup"></canvas>
         </div>
 
-        <div id="noAlarmAlert1" class="alert alert-success" style="display: none; height: 300px; display: flex; justify-content: center; align-items: center;">
+        <div id="noAlarmAlert1" class="alert alert-success chart-alarm-no-tigger">
             Everything is fine, no alarm triggered.
         </div>
 
-        <script>
+        <script nonce="chart123">
             const alarmData = @Html.Raw(ViewData["SeverityAlarmsCount"]);
             const labels = Object.keys(alarmData);
             const data = Object.values(alarmData);

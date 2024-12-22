@@ -7,16 +7,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid py-5 px-4" style="max-width: 1700px; overflow-y: auto;">
+<div class="container-fluid py-5 px-4 max-display-size-inventory">
     <div class="row mb-2 fixed">
         <div class="d-flex justify-content-between align-items-center">
             <h1 class="h2 fw-bold">Inventory</h1>
             <div class="d-flex gap-3">
                 <div class="align-items-center">
-                    <div class="input-group" style="max-width: 400px;">
+                    <div class="input-group search">
                         <div class="form-outline" data-mdb-input-init>
                             <input type="search" id="searchBoxInventory" class="form-control"
-                                   placeholder="Search..." onkeyup="searchInInventory()"/>
+                                   placeholder="Search..."/>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
             <div class="card shadow-sm border-0 rounded">
                 <div class="card-body">
                     <div>
-                        <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
+                        <div class="table-responsive list">
                             <table class="table table-hover table-striped align-middle" id ="inventoryTable">
                                 <thead class="table-lightfix sticky-top bg-white">
                                 <tr>
@@ -178,8 +178,7 @@
                                                 {
                                                     <a asp-controller="Note" asp-action="Details"
                                                        asp-route-id="@item.LastNote.Id"
-                                                       class="text-primary text-decoration-none"
-                                                       style="max-width: 200px; display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                       class="text-primary text-decoration-none inventory-note">
                                                         @(string.IsNullOrEmpty(item.LastNote.Title) ? "N/A" : item.LastNote.Title)
                                                     </a>
                                                 }

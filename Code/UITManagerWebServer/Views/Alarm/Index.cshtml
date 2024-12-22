@@ -182,8 +182,8 @@
                                                 }
                                                 else
                                                 {
-                                                    <select onchange="updateAlarmAttribution('@item.Id', value)"
-                                                            class="form-select form-select-sm @ViewHelpers.GetBGColorForAttribution(@item.UserId)">
+                                                    <select class="form-select form-select-sm @ViewHelpers.GetBGColorForAttribution(@item.UserId)"
+                                                            data-item-id="@item.Id">
                                                         @{ bool isFirst = true; }
                                                         @foreach (var user in ViewData["user"] as IEnumerable<UITManagerWebServer.Models.ApplicationUser>)
                                                         {

@@ -58,3 +58,204 @@ p {
   font-size: calc(1rem + 2px); 
 }
 
+.dropdownElement{
+  display: inline-block;
+  min-width: 120px;
+}
+
+.max-display-size{
+  max-width: 1700px;
+}
+
+.height{
+  height: 50px;
+}
+
+.max-display-size-inventory{
+  max-width: 1700px;
+  overflow-y: auto;
+}
+
+.search{
+  max-width: 400px;
+}
+
+.search-alarm{
+  max-width: 300px;
+}
+.search-notes{
+  max-width: 200px;
+}
+
+.cursor-pointer{
+  cursor: pointer;
+}
+
+.display-none{
+  display: none
+}
+
+.display-none-red{
+  display: none;
+  color: red;
+}
+
+.display-inline{
+  display: inline;
+}
+
+.button-delete{
+  border: none; 
+  background: none;
+}
+
+.list{
+  overflow-x: auto; 
+  max-height: 600px;
+}
+
+.list-note{
+  overflow-x: auto; 
+  max-height: 1000px;
+}
+
+.alarm-note{
+  max-width: 300px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+.information-height{
+  height: 350px;
+  overflow-y: auto;
+}
+
+.inventory-note{
+  max-width: 200px; 
+  display: inline-block; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+.machine-note{
+  display: block; 
+  max-width: 500px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+.margin-right{
+  margin-right: 10px;
+}
+
+.filter-note{
+  max-height: 750px; 
+  overflow-y: auto;
+}
+
+.filter-note-machine{
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.alarm-history{
+  overflow-x: auto; 
+  max-height: 1000px;
+}
+
+.detail-note{
+  max-width: 300px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+.note-title-div{
+  max-width: 600px;
+}
+
+.note-title{
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+.note-image{
+  height: 100px; 
+  object-fit: cover; 
+  cursor: pointer;
+}
+
+.note-body{
+  overflow-y: auto; 
+  max-height: 60vh; 
+  min-height: 300px;
+}
+
+.note-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.markdown-content {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 5px;
+  line-height: 1.6;
+}
+
+.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+  color: #2c3e50;
+}
+
+.markdown-content p {
+  font-size: 1.1rem;
+}
+
+.markdown-content ul {
+  padding-left: 1.5rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.color-white{
+  background-color: white;
+}
+
+.line-height{
+  line-height: 1.25;
+}
+
+.pointer-events-none{
+  pointer-events: none;
+}
+
+.pointer-events-auto{
+  pointer-events: none;
+}
+
+.note-home{
+  display: block; 
+  max-width: 500px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+.chart-alarm{
+  height: 300px; 
+  display: none;
+}
+
+.chart-alarm-no-tigger{
+  display: none;
+  height: 300px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+}

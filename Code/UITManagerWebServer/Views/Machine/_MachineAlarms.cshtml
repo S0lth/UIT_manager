@@ -40,7 +40,7 @@
             <span>Alarm</span>
             <form method="get" class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start">
                 <div class="d-flex ms-auto flex-wrap">
-                    <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
+                    <div class="d-flex align-items-center text-muted fs-6 margin-right">
                         <span>Filter</span>
                         <span class="ms-1">by</span>
                     </div>
@@ -48,8 +48,8 @@
                         <select asp-for="@ViewData["TypeFilter"]" name="TypeFilter"
                                 asp-route-sortOrder="@ViewData["DateSortParam"]?.ToString()"
                                 asp-for-sol="@ViewData["SolutionFilter"]"
-                                class="form-select form-select-sm"
-                                style="display: inline-block; min-width: 120px;" asp->
+                                class="form-select form-select-sm dropdownElement"
+                                 asp->
                             <option value="" disabled selected>
                                 Type
                             </option>
@@ -91,7 +91,7 @@
         </h5>
     </div>
     <div class="card-body">
-        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+        <div class="table-responsive filter-note-machine">
             <table class="table table-hover table-striped table-bordered rounded">
                 <thead class="table-light sticky-top">
                 @if (Model.AnyAlarms)

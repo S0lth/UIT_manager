@@ -24,7 +24,7 @@
     var htmlContent = Markdig.Markdown.ToHtml(Model.Content, markdownPipeline);
 }
 
-<div class="container-fluid py-5 px-4" style="max-width: 1700px;">
+<div class="container-fluid py-5 px-4 max-display-size">
     <div class="row justify-content-center">
         <div class="col-lg-10 col-md-10">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -32,9 +32,8 @@
             </div>
             <div class="card shadow-sm border-0 rounded-lg">
                 <div class="card-header bg-light d-flex justify-content-between align-items-start border-bottom-0">
-                    <div class="d-flex flex-column" style="max-width: 600px;">
-                        <h4 class="card-title mb-0 text-truncate"
-                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <div class="d-flex flex-column note-title-div">
+                        <h4 class="card-title mb-0 text-truncate note-title">
                             @Html.DisplayFor(model => model.Title)
                         </h4>
                         <p class="text-muted mb-0">Created
@@ -50,7 +49,7 @@
                     </div>
                 </div>
 
-                <div class="card-body" style="overflow-y: auto; max-height: 60vh; min-height: 300px;">
+                <div class="card-body note-body">
                     <div class="note-content mb-4">
                         <div class="markdown-content">
                             @Html.Raw(htmlContent)
@@ -61,10 +60,14 @@
                         @foreach (var file in Model.Files)
                         {
                             <div class="col-6 col-sm-4 col-md-3 mb-3">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal"
-                                   onclick="document.getElementById('modalImage').src = '/files/@file.Id'">
-                                    <img src="/files/@file.Id" alt="@file.FileName" class="img-thumbnail w-40 h-40"
-                                         style="height: 100px; object-fit: cover; cursor: pointer;"/>
+                                <a href="#"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#imageModal"
+                                   class="thumbnail-link"
+                                   data-file-id="@file.Id">
+                                    <img src="/files/@file.Id"
+                                         alt="@file.FileName"
+                                         class="img-thumbnail w-40 h-40 note-image" />
                                 </a>
                             </div>
                         }
@@ -148,33 +151,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .note-content img {
-        max-width: 100%;
-        height: auto;
-    }
-
-    .markdown-content {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 5px;
-        line-height: 1.6;
-    }
-
-    .markdown-content h1, .markdown-content h2, .markdown-content h3 {
-        color: #2c3e50;
-    }
-
-    .markdown-content p {
-        font-size: 1.1rem;
-    }
-
-    .markdown-content ul {
-        padding-left: 1.5rem;
-    }
-
-    .markdown-content li {
-        margin-bottom: 0.5rem;
-    }
-</style>
