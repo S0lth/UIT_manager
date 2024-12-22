@@ -3,7 +3,7 @@
 ## Prerequisites
 Before you begin, ensure that the following are installed on your machine:
 - [JetBrains Rider](https://www.jetbrains.com/Rider/) (latest stable version) or [Visual Studio](https://visualstudio.microsoft.com/fr/downloads/)
-- .NET SDK version `net.08`
+- .NET version `.NET 8.0`
 - Docker
     - On Windows, follow the installation guide [here](https://docs.docker.com/desktop/setup/install/windows-install/)
     - On Linux, follow the installation guide [here](https://docs.docker.com/desktop/setup/install/linux/)
