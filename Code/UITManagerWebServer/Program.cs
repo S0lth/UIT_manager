@@ -49,8 +49,20 @@ builder.Services.AddSession(options => {
 });
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpsRedirection(o => o.HttpsPort = 7210);
 
 var app = builder.Build();
+app.UseHttpsRedirection();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Append("Permissions-Policy", "geolocation=(), microphone=()");
+    await next();
+});
 
 if (app.Environment.IsDevelopment()) {
     app.UseMigrationsEndPoint();
@@ -60,7 +72,6 @@ else {
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
