@@ -350,6 +350,7 @@ namespace UITManagerWebServer.Controllers {
                 return RedirectToAction("Edit", new { model = model });
             }
 
+            TempData["Success"] = $"\"{model.NormGroupName}\" successfully edited";
             return RedirectToAction("Details", new { id = model.Id });
         }
 
