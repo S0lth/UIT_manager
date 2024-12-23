@@ -119,4 +119,24 @@ using (var scope = app.Services.CreateScope()) {
     }
 }
 
+// Ajouter l'en-tête X-Content-Type-Options: nosniff
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    await next();
+});
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
+
 app.Run();
