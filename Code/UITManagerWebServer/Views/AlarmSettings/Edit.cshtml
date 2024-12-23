@@ -13,18 +13,26 @@
         "Go", "%", "TEXT"
     };
     int i = 0;
-    var error = TempData["Error"];
     var maxProcessingTimeDayFormat = (Model.MaxExpectedProcessingTime.Days < 10 ? "0" : "") + Model.MaxExpectedProcessingTime.Days;
     var maxProcessingTimeHoursFormat = (Model.MaxExpectedProcessingTime.Hours < 10 ? "0" : "") + Model.MaxExpectedProcessingTime.Hours;
     var maxProcessingTimeMinuteFormat = (Model.MaxExpectedProcessingTime.Minutes < 10 ? "0" : "") + Model.MaxExpectedProcessingTime.Minutes;
     var maxProcessingTimeSecondsFormat = (Model.MaxExpectedProcessingTime.Seconds < 10 ? "0" : "") + Model.MaxExpectedProcessingTime.Seconds;
     var maxProcessingTimeFormat = maxProcessingTimeDayFormat + " " + maxProcessingTimeHoursFormat + ":" + maxProcessingTimeMinuteFormat + ":" + maxProcessingTimeSecondsFormat;
 }
-@if (error != null)
+@if (TempData["Success"] != null)
 {
-    <div class="alert alert-danger">@error</div>
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 }
-
+else if(TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <div class="container-fluid py-3 max-display-size" >
     <div class="row mb-4">
         <div class="col-lg-12">
@@ -244,7 +252,7 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-link delete-btn" >
-                                        <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash delete-btn"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -260,9 +268,17 @@
                                             <optgroup label="@information.Name">
                                                 @foreach (var subinfo in information.SubInformationNames)
                                                 {
-                                                    <option value="@subinfo.Id">@subinfo.Name</option>
+                                                        <option value="@subinfo.Id">@subinfo.Name</option>
                                                 }
                                             </optgroup>
+                                                
+                                        }
+                                        else
+                                        {
+                                            if ((information.SubInformationNames.IsNullOrEmpty() && information.ParentId == null))
+                                            {
+                                                <option value="@information.Id">@information.Name</option>
+                                            }
                                         }
                                     }
                                 </select>
@@ -288,7 +304,7 @@
                             </td>
                             <td>
                                 <button type="button" class="btn btn-link delete-btn">
-                                    <i class="bi bi-trash"></i>
+                                    <i class="bi bi-trash delete-btn"></i>
                                 </button>
                             </td>
                         </tr>
