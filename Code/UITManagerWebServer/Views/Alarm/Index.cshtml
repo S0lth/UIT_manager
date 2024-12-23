@@ -8,14 +8,14 @@
 }
 
 <div id="alert-container" class="p-0 m-0"></div>
-<div class="container-fluid px-4" style="max-width: 1700px;">
+<div class="container-fluid px-4 max-display-size" >
     <div class="row mb-2 fixed">
         <div class="col-lg-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="h2 fw-bold">Raised alarms</h1>
                 <div class="d-flex gap-3">
                     <div class="align-items-center">
-                        <div class="input-group" style="max-width: 400px;">
+                        <div class="input-group search">
                             <div class="form-outline" data-mdb-input-init>
                                 <input type="search" id="Search" class="form-control" placeholder="Search..."/>
                             </div>
@@ -47,7 +47,7 @@
             <div class="card shadow-sm border-0 rounded">
                 <div class="card-body">
                     <div>
-                        <div class="table-responsive" style="overflow-x: auto; max-height: 600px;">
+                        <div class="table-responsive list-note">
                             @if (Model.Count() == 0)
                             {
                                 <div class="list-group-item text-center">
@@ -139,18 +139,18 @@
                                                         @item.GetLatestAlarmHistory()?.StatusType?.Name
                                                     </button>
 
-                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton"
-                                                        style="background-color: white;">
+                                                    <ul class="dropdown-menu color-white" aria-labelledby="dropdownMenuButton"
+                                                        >
                                                         @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
                                                         {
                                                             <li>
-                                                                <a class="dropdown-item"
-                                                                   onclick="updateAlarmStatus(@item.Id, '@statusType.Name')">
+                                                                <a href="#" 
+                                                                   class="dropdown-item update-alarm" 
+                                                                   data-item-id="@item.Id" 
+                                                                   data-status-name="@statusType.Name">
                                                                     <strong>@statusType.Name</strong>
-                                                                    <div
-                                                                        class="text-muted ms-2">@statusType.Description</div>
+                                                                    <div class="text-muted ms-2">@statusType.Description</div>
                                                                 </a>
-
                                                             </li>
                                                         }
                                                     </ul>
@@ -182,8 +182,8 @@
                                                 }
                                                 else
                                                 {
-                                                    <select onchange="updateAlarmAttribution('@item.Id', value)"
-                                                            class="form-select form-select-sm @ViewHelpers.GetBGColorForAttribution(@item.UserId)">
+                                                    <select class="form-select form-select-sm @ViewHelpers.GetBGColorForAttribution(@item.UserId)"
+                                                            data-item-id="@item.Id">
                                                         @{ bool isFirst = true; }
                                                         @foreach (var user in ViewData["user"] as IEnumerable<UITManagerWebServer.Models.ApplicationUser>)
                                                         {
@@ -197,16 +197,23 @@
                                                             else if (@item.UserId == null && isFirst == true)
                                                             {
                                                                 isFirst = false;
-                                                                <option
-                                                                    onclick="updateAlarmAttribution('@item.Id', '@user.Id')"
-                                                                    selected value="">Unattribued
+                                                                <option 
+                                                                    class="update-alarm-attribution" 
+                                                                    data-item-id="@item.Id" 
+                                                                    data-user-id="@user.Id" 
+                                                                    value="">
+                                                                    Unattributed
                                                                 </option>
                                                             }
                                                             else
                                                             {
-                                                                <option
-                                                                    onclick="updateAlarmAttribution('@item.Id', '@user.Id')"
-                                                                    value="@user.Id">@user.FirstName @user.LastName</option>
+                                                                <option 
+                                                                    class="update-alarm-attribution" 
+                                                                    data-item-id="@item.Id" 
+                                                                    data-user-id="@user.Id" 
+                                                                    value="@user.Id">
+                                                                    @user.FirstName @user.LastName
+                                                                </option>
                                                             }
                                                         }
                                                     </select>
@@ -225,7 +232,22 @@
     </div>
 </div>
 
-<script>
+<script nonce="function526">
+    document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("update-alarm")) {
+                event.preventDefault(); 
+                
+                const itemId = event.target.getAttribute("data-item-id");
+                const statusName = event.target.getAttribute("data-status-name");
+
+                
+                updateAlarmStatus(itemId, statusName);
+            }
+        });
+    });
+
+
     async function updateAlarmStatus(alarmId, status) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
@@ -260,6 +282,24 @@
         });
     }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectElement = document.querySelector("select"); // Remplacez par l'ID ou la classe du select si nécessaire
+
+        if (selectElement) {
+            selectElement.addEventListener("change", function (event) {
+                const selectedOption = event.target.options[event.target.selectedIndex];
+
+                // Vérifiez si l'option sélectionnée a les attributs nécessaires
+                if (selectedOption.classList.contains("update-alarm-attribution")) {
+                    const itemId = selectedOption.getAttribute("data-item-id");
+                    const userId = selectedOption.getAttribute("data-user-id");
+
+                    // Appelez la fonction avec les données récupérées
+                    updateAlarmAttribution(itemId, userId);
+                }
+            });
+        }
+    });
 
     async function updateAlarmAttribution(alarmId, userId) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
@@ -326,5 +366,6 @@
 
         setTimeout(() => alertDiv.remove(), 5000);
     }
+
 
 </script>

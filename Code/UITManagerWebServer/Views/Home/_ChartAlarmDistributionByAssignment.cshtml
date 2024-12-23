@@ -9,14 +9,14 @@
                 <i class="bi bi-info-circle"></i>
             </button>
         </h5>
-        <div id="chartContainer" style="height: 300px; display: none;">
+        <div id="chartContainer" class="chart-alarm">
             <canvas id="ChartAlarmDistributionByAssignment"></canvas>
         </div>
-        <div id="noAlarmAlert" class="alert alert-success" style="display: none; height: 300px; display: flex; justify-content: center; align-items: center;">
+        <div id="noAlarmAlert" class="alert alert-success chart-alarm-no-tigger">
             Everything is fine, no alarm triggered.
         </div>
 
-        <script>
+        <script nonce="chart123">
             const alarm_assign_Data = @Html.Raw(ViewData["AssignedOrNotAlarmCount"]);
             //const alarm_assign_Data = {};
             const labels_assign = Object.keys(alarm_assign_Data);

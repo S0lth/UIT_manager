@@ -8,11 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Security-Policy"
           content="base-uri 'self';
-                   default-src 'self';
-                   img-src: https:;
+                   default-src 'self' https://cdn.jsdelivr.net/codemirror.spell-checker/latest/en_US.aff https://cdn.jsdelivr.net/codemirror.spell-checker/latest/en_US.dic;
+                   img-src 'self' data:;
                    object-src 'none';
-                   script-src 'self';
-                   style-src 'self';
+                   script-src 'self'
+                              https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js 'nonce-chart123' 'validation454'
+                            'nonce-function526' 'nonce-markdown451' https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.js;
+                   style-src 'self' https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.css 
+                                https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.js
+                                https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css;
+                   font-src 'self'  https://cdn.jsdelivr.net/codemirror.spell-checker/latest/en_US.aff 
+                            https://cdn.jsdelivr.net/codemirror.spell-checker/latest/en_US.dic https://maxcdn.bootstrapcdn.com/font-awesome/latest/fonts/;
                    upgrade-insecure-requests;">
                    
     <title>@ViewData["Title"] - UITManagerWebServer</title>
@@ -82,7 +88,7 @@
     </nav>
 </header>
 
-<div class="container-fluid py-3 px-4" style="max-width: 1700px;">
+<div class="container-fluid py-3 px-4 max-display-size">
     @if (ViewData["Breadcrumbs"] != null)
     {
         var breadcrumbs = ViewData["Breadcrumbs"] as List<BreadcrumbItem>;
