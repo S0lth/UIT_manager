@@ -432,6 +432,7 @@ namespace UITManagerWebServer.Controllers {
                 return View(normGroupModel);
             }
 
+            TempData["Success"] = $"{toAddNormGroup.Name} successfully created";
             return RedirectToAction("Index");
         }
 
