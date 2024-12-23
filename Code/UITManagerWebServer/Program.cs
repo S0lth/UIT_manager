@@ -51,6 +51,13 @@ builder.Services.AddSession(options => {
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpsRedirection(o => o.HttpsPort = 7210);
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.HttpOnly = true;             
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 var app = builder.Build();
 app.UseHttpsRedirection();
 
@@ -59,8 +66,11 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
     context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("Content-Security-Policy", "frame-ancestors 'self';");
     context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
     context.Response.Headers.Append("Permissions-Policy", "geolocation=(), microphone=()");
+    
+    
     await next();
 });
 
@@ -95,12 +105,8 @@ using (var scope = app.Services.CreateScope()) {
         bool hasData = await context.Machines.AnyAsync();
 
         if (!hasData) {
-            // Si aucune donnée n'existe, effectuer le populate
             Console.WriteLine("Database is empty. Starting population...");
 
-            // Populate without alarm trigger today
-            //await Populate.Initialize(services,true);
-            // Populate with alarm trigger today
             await Populate.Initialize(services,false);            
             Console.WriteLine("Database populated successfully.");
         }
@@ -112,6 +118,5 @@ using (var scope = app.Services.CreateScope()) {
         Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
     }
 }
-
 
 app.Run();
