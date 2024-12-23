@@ -2,19 +2,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using UITManagerWebServer.Data;
+using UITManagerWebServer.Hubs;
 using UITManagerWebServer.Models;
 
 namespace UITManagerWebServer.Controllers {
     public class AlarmSettingsController : Controller {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHubContext<WebAppHub> _hubContext;
 
-        public AlarmSettingsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager) {
+        public AlarmSettingsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager,IHubContext<WebAppHub> hubContext) {
             _context = context;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         /// <summary>
@@ -343,6 +347,7 @@ namespace UITManagerWebServer.Controllers {
             if (hasErrors) {
                 return RedirectToAction("Edit", new { model = model });
             }
+            await _hubContext.Clients.All.SendAsync("ReceiveMessage", normGroup.Id);
 
             return RedirectToAction("Details", new { id = model.Id });
         }
@@ -419,6 +424,8 @@ namespace UITManagerWebServer.Controllers {
             if (!string.IsNullOrEmpty(toAddNormGroup.Name)) {
                 _context.NormGroups.Add(toAddNormGroup);
                 await _context.SaveChangesAsync();
+                
+                await _hubContext.Clients.All.SendAsync("ReceiveMessage", normGroupModel.Id);
             }
             else {
                 TempData["Error"] = "You cannot have a criteria group without a name";

@@ -1,16 +1,17 @@
-﻿
-
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using UITManagerAlarmManager.Data;
 using UITManagerAlarmManager.Service;
 
-class Program
-{
+namespace UITManagerAlarmManager;
+
+class Program {
     static async Task Main(string[] args) {
-        
         
         var configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
@@ -26,28 +27,47 @@ class Program
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
+        var connectionApi = new HubConnectionBuilder().WithUrl( "http://localhost:5014/ApiHub").Build();
+        var connectionWebApp = new HubConnectionBuilder().WithUrl( "http://localhost:5287/WebAppHub").Build();
         
-        
-        using (var context = serviceProvider.GetRequiredService<ApplicationDbContext>())
-        {
-            Email email = new Email(context);
-            var connection = new HubConnectionBuilder().WithUrl( "http://localhost:5014/ApiHub").Build();
-            email.Send("pomme");
-            
-            connection.On<int>("ReceiveMessage", message => {
-                Console.WriteLine(message);
-                var trigger = new TriggerAlarm(context);
-                trigger.Triggered(message);
+        try {
+            using var scope = serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            //Email email = new Email(context);
+            //email.Send("pomme");
+
+            // API Hub: Handle messages
+            /*connectionApi.On<int>("ReceiveMessage", async message =>
+            {
+                Console.WriteLine($"API Hub message received: {message}");
+                await TriggerAlarm.TriggeredAsync(context, message);
             });
-            
-            try {
-                await connection.StartAsync();
-                Console.WriteLine("Connection established");
-                Console.ReadLine();
-            }
-            catch (Exception e) {
-                Console.WriteLine(e);
-            }
+
+            await connectionApi.StartAsync();
+            Console.WriteLine("Connection to API Hub established");*/
+
+            // WebApp Hub: Handle messages
+            connectionWebApp.On<int>("ReceiveMessage", async message =>
+            {
+                Console.WriteLine($"WebApp Hub message received: {message}");
+                
+                await Task.Delay(30000);
+                await TriggerAlarm.UpdateAlarmAsync(context, message);
+            });
+
+            await connectionWebApp.StartAsync();
+            Console.WriteLine("Connection to WebApp Hub established");
+
+            Console.WriteLine("Press Ctrl+C to exit...");
+            await Task.Delay(Timeout.Infinite);
         }
+        catch (Exception e) {
+            Console.WriteLine(e);
+        }
+        finally {
+            await connectionApi.DisposeAsync();
+            await connectionWebApp.DisposeAsync();
+        }
+        
     }
 }
