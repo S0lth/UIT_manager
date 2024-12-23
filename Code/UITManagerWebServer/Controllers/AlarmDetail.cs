@@ -37,9 +37,17 @@ namespace UITManagerWebServer {
                 case "Index":
                     int alarmId = Convert.ToInt32(context.ActionArguments["id"]);
                     var alarm = _context.Alarms.FirstOrDefault(a => a.Id == alarmId);
-                    if (alarm != null) {
+                    var normGroup = _context.NormGroups.FirstOrDefault(n => n.Id == alarm.NormGroupId);
+                    var machine = _context.Machines.FirstOrDefault(m => m.Id == alarm.MachineId);
+                    if (alarm != null && normGroup != null && machine != null) {
                         breadcrumbs.Add(new BreadcrumbItem {
-                            Title = "Machine's Alarm Details",
+                            Title = "Inventory", Url = Url.Action("Index", "Machine"),
+                        });
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = $"{machine.Name}", Url = Url.Action("Details", "Machine", new { id = alarm.MachineId }),
+                        });
+                        breadcrumbs.Add(new BreadcrumbItem {
+                            Title = $"{normGroup.Name}",
                             Url = string.Empty,
                             IsActive = true
                         });
