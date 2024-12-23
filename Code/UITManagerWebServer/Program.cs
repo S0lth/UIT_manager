@@ -53,8 +53,7 @@ using (var scope = app.Services.CreateScope()) {
         using var context = new ApplicationDbContext(
             services.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
 
-        //bool hasData = await context.Machines.AnyAsync();
-        bool hasData = false;
+        bool hasData = await context.Machines.AnyAsync();
         if (!hasData) {
             // Si aucune donnée n'existe, effectuer le populate
             Console.WriteLine("Database is empty. Starting population...");
