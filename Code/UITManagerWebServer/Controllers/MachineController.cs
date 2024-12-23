@@ -200,8 +200,12 @@ namespace UITManagerWebServer.Controllers {
             if (machine != null) {
                 machine.IsWorking = !machine.IsWorking;
                 await _context.SaveChangesAsync();
+                TempData["Success"] = $"{machine.Name} state successfully changed.";
             }
-
+            else {
+                TempData["Error"] = $"An error occured.";
+            }
+            
             return RedirectToAction("Details", new {
                 id,
                 sortOrder,
