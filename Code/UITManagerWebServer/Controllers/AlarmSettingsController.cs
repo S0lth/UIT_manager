@@ -310,6 +310,7 @@ namespace UITManagerWebServer.Controllers {
                 return RedirectToAction("Edit", new { model = model });
             }
 
+            // Change or add norm
             for (int i = 0; i < model.Norms.Count; i++) {
                 if (!string.IsNullOrEmpty(model.Norms[i].Name) && !string.IsNullOrEmpty(model.Norms[i].Value)) {
                     try {
@@ -333,6 +334,11 @@ namespace UITManagerWebServer.Controllers {
                     TempData["Error"] = "Norm should have a name and a value";
                     hasErrors = true;
                 }
+            }
+            
+            // Delete extras norms
+            for (int i = model.Norms.Count; i < normGroup.Norms.Count; i++) {
+                _context.Norms.Remove(normGroup.Norms[i]);
             }
 
             SeverityHistory latestSeverityHistory = normGroup.GetLatestSeverityHistory();

@@ -244,7 +244,7 @@
                                 </td>
                                 <td>
                                     <a class="btn btn-link delete-btn" >
-                                        <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash delete-btn"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -260,9 +260,17 @@
                                             <optgroup label="@information.Name">
                                                 @foreach (var subinfo in information.SubInformationNames)
                                                 {
-                                                    <option value="@subinfo.Id">@subinfo.Name</option>
+                                                        <option value="@subinfo.Id">@subinfo.Name</option>
                                                 }
                                             </optgroup>
+                                                
+                                        }
+                                        else
+                                        {
+                                            if ((information.SubInformationNames.IsNullOrEmpty() && information.ParentId == null))
+                                            {
+                                                <option value="@information.Id">@information.Name</option>
+                                            }
                                         }
                                     }
                                 </select>
