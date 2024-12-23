@@ -9,21 +9,24 @@
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.css"
 />
-<div class="container-fluid py-5 px-4 max-display-size">
+<div class="container-fluid px-4 max-display-size">
     <form asp-action="Create" method="POST">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 col-md-10">
-                <div class="align-items-center mb-4">
+        <div class="row mb-2 fixed">
+            <div class="col-lg-12">
+                <div class="d-flex justify-content-between align-items-center">
                     <h1 class="h2 fw-bold">Create Note</h1>
                 </div>
                 <div class="card shadow-sm border-0 rounded-lg w-100">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center border-bottom-0 w-100">
+                    <div
+                        class="card-header bg-light d-flex justify-content-between align-items-center border-bottom-0 w-100">
                         <div class="form-floating w-75">
-                            <input id="Title" name="Title" class="form-control w-100 fs-4 fw-bold" placeholder="Title" required/>
+                            <input id="Title" name="Title" class="form-control w-100 fs-4 fw-bold" placeholder="Title"
+                                   required/>
                             <label for="Title" class="form-label">Title</label>
                         </div>
                         <div class="form-check d-flex align-items-center justify-content-center w-25">
-                            <input type="checkbox" class="form-check-input" name="IsSolution" id="IsSolution" value="true"/>
+                            <input type="checkbox" class="form-check-input" name="IsSolution" id="IsSolution"
+                                   value="true"/>
                             <label for="IsSolution" class="form-check-label fw-bold ms-2">Solution</label>
                         </div>
                     </div>
@@ -31,9 +34,9 @@
                     <div class="card-body bg-light mb-0 h-100">
                         <div class="form-group">
                             <textarea
-                              id="markdown-editor"
-                              name="Content"
-                              placeholder="Write markdown here"
+                                id="markdown-editor"
+                                name="Content"
+                                placeholder="Write markdown here"
                             ></textarea>
                         </div>
                     </div>
@@ -41,7 +44,7 @@
                     <input type="hidden" name="MachineId" value="@ViewData["Machine"]"/>
                     <div class="w-100 d-flex justify-content-end m-0 mb-2">
                         <div class="w-auto d-flex justify-content-end">
-                            <input type="submit" class="w-100 btn btn-success px-4 py-2 me-3 mb-2" value="Save Note" />
+                            <input type="submit" class="w-100 btn btn-success px-4 py-2 me-3 mb-2" value="Save Note"/>
                         </div>
                     </div>
 
@@ -59,47 +62,47 @@
         spellChecker: true,
         status: false,
         toolbar: [
-          "bold",
-          "italic",
-          "heading",
-          "|",
-          "quote",
-          "link",
-          "|",
-          "unordered-list",
-          "ordered-list",
-          "|",
-          {
-            name: "image",
-            action: function() {
-              var input = document.createElement("input");
-              input.type = "file";
-              input.accept = "image/*";
-              input.onchange = function(e) {
-                var file = e.target.files[0];
-                  if (file && currentNumber < numberMaxImage) {
-                    currentNumber++;
-                    var formData = new FormData();
-                    formData.append("file", file);
-                    fetch("/upload", {
-                        method: "POST",
-                        body: formData,
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.url) {
-                            var imageUrl = data.url;
-                            var markdownImage = `![Image](${imageUrl})`;
-                            simplemde.codemirror.replaceSelection(markdownImage);
+            "bold",
+            "italic",
+            "heading",
+            "|",
+            "quote",
+            "link",
+            "|",
+            "unordered-list",
+            "ordered-list",
+            "|",
+            {
+                name: "image",
+                action: function () {
+                    var input = document.createElement("input");
+                    input.type = "file";
+                    input.accept = "image/*";
+                    input.onchange = function (e) {
+                        var file = e.target.files[0];
+                        if (file && currentNumber < numberMaxImage) {
+                            currentNumber++;
+                            var formData = new FormData();
+                            formData.append("file", file);
+                            fetch("/upload", {
+                                method: "POST",
+                                body: formData,
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.url) {
+                                        var imageUrl = data.url;
+                                        var markdownImage = `![Image](${imageUrl})`;
+                                        simplemde.codemirror.replaceSelection(markdownImage);
+                                    }
+                                })
                         }
-                    })
-                  }
-              };
-              input.click();
-            },
-            className: "fa fa-image",
-            title: "Insert Image"
-        }]
-      });
+                    };
+                    input.click();
+                },
+                className: "fa fa-image",
+                title: "Insert Image"
+            }]
+    });
 
 </script>

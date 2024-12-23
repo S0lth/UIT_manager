@@ -53,7 +53,7 @@ namespace UITManagerWebServer.Controllers {
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
-        [Authorize(Roles = "ITDirector")]
+        [Authorize(Roles = "IT Director")]
         public async Task<IActionResult> Index(string sortOrder) {
             var userRolesDb = _context.Users
                 .Select(user => new {
@@ -117,7 +117,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpPost]
-        [Authorize(Roles = "ITDirector")]
+        [Authorize(Roles = "IT Director")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleIsActive(string id, bool isActive, bool isCancel = false) {
             if (isCancel) {
