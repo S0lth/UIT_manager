@@ -55,7 +55,7 @@
                 
                 <!-- Filter machine notes -->
                 <div class="d-flex ms-auto flex-wrap">
-                    <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
+                    <div class="d-flex align-items-center text-muted fs-6 margin-right">
                         <span>Filter</span>
                         <span class="ms-1">by</span>
                     </div>
@@ -126,8 +126,7 @@
                                         <div>
                                             <p class="mb-1">
                                                 <a asp-controller="Note" asp-action="Details" asp-route-id="@note.Id"
-                                                   class="text-primary text-decoration-none text-truncate"
-                                                   style="display: block; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                   class="text-primary text-decoration-none text-truncate machine-note">
                                                     @note.Title
                                                 </a>
                                             </p>

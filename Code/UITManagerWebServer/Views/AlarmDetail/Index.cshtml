@@ -5,7 +5,7 @@
     ViewData["Title"] = "Alarm Details";
 }
 <div id="alert-container" class="p-0 m-0"></div>
-<div class="container-fluid py-3" style="max-width: 1700px;">
+<div class="container-fluid py-3 max-display-size">
     <div class="row">
         <div class="col-12 mb-2">
             <h1 class="h2 fw-bold">Machine's Alarm Details</h1>
@@ -64,7 +64,7 @@
 
                 @if (previousUrl != null)
                 {
-                    <a class="btn btn-outline-secondary" href="@previousUrl">
+                    <a class="btn btn-outline-dark" href="@previousUrl">
                         Back to @previousPageName
                     </a>
                 }

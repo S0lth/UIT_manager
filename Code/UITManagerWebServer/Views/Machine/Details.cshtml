@@ -38,7 +38,7 @@
 
 }
 
-<div class="container-fluid py-3" style="max-width: 1700px;">
+<div class="container-fluid py-3 max-display-size">
     <div class="d-flex w-100 justify-content-between">
         <h1 class="fs-2 fw-bold me-3 text-nowrap">
             @Model.Name
@@ -111,7 +111,7 @@
 
                 @if (previousUrl != null)
                 {
-                    <a class="btn btn-outline-secondary" href="@previousUrl">
+                    <a class="btn btn-outline-dark" href="@previousUrl">
                         Back to @previousPageName
                     </a>
                 }

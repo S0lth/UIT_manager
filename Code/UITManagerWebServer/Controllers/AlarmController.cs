@@ -214,7 +214,7 @@ namespace UITManagerWebServer.Controllers {
 
 
         [HttpPost]
-        [Authorize(Roles = "ITDirector, MaintenanceManager")]
+        [Authorize(Roles = "IT Director, Maintenance Manager")]
         [Route("Alarm/Attribution")]
         public async Task<IActionResult> UpdateAttribution([FromBody] UpdateAssignedUserRequest request) {
             if (request == null || string.IsNullOrEmpty(request.Id) || string.IsNullOrEmpty(request.UserId)) {

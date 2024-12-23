@@ -1,4 +1,5 @@
-﻿@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
+﻿@using Microsoft.IdentityModel.Tokens
+@model UITManagerWebServer.Controllers.AlarmSettingsController.NormGroupModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -24,7 +25,7 @@
     <div class="alert alert-danger">@error</div>
 }
 
-<div class="container-fluid py-3" style="max-width: 1700px;">
+<div class="container-fluid py-3 max-display-size" >
     <div class="row mb-4">
         <div class="col-lg-12">
             <h1 class="h2 text-start fw-bold">@Model.NormGroupName - Edit criteria</h1>
@@ -198,6 +199,13 @@
                                                 </optgroup>
                                                 
                                             }
+                                            else
+                                            {
+                                                if ((information.SubInformationNames.IsNullOrEmpty() && information.ParentId == null))
+                                                {
+                                                    <option value="@information.Id">@information.Name</option>
+                                                }
+                                            }
                                         }
                                     </select>
                                 </td>
@@ -235,13 +243,13 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <a onclick="deleteLine(this)" class="btn btn-link">
+                                    <a class="btn btn-link delete-btn" >
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </td>
                             </tr>
                         }
-                        <tr id="rowTemplate" style="display: none">
+                        <tr id="rowTemplate" class="display-none">
                             <td><input class="form-control" type="text" name="Norms[{{index}}].Name"/></td>
                             <td>
                                 <select class="form-select" name="Norms[{{index}}].InformationNameId">
@@ -279,7 +287,7 @@
                                 </select>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-link" onclick="deleteLine(this)">
+                                <button type="button" class="btn btn-link delete-btn">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>
@@ -291,7 +299,7 @@
 
                             <td colspan="6" class="align-content-end">
                                 <div class="d-flex w-100 justify-content-start">
-                                    <a class="link-primary" onclick="addRow()" style="cursor: pointer">
+                                    <a class="link-primary cursor-pointer" id="addRow"  >
                                          <i class="bi bi-plus-circle"></i>
                                     </a>
                                 </div>
@@ -312,7 +320,7 @@
     </div>
 </div>
 </div>
-<script>
+<script nonce="function526">
     
     const deleteButtons = document.querySelectorAll('[data-bs-target="#deleteNormModal"]');
     
@@ -322,15 +330,22 @@
             document.getElementById('normIdToDelete').value = id;
         });
     });
-    let rowIndex = @Model.Norms.Count; 
+    let rowIndex = @Model.Norms.Count;
 
+    document.getElementById("addRow").addEventListener("click", addRow);
     function addRow() {
         let templateRow = document.getElementById("rowTemplate").innerHTML;
         let newRow = templateRow.replace(/{{index}}/g, rowIndex);
         document.getElementById("table-norm").insertAdjacentHTML('beforeend', newRow);
         rowIndex++;
     }
-    
+
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("delete-btn")) {
+            deleteLine(event.target);
+        }
+    });
+
     function deleteLine(button) {
         var row = button.closest("tr");
         row.remove();

@@ -6,11 +6,27 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="Content-Security-Policy"
+          content="base-uri 'self';
+                   default-src 'self' https://cdn.jsdelivr.net/codemirror.spell-checker/latest/en_US.aff https://cdn.jsdelivr.net/codemirror.spell-checker/latest/en_US.dic;
+                   img-src 'self' data:;
+                   object-src 'none';
+                   script-src 'self'
+                              https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js 'nonce-chart123' 'validation454'
+                            'nonce-function526' 'nonce-markdown451' https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.js;
+                   style-src 'self' https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.css 
+                                https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.js
+                                https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css;
+                   font-src 'self'  https://cdn.jsdelivr.net/codemirror.spell-checker/latest/en_US.aff 
+                            https://cdn.jsdelivr.net/codemirror.spell-checker/latest/en_US.dic https://maxcdn.bootstrapcdn.com/font-awesome/latest/fonts/;
+                   upgrade-insecure-requests;">
+                   
     <title>@ViewData["Title"] - UITManagerWebServer</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/UITManagerWebServer.styles.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css"/>
+    <script src="~/js/security.js"></script>
 </head>
 <body>
 <header>
@@ -47,7 +63,7 @@
                             </a>
                         </li>
                         <li class="nav-item me-3">
-                            @if (User.IsInRole("ITDirector") || User.IsInRole("MaintenanceManager"))
+                            @if (User.IsInRole("IT Director") || User.IsInRole("Maintenance Manager"))
                             {
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AlarmSettings" ? "active-link" : "") text-fs-1"
                                    asp-area="" asp-controller="AlarmSettings" asp-action="Index">
@@ -56,7 +72,7 @@
                             }
                         </li>
                         <li class="nav-item me-3">
-                            @if (User.IsInRole("ITDirector"))
+                            @if (User.IsInRole("IT Director"))
                             {
                                 <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" ? "active-link" : "") text-fs-1"
                                    asp-area="" asp-controller="User" asp-action="Index">
@@ -72,7 +88,7 @@
     </nav>
 </header>
 
-<div class="container-fluid py-3 px-4" style="max-width: 1700px;">
+<div class="container-fluid py-3 px-4 max-display-size">
     @if (ViewData["Breadcrumbs"] != null)
     {
         var breadcrumbs = ViewData["Breadcrumbs"] as List<BreadcrumbItem>;

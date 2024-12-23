@@ -48,5 +48,9 @@ namespace UITManagerWebServer.Helpers
 
             return "text-secondary";
         }
+
+        public static string GetPointerEvent(string actif, string expected) {
+            return actif == expected ? "pointer-events-none" : "pointer-events-auto";
+        }
     }
 }

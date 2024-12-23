@@ -1,12 +1,15 @@
 ﻿@model HomePageViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Newtonsoft.Json
+@using UITManagerWebServer.Helpers
 @using UITManagerWebServer.Models.ModelsView
 @{
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid py-1">
+<div class="container-fluid px-4" style="max-width: 1700px;">
+<div class="d-flex justify-content-between align-items-center mb-2">
     <div class="row mt-4">
         <div class="col-md-6">
             <div class="row text-center">
@@ -64,8 +67,8 @@
                        asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
                        asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
                        asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
-                       class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "")"
-                       style="pointer-events: @(Model.ActiveTab == "unprocessed" ? "none" : "auto")">
+                       class="nav-link @(Model.ActiveTab == "unprocessed" ? "active" : "") @ViewHelpers.GetPointerEvent(Model.ActiveTab, "unprocessed")"
+                      >
                         Unprocessed Alarms
                     </a>
                 </li>
@@ -77,8 +80,8 @@
                        asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
                        asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
                        asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
-                       class="nav-link @(Model.ActiveTab == "newest" ? "active" : "")"
-                       style="pointer-events: @(Model.ActiveTab == "newest" ? "none" : "auto")">
+                       class="nav-link @(Model.ActiveTab == "newest" ? "active" : "") @ViewHelpers.GetPointerEvent(Model.ActiveTab, "newest")"
+                       >
                         Newest Alarms
                     </a>
                 </li>
@@ -90,8 +93,7 @@
                        asp-route-SolutionFilter="@ViewData["SolutionFilter"]"
                        asp-route-AuthorFilter="@ViewData["AuthorFilter"]"
                        asp-route-SortOrderNote="@ViewData["SortOrderNote"]"
-                       class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "")"
-                       style="pointer-events: @(Model.ActiveTab == "overdue" ? "none" : "auto")">
+                       class="nav-link @(Model.ActiveTab == "overdue" ? "active" : "") @ViewHelpers.GetPointerEvent(Model.ActiveTab, "overdue")">
                         Alarms Exceeding Estimated Processing Time
                     </a>
                 </li>
@@ -118,10 +120,10 @@
                     <div class="card-body">
                         <h5 class="card-title mb-4 d-flex justify-content-between align-items-center">
                             <span>Notes
-                            <button type="button" class="btn btn-link" data-bs-toggle="modal"
-                                    data-bs-target="#notesModal">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal"
+                                        data-bs-target="#notesModal">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
                             </span>
                             <form method="get"
                                   class="d-flex flex-wrap gap-3 p-3 align-items-center justify-content-start"
@@ -130,7 +132,7 @@
                                 <input type="hidden" name="tab" value="@Model.ActiveTab"/>
                                 <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]?.ToString()"/>
                                 <div class="d-flex ms-auto flex-wrap">
-                                    <div class="d-flex align-items-center text-muted fs-6" style="margin-right: 10px;">
+                                    <div class="d-flex align-items-center text-muted fs-6 margin-right">
                                         <span>Filter</span>
                                         <span class="ms-1">by</span>
                                     </div>
@@ -138,8 +140,7 @@
                                     <!-- Solution Filter Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["SolutionFilter"]" name="SolutionFilter"
-                                                class="form-select form-select-sm"
-                                                style="display: inline-block; min-width: 120px;">
+                                                class="form-select form-select-sm dropdownElement">
                                             <option value="" disabled selected>Type</option>
                                             <option value="">All</option>
                                             <option value="true">Solution</option>
@@ -150,8 +151,7 @@
                                     <!-- Author Filter Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["AuthorFilter"]" name="AuthorFilter"
-                                                class="form-select form-select-sm"
-                                                style="display: inline-block; min-width: 120px;">
+                                                class="form-select form-select-sm dropdownElement">
                                             <option value="" disabled selected>Author</option>
                                             <option value="">All Authors</option>
                                             @foreach (var author in ViewBag.Authors)
@@ -166,8 +166,7 @@
                                     <!-- Sort Order Dropdown -->
                                     <div class="dropdown me-2 mb-2 mb-md-0">
                                         <select asp-for="@ViewData["SortOrderNote"]" name="SortOrderNote"
-                                                class="form-select form-select-sm"
-                                                style="display: inline-block; min-width: 120px;">
+                                                class="form-select form-select-sm dropdownElement">
                                             <option value="" disabled selected>Date</option>
                                             <option value="ndate">Newest First</option>
                                             <option value="ndate_desc">Oldest First</option>
@@ -195,4 +194,5 @@
         </div>
         @Html.Partial("_Modals")
     </div>
+</div>
 </div>

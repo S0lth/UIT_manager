@@ -90,7 +90,7 @@ namespace UITManagerWebServer.Controllers {
             TempData["PreviousUrl"] = Request.Headers["Referer"].ToString();
         }
 
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public async Task<IActionResult> Index(string sortOrder) {
             IQueryable<NormGroup> normGroups = _context.NormGroups
                 .Include(ng => ng.SeverityHistories)
@@ -159,7 +159,7 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public async Task<IActionResult> Delete(int id) {
             NormGroup? normGroup = await _context.NormGroups.FindAsync(id);
 
@@ -173,7 +173,7 @@ namespace UITManagerWebServer.Controllers {
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public async Task<IActionResult> Details(int? id) {
             if (id == null) return NotFound();
             NormGroup? normGroup = await _context.NormGroups
@@ -214,7 +214,7 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public IActionResult DeleteNorm(int normId) {
             int id = 0;
             Norm? norm = _context.Norms.FirstOrDefault(n => n.Id == normId);
@@ -230,7 +230,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpGet]
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public async Task<IActionResult> Edit(int id) {
             NormGroup? normGroup = await _context.NormGroups
                 .Include(ng => ng.Norms)
@@ -267,7 +267,7 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public async Task<IActionResult> Edit(NormGroupModel model, string expected) {
             NormGroup? normGroup = await _context.NormGroups
                 .Include(ng => ng.Norms)
@@ -354,7 +354,7 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public async Task<IActionResult> ToggleIsEnable(int id, bool isEnable) {
             NormGroup? normGroup = await _context.NormGroups.FindAsync(id);
 
@@ -370,7 +370,7 @@ namespace UITManagerWebServer.Controllers {
         }
 
         [HttpGet]
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public async Task<IActionResult> Create() {
             ViewData["InformationsName"] = await _context
                 .InformationNames
@@ -382,7 +382,7 @@ namespace UITManagerWebServer.Controllers {
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "MaintenanceManager, ITDirector")]
+        [Authorize(Roles = "Maintenance Manager, IT Director")]
         public async Task<IActionResult> Create(NormGroupModel normGroupModel, string expected) {
             Regex regex = new Regex(@"^(\d{1,3})\s(\d{2}):(\d{2}):(\d{2})$");
             Match match = regex.Match(expected);
