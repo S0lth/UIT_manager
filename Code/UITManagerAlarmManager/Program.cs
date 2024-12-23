@@ -30,9 +30,7 @@ class Program
         
         using (var context = serviceProvider.GetRequiredService<ApplicationDbContext>())
         {
-            Email email = new Email(context);
             var connection = new HubConnectionBuilder().WithUrl( "http://localhost:5014/ApiHub").Build();
-            email.Send("pomme");
             
             connection.On<int>("ReceiveMessage", message => {
                 Console.WriteLine(message);

@@ -2,6 +2,7 @@
 using UITManagerAlarmManager.Data;
 using UITManagerAlarmManager.Models;
 
+
 namespace UITManagerAlarmManager.Service;
 
 public class TriggerAlarm {
@@ -20,6 +21,8 @@ public class TriggerAlarm {
     /// <returns>A Task representing the asynchronous operation.</returns>
     public async Task Triggered(int machineId) {
         Console.WriteLine("Hello");
+        
+        Machine? machine = _context.Machines.FirstOrDefault(m => m.Id == machineId);
 
         List<Information> machineComponent = await _context.Components
             .Where(c => c.MachinesId == machineId)
@@ -100,7 +103,8 @@ public class TriggerAlarm {
                 }
             }
         }
-
+        Email email = new Email(_context);
+        await email.Send($"An alarm has been triggered on the machine{machine?.Name}.}}");
 
         _context.SaveChanges();
     }

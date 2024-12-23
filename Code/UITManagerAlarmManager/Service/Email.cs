@@ -23,23 +23,23 @@ public class Email {
             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
             {
                 Port = 587,
-                Credentials = new NetworkCredential("uitmanager.mail@gmail.com", "StrongerPassword!1"),
+                Credentials = new NetworkCredential("musica.proytb@gmail.com", "sgpq vvbv gcpn lpac"),
                 EnableSsl = true
             };
 
             // Configuration du message
             MailMessage mail = new MailMessage
             {
-                From = new MailAddress("uitmanager.mail@gmail.com"),
-                Subject = "Test d'envoi d'e-mail en C#",
-                Body = "Ceci est un test d'e-mail envoyé depuis une application C#.",
+                From = new MailAddress("musica.proytb@gmail.com"),
+                Subject = "Alarm tiggered",
+                Body = subject,
                 IsBodyHtml = true
             };
             mail.To.Add("mathis.spronck@student.hers.be");
 
             // Envoyer l'e-mail
             smtpClient.Send(mail);
-            Console.WriteLine("E-mail envoyé avec succès !");
+            Console.WriteLine("E-mail envoye avec succes !");
         }
         catch (Exception ex)
         {
