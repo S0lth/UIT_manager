@@ -144,10 +144,11 @@
                                                         @foreach (var statusType in ViewData["AlarmStatusTypes"] as IEnumerable<UITManagerWebServer.Models.AlarmStatusType>)
                                                         {
                                                             <li>
-                                                                <a href="#" 
-                                                                   class="dropdown-item update-alarm" 
-                                                                   data-item-id="@item.Id" 
-                                                                   data-status-name="@statusType.Name">
+                                                                <a
+                                                                    href="#"
+                                                                    class="dropdown-item update-alarm"
+                                                                    data-model-id="@item.Id"
+                                                                    data-status-name="@statusType.Name">
                                                                     <strong>@statusType.Name</strong>
                                                                     <div class="text-muted ms-2">@statusType.Description</div>
                                                                 </a>
@@ -231,18 +232,20 @@
         </div>
     </div>
 </div>
-
 <script nonce="function526">
     document.addEventListener("DOMContentLoaded", function () {
         document.addEventListener("click", function (event) {
-            if (event.target.classList.contains("update-alarm")) {
-                event.preventDefault(); 
-                
-                const itemId = event.target.getAttribute("data-item-id");
-                const statusName = event.target.getAttribute("data-status-name");
+            const target = event.target;
 
-                
-                updateAlarmStatus(itemId, statusName);
+
+            if (target.classList.contains("update-alarm") || target.closest(".update-alarm")) {
+                event.preventDefault();
+
+                const alarmElement = target.closest(".update-alarm");
+                const modelId = alarmElement.getAttribute("data-model-id");
+                const statusName = alarmElement.getAttribute("data-status-name");
+
+                updateAlarmStatus(modelId, statusName);
             }
         });
     });
@@ -250,6 +253,10 @@
 
     async function updateAlarmStatus(alarmId, status) {
         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        if (!token) {
+            showAlert('CSRF token is missing.', 'danger');
+            return;
+        }
 
         await fetch(`/Alarm/UpdateStatus`, {
             method: 'POST',
@@ -260,8 +267,7 @@
             body: JSON.stringify({id: alarmId, status: status})
         }).then(async response => {
             if (response.ok) {
-                const alertMessage = await response.text();
-                document.getElementById('alert-container').innerHTML = alertMessage;
+                document.getElementById('alert-container').innerHTML = await response.text();
                 setTimeout(() => document.getElementById('alert-container').innerHTML = '', 5000);
 
                 const dropdownButton = document.querySelector(`#dropdownMenuButton[data-alarm-id="${alarmId}"]`);
@@ -281,7 +287,6 @@
         }).catch(error => {
         });
     }
-
     document.addEventListener("DOMContentLoaded", function () {
         const selectElement = document.querySelector("select"); // Remplacez par l'ID ou la classe du select si nécessaire
 
