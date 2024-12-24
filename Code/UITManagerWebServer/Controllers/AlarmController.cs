@@ -33,7 +33,8 @@ namespace UITManagerWebServer.Controllers {
                 Title = "Raised Alarms", Url = Url.Action("Index", "Alarm"), IsActive = false
             });
 
-            string currentAction = context.ActionDescriptor.RouteValues["action"];
+            string? currentAction = context.ActionDescriptor.RouteValues["action"];
+            string? id = context.ActionArguments.ContainsKey("id") ? context.ActionArguments["id"]?.ToString() : null;
 
             switch (currentAction) {
                 case "Index":
@@ -41,7 +42,24 @@ namespace UITManagerWebServer.Controllers {
                     break;
 
                 case "Details":
-                    breadcrumbs.Add(new BreadcrumbItem { Title = "Details", Url = string.Empty, IsActive = true });
+                    var alarm = _context.Alarms
+                        .Include(a => a.Machine)
+                        .Include(a => a.NormGroup)
+                        .FirstOrDefault(a => a.Id.ToString() == id);
+
+                    if (alarm != null) {
+                        breadcrumbs.Add(new BreadcrumbItem { 
+                            Title = alarm.Machine?.Name, 
+                            Url = Url.Action("Details", "Machine", new { id = alarm.Machine.Id }), 
+                            IsActive = false 
+                        });
+
+                        breadcrumbs.Add(new BreadcrumbItem { 
+                            Title = alarm.NormGroup.Name, 
+                            Url = string.Empty, 
+                            IsActive = true 
+                        });
+                    }
                     break;
             }
 
@@ -298,10 +316,164 @@ namespace UITManagerWebServer.Controllers {
             ViewBag.NormGroupId = new SelectList(_context.NormGroups, "Id", "Name", alarm.NormGroupId);
             return View(alarm);
         }
+        
+        [Authorize(Roles = "IT Director, Maintenance Managern Technician")]
+        public async Task<IActionResult> Details(string sortOrder, int  id, string solutionFilter, string authorFilter,
+            string sortOrderNote) {
+            if (string.IsNullOrEmpty(sortOrder)) {
+                sortOrder = "date";
+            }
+
+            ViewData["SortOrder"] = sortOrder;
+            ViewData["SolutionFilter"] = solutionFilter;
+            ViewData["AuthorFilter"] = authorFilter;
+            ViewData["SortOrderNote"] = sortOrderNote;
+
+            ViewData["NoteSortParm"] = sortOrder.Contains("note_desc") ? "note" : "note_desc";
+            ViewData["DateSortParm"] = sortOrder.Contains("date_desc") ? "date" : "date_desc";
+            ViewData["TypeSortParm"] = sortOrder.Contains("type_desc") ? "type" : "type_desc";
+            ViewData["AuthorSortParm"] = sortOrder.Contains("author_desc") ? "author" : "author_desc";
+
+            Alarm? alarm = await getAlarm(id);
+
+            if (alarm == null) {
+                return NotFound();
+            }
+
+            int alarmCount = await _context.Alarms
+                .Where(a => a.MachineId == alarm.MachineId && a.NormGroupId == alarm.MachineId)
+                .CountAsync();
+
+            int alarmCountAll = await _context.Alarms
+                .Where(a => a.NormGroupId == alarm.NormGroupId)
+                .CountAsync();
+
+            ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
+            ViewData["Alarm"] = alarm;
+            ViewData["user"] = _context.Users.ToList();
+            ViewData["AlarmCount"] = alarmCount;
+            ViewData["AlarmCountAll"] = alarmCountAll;
+
+
+            List<Note> notes = await FetchFilteredNotes(solutionFilter, authorFilter, sortOrderNote);
+
+            notes = ApplySorting(notes.AsQueryable(), sortOrder).ToList();
+            ViewData["Notes"] = notes;
+
+
+            ViewData["Authors"] = ViewBag.Authors = await _context.Users.ToListAsync();
+
+            List<dynamic> triggeredInfoList = new List<dynamic>();
+            foreach (Norm norm in alarm.NormGroup.Norms) {
+                if (norm.InformationName != null) {
+                    string infoName = norm.InformationName.Name;
+                    string machineValue = alarm.Machine.GetInformationValueByName(infoName);
+
+                    if (!string.IsNullOrEmpty(machineValue)) {
+                        var triggeredInfo = new {
+                            InfoName = infoName,
+                            MachineValue = machineValue,
+                            NormValue = norm.Value,
+                            Condition = norm.Condition,
+                            Format = norm.Format
+                        };
+                        triggeredInfoList.Add(triggeredInfo);
+                    }
+                }
+            }
+
+            Console.WriteLine(triggeredInfoList.ToArray());
+
+            ViewData["TriggeredInfoValue"] = triggeredInfoList;
+
+            return View(ViewData.Model);
+        }
+
+        private IQueryable<Note> ApplySorting(IQueryable<Note> query, string sortOrder) {
+            switch (sortOrder) {
+                case "note_desc":
+                    return query.OrderByDescending(n => n.Title);
+                case "note":
+                    return query.OrderBy(n => n.Title);
+                case "date_desc":
+                    return query.OrderByDescending(n => n.CreatedAt);
+                case "date":
+                    return query.OrderBy(n => n.CreatedAt);
+                case "type_desc":
+                    return query.OrderByDescending(n => n.IsSolution);
+                case "type":
+                    return query.OrderBy(n => n.IsSolution);
+                case "author_desc":
+                    return query.OrderByDescending(n => n.Author.LastName);
+                case "author":
+                    return query.OrderBy(n => n.Author.LastName);
+                default:
+                    return query.OrderByDescending(n => n.CreatedAt);
+            }
+        }
 
         [Authorize]
-        public IActionResult Details(string id) {
-            return Redirect($"/AlarmDetail/Index/{id}");
+        public List<Information> FindMatchingInformations(int machineId, string informationName) {
+            Machine? machine = _context.Machines
+                .Include(m => m.Informations)
+                .FirstOrDefault(m => m.Id == machineId);
+
+            if (machine == null) {
+                return new List<Information>();
+            }
+
+            List<Information> matchingInformations = machine.Informations
+                .SelectMany(info => info.Children)
+                .Where(child =>
+                    child.Name.Equals(informationName, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return matchingInformations;
+        }
+
+        private async Task<List<Note>> FetchFilteredNotes(string solutionFilter, string authorFilter,
+            string sortOrderNote) {
+            IQueryable<Note> notesQuery = _context.Notes.Include(n => n.Author).AsQueryable();
+
+            if (!string.IsNullOrEmpty(solutionFilter) && solutionFilter != "all") {
+                bool isSolution = solutionFilter.ToLower() == "true";
+                notesQuery = notesQuery.Where(n => n.IsSolution == isSolution);
+            }
+
+            if (sortOrderNote == "ndate_desc") {
+                notesQuery = notesQuery.OrderByDescending(n => n.CreatedAt);
+            }
+            else if (sortOrderNote == "ndate") {
+                notesQuery = notesQuery.OrderBy(n => n.CreatedAt);
+            }
+
+            List<Note> notes = await notesQuery.ToListAsync();
+
+            if (!string.IsNullOrEmpty(authorFilter)) {
+                notes = notes.Where(n => n.AuthorId == authorFilter).ToList();
+            }
+
+            return notes;
+        }
+
+        private async Task<Alarm> getAlarm(int id) {
+            Alarm? alarm = await _context.Alarms
+                .Include(a => a.Machine)
+                .ThenInclude(aa => aa.Informations)
+                .ThenInclude(i => i.Children)
+                .Include(a => a.NormGroup)
+                .ThenInclude(ng => ng.Norms)
+                .ThenInclude(norm => norm.InformationName)
+                .ThenInclude(infoName => infoName.SubInformationNames)
+                .Include(a => a.User)
+                .Include(a => a.AlarmHistories.OrderByDescending(b => b.ModificationDate))
+                .ThenInclude(aStatus => aStatus.StatusType)
+                .Include(a => a.NormGroup.SeverityHistories)
+                .ThenInclude(sh => sh.Severity)
+                .Where(a => a.Id == id)
+                .FirstOrDefaultAsync();
+
+            return alarm;
         }
     }
 

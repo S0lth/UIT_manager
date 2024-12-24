@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UITManagerAlarmManager.Data;
 using UITManagerAlarmManager.Models;
 
+
 namespace UITManagerAlarmManager.Service;
 
 public static class TriggerAlarm {
@@ -20,6 +21,8 @@ public static class TriggerAlarm {
     /// <returns>A Task representing the asynchronous operation.</returns>
     public static async Task TriggeredAsync(ApplicationDbContext context, int machineId, int normGroupId = -1) {
         Console.WriteLine("Hello");
+        
+        Machine? machine = context.Machines.FirstOrDefault(m => m.Id == machineId);
 
         List<Information> machineComponent = await context.Components
             .Where(c => c.MachinesId == machineId)
@@ -87,13 +90,8 @@ public static class TriggerAlarm {
                                     normValid = Double.Parse(norm.Value!) != Double.Parse(information.Value);
                                     break;
                                 case ">":
-                                    Console.WriteLine("----------------------------------------");
-                                    Console.WriteLine(Double.Parse(information.Value) );
                                     Console.WriteLine(">");
-                                    Console.WriteLine(Double.Parse(norm.Value!));
-                                    Console.WriteLine("------------------------------------------");
                                     normValid = Double.Parse(information.Value) > Double.Parse(norm.Value!);
-                                    Console.WriteLine(normValid);
                                     break;
                                 case "<":
                                     Console.WriteLine("<");
@@ -116,11 +114,12 @@ public static class TriggerAlarm {
                 }
                 if (allNormsValid) {
                     CreateAlarm(context, machineId, normGroup.Id, listStatus);
+                    Email email = new Email(context);
+                    await email.Send($"An alarm has been triggered on the machine{machine?.Name}.}}");
                 }
             }
         }
-
-        await context.SaveChangesAsync();
+        context.SaveChanges();
     }
 
     /// <summary>
@@ -233,9 +232,6 @@ public static class TriggerAlarm {
         }
         
         await context.SaveChangesAsync();
-        
-        
-        /*Tigger new Alarm*/
         
         List<Machine> machines = await context.Machines.ToListAsync();
 

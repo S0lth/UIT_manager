@@ -210,7 +210,7 @@
                             </td>
                             <td>
                                 <button type="button" class="btn btn-link delete-btn">
-                                    <i class="bi bi-trash"></i>
+                                    <i class="bi bi-trash delete-btn"></i>
                                 </button>
                             </td>
                         </tr>
@@ -255,7 +255,7 @@
     });
     let rowIndex = 0;
 
-    document.getElementById("addRowButton").addEventListener("click", addRow);
+    document.getElementById("addRow").addEventListener("click", addRow);
     function addRow() {
         let templateRow = document.getElementById("rowTemplate").innerHTML;
         let newRow = templateRow.replace(/{{index}}/g, rowIndex);

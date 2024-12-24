@@ -236,7 +236,7 @@ p {
 }
 
 .pointer-events-auto{
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .note-home{

@@ -314,6 +314,7 @@ namespace UITManagerWebServer.Controllers {
                 return RedirectToAction("Edit", new { model = model });
             }
 
+            // Change or add norm
             for (int i = 0; i < model.Norms.Count; i++) {
                 if (!string.IsNullOrEmpty(model.Norms[i].Name) && !string.IsNullOrEmpty(model.Norms[i].Value)) {
                     try {
@@ -338,6 +339,11 @@ namespace UITManagerWebServer.Controllers {
                     hasErrors = true;
                 }
             }
+            
+            // Delete extras norms
+            for (int i = model.Norms.Count; i < normGroup.Norms.Count; i++) {
+                _context.Norms.Remove(normGroup.Norms[i]);
+            }
 
             SeverityHistory latestSeverityHistory = normGroup.GetLatestSeverityHistory();
             latestSeverityHistory.IdSeverity = model.IdSeverity;
@@ -349,6 +355,7 @@ namespace UITManagerWebServer.Controllers {
             }
             await _hubContext.Clients.All.SendAsync("ReceiveMessage", normGroup.Id);
 
+            TempData["Success"] = $"\"{model.NormGroupName}\" successfully edited";
             return RedirectToAction("Details", new { id = model.Id });
         }
 
@@ -432,6 +439,7 @@ namespace UITManagerWebServer.Controllers {
                 return View(normGroupModel);
             }
 
+            TempData["Success"] = $"{toAddNormGroup.Name} successfully created";
             return RedirectToAction("Index");
         }
 
