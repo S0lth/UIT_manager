@@ -194,8 +194,10 @@ namespace UITManagerWebServer.Controllers {
             }
 
             AlarmStatusType? statusType =
-                await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
-            if (statusType == null) {
+                await _context.AlarmStatusTypes
+                    .Where(a => a.Name != "Not Triggered Anymore")
+                    .FirstOrDefaultAsync(s => s.Name == request.Status);
+            if (statusType == null || statusType.Name == "Not Triggered Anymore") {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
 
