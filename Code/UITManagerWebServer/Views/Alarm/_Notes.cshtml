@@ -7,7 +7,7 @@
     </div>
     <div class="card-body m-0 p-1">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <form method="get" class="d-flex gap-3 align-items-center" asp-action="Index">
+            <form method="get" class="d-flex gap-3 align-items-center" asp-action="Details">
                 <input type="hidden" name="sortOrder" value="@ViewData["SortOrder"]?.ToString()"/>
                 <div class="d-flex align-items-center">
                     <div class="dropdown">
@@ -63,25 +63,25 @@
                 <thead class="table-lightfix sticky-top bg-white">
                     <tr>
                         <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "note")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["NoteSortParm"]"
+                            <a asp-action="Details" asp-route-sortOrder="@ViewData["NoteSortParm"]"
                                class="text-decoration-none text-dark">
                                 Note <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "note")"></i>
                             </a>
                         </th>
                         <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "date")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
+                            <a asp-action="Details" asp-route-sortOrder="@ViewData["DateSortParm"]"
                                class="text-decoration-none text-dark">
                                 Date <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "date")"></i>
                             </a>
                         </th>
                         <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "type")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["TypeSortParm"]"
+                            <a asp-action="Details" asp-route-sortOrder="@ViewData["TypeSortParm"]"
                                class="text-decoration-none text-dark">
                                 Type <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "type")"></i>
                             </a>
                         </th>
                         <th class="@ViewHelpers.GetHeaderClass(ViewData["SortOrder"]?.ToString(), "author")">
-                            <a asp-action="Index" asp-route-sortOrder="@ViewData["AuthorSortParm"]"
+                            <a asp-action="Details" asp-route-sortOrder="@ViewData["AuthorSortParm"]"
                                class="text-decoration-none text-dark">
                                 Author <i class="@ViewHelpers.GetSortIcon(ViewData["SortOrder"]?.ToString(), "author")"></i>
                             </a>

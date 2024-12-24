@@ -265,9 +265,10 @@ namespace UITManagerWebServer.Controllers {
                     file.IsTemporary = false;
                 }
             }
-
             _context.Files.UpdateRange(tempFiles);
             await _context.SaveChangesAsync();
+            Machine? machine = _context.Machines.FirstOrDefault(m => m.Id == note.MachineId);
+            TempData["Success"] = $"Note {note.Title} successfully added to machine {machine?.Name}";
 
             return RedirectToAction(nameof(Index));
         }
