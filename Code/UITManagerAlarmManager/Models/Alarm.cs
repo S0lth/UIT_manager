@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-
-namespace UITManagerAlarmManager.Models {
+﻿namespace UITManagerAlarmManager.Models {
     public class Alarm {
         public int Id { get; set; }
         public List<AlarmStatusHistory> AlarmHistories { get; set; }

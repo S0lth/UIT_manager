@@ -1,9 +1,9 @@
 ﻿@using Microsoft.IdentityModel.Tokens
-@using UITManagerWebServer.Controllers
-@model MachineController.DetailsViewModel
+@using UITManagerWebServer.Models.ModelsView
+
 @{
-    List<MachineController.ComponentsViewModel> informations = Model.Informations;
-    List<MachineController.ComponentsViewModel> informationsSorted = informations
+    List<ComponentsViewModel> informations = Model.Informations;
+    List<ComponentsViewModel> informationsSorted = informations
         .OrderByDescending(n => n.Name.Equals("Tag Service"))
         .ThenBy(n => n.Name)
         .ToList();
@@ -40,7 +40,7 @@
         return uptimeValue;
     }
 
-    private void RenderInformation(MachineController.ComponentsViewModel info, string parentAccordionId)
+    private void RenderInformation(ComponentsViewModel info, string parentAccordionId)
     {
         string accordionId = $"accordion-{info.id}";
         string collapseId = $"collapse-{info.id}";
@@ -97,7 +97,7 @@
                             <div class="w-100">
                                 <span>
                                     <strong>@info.Name</strong>
-                                    @foreach (MachineController.ComponentsViewModel i in info.Children)
+                                    @foreach (ComponentsViewModel i in info.Children)
                                     {
                                         @($" {i.Value} ")
                                     }
@@ -158,7 +158,7 @@
                     </span>
                 </h3>
             </div>
-            @foreach (MachineController.ComponentsViewModel info in informationsSorted)
+            @foreach (ComponentsViewModel info in informationsSorted)
             {
                 int nbDeletion = info.Children.RemoveAll(s => s.Value.IsNullOrEmpty() && s.Children.Count == 0);
                 if ((nbDeletion == 0 && !info.Children.Any()) || info.Children.Any())

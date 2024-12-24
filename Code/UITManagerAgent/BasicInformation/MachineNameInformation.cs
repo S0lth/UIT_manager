@@ -1,5 +1,5 @@
 ﻿namespace UITManagerAgent.BasicInformation;
-using System.Text.Json;
+
 /// <summary>
 /// Represent information about the machine name  
 /// </summary>

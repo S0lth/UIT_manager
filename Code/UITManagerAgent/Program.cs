@@ -1,7 +1,5 @@
 using System.Runtime.Versioning;
 using UITManagerAgent;
-using UITManagerAgent.BasicInformation;
-using UITManagerAgent.DataCollectors;
 
 [SupportedOSPlatform("windows")]
 public class Program {

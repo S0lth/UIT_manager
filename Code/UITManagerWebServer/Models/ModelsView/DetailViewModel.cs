@@ -11,3 +11,4 @@ public class DetailViewModel
     public bool AnyNote { get; set; }
     public bool AnyAlarms { get; set; } 
 }
+

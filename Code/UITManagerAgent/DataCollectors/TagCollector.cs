@@ -1,9 +1,8 @@
 ﻿using System.Management;
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
+
 namespace UITManagerAgent.DataCollectors;
-
-
     public class TagCollector : DataCollector{
         [SupportedOSPlatform("windows")]
         private ManagementObjectSearcher _searcher = new ManagementObjectSearcher("SELECT SerialNumber FROM Win32_BIOS");

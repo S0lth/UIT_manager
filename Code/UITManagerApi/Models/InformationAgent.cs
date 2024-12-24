@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace UITManagerApi.Models;
 public class InformationAgent {
     public string Name { get; set; }

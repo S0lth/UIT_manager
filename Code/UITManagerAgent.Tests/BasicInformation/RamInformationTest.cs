@@ -20,7 +20,6 @@ public class RamInformationTest {
         _ramInformation = new RamInformation();
         _ramInformation2 = new RamInformation();
         _ramInformation2.InformationAgents[0].Value = 1000000+"";
-        
     }
 
     /// <summary>
