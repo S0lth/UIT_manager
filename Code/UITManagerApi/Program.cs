@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
 using UITManagerApi.Data;
 using UITManagerApi.Hubs;
+using UITManagerApi.Models;
 using UITManagerApi.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +39,24 @@ builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwa
 builder.Services.AddSwaggerGen(option => {
     option.OperationFilter<SwaggerDefaultValues>();
 });
+
+JwtSettings jwtParams = new JwtSettings();
+builder.Configuration.GetSection("JwtSettings").Bind(jwtParams);
+builder.Services.AddSingleton(jwtParams);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => {
+        options.TokenValidationParameters = new
+            TokenValidationParameters {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtParams.Issuer,
+                ValidAudience = jwtParams.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtParams.SecretKey)),
+            };
+    });
 
 var app = builder.Build();
 

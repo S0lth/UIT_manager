@@ -9,7 +9,7 @@ namespace UITManagerAlarmManager.Data {
             : base(options) {
         }
         
-        public DbSet<Machine> Machines { get; set; }
+        public DbSet<Machine?> Machines { get; set; }
         
         public DbSet<Alarm> Alarms { get; set; }
 
