@@ -458,3 +458,6 @@ MigrationBackup/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,vs,rider
 **/.env
+
+# file with secret
+UITManagerApi/appsettings.json
