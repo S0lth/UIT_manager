@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
+using UITManagerApi.Controllers;
 using UITManagerApi.Data;
 using UITManagerApi.Hubs;
 using UITManagerApi.Models;
@@ -43,6 +44,7 @@ builder.Services.AddSwaggerGen(option => {
 JwtSettings jwtParams = new JwtSettings();
 builder.Configuration.GetSection("JwtSettings").Bind(jwtParams);
 builder.Services.AddSingleton(jwtParams);
+builder.Services.AddScoped<AuthController>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options => {

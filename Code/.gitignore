@@ -460,4 +460,5 @@ MigrationBackup/
 **/.env
 
 # file with secret
-UITManagerApi/appsettings.json
+UITManagerApi/appsettings.Development.json
+UITManagerApi/registredUsers.json
