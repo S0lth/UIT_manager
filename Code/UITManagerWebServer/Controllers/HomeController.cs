@@ -28,8 +28,7 @@ namespace UITManagerWebServer.Controllers {
 
             if (context.ActionArguments.ContainsKey("tab")) {
                 string tab = context.ActionArguments["tab"].ToString();
-                switch (tab)
-                {
+                switch (tab) {
                     case "unprocessed":
                         breadcrumbs.Add(new BreadcrumbItem {
                             Title = "Unprocessed Alarms", Url = string.Empty, IsActive = true
@@ -199,7 +198,11 @@ namespace UITManagerWebServer.Controllers {
                     .Where(a =>
                         a.AlarmHistories
                             .OrderByDescending(ah => ah.ModificationDate)
-                            .FirstOrDefault().StatusType.Name != "Resolved");
+                            .FirstOrDefault().StatusType.Name != "Resolved")
+                    .Where(a =>
+                        a.AlarmHistories
+                            .OrderByDescending(ah => ah.ModificationDate)
+                            .FirstOrDefault().StatusType.Name != "Not Triggered Anymore");
             }
 
             if (orderByDate) {
@@ -283,6 +286,10 @@ namespace UITManagerWebServer.Controllers {
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
                     .FirstOrDefault().StatusType.Name != "Resolved")
+                .Where(a =>
+                    a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault().StatusType.Name != "Not Triggered Anymore")
                 .Select(a => a.Machine)
                 .Distinct()
                 .CountAsync();
@@ -295,6 +302,10 @@ namespace UITManagerWebServer.Controllers {
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
                     .FirstOrDefault().StatusType.Name != "Resolved")
+                .Where(a =>
+                    a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault().StatusType.Name != "Not Triggered Anymore")
                 .Select(a => new {
                     Severity = a.NormGroup.SeverityHistories
                         .OrderByDescending(sh => sh.UpdateDate)
@@ -313,6 +324,10 @@ namespace UITManagerWebServer.Controllers {
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
                     .FirstOrDefault().StatusType.Name != "Resolved")
+                .Where(a =>
+                    a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault().StatusType.Name != "Not Triggered Anymore")
                 .ToListAsync();
 
             var assignedCount = alarmCounts.Count(a => a.UserId != null);
@@ -403,6 +418,10 @@ namespace UITManagerWebServer.Controllers {
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(ah => ah.ModificationDate)
                     .FirstOrDefault().StatusType.Name != "Resolved")
+                .Where(a =>
+                    a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault().StatusType.Name != "Not Triggered Anymore")
                 .CountAsync();
 
             return alarmsNotResolvedCount;
@@ -413,6 +432,13 @@ namespace UITManagerWebServer.Controllers {
 
             var alarmsTriggeredTodayCount = await _context.Alarms
                 .Where(a => a.TriggeredAt.Date == today)
+                .Where(a => a.AlarmHistories
+                    .OrderByDescending(ah => ah.ModificationDate)
+                    .FirstOrDefault().StatusType.Name != "Resolved")
+                .Where(a =>
+                    a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault().StatusType.Name != "Not Triggered Anymore")
                 .CountAsync();
 
             return alarmsTriggeredTodayCount;

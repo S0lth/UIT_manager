@@ -101,7 +101,11 @@ namespace UITManagerWebServer.Controllers {
                 .Where(a => a.AlarmHistories
                     .OrderByDescending(h => h.ModificationDate)
                     .FirstOrDefault()!
-                    .StatusType.Name != "Resolved");
+                    .StatusType.Name != "Resolved")
+                .Where(a =>
+                    a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault().StatusType.Name != "Not Triggered Anymore");
 
             if (!string.IsNullOrEmpty(search)) {
                 string[] searchTerms = search.ToLower().Split(',');
@@ -173,7 +177,9 @@ namespace UITManagerWebServer.Controllers {
                 _ => alarms.OrderBy(a => a.Machine.Name)
             };
 
-            ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes.ToListAsync();
+            ViewData["AlarmStatusTypes"] = await _context.AlarmStatusTypes
+                .Where(a => a.Name != "Not Triggered Anymore")
+                .ToListAsync();
             ViewData["user"] = users;
 
             if (User.IsInRole("Admin")) {
@@ -206,8 +212,10 @@ namespace UITManagerWebServer.Controllers {
             }
 
             AlarmStatusType? statusType =
-                await _context.AlarmStatusTypes.FirstOrDefaultAsync(s => s.Name == request.Status);
-            if (statusType == null) {
+                await _context.AlarmStatusTypes
+                    .Where(a => a.Name != "Not Triggered Anymore")
+                    .FirstOrDefaultAsync(s => s.Name == request.Status);
+            if (statusType == null || statusType.Name == "Not Triggered Anymore") {
                 return BadRequest(new { success = false, message = "Invalid status." });
             }
 

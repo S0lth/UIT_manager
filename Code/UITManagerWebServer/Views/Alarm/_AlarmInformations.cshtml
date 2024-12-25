@@ -55,27 +55,34 @@
                         <div class="col-md-6">
                             <div class="d-flex flex-column">
                                 <label for="AlarmStatus"><strong>Status</strong></label>
-                                <div class="dropdown">
-                                    <button class="btn btn-light dropdown-toggle search-alarm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" data-alarm-id="@Model.Id" >
-                                        <span>@Model.AlarmHistories.OrderByDescending(a => a.ModificationDate).FirstOrDefault().StatusType.Name</span>
-                                    </button>
-                                    <ul class="dropdown-menu color-white" aria-labelledby="dropdownMenuButton" >
-                                        @foreach (var status in ViewData["AlarmStatusTypes"] as List<AlarmStatusType>)
-                                        {
-                                            <li>
-                                                <a
-                                                    href="#"
-                                                    class="dropdown-item update-alarm"
-                                                    data-model-id="@Model.Id"
-                                                    data-status-name="@status.Name">
-                                                    <strong>@status.Name</strong>
-                                                    <div class="text-muted ms-2">@status.Description</div>
-                                                </a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-
+                                @if (Model.AlarmHistories.OrderByDescending(a => a.ModificationDate).FirstOrDefault().StatusType.Name == "Not Triggered Anymore")
+                                {
+                                    <div class="text-muted">
+                                        Not Triggered Anymore
+                                    </div>                                
+                                }
+                                else{
+                                    <div class="dropdown">
+                                        <button class="btn btn-light dropdown-toggle search-alarm" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" data-alarm-id="@Model.Id" >
+                                            <span>@Model.AlarmHistories.OrderByDescending(a => a.ModificationDate).FirstOrDefault().StatusType.Name</span>
+                                        </button>
+                                        <ul class="dropdown-menu color-white" aria-labelledby="dropdownMenuButton" >
+                                            @foreach (var status in ViewData["AlarmStatusTypes"] as List<AlarmStatusType>)
+                                            {
+                                                <li>
+                                                    <a
+                                                        href="#"
+                                                        class="dropdown-item update-alarm"
+                                                        data-model-id="@Model.Id"
+                                                        data-status-name="@status.Name">
+                                                        <strong>@status.Name</strong>
+                                                        <div class="text-muted ms-2">@status.Description</div>
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>

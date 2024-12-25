@@ -374,8 +374,8 @@ public static class Populate {
             usersInRoles.AddRange(usersInRole);
         }
 
-        usersInRoles = usersInRoles.Distinct().ToList();
-
+        usersInRoles = usersInRoles.Where(user => user.IsActivate).Distinct().ToList();
+        
         var severityHistories = new List<SeverityHistory>() {
             // Storage exceeded
             new SeverityHistory {
@@ -664,11 +664,14 @@ public static class Populate {
             }
 
             double ramUsed;
+            double ramUsedPercent;
             if (i > nbMachines * 0.4 && i < nbMachines * 0.56) {
                 ramUsed = GetRandomNumber(ramTotal * 0.8, ramTotal);
+                ramUsedPercent = ramUsed / ramTotal * 100;
             }
             else {
                 ramUsed = GetRandomNumber(0, ramTotal * 0.81);
+                ramUsedPercent = ramUsed / ramTotal * 100;
             }
 
             double ramFree = ramTotal - ramUsed;
@@ -682,6 +685,7 @@ public static class Populate {
                     Children = new List<Information> {
                         new Value { Name = "Total RAM", Machine = machine, Value = ramTotal.ToString(), Format = "GB" },
                         new Value { Name = "Used RAM", Machine = machine, Value = ramUsed.ToString(), Format = "GB" },
+                        new Value { Name = "Used RAM", Machine = machine, Value = ramUsedPercent.ToString(), Format = "%" },
                         new Value { Name = "Free RAM", Machine = machine, Value = ramFree.ToString(), Format = "GB" }
                     }
                 });
@@ -716,6 +720,7 @@ public static class Populate {
                         int diskTotal = diskTotals[random.Next(diskTotals.Length)];
                         double diskUsed = GetRandomNumber(diskTotal * 0.99, diskTotal);
                         double diskFree = diskTotal - diskUsed;
+                        double diskUsedPercent = diskUsed / diskTotal * 100;
 
                         var val = new Component {
                             Name = diskNames[random.Next(diskNames.Length)],
@@ -731,6 +736,9 @@ public static class Populate {
                                 },
                                 new Value {
                                     Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Used", Value = diskUsedPercent.ToString(), Format = "%", Machine = machine
                                 },
                                 new Value {
                                     Name = "Disk Free Size",
@@ -746,6 +754,7 @@ public static class Populate {
                         int diskTotal = diskTotals[random.Next(diskTotals.Length)];
                         double diskUsed = GetRandomNumber(diskTotal * 0.8, diskTotal * 0.95);
                         double diskFree = diskTotal - diskUsed;
+                        double diskUsedPercent = diskUsed / diskTotal * 100;
 
                         var val = new Component {
                             Name = diskNames[random.Next(diskNames.Length)],
@@ -760,7 +769,13 @@ public static class Populate {
                                     Machine = machine
                                 },
                                 new Value {
-                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
+                                    Name = "Disk Used", 
+                                    Value = diskUsed.ToString(), 
+                                    Format = "GB", 
+                                    Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Used", Value = diskUsedPercent.ToString(), Format = "%", Machine = machine
                                 },
                                 new Value {
                                     Name = "Disk Free Size",
@@ -776,6 +791,7 @@ public static class Populate {
                         int diskTotal = diskTotals[random.Next(diskTotals.Length)];
                         double diskUsed = GetRandomNumber(0, diskTotal * 0.8);
                         double diskFree = diskTotal - diskUsed;
+                        double diskUsedPercent = diskUsed / diskTotal * 100;
 
                         var val = new Component {
                             Name = diskNames[random.Next(diskNames.Length)],
@@ -790,7 +806,13 @@ public static class Populate {
                                     Machine = machine
                                 },
                                 new Value {
-                                    Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
+                                    Name = "Disk Used", 
+                                    Value = diskUsed.ToString(), 
+                                    Format = "GB", 
+                                    Machine = machine
+                                },
+                                new Value {
+                                    Name = "Disk Used", Value = diskUsedPercent.ToString(), Format = "%", Machine = machine
                                 },
                                 new Value {
                                     Name = "Disk Free Size",
@@ -807,7 +829,7 @@ public static class Populate {
                     int diskTotal = diskTotals[random.Next(diskTotals.Length)];
                     double diskUsed = GetRandomNumber(0, diskTotal * 0.8);
                     double diskFree = diskTotal - diskUsed;
-
+                    double diskUsedPercent = diskUsed / diskTotal * 100;
                     var val = new Component {
                         Name = diskNames[random.Next(diskNames.Length)],
                         Machine = machine,
@@ -819,6 +841,9 @@ public static class Populate {
                             },
                             new Value {
                                 Name = "Disk Used", Value = diskUsed.ToString(), Format = "GB", Machine = machine
+                            },
+                            new Value {
+                                Name = "Disk Used", Value = diskUsedPercent.ToString(), Format = "%", Machine = machine
                             },
                             new Value {
                                 Name = "Disk Free Size", Value = diskFree.ToString(), Format = "GB", Machine = machine
@@ -929,7 +954,7 @@ public static class Populate {
             usersInRoles.AddRange(usersInRole);
         }
 
-        usersInRoles = usersInRoles.Distinct().ToList();
+        usersInRoles = usersInRoles.Where(user => user.IsActivate).Distinct().ToList();
 
         var alarmStatusTypes = new List<AlarmStatusType> {
             new AlarmStatusType {
@@ -954,6 +979,11 @@ public static class Populate {
                 Name = "Awaiting Third-Party Assistance",
                 Description =
                     "The resolution of the issue causing the alarm depends on action or support from an external party or vendor, and progress is pending their input."
+            },
+            new AlarmStatusType {
+                Name = "Not Triggered Anymore",
+                Description =
+                    "An issue that previously triggered an alarm, but the alarm criteria are no longer valid."
             }
         };
 
@@ -979,7 +1009,7 @@ public static class Populate {
                     nbStatus = random.Next(1, 3);
 
                     var alarm = new Alarm {
-                        TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                        TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                         Machine = machine,
                         NormGroup = normGroups[2],
                         UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -993,9 +1023,7 @@ public static class Populate {
                 for (int j = 0; j < 3; j++) {
                     nbStatus = 3;
                     var oldAlarm = new Alarm {
-                        TriggeredAt =
-                            DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                                .AddMinutes(-random.Next(0, 60)),
+                        TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                         Machine = machine,
                         NormGroup = normGroups[2],
                         UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1015,7 +1043,7 @@ public static class Populate {
                 int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[5],
                     UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -1031,8 +1059,7 @@ public static class Populate {
                 int nbStatus = 3;
                 var alarm = new Alarm {
                     TriggeredAt =
-                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                            .AddMinutes(-random.Next(0, 60)),
+                        DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[5],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1060,7 +1087,7 @@ public static class Populate {
                     if (!noAlarm) {
                         nbStatus = random.Next(1, 3);
                         var alarm = new Alarm {
-                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[0],
                             UserId = random.Next(0, 101) < 80
@@ -1079,8 +1106,7 @@ public static class Populate {
                         nbStatus = 3;
                         var oldAlarm = new Alarm {
                             TriggeredAt =
-                                DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                                    .AddMinutes(-random.Next(0, 60)),
+                                DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[0],
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1099,7 +1125,7 @@ public static class Populate {
                     if (!noAlarm) {
                         nbStatus = random.Next(1, 3);
                         var alarm = new Alarm {
-                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[3],
                             UserId = random.Next(0, 101) < 80
@@ -1118,8 +1144,7 @@ public static class Populate {
                         nbStatus = 3;
                         var oldAlarm = new Alarm {
                             TriggeredAt =
-                                DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                                    .AddMinutes(-random.Next(0, 60)),
+                                DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[3],
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1142,7 +1167,7 @@ public static class Populate {
                 int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[4],
                     UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -1158,8 +1183,7 @@ public static class Populate {
                 int nbStatus = 3;
                 var alarm = new Alarm {
                     TriggeredAt =
-                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                            .AddMinutes(-random.Next(0, 60)),
+                        DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[4],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1181,7 +1205,7 @@ public static class Populate {
                 int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[1],
                     UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -1197,8 +1221,7 @@ public static class Populate {
                 int nbStatus = 3;
                 var alarm = new Alarm {
                     TriggeredAt =
-                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                            .AddMinutes(-random.Next(0, 60)),
+                        DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[1],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1336,27 +1359,44 @@ public static class Populate {
         Random random = new Random();
         return random.NextDouble() * (maximum - minimum) + minimum;
     }
-
+    
     private static List<AlarmStatusHistory> AddStatusHistory(int nbStatus, Alarm alarm,
         List<AlarmStatusType> alarmStatusTypes, List<ApplicationUser> usersInRoles, Random random) {
-        List<AlarmStatusHistory> alarmStatusHistories = new List<AlarmStatusHistory>();
+        var alarmStatusHistories = new List<AlarmStatusHistory>();
 
         if (alarm.UserId == null) {
             nbStatus = 1;
         }
 
-        DateTime tempModificationDate = default;
+        DateTime startDate = alarm.TriggeredAt.ToUniversalTime();
+        
+        DateTime endDate;
+        if (nbStatus != 3) {
+            endDate = DateTime.Now.AddHours(-1).ToUniversalTime();
+        }
+        else {
+            endDate = startDate.AddHours(random.Next(48, 73));
+        }
+
+        double totalHours = (endDate - startDate).TotalHours;
+
+        DateTime tempModificationDate = startDate;
+
         for (int i = 0; i < nbStatus; i++) {
-            DateTime earliestDate = (DateTime.Now < alarm.TriggeredAt) ? DateTime.Now : alarm.TriggeredAt;
-            if (i == 0) tempModificationDate = earliestDate.AddHours(-random.Next(120, 240));
-            else tempModificationDate = earliestDate.AddHours(-random.Next(1, 120));
-            alarmStatusHistories.Add(
-                new AlarmStatusHistory {
-                    Alarm = alarm,
-                    StatusType = alarmStatusTypes[i],
-                    ModificationDate = tempModificationDate,
-                    UserId = (i == 0) ? null : usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                });
+
+            double maxHoursForStatus = totalHours - (i * (totalHours / nbStatus));
+            double hoursToAdd = random.NextDouble() * maxHoursForStatus;
+
+            if (i !=0) {
+                tempModificationDate = tempModificationDate.AddHours(hoursToAdd);
+            }
+
+            alarmStatusHistories.Add(new AlarmStatusHistory {
+                Alarm = alarm,
+                StatusType = alarmStatusTypes[i],
+                ModificationDate = i == 0 ? alarm.TriggeredAt : tempModificationDate,
+                UserId = i == 0 ? null : usersInRoles[random.Next(0, usersInRoles.Count)].Id
+            });
         }
 
         return alarmStatusHistories;
