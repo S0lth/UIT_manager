@@ -43,6 +43,14 @@ public static class TriggerAlarm {
                 .ThenInclude(n => n.InformationName)
                 .ToListAsync());
         }
+        
+        foreach (var normGroup in listNormsGroups) {
+            await context.Entry(normGroup).ReloadAsync();
+            foreach (var norm in normGroup.Norms) {
+                await context.Entry(norm).ReloadAsync();
+            }
+        }
+        
         Console.WriteLine(listNormsGroups[0].Norms[0].Value);
         List<AlarmStatusType> listStatus = await context.AlarmStatusTypes.ToListAsync();
 
@@ -115,11 +123,11 @@ public static class TriggerAlarm {
                 if (allNormsValid) {
                     CreateAlarm(context, machineId, normGroup.Id, listStatus);
                     Email email = new Email(context);
-                    await email.Send($"An alarm has been triggered on the machine{machine?.Name}.}}");
+                    //await email.Send($"An alarm has been triggered on the machine{machine?.Name}.}}");
                 }
             }
         }
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
     /// <summary>
@@ -139,7 +147,32 @@ public static class TriggerAlarm {
         context.Alarms.Add(alarm);
     }
 
+    /// <summary>
+    /// Updates the alarm and triggers processing for all machines in the database.
+    /// </summary>
+    /// <param name="context"> The database context of type <see cref="ApplicationDbContext"/> used to interact with the database.</param>
+    /// <param name="normGroupId"> An integer representing the ID of the norm group to be processed.</param>
+    /// <returns>
+    /// A <see cref="Task"/> representing the asynchronous operation.
+    /// </returns>
+    public static async Task UpdateAsync(ApplicationDbContext context, int normGroupId) {
+        
+        await UpdateAlarmAsync(context, normGroupId);
+        
+        List<Machine> machines = await context.Machines.ToListAsync();
 
+        foreach (Machine machine in machines) {
+            await TriggeredAsync(context, machine.Id,normGroupId);
+        }
+    }
+
+    /// <summary>
+    /// Updates alarms for a specified norm group by validating machines against the group's norms,
+    /// resolving alarms that no longer meet the conditions, and triggering alarm checks for all machines.
+    /// </summary>
+    /// <param name="context">The database context for accessing and modifying data.</param>
+    /// <param name="normGroupId">The ID of the norm group to validate and apply to alarms.</param>
+    /// <returns>A Task that represents the asynchronous operation.</returns>
     public static async Task UpdateAlarmAsync(ApplicationDbContext context, int normGroupId) {
         
         NormGroup? normGroup = await context.NormGroups
@@ -148,6 +181,13 @@ public static class TriggerAlarm {
             .Where(m => m.Id == normGroupId)
             .FirstOrDefaultAsync();
 
+        
+        await context.Entry(normGroup).ReloadAsync();
+
+        foreach (var norm in normGroup.Norms) {
+            await context.Entry(norm).ReloadAsync();
+        }
+        
         List<Alarm> alarms = await context.Alarms
              .Where(a => a.NormGroupId == normGroupId &&
                  !context.AlarmHistories
@@ -156,8 +196,6 @@ public static class TriggerAlarm {
                      .Take(1)
                      .Any(ah2 => ah2.StatusType.Name == "Resolved" || ah2.StatusType.Name == "Not Triggered Anymore"))
              .ToListAsync();
-
-            //(!a.AlarmHistories.Any(sh => sh.StatusType.Name == "Resolved" || sh.StatusType.Name == "Not Triggered Anymore")))
 
         Console.WriteLine("NB Alarm : " + alarms.Count);
 
@@ -232,11 +270,5 @@ public static class TriggerAlarm {
         }
         
         await context.SaveChangesAsync();
-        
-        List<Machine> machines = await context.Machines.ToListAsync();
-
-        foreach (Machine machine in machines) {
-            await TriggeredAsync(context, machine.Id,normGroupId);
-        }
     }
 }

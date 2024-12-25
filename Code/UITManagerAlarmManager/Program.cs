@@ -34,26 +34,23 @@ class Program {
         try {
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            //Email email = new Email(context);
-            //email.Send("pomme");
 
             // API Hub: Handle messages
-            /*connectionApi.On<int>("ReceiveMessage", async message =>
+            connectionApi.On<int>("ReceiveMessage", async message =>
             {
                 Console.WriteLine($"API Hub message received: {message}");
                 await TriggerAlarm.TriggeredAsync(context, message);
             });
 
             await connectionApi.StartAsync();
-            Console.WriteLine("Connection to API Hub established");*/
+            Console.WriteLine("Connection to API Hub established");
 
             // WebApp Hub: Handle messages
             connectionWebApp.On<int>("ReceiveMessage", async message =>
             {
                 Console.WriteLine($"WebApp Hub message received: {message}");
                 
-                await Task.Delay(30000);
-                await TriggerAlarm.UpdateAlarmAsync(context, message);
+                await TriggerAlarm.UpdateAsync(context, message);
             });
 
             await connectionWebApp.StartAsync();

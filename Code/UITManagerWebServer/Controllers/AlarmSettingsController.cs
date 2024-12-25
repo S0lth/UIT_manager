@@ -432,7 +432,7 @@ namespace UITManagerWebServer.Controllers {
                 _context.NormGroups.Add(toAddNormGroup);
                 await _context.SaveChangesAsync();
                 
-                await _hubContext.Clients.All.SendAsync("ReceiveMessage", normGroupModel.Id);
+                await _hubContext.Clients.All.SendAsync("ReceiveMessage", toAddNormGroup.Id);
             }
             else {
                 TempData["Error"] = "You cannot have a criteria group without a name";
@@ -449,11 +449,14 @@ namespace UITManagerWebServer.Controllers {
 
         private async Task<int> GetTotalAlarms(string normGroupName) {
             return await _context.Alarms
-                .Where(a => a.NormGroup.Name == normGroupName &&
-                            a.AlarmHistories
-                                .OrderByDescending(h => h.ModificationDate)
-                                .FirstOrDefault()!
-                                .StatusType.Name != "Resolved")
+                .Where(a => a.NormGroup.Name == normGroupName)
+                .Where(a => a.AlarmHistories
+                    .OrderByDescending(ah => ah.ModificationDate)
+                    .FirstOrDefault().StatusType.Name != "Resolved")
+                .Where(a =>
+                    a.AlarmHistories
+                        .OrderByDescending(ah => ah.ModificationDate)
+                        .FirstOrDefault().StatusType.Name != "Not Triggered Anymore")
                 .CountAsync();
         }
 
