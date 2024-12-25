@@ -19,7 +19,7 @@ public class ApiCommunicator {
         _httpClient = httpClient ?? new HttpClient();
         _httpClient.BaseAddress = new Uri("http://localhost:5014");
         _httpClient.DefaultRequestHeaders.Accept.Clear();
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token!.AccessToken);
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token!.value);
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
@@ -72,7 +72,6 @@ public class ApiCommunicator {
                 Encoding.UTF8,
                 "application/json"
             );
-            Console.WriteLine(JsonSerializer.Serialize(requestData));
             
             try
             {
@@ -83,10 +82,9 @@ public class ApiCommunicator {
                 if (response.IsSuccessStatusCode)
                 {
                     string responseBody = await response.Content.ReadAsStringAsync();
-
+                    
                     // Désérialiser la réponse JSON
                     var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody);
-                    Console.WriteLine($"=> Token received successfully. {tokenResponse.AccessToken}");
                     return tokenResponse;
                 }
                 else
