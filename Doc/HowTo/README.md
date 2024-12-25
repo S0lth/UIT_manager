@@ -60,6 +60,15 @@ Before you begin, ensure that the following are installed on your machine:
     local     database_postgres_data
     ```
     Ensure that the volume `database_postgres_data` exists.
+
+## setUp Jwt Token
+1. Create the `registredUsers.json` file:
+   ```bash
+   $ touch ~/uitmanager/Code/UITManagerApi/registredUsers.json
+   ```
+2. Copy the contents of the `registredUsers.json` part in `credentials.md` file and paste it into the `registredUsers.json` file you've just created.
+3. Copy the contents of the `appsettings.Development.json` part in `credentials.md` file and paste it into the `appsettings.Development.json` file in UITManagerApi.
+
 ## Applying Migrations
 To apply migrations to your PostgreSQL Docker container, run the following commands:
 ```bash
