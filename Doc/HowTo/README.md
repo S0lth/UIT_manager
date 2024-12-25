@@ -61,7 +61,7 @@ Before you begin, ensure that the following are installed on your machine:
     ```
     Ensure that the volume `database_postgres_data` exists.
 
-## setUp Jwt Token
+## Setup Jwt Token
 1. Create the `registredUsers.json` file:
    ```bash
    $ touch ~/uitmanager/Code/UITManagerApi/registredUsers.json
