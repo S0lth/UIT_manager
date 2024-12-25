@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
+using UITManagerWebServer.Hubs;
 using UITManagerWebServer.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -51,7 +54,6 @@ using (var scope = app.Services.CreateScope()) {
             services.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
 
         bool hasData = await context.Machines.AnyAsync();
-
         if (!hasData) {
             // Si aucune donnée n'existe, effectuer le populate
             Console.WriteLine("Database is empty. Starting population...");
@@ -90,5 +92,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+app.MapHub<WebAppHub>("/WebAppHub");
 
 app.Run();
