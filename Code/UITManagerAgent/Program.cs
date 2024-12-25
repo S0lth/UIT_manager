@@ -1,14 +1,12 @@
 using System.Runtime.Versioning;
 using UITManagerAgent;
-using UITManagerAgent.BasicInformation;
-using UITManagerAgent.DataCollectors;
 
 [SupportedOSPlatform("windows")]
 public class Program {
 
     public static async Task Main(string[] args) {
 
-        using (TaskSchedulerAgent scheduler = new TaskSchedulerAgent(2, SendMachineInformation))
+        using (TaskSchedulerAgent scheduler = new TaskSchedulerAgent(24, SendMachineInformation))
         {
             Console.WriteLine("=> Task scheduler is running. Press Enter to exit...");
             Console.ReadLine();

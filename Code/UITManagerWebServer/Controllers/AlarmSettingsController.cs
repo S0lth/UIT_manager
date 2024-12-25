@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Hubs;
 using UITManagerWebServer.Models;
+using UITManagerWebServer.Models.ModelsView;
 
 namespace UITManagerWebServer.Controllers {
     public class AlarmSettingsController : Controller {
@@ -467,39 +468,6 @@ namespace UITManagerWebServer.Controllers {
                 .OrderByDescending(sh => sh.UpdateDate)
                 .Select(sh => sh.Severity.Name)
                 .FirstOrDefaultAsync();
-        }
-
-        public class SeverityHistoryModel {
-            public int Id { get; set; }
-            public Severity? Severity { get; set; }
-            public int SeverityId { get; set; }
-            public string UserId { get; set; }
-            public string UserName { get; set; }
-            public string UserFirstName { get; set; }
-        }
-
-        public class NormGroupModel {
-            public int Id { get; set; }
-            public string? NormGroupName { get; set; }
-            public int IdSeverity { get; set; }
-            public int Priority { get; set; }
-            public TimeSpan MaxExpectedProcessingTime { get; set; }
-            public bool IsEnable { get; set; }
-
-            public List<Severity> Severities { get; set; } = new();
-            public List<Norm> Norms { get; set; } = new();
-            public List<SeverityHistory>? SeverityHistories { get; set; } = new();
-            public List<InformationName> Informations { get; set; } = new();
-            public List<int> IdNormToDelete { get; set; } = new();
-        }
-
-        public class NormGroupPageViewModel {
-            public int Id { get; set; }
-            public string? NormGroupName { get; set; }
-            public string? Severity { get; set; }
-            public int Priority { get; set; }
-            public int TotalAlarms { get; set; }
-            public bool IsEnable { get; set; }
         }
     }
 }

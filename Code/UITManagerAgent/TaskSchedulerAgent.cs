@@ -17,12 +17,12 @@ public class TaskSchedulerAgent : TaskScheduler, IDisposable {
     /// <param name="taskFunc">The asynchronous task to execute periodically.</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="minutes"/> is less than or equal to zero.</exception>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="taskFunc"/> is null.</exception>
-    public TaskSchedulerAgent(int minutes, Func<Task> taskFunc) 
+    public TaskSchedulerAgent(int hour, Func<Task> taskFunc) 
         // on doit rechanger cette variable en heure pour la production !!! Mettre 24 et changer "minutes" en "hours"
     {
-        if (minutes <= 0) throw new ArgumentOutOfRangeException(nameof(minutes), "=> Minutes must be greater than zero.");
+        if (hour <= 0) throw new ArgumentOutOfRangeException(nameof(hour), "=> Hours must be greater than zero.");
 
-        _interval = TimeSpan.FromMinutes(minutes);
+        _interval = TimeSpan.FromHours(hour);
         _taskFunc = taskFunc ?? throw new ArgumentNullException(nameof(taskFunc));
         _timer = new Timer(ExecuteScheduledTask, null, TimeSpan.Zero, _interval);
     }

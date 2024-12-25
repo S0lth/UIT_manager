@@ -1,6 +1,7 @@
 using System.DirectoryServices;
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
+
 namespace UITManagerAgent.DataCollectors;
 
 /// <summary>

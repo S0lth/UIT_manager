@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Data;
 using UITManagerWebServer.Models;
+using UITManagerWebServer.Models.ModelsView;
 
 namespace UITManagerWebServer.Controllers {
     public class MachineController : Controller {
@@ -156,11 +157,11 @@ namespace UITManagerWebServer.Controllers {
             Machine? machine = await _context.Machines
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            List<NoteViewModel> notes = await getFilteredNotes(sortOrder, solutionFilter, authorFilter, id);
-            List<AlarmViewModel> alarms = await getFilteredAlarms(sortOrder, id, typeFilter);
+            List<NoteMachineViewModel> notes = await getFilteredNotes(sortOrder, solutionFilter, authorFilter, id);
+            List<AlarmMachineViewModel> alarms = await getFilteredAlarms(sortOrder, id, typeFilter);
             List<ComponentsViewModel> information = await GetMachineInformation(id);
             dynamic authors = ViewBag.Authors = await _context.Users.ToListAsync();
-            DetailsViewModel detailView = new DetailsViewModel {
+            DetailMachineViewModel detailView = new DetailMachineViewModel {
                 Id = machine.Id,
                 Name = machine.Name,
                 LastSeen = machine.LastSeen,
@@ -270,7 +271,7 @@ namespace UITManagerWebServer.Controllers {
             return parentViewModel;
         }
 
-        private async Task<List<AlarmViewModel>> getFilteredAlarms(string sortOrder, int? id, string typeFilter) {
+        private async Task<List<AlarmMachineViewModel>> getFilteredAlarms(string sortOrder, int? id, string typeFilter) {
             IQueryable<Alarm> alarmsQuery = _context.Alarms
                 .Include(a => a.Machine)
                 .Include(a => a.NormGroup)
@@ -304,7 +305,7 @@ namespace UITManagerWebServer.Controllers {
 
             List<Alarm> alarms = await alarmsQuery.ToListAsync();
 
-            return alarms.Select(a => new AlarmViewModel {
+            return alarms.Select(a => new AlarmMachineViewModel {
                 MachineId = a.Machine.Id,
                 AlarmId = a.Id,
                 Status = a.AlarmHistories.OrderByDescending(h => h.ModificationDate).FirstOrDefault()?.StatusType.Name,
@@ -362,7 +363,7 @@ namespace UITManagerWebServer.Controllers {
             }
         }
 
-        private async Task<List<NoteViewModel>> getFilteredNotes(string sortOrder, string solutionFilter,
+        private async Task<List<NoteMachineViewModel>> getFilteredNotes(string sortOrder, string solutionFilter,
             string authorFilter, int? id) {
             IQueryable<Note> notesQuery =
                 _context.Notes.Include(n => n.Author).Where(n => n.MachineId == id).AsQueryable();
@@ -386,7 +387,7 @@ namespace UITManagerWebServer.Controllers {
                     (n.Author.Id == authorFilter)).ToList();
             }
 
-            return notes.Select(n => new NoteViewModel {
+            return notes.Select(n => new NoteMachineViewModel {
                 Author = n.Author != null ? n.Author.FirstName + " " + n.Author.LastName : "Unknown",
                 Id = n.Id,
                 Date = n.CreatedAt,
@@ -499,92 +500,6 @@ namespace UITManagerWebServer.Controllers {
 
         private bool MachineExists(int id) {
             return _context.Machines.Any(e => e.Id == id);
-        }
-
-        public class AlarmViewModel {
-            public int MachineId { get; set; }
-            public int AlarmId { get; set; }
-            public string Status { get; set; }
-            public string Severity { get; set; }
-            public string AlarmGroupName { get; set; }
-            public DateTime TriggeredAt { get; set; }
-        }
-
-        public class NoteViewModel {
-            public string Author { get; set; }
-            public int MachineId { get; set; }
-            public int Id { get; set; }
-            public DateTime Date { get; set; }
-            public bool IsSolution { get; set; }
-            public string Title { get; set; }
-        }
-
-        public class ComponentsViewModel {
-            public int MachineId { get; set; }
-            public int? ParentId { get; set; }
-            public int id { get; set; }
-            public string Name { get; set; }
-            public string Value { get; set; }
-            public string Format { get; set; }
-            public List<ComponentsViewModel> Children { get; set; }
-        }
-
-        public class DetailsViewModel {
-            public int? Id { get; set; }
-            public List<AlarmViewModel> Alarms { get; set; }
-            public List<NoteViewModel> Notes { get; set; }
-            public List<ComponentsViewModel> Informations { get; set; }
-            public List<ApplicationUser> Authors { get; set; }
-            public string Model { get; set; }
-            public string Name { get; set; }
-            public bool IsWorking { get; set; }
-            public DateTime? LastSeen { get; set; }
-            public bool AnyNote { get; set; }
-            public bool AnyAlarms { get; set; }
-        }
-
-        /// <summary>
-        /// Represents the data for a machine, including its details, status, and associated notes.
-        /// </summary>
-        public class MachineViewModel {
-            public int Id { get; set; }
-
-            public string Name { get; set; }
-
-            public string Model { get; set; }
-
-            public DateTime LastSeen { get; set; }
-
-            public string Os { get; set; }
-
-            public string Build { get; set; }
-
-            public string ServiceTag { get; set; }
-
-            public bool IsWorking { get; set; }
-
-            public int NoteCount { get; set; }
-
-            public Note LastNote { get; set; }
-
-            /// <summary>
-            /// Gets the difference between the system date and the last seen date
-            /// The latest note is determined by the most recent creation date.
-            /// </summary>
-            /// <returns>A string containing the difference</returns>
-            public string GetLastSeen() {
-                TimeSpan timeSpan = DateTime.Now - LastSeen;
-
-                return timeSpan.TotalMinutes switch {
-                    < 1 => "Just now",
-                    < 60 => $"{(int)timeSpan.TotalMinutes} minute{(timeSpan.TotalMinutes >= 2 ? "s" : "")} ago",
-                    < 1440 => $"{(int)timeSpan.TotalHours} hour{(timeSpan.TotalHours >= 2 ? "s" : "")} ago",
-                    < 43200 => $"{(int)timeSpan.TotalDays} day{(timeSpan.TotalDays >= 2 ? "s" : "")} ago",
-                    < 525600 =>
-                        $"{(int)(timeSpan.TotalDays / 30)} month{(timeSpan.TotalDays / 30 >= 2 ? "s" : "")} ago",
-                    _ => $"{(int)(timeSpan.TotalDays / 365)} year{(timeSpan.TotalDays / 365 >= 2 ? "s" : "")} ago",
-                };
-            }
         }
     }
 }

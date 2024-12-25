@@ -1,8 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+﻿using Moq;
 using Microsoft.AspNetCore.SignalR;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using UITManagerApi.Controllers;
 using UITManagerApi.Data;
