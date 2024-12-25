@@ -374,8 +374,8 @@ public static class Populate {
             usersInRoles.AddRange(usersInRole);
         }
 
-        usersInRoles = usersInRoles.Distinct().ToList();
-
+        usersInRoles = usersInRoles.Where(user => user.IsActivate).Distinct().ToList();
+        
         var severityHistories = new List<SeverityHistory>() {
             // Storage exceeded
             new SeverityHistory {
@@ -954,7 +954,7 @@ public static class Populate {
             usersInRoles.AddRange(usersInRole);
         }
 
-        usersInRoles = usersInRoles.Distinct().ToList();
+        usersInRoles = usersInRoles.Where(user => user.IsActivate).Distinct().ToList();
 
         var alarmStatusTypes = new List<AlarmStatusType> {
             new AlarmStatusType {
@@ -1009,7 +1009,7 @@ public static class Populate {
                     nbStatus = random.Next(1, 3);
 
                     var alarm = new Alarm {
-                        TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                        TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                         Machine = machine,
                         NormGroup = normGroups[2],
                         UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1023,9 +1023,7 @@ public static class Populate {
                 for (int j = 0; j < 3; j++) {
                     nbStatus = 3;
                     var oldAlarm = new Alarm {
-                        TriggeredAt =
-                            DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                                .AddMinutes(-random.Next(0, 60)),
+                        TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                         Machine = machine,
                         NormGroup = normGroups[2],
                         UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1045,7 +1043,7 @@ public static class Populate {
                 int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[5],
                     UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -1061,8 +1059,7 @@ public static class Populate {
                 int nbStatus = 3;
                 var alarm = new Alarm {
                     TriggeredAt =
-                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                            .AddMinutes(-random.Next(0, 60)),
+                        DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[5],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1090,7 +1087,7 @@ public static class Populate {
                     if (!noAlarm) {
                         nbStatus = random.Next(1, 3);
                         var alarm = new Alarm {
-                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[0],
                             UserId = random.Next(0, 101) < 80
@@ -1109,8 +1106,7 @@ public static class Populate {
                         nbStatus = 3;
                         var oldAlarm = new Alarm {
                             TriggeredAt =
-                                DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                                    .AddMinutes(-random.Next(0, 60)),
+                                DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[0],
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1129,7 +1125,7 @@ public static class Populate {
                     if (!noAlarm) {
                         nbStatus = random.Next(1, 3);
                         var alarm = new Alarm {
-                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                            TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[3],
                             UserId = random.Next(0, 101) < 80
@@ -1148,8 +1144,7 @@ public static class Populate {
                         nbStatus = 3;
                         var oldAlarm = new Alarm {
                             TriggeredAt =
-                                DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                                    .AddMinutes(-random.Next(0, 60)),
+                                DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[3],
                             UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1172,7 +1167,7 @@ public static class Populate {
                 int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[4],
                     UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -1188,8 +1183,7 @@ public static class Populate {
                 int nbStatus = 3;
                 var alarm = new Alarm {
                     TriggeredAt =
-                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                            .AddMinutes(-random.Next(0, 60)),
+                        DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[4],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1211,7 +1205,7 @@ public static class Populate {
                 int nbStatus = random.Next(1, 3);
 
                 var alarm = new Alarm {
-                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
+                    TriggeredAt = DateTime.UtcNow.AddHours(-random.Next(3, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[1],
                     UserId = random.Next(0, 101) < 80 ? usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id : null
@@ -1227,8 +1221,7 @@ public static class Populate {
                 int nbStatus = 3;
                 var alarm = new Alarm {
                     TriggeredAt =
-                        DateTime.UtcNow.AddDays(-random.Next(1, 365)).AddHours(-random.Next(0, 24))
-                            .AddMinutes(-random.Next(0, 60)),
+                        DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[1],
                     UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
@@ -1366,36 +1359,44 @@ public static class Populate {
         Random random = new Random();
         return random.NextDouble() * (maximum - minimum) + minimum;
     }
-
+    
     private static List<AlarmStatusHistory> AddStatusHistory(int nbStatus, Alarm alarm,
         List<AlarmStatusType> alarmStatusTypes, List<ApplicationUser> usersInRoles, Random random) {
-        List<AlarmStatusHistory> alarmStatusHistories = new List<AlarmStatusHistory>();
+        var alarmStatusHistories = new List<AlarmStatusHistory>();
 
         if (alarm.UserId == null) {
             nbStatus = 1;
         }
 
-        DateTime tempModificationDate = default;
+        DateTime startDate = alarm.TriggeredAt.ToUniversalTime();
+        
+        DateTime endDate;
+        if (nbStatus != 3) {
+            endDate = DateTime.Now.AddHours(-1).ToUniversalTime();
+        }
+        else {
+            endDate = startDate.AddHours(random.Next(48, 73));
+        }
+
+        double totalHours = (endDate - startDate).TotalHours;
+
+        DateTime tempModificationDate = startDate;
+
         for (int i = 0; i < nbStatus; i++) {
-            if (i == 0) {
-                tempModificationDate = alarm.TriggeredAt.AddHours(-random.Next(1, 240*5));
-                alarmStatusHistories.Add(
-                    new AlarmStatusHistory {
-                        Alarm = alarm,
-                        StatusType = alarmStatusTypes[i],
-                        ModificationDate = tempModificationDate,
-                        UserId = null
-                    }); 
-            } else {
-                tempModificationDate = tempModificationDate.AddHours(random.Next(1, 240));
-                alarmStatusHistories.Add(
-                   new AlarmStatusHistory {
-                       Alarm = alarm,
-                       StatusType = alarmStatusTypes[i],
-                       ModificationDate = tempModificationDate,
-                       UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
-                   }); 
+
+            double maxHoursForStatus = totalHours - (i * (totalHours / nbStatus));
+            double hoursToAdd = random.NextDouble() * maxHoursForStatus;
+
+            if (i !=0) {
+                tempModificationDate = tempModificationDate.AddHours(hoursToAdd);
             }
+
+            alarmStatusHistories.Add(new AlarmStatusHistory {
+                Alarm = alarm,
+                StatusType = alarmStatusTypes[i],
+                ModificationDate = i == 0 ? alarm.TriggeredAt : tempModificationDate,
+                UserId = i == 0 ? null : usersInRoles[random.Next(0, usersInRoles.Count)].Id
+            });
         }
 
         return alarmStatusHistories;
