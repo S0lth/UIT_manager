@@ -36,7 +36,8 @@ public class ApiCommunicatorTest {
             BaseAddress = new Uri("http://localhost:5014/")
         };
 
-        var apiCommunicator = new ApiCommunicator("api/agent", httpClient);
+        TokenResponse tokenResponse= await ApiCommunicator.generateTokenAsync();
+        var apiCommunicator = new ApiCommunicator("api/agent", tokenResponse,httpClient);
 
         var machineInfo = new MachineInformation();
 
@@ -69,8 +70,8 @@ public class ApiCommunicatorTest {
         var httpClient = new HttpClient(mockHandler.Object) {
             BaseAddress = new Uri("http://localhost:5014/")
         };
-        
-        var apiCommunicator = new ApiCommunicator("api/agent", httpClient);
+        TokenResponse tokenResponse= await ApiCommunicator.generateTokenAsync();
+        var apiCommunicator = new ApiCommunicator("api/agent", tokenResponse,httpClient);
 
         var machineInfo = new MachineInformation();
 
@@ -100,9 +101,8 @@ public class ApiCommunicatorTest {
         var httpClient = new HttpClient(mockHandler.Object) {
             BaseAddress = new Uri("http://localhost:5014/")
         };
-        
-        var apiCommunicator = new ApiCommunicator("api/agent", httpClient);
-
+        TokenResponse tokenResponse= await ApiCommunicator.generateTokenAsync();
+        var apiCommunicator = new ApiCommunicator("api/agent", tokenResponse,httpClient);
         var machineInfo = new MachineInformation();
 
         var result = await apiCommunicator.SendMachineInformationAsync(machineInfo);
@@ -131,8 +131,8 @@ public class ApiCommunicatorTest {
         var httpClient = new HttpClient(mockHandler.Object) {
             BaseAddress = new Uri("http://localhost:5014/")
         };
-        
-        var apiCommunicator = new ApiCommunicator("api/agent", httpClient);
+        TokenResponse tokenResponse= await ApiCommunicator.generateTokenAsync();
+        var apiCommunicator = new ApiCommunicator("api/agent", tokenResponse,httpClient);
 
         var machineInfo = new MachineInformation();
 

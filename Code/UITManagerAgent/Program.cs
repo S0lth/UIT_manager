@@ -24,7 +24,8 @@ public class Program {
     /// </returns>
     [SupportedOSPlatform("windows")]
     private static async Task<Task> SendMachineInformation() {
-        ApiCommunicator apiCommunicator = new ApiCommunicator("api/v1.0/agent");
+        TokenResponse tokenResponse= await ApiCommunicator.generateTokenAsync();
+        ApiCommunicator apiCommunicator = new ApiCommunicator("api/v1.0/agent", tokenResponse);
         MachineInformation machineInformation = new MachineInformation();
         Console.WriteLine(machineInformation.ToJson());
         bool success = await apiCommunicator.SendMachineInformationAsync(machineInformation);
