@@ -1,6 +1,5 @@
 ﻿using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
-using UITManagerAgent.DataCollectors;
 
 namespace UITManagerAgent.Tests.BasicInformation {
     

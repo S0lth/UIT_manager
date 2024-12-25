@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UITManagerWebServer.Models {
+﻿namespace UITManagerWebServer.Models {
     /// <summary>
     /// Represents a group of norms categorized by priority.
     /// </summary>

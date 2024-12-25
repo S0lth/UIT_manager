@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using UITManagerAgent.BasicInformation;
+﻿using UITManagerAgent.BasicInformation;
 
 /// <summary>
 /// Represents information about a domain name.

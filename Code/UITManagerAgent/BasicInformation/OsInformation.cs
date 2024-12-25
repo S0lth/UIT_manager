@@ -1,6 +1,4 @@
-﻿using System.Management;
-using System.Runtime.Versioning;
-using System.Text.Json;
+﻿using System.Runtime.Versioning;
 
 namespace UITManagerAgent.BasicInformation;
 

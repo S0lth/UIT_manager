@@ -1,5 +1,4 @@
 @using UITManagerWebServer.Helpers
-@using UITManagerWebServer.Models
 @model UITManagerWebServer.Models.Alarm
 @{
     var userIsAuthorized = User.IsInRole("IT Director") || User.IsInRole("Maintenance Manager");

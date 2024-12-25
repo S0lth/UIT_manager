@@ -1,7 +1,8 @@
 ﻿using UITManagerAgent.BasicInformation;
-namespace UITManagerAgent.DataCollectors;
 using System.Management;
 using System.Runtime.Versioning;
+
+namespace UITManagerAgent.DataCollectors;
 
 public class ModelCollectors : DataCollector {
     [SupportedOSPlatform("windows")]

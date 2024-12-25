@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using UITManagerWebServer.Models;
-using Information = Microsoft.VisualBasic.Information;
 
 namespace UITManagerWebServer.Data {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser> {

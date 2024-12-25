@@ -309,7 +309,7 @@ namespace UITManagerWebServer.Controllers {
             return View(alarm);
         }
         
-        [Authorize(Roles = "IT Director, Maintenance Managern Technician")]
+        [Authorize(Roles = "IT Director, Maintenance Manager, Technician")]
         public async Task<IActionResult> Details(string sortOrder, int  id, string solutionFilter, string authorFilter,
             string sortOrderNote) {
             if (string.IsNullOrEmpty(sortOrder)) {

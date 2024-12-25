@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Runtime.Versioning;
 using UITManagerAgent.BasicInformation;
 using UITManagerAgent.DataCollectors;

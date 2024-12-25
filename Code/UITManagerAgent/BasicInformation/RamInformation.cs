@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Versioning;
+
 namespace UITManagerAgent.BasicInformation;
 
 /// <summary>

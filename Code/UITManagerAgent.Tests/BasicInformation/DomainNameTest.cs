@@ -1,7 +1,4 @@
-﻿
-using UITManagerAgent.BasicInformation;
-
-namespace UITManagerAgent.Tests.BasicInformation;
+﻿namespace UITManagerAgent.Tests.BasicInformation;
 
 
 /// <summary>

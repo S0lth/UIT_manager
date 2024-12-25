@@ -1,6 +1,4 @@
-﻿using System.Runtime.Versioning;
-using UITManagerAgent.BasicInformation;
-using UITManagerAgent.DataCollectors;
+﻿using UITManagerAgent.BasicInformation;
 
 namespace UITManagerAgent.Tests.BasicInformation;
 

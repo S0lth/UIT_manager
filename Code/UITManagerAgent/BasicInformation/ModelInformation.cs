@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-namespace UITManagerAgent.BasicInformation;
-
+﻿namespace UITManagerAgent.BasicInformation;
 
 public class ModelInformation : Information{
     /// <summary>

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UITManagerAlarmManager.Models {
+﻿namespace UITManagerAlarmManager.Models {
     /// <summary>
     /// Represents a group of norms categorized by priority.
     /// </summary>
