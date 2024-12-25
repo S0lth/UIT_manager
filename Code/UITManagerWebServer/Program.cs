@@ -65,7 +65,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-
 app.Use(async (context, next) =>
 {
     context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
@@ -73,7 +72,6 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("X-Frame-Options", "DENY");
     context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
     context.Response.Headers.Append("Permissions-Policy", "geolocation=(), microphone=()");
-    
     
     await next();
 });
@@ -89,9 +87,7 @@ else {
 }
 
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
