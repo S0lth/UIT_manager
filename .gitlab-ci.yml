@@ -9,10 +9,20 @@
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
+.other_job:
+  before_script:
+    - Set-Variable -Name "time" -Value (Get-Date -Format "HH:mm")
+    - Write-Host "Pipeline started by $env:GITLAB_USER_NAME (@$env:GITLAB_USER_LOGIN) at $time for configuration $env:BUILD_CONFIGURATION"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
 variables:
   PROJECT_NAME: UITManagerAgent
   PROJECT_NAME_TEST: UITManagerAgent.Tests
   WEBAPP_NAME: UITManagerWebServer
+  API_NAME: UITManagerApi
   BUILD_CONFIGURATION: Debug
   BASE_DIR: "$CI_PROJECT_DIR\\Code"
 
@@ -21,12 +31,14 @@ cache:
   paths:
     - "Code/UITManagerAgent/obj/"
     - "Code/UITManagerAgent/bin/"
+    - "Code/UITManagerApi/obj/"
+    - "Code/UITManagerApi/bin/"
     - "Code/UITManagerAgent.Tests/obj/"
     - "Code/UITManagerAgent.Tests/bin/"
     - "Code/UITManagerWebServer/obj/"
     - "Code/UITManagerWebServer/bin/"
 
-build:
+build_solution:
   extends: .windows_job
   stage: build
   script:
@@ -38,7 +50,7 @@ build:
       - "Code/UITManagerAgent.Tests/bin/Debug"
     expire_in: 1 week
 
-test:
+test_solution:
   extends: .windows_job
   stage: test
   script:
@@ -47,7 +59,7 @@ test:
     - build
 
 build_webapp:
-  extends: .windows_job
+  extends: .other_job
   stage: build
   script:
     - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:WEBAPP_NAME\\$env:WEBAPP_NAME.csproj"
@@ -56,3 +68,23 @@ build_webapp:
     paths:
       - "Code/UITManagerWebServer/bin/Debug"
     expire_in: 1 week
+
+build_api:
+  extends: .other_job
+  stage: build
+  script:
+    - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\$env:API_NAME.csproj"
+    - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\$env:API_NAME.csproj" -c $env:BUILD_CONFIGURATION
+  artifacts:
+    paths:
+      - "Code/UITManagerApi/bin/Debug"
+    expire_in: 1 week
+
+test_api:
+  extends: .other_job
+  stage: test
+  script:
+    - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME\\$PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
+  dependencies:
+    - build
+
