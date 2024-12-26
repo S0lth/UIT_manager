@@ -64,10 +64,11 @@ build_webapp:
 build_api:
   extends: .windows_job
   stage: build
+  before_script:
+    - echo '[{"Name:" "'"$JWT_USER"'", "Serial:" "'"$JWT_PASSWORD"'"}]' >  "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\registerUsers.json
   script:
     - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\$env:API_NAME.csproj"
     - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\$env:API_NAME.csproj" -c $env:BUILD_CONFIGURATION
-    - echo '[{"Name:" "'"$JWT_USER"'", "Serial:" "'"$JWT_PASSWORD"'"}]' >  "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\registerUsers.json
   artifacts:
     paths:
       - "Code/UITManagerApi/bin/Debug"
