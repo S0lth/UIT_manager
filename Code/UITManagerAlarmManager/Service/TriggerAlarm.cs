@@ -123,7 +123,7 @@ public static class TriggerAlarm {
                 if (allNormsValid) {
                     CreateAlarm(context, machineId, normGroup.Id, listStatus);
                     Email email = new Email(context);
-                    //await email.Send($"An alarm has been triggered on the machine{machine?.Name}.}}");
+                    await email.Send($"An alarm has been triggered on the machine{machine?.Name}. See more on https://localhost:7012/Machine/{machineId}}}");
                 }
             }
         }
