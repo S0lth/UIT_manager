@@ -51,7 +51,7 @@ test_solution:
     - build_solution
 
 build_webapp:
-  extends: .other_job
+  extends: .windows_job
   stage: build
   script:
     - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:WEBAPP_NAME\\$env:WEBAPP_NAME.csproj"
