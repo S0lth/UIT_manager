@@ -11,7 +11,6 @@ namespace UITManagerApi.Controllers {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase {
-        private readonly ILogger<AgentController> _logger;
         private readonly JwtSettings _jwtSettings = new JwtSettings();
         private const string _relativePath = "registredUsers.json";
         private List<User> _allowedUsers = new List<User>();
