@@ -9,12 +9,6 @@
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
-.other_job:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push"
-    - if: '$CI_PIPELINE_SOURCE == "web"'
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
 
 variables:
   PROJECT_NAME: UITManagerAgent
@@ -68,7 +62,7 @@ build_webapp:
     expire_in: 1 week
 
 build_api:
-  extends: .other_job
+  extends: .windows_job
   stage: build
   script:
     - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\$env:API_NAME.csproj"
@@ -80,7 +74,7 @@ build_api:
     expire_in: 1 week
 
 test_api:
-  extends: .other_job
+  extends: .windows_job
   stage: test
   script:
     - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME\\$PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
