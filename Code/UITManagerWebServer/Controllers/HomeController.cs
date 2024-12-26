@@ -77,19 +77,19 @@ namespace UITManagerWebServer.Controllers {
                     tab = "unprocessed"
                 });
             }
-
             List<AlarmViewModel> selectedAlarms;
             if (tab == "unprocessed") {
-                selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
+                selectedAlarms = await GetAlarmsWithDetails(statusFilter:"New", sortOrder: sortOrder, overdue: false, orderByDate:false, newest: false, takeTop: null);
             }
             else if (tab == "newest") {
-                selectedAlarms = await GetAlarmsWithDetails(sortOrder, orderByDate: true, newest: true);
+                selectedAlarms = await GetAlarmsWithDetails(statusFilter: null, sortOrder: sortOrder, overdue:false, orderByDate: true, newest: true, takeTop: null);
             }
             else if (tab == "overdue") {
-                selectedAlarms = await GetAlarmsWithDetails(sortOrder, overdue: true, orderByDate: true);
+                selectedAlarms = await GetAlarmsWithDetails(statusFilter: null, sortOrder: sortOrder, overdue: true,
+                    orderByDate: true, newest: false, takeTop: null);
             }
             else {
-                selectedAlarms = await GetAlarmsWithDetails("New", sortOrder);
+                selectedAlarms = await GetAlarmsWithDetails(statusFilter: "New",sortOrder:  sortOrder, overdue: false, orderByDate: false, newest: false, takeTop: null);
             }
 
 
