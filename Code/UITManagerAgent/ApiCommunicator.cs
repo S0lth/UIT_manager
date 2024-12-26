@@ -77,7 +77,7 @@ public class ApiCommunicator {
     /// </remarks>
     public static async Task<TokenResponse> generateTokenAsync() {
         string endpointUrl = "http://localhost:5014/api/v1.0/Auth";
-        string user = "oroger";
+        string user = "uitmanager";
         string password = "StrongerPassword!1";
 
         using (HttpClient httpClient = new HttpClient()) {
@@ -91,15 +91,12 @@ public class ApiCommunicator {
             
             try
             {
-                // Envoyer la requête POST
                 HttpResponseMessage response = await httpClient.PostAsync(endpointUrl, requestContent);
 
-                // Vérifier si la requête a réussi
                 if (response.IsSuccessStatusCode)
                 {
                     string responseBody = await response.Content.ReadAsStringAsync();
                     
-                    // Désérialiser la réponse JSON
                     var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody);
                     return tokenResponse;
                 }

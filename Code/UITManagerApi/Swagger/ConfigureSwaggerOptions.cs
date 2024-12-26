@@ -17,10 +17,10 @@ namespace UITManagerApi.Swagger {
 
         private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description) {
             var info = new OpenApiInfo() {
-                Title = "Example Web API",
+                Title = "API UITMANAGER AlarmManager",
                 Version = description.ApiVersion.ToString(),
-                Description = "Description for the example Web API",
-                Contact = new OpenApiContact { Name = "Author name", Email = "author-main@org.com" },
+                Description = "Manage Alarms and Mails on UITMANAGER System",
+                Contact = new OpenApiContact { Name = "CEO UIT", Email = "ceo@uit.be" },
                 License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
             };
 
