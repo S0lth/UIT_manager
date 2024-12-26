@@ -2,7 +2,6 @@
   tags:
     - saas-windows-medium-amd64
   before_script:
-    - Set-Variable -Name "time" -Value (Get-Date -Format "HH:mm")
     - Write-Host "Pipeline started by $env:GITLAB_USER_NAME (@$env:GITLAB_USER_LOGIN) at $time for configuration $env:BUILD_CONFIGURATION"
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
@@ -11,7 +10,6 @@
 
 .other_job:
   before_script:
-    - Set-Variable -Name "time" -Value (Get-Date -Format "HH:mm")
     - Write-Host "Pipeline started by $env:GITLAB_USER_NAME (@$env:GITLAB_USER_LOGIN) at $time for configuration $env:BUILD_CONFIGURATION"
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
