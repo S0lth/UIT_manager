@@ -75,15 +75,12 @@ public class ApiCommunicator {
             
             try
             {
-                // Envoyer la requête POST
                 HttpResponseMessage response = await httpClient.PostAsync(endpointUrl, requestContent);
 
-                // Vérifier si la requête a réussi
                 if (response.IsSuccessStatusCode)
                 {
                     string responseBody = await response.Content.ReadAsStringAsync();
                     
-                    // Désérialiser la réponse JSON
                     var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(responseBody);
                     return tokenResponse;
                 }
