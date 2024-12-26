@@ -46,12 +46,11 @@ postgres_database=uitmanager
 ]
 ```
 
-## `.env` in /Code/UITManagerAlarmManager Mail
-```bash
+## `.env` in /Code/UITManagerAlarmManager for Mails
+```
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USERNAME=UITMANAGER SYSTEM
+SMTP_USERNAME=musica.proytb@gmail.com
 SMTP_PASSWORD=sgpq vvbv gcpn lpac
 SMTP_FROM_EMAIL=musica.proytb@gmail.com
-
 ```
