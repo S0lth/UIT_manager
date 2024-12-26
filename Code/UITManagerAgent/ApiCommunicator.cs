@@ -59,6 +59,22 @@ public class ApiCommunicator {
         }
     }
 
+    /// <summary>
+    /// Asynchronously generates a token by sending a POST request to a specified authentication endpoint.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task{TokenResponse}"/> representing the asynchronous operation:
+    /// - Returns a <see cref="TokenResponse"/> object if the request is successful.
+    /// - Returns <c>null</c> if the request fails or encounters an exception.
+    /// </returns>
+    /// <remarks>
+    /// This method performs the following operations:
+    /// 1. Constructs an HTTP POST request to the authentication API.
+    /// 2. Serializes user credentials (`Name` and `Serial`) into a JSON payload.
+    /// 3. Sends the request to the specified endpoint URL.
+    /// 4. Deserializes the JSON response into a <see cref="TokenResponse"/> object if the response indicates success.
+    /// 5. Logs any errors or exceptions that occur during the operation.
+    /// </remarks>
     public static async Task<TokenResponse> generateTokenAsync() {
         string endpointUrl = "http://localhost:5014/api/v1.0/Auth";
         string user = "oroger";
