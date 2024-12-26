@@ -61,7 +61,7 @@ public class ApiCommunicator {
 
     public static async Task<TokenResponse> generateTokenAsync() {
         string endpointUrl = "http://localhost:5014/api/v1.0/Auth";
-        string user = "oroger";
+        string user = "uitmanager";
         string password = "StrongerPassword!1";
 
         using (HttpClient httpClient = new HttpClient()) {
