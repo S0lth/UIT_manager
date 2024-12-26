@@ -16,7 +16,7 @@ postgres_database=uitmanager
   - username: `oroger`
   - password: `StrongerPassword!1`
 
-## `appsettings.Development.json` in /code/UITManagerApi
+## `appsettings.Development.json` in /Code/UITManagerApi
 ```json
 {
   "Logging": {
@@ -36,20 +36,22 @@ postgres_database=uitmanager
 ```
 
 
-## `registredUsers.json` in /code/UITManagerApi
+## `registredUsers.json` in /Code/UITManagerApi
 ```json
 [
   {
-    "Name": "oroger",
-    "Serial": "StrongerPassword!1"
-  },
-  {
-    "Name": "devauxisaac",
-    "Serial": "StrongerPassword!1"
-  },
-  {
-    "Name": "milletcamille",
+    "Name": "uitmanager",
     "Serial": "StrongerPassword!1"
   }
 ]
+```
+
+## `.env` in /Code/UITManagerAlarmManager Mail
+```bash
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=UITMANAGER SYSTEM
+SMTP_PASSWORD=sgpq vvbv gcpn lpac
+SMTP_FROM_EMAIL=musica.proytb@gmail.com
+
 ```
