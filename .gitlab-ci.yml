@@ -75,7 +75,7 @@ build_api:
   script:
     - dotnet restore "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\$env:API_NAME.csproj"
     - dotnet build --no-restore "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\$env:API_NAME.csproj" -c $env:BUILD_CONFIGURATION
-    - echo '[{"Name:" "'"$USER_NAME"'", "Serial:" "'"$USER_PASSWORD"'"}]' >  "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\registerUsers.json
+    - echo '[{"Name:" "'"$JWT_USER"'", "Serial:" "'"$JWT_PASSWORD"'"}]' >  "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\registerUsers.json
   artifacts:
     paths:
       - "Code/UITManagerApi/bin/Debug"
