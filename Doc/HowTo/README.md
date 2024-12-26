@@ -69,6 +69,13 @@ Before you begin, ensure that the following are installed on your machine:
 2. Copy the contents of the `registredUsers.json` part in `credentials.md` file and paste it into the `registredUsers.json` file you've just created.
 3. Copy the contents of the `appsettings.Development.json` part in `credentials.md` file and paste it into the `appsettings.Development.json` file in UITManagerApi.
 
+## Setup Mail
+1. Create the `.env` file:
+   ```bash
+   $ touch ~/uitmanager/Code/UITManagerAlarmManager/.env
+   ```
+2. Copy the contents of the `.env` part (mail) in `credentials.md` file and paste it into the `.env` file you've just created.
+
 ## Applying Migrations
 To apply migrations to your PostgreSQL Docker container, run the following commands:
 ```bash
