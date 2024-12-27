@@ -75,6 +75,8 @@ build_api:
 test_api:
   extends: .windows_job
   stage: test
+  before_script:
+    - echo '[{"Name:" "'"$JWT_USER"'", "Serial:" "'"$JWT_PASSWORD"'"}]' >  "$env:CI_PROJECT_DIR\\Code\\$env:API_NAME\\registerUsers.json
   script:
     - dotnet test --no-build "$BASE_DIR\\$PROJECT_NAME\\$PROJECT_NAME.sln" -c $env:BUILD_CONFIGURATION
   dependencies:
