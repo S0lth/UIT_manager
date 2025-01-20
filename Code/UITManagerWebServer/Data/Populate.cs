@@ -24,7 +24,7 @@ public static class Populate {
 
         await SeedAlarms(context, machines, normGroups, userManager, noAlarm);
 
-        SeedNotes(context, machines);
+        //SeedNotes(context, machines);
 
         Console.WriteLine($"Database populated");
     }
@@ -944,7 +944,7 @@ public static class Populate {
     private static async Task SeedAlarms(ApplicationDbContext context, List<Machine> machines,
         List<NormGroup> normGroups, UserManager<ApplicationUser> userManager, bool noAlarm) {
         var random = new Random();
-
+        
         var rolesToFind = new List<string> { "Technician" };
 
         var usersInRoles = new List<ApplicationUser>();
@@ -990,6 +990,7 @@ public static class Populate {
         context.AlarmStatusTypes.AddRange(alarmStatusTypes);
 
         var alarms = new List<Alarm>();
+        var notes = new List<Note>();
         var alarmStatusHistories = new List<AlarmStatusHistory>();
 
         foreach (var machine in machines) {
@@ -1022,6 +1023,7 @@ public static class Populate {
                 // Closed Alarm
                 for (int j = 0; j < 3; j++) {
                     nbStatus = 3;
+                    String userId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id;
                     var oldAlarm = new Alarm {
                         TriggeredAt = DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                         Machine = machine,
@@ -1032,6 +1034,7 @@ public static class Populate {
                     alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes, usersInRoles,
                         random));
                     alarms.Add(oldAlarm);
+                    notes.Add(AddNote(machine,"Investigating CPU Usage",alarmStatusHistories[^1].ModificationDate,userId));
                 }
             }
 
@@ -1056,7 +1059,8 @@ public static class Populate {
             }
             else {
                 // Closed alarm
-                int nbStatus = 3;
+                int nbStatus = 3;                       
+                String userId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id;
                 var alarm = new Alarm {
                     TriggeredAt =
                         DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
@@ -1069,6 +1073,7 @@ public static class Populate {
                     random));
 
                 alarms.Add(alarm);
+                notes.Add(AddNote(machine,"Managed low RAM issue",alarmStatusHistories[^1].ModificationDate,userId));
             }
 
             // Get Storage
@@ -1102,19 +1107,23 @@ public static class Populate {
                     }
 
                     // Closed alarm
+                    int triggerAddNote = random.Next(4,15);
                     for (int j = 0; j < 20; j++) {
                         nbStatus = 3;
+                        String userId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id;
                         var oldAlarm = new Alarm {
                             TriggeredAt =
                                 DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[0],
-                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                            UserId = userId
                         };
 
                         alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes,
                             usersInRoles, random));
-                        alarms.Add(oldAlarm);
+                        alarms.Add(oldAlarm); 
+                        if (j == triggerAddNote)
+                            notes.Add(AddNote(machine,"Storage Monitoring",alarmStatusHistories[^1].ModificationDate,userId));
                     }
                 }
                 //else if (diskUsed / diskTot > Double.Parse(normGroups[3].Norms.Find(n => n.Name.Equals("Storage over 80%")).Value)/100) {
@@ -1138,21 +1147,25 @@ public static class Populate {
 
                         alarms.Add(alarm);
                     }
-
+                    int triggerAddNote = random.Next(4,15);
                     // Closed Alarm
                     for (int j = 0; j < 20; j++) {
                         nbStatus = 3;
+                        String userId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id;
                         var oldAlarm = new Alarm {
                             TriggeredAt =
                                 DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                             Machine = machine,
                             NormGroup = normGroups[3],
-                            UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                            UserId = userId
                         };
 
                         alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, oldAlarm, alarmStatusTypes,
                             usersInRoles, random));
                         alarms.Add(oldAlarm);
+                        
+                        if (j == triggerAddNote)
+                            notes.Add(AddNote(machine,"Storage Monitoring 2",alarmStatusHistories[^1].ModificationDate,userId));
                     }
                 }
             }
@@ -1181,18 +1194,20 @@ public static class Populate {
             else {
                 // Closed alarm
                 int nbStatus = 3;
+                string userId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id;
                 var alarm = new Alarm {
                     TriggeredAt =
                         DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[4],
-                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                    UserId = userId
                 };
 
                 alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
                     random));
 
                 alarms.Add(alarm);
+                notes.Add(AddNote(machine,"Upgraded DirectX Version",alarmStatusHistories[^1].ModificationDate,userId));
             }
 
             // Get Windows
@@ -1219,122 +1234,155 @@ public static class Populate {
             else {
                 //Closed alarm
                 int nbStatus = 3;
+                string userId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id;
                 var alarm = new Alarm {
                     TriggeredAt =
                         DateTime.UtcNow.AddDays(-random.Next(2, 120)).AddHours(-random.Next(0, 24)).AddMinutes(-random.Next(0, 60)),
                     Machine = machine,
                     NormGroup = normGroups[1],
-                    UserId = usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id
+                    UserId = userId
                 };
 
                 alarmStatusHistories.AddRange(AddStatusHistory(nbStatus, alarm, alarmStatusTypes, usersInRoles,
                     random));
 
                 alarms.Add(alarm);
+                notes.Add(AddNote(machine,"OS Upgrade",alarmStatusHistories[^1].ModificationDate,userId));
             }
         }
+     
+        notes.Add(AddNote(machines[machines.Count/2],"Driver Update",DateTime.UtcNow.AddDays(-random.Next(30,90)).AddHours(-random.Next(0,25)).AddMinutes(-random.Next(0,61)),usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id));
+        notes.Add(AddNote(machines[machines.Count/4],"System Vulnerability Patch",DateTime.UtcNow.AddDays(-random.Next(30,90)).AddHours(-random.Next(0,25)).AddMinutes(-random.Next(0,61)),usersInRoles[random.Next(0, usersInRoles.Count - 1)].Id));
 
         context.AlarmHistories.AddRange(alarmStatusHistories);
         context.Alarms.AddRange(alarms);
+        context.Notes.AddRange(notes);
         context.SaveChanges();
     }
-
-    private static void SeedNotes(ApplicationDbContext context, List<Machine> machines) {
-        var random = new Random();
-        var notes = new List<Note>();
-
+    
+    private static Note AddNote(Machine machine, string type, DateTime? date, string authorId) {
+        
         var solutionTitles = new[] { "Driver Update", "System Vulnerability Patch", "OS Upgrade" };
-
         var solutionContents = new[] {
             "### Resolved issue with outdated drivers\n- **Issue**: The outdated drivers were causing frequent system crashes and slow performance, especially with peripheral devices.\n- **Actions Taken**:\n   1. Identified that several drivers were not up to date.\n   2. Updated drivers for network adapter, sound card, and graphics card.\n   3. Restarted the system after the updates were completed to ensure stability.\n- **Outcome**: After the update, the system was much more stable, and there were no crashes during the stress tests.\n![Driver Image](image1.png)\n\n",
             "### Patched system vulnerabilities\n- **Issue**: A security vulnerability was discovered in the system related to outdated security patches and missing updates.\n- **Actions Taken**:\n   1. Applied critical patches to address known vulnerabilities in the system.\n   2. Updated the operating system and security-related software to the latest versions.\n   3. Ran a vulnerability scan to ensure all security patches were correctly installed and no residual threats remained.\n- **Outcome**: The vulnerability has been successfully patched, and a follow-up scan confirmed no remaining issues. The system is now fully up-to-date with current security standards.\n",
             "### Updated operating system\n- **Issue**: The operating system was outdated, with multiple patches missing, exposing the system to potential malware and instability.\n- **Actions Taken**:\n   1. Backed up all critical data and created restore points for the system.\n   2. Installed the latest operating system version along with all pending security updates.\n   3. Checked for application compatibility with the new version.\n- **Outcome**: The upgrade was successful, and performance has improved significantly. All applications are running smoothly, and the system is now more secure.\n"
         };
 
-        var nonSolutionTitles = new[] { "Investigating CPU Usage", "Storage Monitoring" };
+        var nonSolutionTitles = new[] { "Investigating CPU Usage", "Full storage capacity alarms triggered","Multiple 80% storage capacity alarms triggered","Managed low RAM issue","Upgraded DirectX Version" };
         var nonSolutionContents = new[] {
-            "### Investigating high CPU usage\n- **Issue**: Users reported performance lag due to excessive CPU usage when running high-demand applications.\n- **Actions Taken**:\n   1. Analyzed running processes and identified a few applications that were consuming excessive CPU resources.\n   2. Disabled unnecessary background tasks and services that were consuming CPU.\n   3. Monitored CPU performance over a 24-hour period after making adjustments.\n   4. Further investigation revealed a potential memory leak in one of the installed applications.\n- **Current Status**: The issue is still being investigated. The next step is to contact the application vendor for a patch related to the memory leak.\n- ![CPU](image4.png)\n\n",
-            "### Monitoring storage capacity\n- **Issue**: The system's storage reached 95% capacity, triggering warnings of potential performance degradation.\n- **Actions Taken**:\n   1. Checked current disk usage and identified large files and temporary data causing the storage overflow.\n   2. Moved several non-essential files to an external drive to free up space.\n   3. Implemented disk clean-up tasks to remove redundant files and logs that were not required.\n   4. Reconfigured disk quotas to ensure that future storage usage remains manageable.\n- **Current Status**: The system is stable, and storage usage is now below 70%. However, I’m continuing to monitor disk usage to prevent further issues. A long-term solution will involve upgrading the storage device.\n- ![Storage](image5.png)\n\n"
+            "### Investigating high CPU usage\n- **Issue**: Users reported performance lag due to excessive CPU usage when running high-demand applications.\n- **Actions Taken**:\n   1. Analyzed running processes and identified a few applications that were consuming excessive CPU resources.\n   2. Disabled unnecessary background tasks and services that were consuming CPU.\n   3. Monitored CPU performance over a 24-hour period after making adjustments.\n   4. Further investigation revealed a potential memory leak in one of the installed applications.\n- **Current Status**: The issue is still being investigated. The next step is to contact the application vendor for a patch related to the memory leak.\n![CPU](image4.png)\n\n",
+            "### Monitoring storage capacity\n- **Issue**: The system's storage reached 99% capacity, triggering warnings of potential performance degradation.\n- **Actions Taken**:\n   1. Checked current disk usage and identified large files and temporary data causing the storage overflow.\n   2. Moved several non-essential files to an external drive to free up space.\n   3. Implemented disk clean-up tasks to remove redundant files and logs that were not required.\n   4. Reconfigured disk quotas to ensure that future storage usage remains manageable.\n- **Current Status**: The system is stable, and storage usage is now below 70%. However, I’m continuing to monitor disk usage to prevent further issues. A long-term solution will involve upgrading the storage device.\n![Storage](image6.png)\n\n",
+            "### Monitoring storage capacity\n- **Issue**: The system's storage reached 80% capacity, triggering warnings of potential performance degradation.\n- **Actions Taken**:\n   1. Checked current disk usage and identified large files and temporary data contributing to the high storage usage.\n   2. Moved several non-essential files to an external drive to free up space.\n   3. Implemented disk clean-up tasks to remove redundant files and logs that were not required.\n   4. Reconfigured disk quotas to ensure that future storage usage remains manageable.\n- **Current Status**: The system is stable, and storage usage is now below 70%. However, I’m continuing to monitor disk usage to prevent further issues. A long-term solution will involve upgrading the storage device.\n![Storage](image5.png)\n\n",
+            "### Managed low RAM issue\n- **Issue**: The system experienced performance issues due to low available RAM, particularly during multitasking.\n- **Actions Taken**:\n  1. Identified high memory consumption from specific applications and background processes.\n  2. Increased the paging file size to temporarily offset the low RAM issue.\n  3. Ordered additional RAM modules (16 GB), with installation scheduled for next maintenance window.\n- **Outcome**: The system is stable for now, but the long-term resolution will involve upgrading the hardware to support increased workload demands.\n",
+            "### Upgraded DirectX Version\n- **Issue**: The system was running an outdated version of DirectX (DirectX 11), which caused performance bottlenecks and limited support for modern graphics features in newer applications and games.\n- **Actions Taken**:\n  1. Verified the current DirectX version and confirmed the system was running DirectX 11.\n  2. Checked hardware compatibility to ensure support for DirectX 12.\n  3. Updated the GPU drivers to the latest version to support DirectX 12.\n  4. Installed the DirectX 12 runtime via the Windows Update service.\n  5. Conducted tests with DirectX 12-enabled applications to confirm stability and improved performance.\n- **Outcome**: The migration to DirectX 12 was successful. The system now supports modern graphics APIs and shows significant performance improvements in graphics-intensive applications. No issues were observed during the post-migration tests.\n"
         };
 
-        var usersInRolesNote = context.Users.ToList();
+        string title = "";
+        string content = "";
+        bool isSolution = false;
 
-        List<string> ExtractImageFileNames(string content) {
-            var fileNames = new List<string>();
-            var regex = new Regex(@"!\[.*?\]\((.*?)\)", RegexOptions.Compiled);
-            var matches = regex.Matches(content);
+        switch (type) {
+            case "Driver Update":
+                title = solutionTitles[0];
+                content = solutionContents[0];
+                isSolution = true;
+                break;
 
-            foreach (Match match in matches) {
-                var imageFileName = match.Groups[1].Value;
-                fileNames.Add(imageFileName);
+            case "System Vulnerability Patch":
+                title = solutionTitles[1];
+                content = solutionContents[1];
+                isSolution = true;
+                break;
+
+            case "OS Upgrade":
+                title = solutionTitles[2];
+                content = solutionContents[2];
+                isSolution = true;
+                break;
+
+            case "Investigating CPU Usage":
+                title = nonSolutionTitles[0];
+                content = nonSolutionContents[0];
+                isSolution = false;
+                break;
+
+            case "Storage Monitoring":
+                title = nonSolutionTitles[1];
+                content = nonSolutionContents[1];
+                isSolution = false;
+                break;
+            
+            case "Storage Monitoring 2":
+                title = nonSolutionTitles[2];
+                content = nonSolutionContents[2];
+                isSolution = false;
+                break;
+            
+            case "Managed low RAM issue":
+                title = nonSolutionTitles[3];
+                content = nonSolutionContents[3];
+                isSolution = false;
+                break;
+
+            case "Upgraded DirectX Version":
+                title = nonSolutionTitles[4];
+                content = nonSolutionContents[4];
+                isSolution = false;
+                break;
+            
+        }
+
+        var note = new Note {
+            Title = title,
+            Content = content,
+            CreatedAt = (DateTime)date!,
+            Machine = machine,
+            IsSolution = isSolution,
+            AuthorId = authorId
+        };
+
+        var imageFileNames = ExtractImageFileNames(content);
+        AddFilesToNote(note, imageFileNames);
+
+        return note;
+    }
+
+    
+    private static List<string> ExtractImageFileNames(string content) {
+        var fileNames = new List<string>();
+        var regex = new Regex(@"!\[.*?\]\((.*?)\)", RegexOptions.Compiled); // Correspond au format ![alt text](file_path)
+        var matches = regex.Matches(content);
+
+        foreach (Match match in matches) {
+            var imageFileName = match.Groups[1].Value; // Extrait le chemin ou le nom du fichier entre les parenthèses
+            fileNames.Add(imageFileName);
+        }
+
+        return fileNames;
+    }
+    
+    private static void AddFilesToNote(Note note, List<string> imageFileNames) {
+        var files = new List<UITManagerWebServer.Models.File>();
+
+        foreach (var fileName in imageFileNames) {
+            var filePath = Path.Combine("Images", fileName); // Chemin du fichier dans le répertoire "Images"
+            if (System.IO.File.Exists(filePath)) {
+                var fileContent = System.IO.File.ReadAllBytes(filePath); // Lit le contenu du fichier
+                var mimeType = "image/jpg"; // Définit le type MIME (peut être amélioré pour détecter automatiquement le type)
+
+                var file = new UITManagerWebServer.Models.File {
+                    FileName = fileName,
+                    FileContent = fileContent,
+                    MimeType = mimeType,
+                    NoteId = note.Id // Lie le fichier à l'identifiant de la note
+                };
+
+                files.Add(file);
             }
-
-            return fileNames;
         }
 
-        void AddFilesToNote(Note note, List<string> imageFileNames) {
-            var files = new List<UITManagerWebServer.Models.File>();
-
-            foreach (var fileName in imageFileNames) {
-                var filePath = Path.Combine("Images", fileName);
-                if (System.IO.File.Exists(filePath)) {
-                    var fileContent = System.IO.File.ReadAllBytes(filePath);
-                    var mimeType = "image/jpg";
-
-                    var file = new UITManagerWebServer.Models.File {
-                        FileName = fileName, FileContent = fileContent, MimeType = mimeType, NoteId = note.Id
-                    };
-
-                    files.Add(file);
-                }
-            }
-
-            note.Files = files;
-        }
-
-
-        for (int i = 0; i < 3; i++) {
-            var note = new Note {
-                Title = solutionTitles[i],
-                Content = solutionContents[i],
-                CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
-                Machine = machines[i],
-                IsSolution = true,
-                AuthorId = usersInRolesNote[random.Next(0, usersInRolesNote.Count)].Id
-            };
-
-            var imageFileNames = ExtractImageFileNames(note.Content);
-            notes.Add(note);
-        }
-
-        for (int i = 0; i < 2; i++) {
-            var note = new Note {
-                Title = nonSolutionTitles[i],
-                Content = nonSolutionContents[i],
-                CreatedAt = DateTime.UtcNow.AddHours(-random.Next(1, 48)),
-                Machine = machines[i + 3],
-                IsSolution = false,
-                AuthorId = usersInRolesNote[random.Next(0, usersInRolesNote.Count)].Id
-            };
-
-            var imageFileNames = ExtractImageFileNames(note.Content);
-            notes.Add(note);
-        }
-
-        try {
-            context.Notes.AddRange(notes);
-            context.SaveChanges();
-
-            foreach (var note in notes) {
-                var imageFileNames = ExtractImageFileNames(note.Content);
-                AddFilesToNote(note, imageFileNames);
-            }
-
-            context.SaveChanges();
-        }
-        catch (Exception ex) {
-            Console.WriteLine($"Error saving notes: {ex.Message}");
-        }
+        note.Files = files; // Associe les fichiers à la note
     }
 
      private static async Task<string> GenerateUniqueWindowsMachineName(ApplicationDbContext context) {
